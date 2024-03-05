@@ -7,20 +7,28 @@ const AuthService = {
     success: boolean;
     data?: { user: User; token: string };
   }> {
-    const response = await axios.post<{ user: User; token: string }>(
-      `${this.baseURL}/login`,
-    );
-    if (response.status < 200 || response.status >= 300) {
+    try {
+      const response = await axios.post<{ user: User; token: string }>(
+        `${this.baseURL}/login`,
+      );
+      return { success: true, data: response.data };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return { success: false };
+      }
       return { success: false };
     }
-    return { success: true, data: response.data };
   },
   async logout(): Promise<{ success: boolean }> {
-    const response = await axios.post(`${this.baseURL}/logout`);
-    if (response.status < 200 || response.status >= 300) {
+    try {
+      await axios.post(`${this.baseURL}/logout`);
+      return { success: true };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return { success: false };
+      }
       return { success: false };
     }
-    return { success: true };
   },
 } as const;
 
