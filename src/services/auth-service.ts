@@ -1,9 +1,12 @@
 import type User from '@/models/user';
 import axios from 'axios';
 
-const AuthService = {
-  baseURL: '/auth',
-  async login(): Promise<{
+class AuthService {
+  private constructor() {}
+
+  private static baseURL = '/auth';
+
+  static async login(): Promise<{
     success: boolean;
     data?: { user: User; token: string };
   }> {
@@ -18,8 +21,9 @@ const AuthService = {
       }
       return { success: false };
     }
-  },
-  async logout(): Promise<{ success: boolean }> {
+  }
+
+  static async logout(): Promise<{ success: boolean }> {
     try {
       await axios.post(`${this.baseURL}/logout`);
       return { success: true };
@@ -29,7 +33,7 @@ const AuthService = {
       }
       return { success: false };
     }
-  },
-} as const;
+  }
+}
 
 export default AuthService;

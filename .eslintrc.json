@@ -39,6 +39,7 @@
     "no-empty-function": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-no-useless-fragment": "off",
-    "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".jsx"] }]
+    "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".jsx"] }],
+    "react-hooks/exhaustive-deps": "off"
   }
 }
