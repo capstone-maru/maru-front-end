@@ -29,9 +29,16 @@
         "tsx": "never"
       }
     ],
-    "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".jsx"] }],
-    "react/jsx-no-useless-fragment": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
-    "react/react-in-jsx-scope": "off"
+    "@typescript-eslint/no-empty-function": [
+      "error",
+      {
+        "allow": ["private-constructors"]
+      }
+    ],
+    "no-empty-function": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-no-useless-fragment": "off",
+    "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".jsx"] }]
   }
 }

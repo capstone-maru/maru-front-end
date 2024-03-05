@@ -1,8 +1,11 @@
+import auth from '@/slices/auth';
 import { configureStore } from '@reduxjs/toolkit';
 
 export const makeStore = () =>
   configureStore({
-    reducer: {},
+    reducer: {
+      auth,
+    },
   });
 
 // Infer the type of makeStore
