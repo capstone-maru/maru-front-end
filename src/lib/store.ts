@@ -1,4 +1,4 @@
-import auth from '@/slices/auth';
+import auth from '@/slices/auth.slice';
 import { configureStore } from '@reduxjs/toolkit';
 
 export const makeStore = () =>

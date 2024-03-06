@@ -53,13 +53,11 @@ ex) `useSomeAction`
 
 ex) 컴포넌트처럼 사용되는 Provider `StoreProvider`, 일부 함수 제공을 위한 `store.ts`
 
-
 ### etc.
 
 이 폴더에 해당하는 파일들은 **케밥 케이스**로 작명합니다.
 
 ex) `auth-service`, `profile-service`
-
 
 ## Package Manager
 
