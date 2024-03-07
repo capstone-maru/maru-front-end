@@ -4,7 +4,6 @@ about: Suggest an idea for this project
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 ## **Overview**
@@ -17,6 +16,6 @@ assignees: ''
 
 ## **Tasks**
 
-- [ ] Task
-
 <!-- Add any your tasks about the feature -->
+
+- [ ] Task

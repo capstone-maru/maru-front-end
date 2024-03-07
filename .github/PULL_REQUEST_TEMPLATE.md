@@ -1,7 +1,7 @@
-## Overview
+## **Overview**
 
-- 요약을 작성해주세요.
+<!-- A clear and concise description about the feature -->
 
-## Issues
+## **Issues**
 
-- PR와 연관된 이슈 번호를 작성해주세요. 예시) #1
+<!-- Add a issues that referenced this pull request -->
