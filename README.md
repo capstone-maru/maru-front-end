@@ -1,4 +1,4 @@
-# Commit Convention
+## Commit Convention
 
 - 커밋할 때 헤더에 아래 내용을 작성하고 전반적인 내용을 간단하게 작성합니다. 또는 이슈로 등록이 되어있다면 이슈 번호를 함께 작성합니다.
 
@@ -23,7 +23,7 @@ git commit -m "commit-type: [message] [issue number]
 
 <br>
 
-# Branch Naming Convention
+## Branch Naming Convention
 
 - 특정 기능을 위한 브랜치를 새롭게 만들 때, 브랜치 이름은 항상 위 Commit Convention의 Header와 함께 작성되어야 합니다.
 - 특정 기능을 위한 브랜치가 아닌 무언가를 하기 위한 브랜치라면, 의미를 잘 표현할 수 있는 이름으로 작성합니다.
@@ -40,9 +40,9 @@ refactor/...
 
 <br>
 
-# File Naming Convention
+## File Naming Convention
 
-- 하기 내용은 폴더 별 파일 네이밍에 대한 규칙을 서술하고 있습니다. 파일 네이밍 규칙을 폴더의 성격에 따라 변경됩니다.
+- 하기 내용은 폴더 별 파일 네이밍에 대한 규칙을 서술하고 있습니다. 파일 네이밍 규칙은 폴더의 성격에 따라 변경됩니다.
 
 ## app
 
