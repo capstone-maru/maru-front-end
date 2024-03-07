@@ -62,6 +62,7 @@ refactor/...
 
 ```plaintext
 [feat]: add new function
+
 [fix]: fix some bug
 ```
 
@@ -76,6 +77,7 @@ refactor/...
 
 ```plaintext
 feat: add new functions
+
 fix: fix some bugs
 ```
 
