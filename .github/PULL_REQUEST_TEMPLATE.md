@@ -1,7 +1,7 @@
-## **Overview**
+## Overview
 
 <!-- A clear and concise description about the feature -->
 
-## **Issues**
+## Issues
 
 <!-- Add a issues that referenced this pull request -->

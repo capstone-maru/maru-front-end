@@ -6,15 +6,15 @@ labels: ''
 assignees: ''
 ---
 
-## **Overview**
+## Overview
 
 <!-- A clear and concise description about the feature -->
 
-## **Additional context**
+## Additional context
 
 <!-- Add any other context or screenshots about the feature request here -->
 
-## **Tasks**
+## Tasks
 
 <!-- Add any your tasks about the feature -->
 
