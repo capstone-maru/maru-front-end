@@ -10,7 +10,7 @@
   - [features](#features)
   - [hooks, quires](#hooks-quires)
   - [lib](#lib)
-  - [types](#etc-types)
+  - [pages, types](#etc-types)
 - [Package Manager](#package-manager)
 
 ## **Commit Convention**
