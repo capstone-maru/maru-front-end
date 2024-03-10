@@ -1,15 +1,17 @@
 import { useAppSelector } from '@/lib/hooks';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function useLoginStatus() {
   const [loginStatus, setLoginStatus] = useState(false);
 
   const status = useAppSelector(state => state.auth.status);
-  if (status === 'logged-in') {
-    setLoginStatus(true);
-  } else {
-    setLoginStatus(false);
-  }
+  useEffect(() => {
+    if (status === 'logged-in') {
+      setLoginStatus(true);
+    } else {
+      setLoginStatus(false);
+    }
+  }, [status]);
 
   return loginStatus;
 }
