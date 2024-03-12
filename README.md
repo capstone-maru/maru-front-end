@@ -1,17 +1,22 @@
 ## **목차**
 
-- [Commit Convention](#commit-convention)
-- [Branch Naming Convention](#branch-naming-convention)
-- [Issues Naming Convention](#issues-naming-convention)
-- [Pull Request Naming Convention](#pull-request-naming-convention)
-- [File Naming Convention](#file-naming-convention)
-  - [app](#app)
-  - [components](#components)
-  - [features](#features)
-  - [hooks, quires](#hooks-quires)
-  - [lib](#lib)
-  - [pages, types](#etc-types)
+- [Naming Convention](#naming-convention)
+  - [Commit Convention](#commit-convention)
+  - [Branch Naming Convention](#branch-naming-convention)
+  - [Issues Naming Convention](#issues-naming-convention)
+  - [Pull Request Naming Convention](#pull-request-naming-convention)
+  - [File Naming Convention](#file-naming-convention)
+    - [app](#app)
+    - [components](#components)
+    - [features](#features)
+    - [hooks, quires](#hooks-quires)
+    - [lib](#lib)
+    - [pages, types](#etc-types)
 - [Package Manager](#package-manager)
+
+<br /> <br />
+
+# Naming Convention
 
 ## **Commit Convention**
 
