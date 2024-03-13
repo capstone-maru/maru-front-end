@@ -6,12 +6,6 @@
   - [Issues Naming Convention](#issues-naming-convention)
   - [Pull Request Naming Convention](#pull-request-naming-convention)
   - [File Naming Convention](#file-naming-convention)
-    - [app](#app)
-    - [components](#components)
-    - [features](#features)
-    - [hooks, quires](#hooks-quires)
-    - [lib](#lib)
-    - [pages, types](#etc-types)
 - [Package Manager](#package-manager)
 
 <br /> <br />
@@ -94,52 +88,17 @@ fix: fix some bugs
 
 <br />
 
-### **app**
+### app
 
-- 이 폴더에 해당하는 파일들은 `Next.js`의 App Router 파일 명명 규칙에 따릅니다.
+### pages
 
-<br />
+### components
 
-### **components**
+### entities
 
-- 이 폴더에는 프로젝트 전반적으로 공통되게 사용되는 컴포넌트들을 모아놓은 폴더입니다. 해당하는 파일들은 **파스칼 케이스**로 작명합니다.
-  - ex)
-    - `ContentTextBox`
+### features
 
-<br />
-
-### **features**
-
-- 이 폴더는 도메인별 상태 관리(redux)를 위한 파일을 모아놓은 폴더입니다. **케밥 케이스**를 이용하며, 아래와 같이 작명합니다.
-  - auth 도메인
-    - ex)
-      - `auth/auth.slice.ts`
-      - `auth/auth.saga.ts`
-
-<br />
-
-### **hooks, quires**
-
-- 이 폴더에는 프로젝트에서 사용되는 Custom hook 들을 모아놓은 폴더입니다. 해당하는 파일들은 접두사로 `use` 를 사용하고, **카멜 케이스**로 작명합니다.
-  - ex)
-    - `useSomeAction`
-    - `useSharedPostQuery`
-
-<br />
-
-### **lib**
-
-- 이 폴더는 일부 예외가 발생할 수 있습니다. 대체로, 이 폴더에 있는 파일은 라이브러리 설정을 위한 파일들로 해당 파일의 성격에 따라 이름을 작명합니다.
-  - ex)
-    - redux store를 리액트 애플리케이션 전반에 제공되기 위해 사용되는 Provider `StoreProvider`
-    - 그에 따른 type checking을 지원하는 함수 제공을 위한 `store.ts`
-
-<br />
-
-### **etc. (types, ...)**
-
-- 위에 언급한 폴더를 제외한 폴더에 작성되는 파일들은 모두 **케밥 케이스**로 작명합니다.
-  - ex) `user.ts`, `user-profile.ts`
+### shared
 
 <br /> <br />
 
