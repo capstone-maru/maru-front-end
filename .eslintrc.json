@@ -20,7 +20,6 @@
   },
   "plugins": ["import", "react"],
   "rules": {
-    "import/export": "off",
     "import/prefer-default-export": "off",
     "import/no-default-export": "error",
     "import/order": [
@@ -58,6 +57,7 @@
         "allow": ["private-constructors"]
       }
     ],
+    "react/jsx-no-useless-fragment": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".jsx"] }],
     "react-hooks/exhaustive-deps": "off"
@@ -67,6 +67,12 @@
       "files": ["src/app/**/*.ts", "src/app/**/*.tsx"],
       "rules": {
         "import/no-default-export": "off"
+      }
+    },
+    {
+      "files": ["src/app/pages/**/*.ts", "src/app/pages/**/*.tsx"],
+      "rules": {
+        "import/no-default-export": "error"
       }
     }
   ]
