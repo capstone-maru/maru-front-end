@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.scss';
-import StyledComponentsRegistry from '@/lib/StyledComponentsRegistry';
-import StoreProvider from '@/lib/StoreProvider';
 import React from 'react';
-import TanstackQueryProvider from '@/lib/TanstackQueryProvider';
+import './globals.scss';
+
+import {
+  StyledComponentsRegistry,
+  StoreProvider,
+  TanstackQueryProvider,
+} from '@/app/lib/providers';
 
 const inter = Inter({ subsets: ['latin'] });
 

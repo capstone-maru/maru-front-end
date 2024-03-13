@@ -1,8 +1,8 @@
 'use client';
 
-import useLoginStatus from '@/hooks/useLoginStatus';
-import MainPageWithLogin from '@/pages/main-with-login';
-import MainPageWithoutLogin from '@/pages/main-without-login';
+import { MainPageWithLogin, MainPageWithoutLogin } from './pages';
+
+import { useLoginStatus } from '@/hooks';
 
 export default function Home() {
   const loginStatus = useLoginStatus();

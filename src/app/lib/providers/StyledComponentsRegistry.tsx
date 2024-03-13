@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
 import { useServerInsertedHTML } from 'next/navigation';
+import React, { useState } from 'react';
 import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
 
-export default function StyledComponentsRegistry({
+export function StyledComponentsRegistry({
   children,
 }: {
   children: React.ReactNode;

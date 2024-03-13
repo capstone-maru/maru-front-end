@@ -1,12 +1,13 @@
-import type User from '@/types/user';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
+import type { User } from '@/entities/user';
 
 /*
 현재 사용자 로그인 정보를 redux를 이용해 관리하는 방식을 채택했지만,
 일관성을 위해 서버로부터 가져오는 모든 데이터를 react-query를 이용하는 방식으로 변경 할 수 있음.
 */
 
-interface AuthState {
+export interface AuthState {
   status: 'logged-in' | 'not-logged-in';
   user: User;
   token: string;
@@ -49,5 +50,6 @@ const authSlice = createSlice({
     },
   },
 });
+
 export const { login, logout } = authSlice.actions;
-export default authSlice.reducer;
+export const { reducer: auth } = authSlice;

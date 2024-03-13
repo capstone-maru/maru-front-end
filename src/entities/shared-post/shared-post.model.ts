@@ -1,4 +1,4 @@
-export default interface SharedPost {
+export interface SharedPost {
   title: string;
   content: string;
 }
