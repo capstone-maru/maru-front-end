@@ -6,6 +6,12 @@
   - [Issues Naming Convention](#issues-naming-convention)
   - [Pull Request Naming Convention](#pull-request-naming-convention)
   - [File Naming Convention](#file-naming-convention)
+    - [app](#app)
+    - [pages](#pages)
+    - [components](#components)
+    - [features](#features)
+    - [entities](#entities)
+    - [shared](#shared)
 - [Package Manager](#package-manager)
 
 <br /> <br />
@@ -90,15 +96,27 @@ fix: fix some bugs
 
 ### app
 
+- 이 폴더에서는 Next.js 라우팅 규칙에 따라 파일 이름을 명명합니다. 또한 내부의 pages, lib 폴더에서는 기본적으로 **케밥 케이스**를 이용하며, 컴포넌트의 경우 **카멜 케이스**를 사용합니다.
+
 ### pages
+
+- pages 폴더는 Next.js 와 충돌을 피하기 위해 app 폴더 내에 위치해 있으며, 이 경우에는 **케밥 케이스**를 사용합니다.
 
 ### components
 
-### entities
+- components 폴더는 **카멜 케이스**를 사용합니다.
 
 ### features
 
+- features 폴더는 **케밥 케이스**를 사용합니다
+
+### entities
+
+- entities 폴더는 **케밥 케이스**를 사용합니다.
+
 ### shared
+
+- shared 폴더는 **케밥 케이스**를 사용합니다.
 
 <br /> <br />
 
