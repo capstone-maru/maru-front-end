@@ -1,5 +1,6 @@
 ## **목차**
 
+- [Architecture](#architecture)
 - [Naming Convention](#naming-convention)
   - [Commit Convention](#commit-convention)
   - [Branch Naming Convention](#branch-naming-convention)
@@ -13,6 +14,47 @@
     - [entities](#entities)
     - [shared](#shared)
 - [Package Manager](#package-manager)
+
+<br /> <br />
+
+# Architecture
+
+- 이 파트에서는 프로젝트 내 전반적인 아키텍처에 서술합니다.
+- 이 프로젝트에선 기본적은 레이어 아키텍처가 적용되어 있으며, 상위 레이어부터 하위 레이어로 나타나 있습니다.
+  - app
+  - pages
+  - components
+  - features
+  - entities
+  - shared
+- 아래는 실제로 이 프로젝트에서 운용되고 있는 파일 구조입니다. 파일 구조를 통해 레이어 아키텍처를 구현합니다.
+  - app/
+    - pages/
+    - lib/
+      - providers/
+    - Next.js Route Files…
+  - components/ (widgets)
+  - features/
+  - entities/
+  - shared/
+- 각 레이어의 설명입니다.
+  - app:
+    - app 레이어는 아키텍처 상 최상단의 레이어에 위치해있으며, 애플리케이션의 진입점 역할을 하기도 하면서 여러 전역적인 설정이 정의되는 레이어입니다.
+    - 또한, 이 프로젝트는 Next.js 프레임워크를 기반으로 개발되고 있어 pages 라우터와 충돌을 막기 위해, app 폴더에 pages 폴더가 포함되어 있습니다.
+  - pages:
+    - pages 레이어는 애플리케이션의 페이지가 포함됩니다.
+  - components:
+    - components 레이어는 페이지에 사용되는 독립적인 UI 컴포넌트가 포함됩니다.
+  - features:
+    - features 레이어는 애플리케이션의 기능을 다룹니다.
+  - entities:
+    - entities 레이어는 애플리케이션의 엔티티를 나타냅니다.
+  - shared:
+    - shared 레이어는 특정 로직에 종속되어 있지 않은, 재사용 가능한 컴포넌트나 유틸리티가 포함됩니
+- 상위 계층의 레이어는 하위 계층 레이어의 기능을 사용할 수 있지만, 하위 계층 레이어에서는 상위 계층 레이어를 사용하는 것은 금지됩니다.
+  - 예외로, 타입스크립트의 편의를 위해 타입 특정을 위한 `useAppSelector` 와 같은 훅은 app 레이어에 위치해있지만, 이 경우에만 예외로 적용합니다.
+- 또한, 캡슐화를 위해 외부 모듈에서 사용하게되는 기능들은 `index.ts` 파일을 통해 `export` 함으로써 접근을 제한합니다.
+- 각 레이어는 하위 컴포넌트를 가질 수 있으며, 이 컴포넌트들은 필요에 따라 많은 파일 구조를 가질 수 있습니다. 예시로는 `entities/user/api/...`, `entities/user.model.ts` 가 될 수 있습니다.
 
 <br /> <br />
 
