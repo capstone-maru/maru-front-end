@@ -1,5 +1,6 @@
-import auth from '@/features/auth/auth.slice';
 import { configureStore } from '@reduxjs/toolkit';
+
+import { auth } from '@/features/auth';
 
 export const makeStore = () =>
   configureStore({
