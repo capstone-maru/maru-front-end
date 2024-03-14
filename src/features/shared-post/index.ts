@@ -1,1 +1,1 @@
-export * as api from './shared-post.api';
+export * from './shared-post.api';
