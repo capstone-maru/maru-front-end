@@ -18,7 +18,7 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["import", "react"],
+  "plugins": ["import", "react", "react-hooks"],
   "rules": {
     "import/prefer-default-export": "off",
     "import/no-default-export": "error",
@@ -60,7 +60,13 @@
     "react/jsx-no-useless-fragment": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".jsx"] }],
-    "react-hooks/exhaustive-deps": "off"
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        "additionalHooks": "useRecoilCallback"
+      }
+    ]
   },
   "overrides": [
     {

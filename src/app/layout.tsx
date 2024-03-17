@@ -5,7 +5,7 @@ import './globals.scss';
 
 import {
   StyledComponentsRegistry,
-  StoreProvider,
+  RecoilRootProvider,
   TanstackQueryProvider,
 } from '@/app/lib/providers';
 
@@ -25,9 +25,9 @@ export default function RootLayout({
     <html lang="ko">
       <body className={inter.className}>
         <TanstackQueryProvider>
-          <StoreProvider>
+          <RecoilRootProvider>
             <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
-          </StoreProvider>
+          </RecoilRootProvider>
         </TanstackQueryProvider>
       </body>
     </html>
