@@ -29,7 +29,7 @@ export default function RootLayout({
           <RecoilRootProvider>
             <StyledComponentsRegistry>
               <NavigationBar />
-              {children}
+              <main>{children}</main>
             </StyledComponentsRegistry>
           </RecoilRootProvider>
         </TanstackQueryProvider>

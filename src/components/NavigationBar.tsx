@@ -4,7 +4,9 @@ import Link from 'next/link';
 import styled from 'styled-components';
 
 const styles = {
-  container: styled.div`
+  container: styled.nav`
+    position: sticky;
+
     display: flex;
     height: 72px;
     padding: 14px 180px 15px 180px;
@@ -41,7 +43,6 @@ const styles = {
     background: #e15637;
 
     color: #fff;
-    text-align: right;
     font-family: 'Noto Sans KR';
     font-size: 16px;
     font-style: normal;
@@ -59,7 +60,7 @@ export function NavigationBar() {
         <Link href="/maru">마루</Link>
         <Link href="/community">커뮤니티</Link>
         <styles.my_page>
-          <Link href="/my">마이 페이지</Link>
+          <Link href="/my">마이페이지</Link>
         </styles.my_page>
       </styles.links>
     </styles.container>
