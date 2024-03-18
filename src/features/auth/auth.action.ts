@@ -1,16 +1,17 @@
 import { useCallback, useMemo } from 'react';
+import { useRecoilState } from 'recoil';
 
-import { useAuthState } from '.';
+import { authState } from './auth.atom';
 
 export const useAuthActions = () => {
-  const [authState, setAuthState] = useAuthState();
+  const [, setAuth] = useRecoilState(authState);
 
   const login = useCallback(() => {
-    setAuthState(prev => ({ ...prev, isLogin: true }));
-  }, []);
+    setAuth(prev => ({ ...prev, isLogin: true }));
+  }, [setAuth]);
   const logout = useCallback(() => {
-    setAuthState(prev => ({ ...prev, isLogin: false }));
-  }, []);
+    setAuth(prev => ({ ...prev, isLogin: false }));
+  }, [setAuth]);
 
   useMemo(
     () => ({
