@@ -8,6 +8,7 @@ import {
   RecoilRootProvider,
   TanstackQueryProvider,
 } from '@/app/lib/providers';
+import { NavigationBar } from '@/components';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -26,7 +27,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <TanstackQueryProvider>
           <RecoilRootProvider>
-            <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+            <StyledComponentsRegistry>
+              <NavigationBar />
+              <main>{children}</main>
+            </StyledComponentsRegistry>
           </RecoilRootProvider>
         </TanstackQueryProvider>
       </body>
