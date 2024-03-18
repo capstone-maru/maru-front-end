@@ -5,11 +5,9 @@ import styled from 'styled-components';
 
 const styles = {
   container: styled.nav`
-    position: sticky;
-
     display: flex;
     height: 72px;
-    padding: 14px 180px 15px 180px;
+    padding: 14px 240px 15px 240px;
     flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
