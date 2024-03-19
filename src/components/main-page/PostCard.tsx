@@ -19,13 +19,14 @@ const styles = {
     display: flex;
     margin-bottom: 38px;
   `,
-  thumbnail: styled.img`
+  thumbnail: styled.div<{ $url?: string }>`
     width: 258px;
     height: 200px;
     flex-shrink: 0;
-    border-width: 0;
     border-radius: 16px;
     background: #f7f6f9;
+    background-image: ${({ $url }) =>
+      $url !== undefined ? `url("${$url}")` : 'none'};
   `,
   information: styled.div`
     display: flex;
@@ -91,8 +92,8 @@ const styles = {
   `,
 };
 
-function Thumbnail({ alt, url }: { alt?: string; url?: string }) {
-  return <styles.thumbnail alt={alt ?? url} src={url} />;
+function Thumbnail({ url }: { url?: string }) {
+  return <styles.thumbnail $url={url} />;
 }
 
 interface Prop {
