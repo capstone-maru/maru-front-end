@@ -198,7 +198,7 @@ export function LandingPage() {
                     <img alt={url} src={url} />
                   </styles.box>
                 ) : (
-                  <styles.box key={url} />
+                  <styles.box key={crypto.randomUUID()} />
                 ),
               )}
             </styles.boxColumn>
