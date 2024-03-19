@@ -69,7 +69,8 @@ const styles = {
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 89px;
+    justify-content: space-between;
+    /* gap: 89px; */
   `,
   dropDownList: styled.div`
     display: flex;
