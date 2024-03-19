@@ -47,7 +47,7 @@ const styles = {
       margin-bottom: 104px;
     }
   `,
-  login_buttons: styled.div`
+  loginButtons: styled.div`
     display: flex;
     flex-direction: column;
     gap: 11px;
@@ -75,13 +75,12 @@ const styles = {
   `,
   section3: styled.div`
     display: flex;
-    width: 1440px;
     height: 500px;
-    padding: 0px 340px 0px 828px;
     justify-content: flex-end;
     align-items: center;
+    padding-right: 213px;
   `,
-  img_box: styled.div`
+  imageBox: styled.div`
     display: flex;
     flex-direction: row;
     gap: 16px;
@@ -89,7 +88,7 @@ const styles = {
     height: 656px;
     flex-shrink: 0;
   `,
-  box_column: styled.div<{ margin: number }>`
+  boxColumn: styled.div<{ margin: number }>`
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -106,6 +105,33 @@ const styles = {
 
     border-radius: 16px;
     background: rgba(247, 246, 249, 0.5);
+  `,
+  section4: styled.div`
+    display: flex;
+    position: relative;
+    left: -240px;
+    width: 100dvw;
+    height: 287px;
+    padding: 161px 619.5px 81px 638.5px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    background: #f7f6f9;
+  `,
+  findMateButton: styled.button`
+    all: unset;
+    padding: 8px 24px;
+
+    border-radius: 8px;
+    background: #e15637;
+
+    color: #fff;
+    font-family: 'Noto Sans KR';
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    cursor: pointer;
   `,
 };
 
@@ -145,7 +171,7 @@ export function LandingPage() {
             마루에서 여러분만을 위한
             <br /> 메이트를 만나보세요
           </p>
-          <styles.login_buttons>
+          <styles.loginButtons>
             <button type="button">
               <img
                 alt="kakao"
@@ -158,14 +184,14 @@ export function LandingPage() {
                 src="https://s3-alpha-sig.figma.com/img/bc24/1c57/afda23776f60b331a41aa67a9eaaf66c?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=O67VG5oEK~e8y5lWE~bQGfiEUiXHHaQ0yCSIUUXpbWVfdm0amwAK-79zpYT7rKfXymBKwBxth01ywb96VRwakMMkU~1HXxHsBP3UKaGvBJtSi4Z-~uQI9n79t1aQhE4jTZb0u1mzFkJESOiNU9Rj2igRRN-lZ9OH~MBL8O3RjkHzBdy5jwm5xmr3OvSQ7~fIiN0GjzwZ3F3znhjNSufW1g0TErw59DmcLz8lXfGq9qut2ay8eL67~lJJV8fVi8AXuIEyAxfpgtOQl2JyAGiTgVMij-HKWGYQZ1EpNXA89KVPSOPjmF75o281Z8YwOiLtOev6ivUi0wuSGhFkSOq6Pw__"
               />
             </button>
-          </styles.login_buttons>
+          </styles.loginButtons>
         </styles.description>
       </styles.section1>
       <styles.section2 />
       <styles.section3>
-        <styles.img_box>
+        <styles.imageBox>
           {images.map((column, i) => (
-            <styles.box_column key={JSON.stringify(column)} margin={16 * i}>
+            <styles.boxColumn key={JSON.stringify(column)} margin={16 * i}>
               {column.map(url =>
                 url !== '' ? (
                   <styles.box key={url}>
@@ -175,10 +201,13 @@ export function LandingPage() {
                   <styles.box key={url} />
                 ),
               )}
-            </styles.box_column>
+            </styles.boxColumn>
           ))}
-        </styles.img_box>
+        </styles.imageBox>
       </styles.section3>
+      <styles.section4>
+        <styles.findMateButton>메이트 찾아보기</styles.findMateButton>
+      </styles.section4>
     </styles.container>
   );
 }
