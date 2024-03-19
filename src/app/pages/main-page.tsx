@@ -1,8 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import styled from 'styled-components';
 
-import { ApricotDropDownList, UserCard, WhiteDropDownList } from '@/components';
+import {
+  ApricotDropDownList,
+  ToggleSwitch,
+  UserCard,
+  WhiteDropDownList,
+} from '@/components';
 
 const styles = {
   container: styled.div`
@@ -63,11 +69,31 @@ const styles = {
     width: 100%;
     display: flex;
     align-items: center;
+    gap: 89px;
+  `,
+  dropDownList: styled.div`
+    display: flex;
+    align-items: center;
     gap: 16px;
+  `,
+  toggle: styled.div`
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  `,
+  toggleLabel: styled.p`
+    color: var(--Gray-3, #888);
+    font-family: 'Noto Sans KR';
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
   `,
 };
 
 export function MainPage() {
+  const [hasRoom, setHasRoom] = useState(false);
+
   return (
     <styles.container>
       <styles.mateRecommendationsContainer>
@@ -125,10 +151,21 @@ export function MainPage() {
           구해요
         </styles.userFilter>
         <styles.postFilter>
-          <WhiteDropDownList title="방 종류" items={['원룸', '기숙사']} />
-          <WhiteDropDownList title="거래 유형" items={['원룸', '기숙사']} />
-          <WhiteDropDownList title="비용" items={['원룸', '기숙사']} />
-          <WhiteDropDownList title="기타" items={['원룸', '기숙사']} />
+          <styles.dropDownList>
+            <WhiteDropDownList title="방 종류" items={['원룸', '기숙사']} />
+            <WhiteDropDownList title="거래 유형" items={['원룸', '기숙사']} />
+            <WhiteDropDownList title="비용" items={['원룸', '기숙사']} />
+            <WhiteDropDownList title="기타" items={['원룸', '기숙사']} />
+          </styles.dropDownList>
+          <styles.toggle>
+            <ToggleSwitch
+              isChecked={hasRoom}
+              onToggle={() => {
+                setHasRoom(prev => !prev);
+              }}
+            />
+            <styles.toggleLabel>방 있는 메이트</styles.toggleLabel>
+          </styles.toggle>
         </styles.postFilter>
       </styles.postRecommendationsContainer>
     </styles.container>
