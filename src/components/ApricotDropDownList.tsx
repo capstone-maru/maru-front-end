@@ -58,21 +58,12 @@ const styles = {
 
 interface Props {
   items: string[];
+  selected: string;
   onSelect: (item: string) => void;
-  defaultValue?: string;
 }
 
-export function ApricotDropDownList({ items, onSelect, defaultValue }: Props) {
-  const [selected, setSelected] = useState(defaultValue);
+export function ApricotDropDownList({ items, selected, onSelect }: Props) {
   const [showList, setShowList] = useState(false);
-
-  useEffect(() => {
-    if (items.length === 0) setSelected(undefined);
-    if (items.length !== 0) {
-      if (defaultValue === undefined || !items.includes(defaultValue))
-        setSelected(items[0]);
-    }
-  }, [items, defaultValue]);
 
   useEffect(() => {
     const closeDropDownList = () => {
@@ -105,7 +96,6 @@ export function ApricotDropDownList({ items, onSelect, defaultValue }: Props) {
                 key={item}
                 onClick={() => {
                   onSelect(item);
-                  setSelected(item);
                 }}
               >
                 {item}

@@ -9,6 +9,7 @@ import {
   UserCard,
   WhiteDropDownList,
 } from '@/components';
+import { type MainPageFilter } from '@/entities/main-page-filter';
 
 const styles = {
   container: styled.div`
@@ -89,11 +90,15 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+    cursor: pointer;
   `,
 };
 
+const dummyUserCards = ['김마루', '최정민', '정연수'];
+const dummyFilters = ['원룸', '기숙사'];
+
 export function MainPage() {
-  const [hasRoom, setHasRoom] = useState(false);
+  const [filter, setFilter] = useState<MainPageFilter>({ hasRoom: false });
 
   return (
     <styles.container>
@@ -137,32 +142,66 @@ export function MainPage() {
       <styles.postRecommendationsContainer>
         <styles.userFilter>
           <ApricotDropDownList
-            items={['김마루', '최정민', '정연수']}
-            onSelect={item => {
-              console.log(item);
+            items={dummyUserCards}
+            selected={filter.userCard ?? dummyUserCards[0]}
+            onSelect={userCard => {
+              setFilter(prev => ({ ...prev, userCard }));
             }}
           />
           님이
           <ApricotDropDownList
-            items={['김마루', '최정민', '정연수']}
-            onSelect={item => {
-              console.log(item);
+            items={dummyUserCards}
+            selected={filter.recommendationCard ?? dummyUserCards[0]}
+            onSelect={recommendationCard => {
+              setFilter(prev => ({ ...prev, recommendationCard }));
             }}
           />
           구해요
         </styles.userFilter>
         <styles.postFilter>
           <styles.dropDownList>
-            <WhiteDropDownList title="방 종류" items={['원룸', '기숙사']} />
-            <WhiteDropDownList title="거래 유형" items={['원룸', '기숙사']} />
-            <WhiteDropDownList title="비용" items={['원룸', '기숙사']} />
-            <WhiteDropDownList title="기타" items={['원룸', '기숙사']} />
+            <WhiteDropDownList
+              title="방 종류"
+              items={dummyFilters}
+              selected={filter.roomType ?? '방 종류'}
+              onSelect={roomType => {
+                setFilter(prev => ({ ...prev, roomType }));
+              }}
+            />
+            <WhiteDropDownList
+              title="거래 유형"
+              items={dummyFilters}
+              selected={filter.dealType ?? '거래 유형'}
+              onSelect={dealType => {
+                setFilter(prev => ({ ...prev, dealType }));
+              }}
+            />
+            <WhiteDropDownList
+              title="비용"
+              items={dummyFilters}
+              selected={filter.budgetAmount ?? '비용'}
+              onSelect={budgetAmount => {
+                setFilter(prev => ({ ...prev, budgetAmount }));
+              }}
+            />
+            <WhiteDropDownList
+              title="기타"
+              items={dummyFilters}
+              selected={filter.etc ?? '기타'}
+              onSelect={etc => {
+                setFilter(prev => ({ ...prev, etc }));
+              }}
+            />
           </styles.dropDownList>
-          <styles.toggle>
+          <styles.toggle
+            onClick={() => {
+              setFilter(prev => ({ ...prev, hasRoom: !prev.hasRoom }));
+            }}
+          >
             <ToggleSwitch
-              isChecked={hasRoom}
+              isChecked={filter.hasRoom}
               onToggle={() => {
-                setHasRoom(prev => !prev);
+                setFilter(prev => ({ ...prev, hasRoom: !prev.hasRoom }));
               }}
             />
             <styles.toggleLabel>방 있는 메이트</styles.toggleLabel>

@@ -66,11 +66,12 @@ const styles = {
 interface Props {
   title: string;
   items: string[];
+  selected: string;
+  onSelect: (item: string) => void;
 }
 
-export function WhiteDropDownList({ title, items }: Props) {
+export function WhiteDropDownList({ title, items, selected, onSelect }: Props) {
   const [showList, setShowList] = useState(false);
-  const [selected, setSelected] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const handler = () => {
@@ -91,7 +92,7 @@ export function WhiteDropDownList({ title, items }: Props) {
       }}
     >
       <styles.content>
-        {selected ?? title}
+        {selected}
         <img alt="drop-down-button-2" src="/icon_drop_down_2.svg" />
       </styles.content>
       {showList && (
@@ -99,7 +100,7 @@ export function WhiteDropDownList({ title, items }: Props) {
           {items.map(item => (
             <styles.item
               onClick={() => {
-                setSelected(item);
+                onSelect(item);
               }}
               key={item}
             >
