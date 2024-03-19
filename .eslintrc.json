@@ -57,6 +57,7 @@
         "allow": ["private-constructors"]
       }
     ],
+    "react/require-default-props": "off",
     "react/jsx-no-useless-fragment": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".jsx"] }],

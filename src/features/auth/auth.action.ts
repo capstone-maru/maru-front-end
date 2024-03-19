@@ -13,7 +13,7 @@ export const useAuthActions = () => {
     setAuth(prev => ({ ...prev, isLogin: false }));
   }, [setAuth]);
 
-  useMemo(
+  return useMemo(
     () => ({
       login,
       logout,
