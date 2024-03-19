@@ -2,12 +2,13 @@
 
 import styled from 'styled-components';
 
+import { ToggleSwitch } from '@/components';
 import {
   ApricotDropDownList,
-  ToggleSwitch,
+  PostCard,
   UserCard,
   WhiteDropDownList,
-} from '@/components';
+} from '@/components/main-page';
 import { useMainPageFilter } from '@/entities/main-page-filter';
 
 const styles = {
@@ -90,6 +91,16 @@ const styles = {
     font-weight: 500;
     line-height: normal;
     cursor: pointer;
+  `,
+  postList: styled.div`
+    margin-top: 86px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 48px;
   `,
 };
 
@@ -206,6 +217,64 @@ export function MainPage() {
             <styles.toggleLabel>방 있는 메이트</styles.toggleLabel>
           </styles.toggle>
         </styles.postFilter>
+        <styles.postList>
+          <PostCard
+            post={{
+              title: '혼자 살긴 너무 큰 방 같이 살 룸메이트 구해요!',
+              content: '혼자 살긴 너무 큰 방 같이 살 룸메이트 구해요!',
+            }}
+            writer={{
+              name: '정연수',
+              address: '정릉동',
+              birth: new Date(1999, 10, 8),
+              email: '',
+              gender: 'male',
+              phone: '',
+            }}
+          />
+          <PostCard
+            post={{
+              title: '혼자 살긴 너무 큰 방 같이 살 룸메이트 구해요!',
+              content: '혼자 살긴 너무 큰 방 같이 살 룸메이트 구해요!',
+            }}
+            writer={{
+              name: '정연수',
+              address: '정릉동',
+              birth: new Date(1999, 10, 8),
+              email: '',
+              gender: 'male',
+              phone: '',
+            }}
+          />{' '}
+          <PostCard
+            post={{
+              title: '혼자 살긴 너무 큰 방 같이 살 룸메이트 구해요!',
+              content: '혼자 살긴 너무 큰 방 같이 살 룸메이트 구해요!',
+            }}
+            writer={{
+              name: '정연수',
+              address: '정릉동',
+              birth: new Date(1999, 10, 8),
+              email: '',
+              gender: 'male',
+              phone: '',
+            }}
+          />{' '}
+          <PostCard
+            post={{
+              title: '혼자 살긴 너무 큰 방 같이 살 룸메이트 구해요!',
+              content: '혼자 살긴 너무 큰 방 같이 살 룸메이트 구해요!',
+            }}
+            writer={{
+              name: '정연수',
+              address: '정릉동',
+              birth: new Date(1999, 10, 8),
+              email: '',
+              gender: 'male',
+              phone: '',
+            }}
+          />
+        </styles.postList>
       </styles.postRecommendationsContainer>
     </styles.container>
   );
