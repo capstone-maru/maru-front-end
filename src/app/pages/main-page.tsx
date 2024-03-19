@@ -2,7 +2,7 @@
 
 import styled from 'styled-components';
 
-import { UserCard } from '@/components';
+import { DropDownList, UserCard } from '@/components';
 
 const styles = {
   container: styled.div`
@@ -30,7 +30,7 @@ const styles = {
     display: flex;
     flex-direction: row;
     gap: 42px;
-    padding: 0 44px;
+    margin: 0 44px;
     overflow-x: auto;
 
     -ms-overflow-style: none;
@@ -38,6 +38,24 @@ const styles = {
     scrollbar ::-webkit-scrollbar {
       display: none;
     }
+  `,
+  postRecommendationsContainer: styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 138px;
+  `,
+  postFilter: styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    gap: 16px;
   `,
 };
 
@@ -81,6 +99,24 @@ export function MainPage() {
           />
         </styles.mateRecommendation>
       </styles.mateRecommendationsContainer>
+      <styles.postRecommendationsContainer>
+        <styles.postFilter>
+          <DropDownList
+            items={['김마루', '최정민', '정연수']}
+            onSelect={item => {
+              console.log(item);
+            }}
+          />
+          님이
+          <DropDownList
+            items={['김마루', '최정민', '정연수']}
+            onSelect={item => {
+              console.log(item);
+            }}
+          />
+          구해요
+        </styles.postFilter>
+      </styles.postRecommendationsContainer>
     </styles.container>
   );
 }
