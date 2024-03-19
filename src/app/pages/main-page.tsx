@@ -2,7 +2,7 @@
 
 import styled from 'styled-components';
 
-import { DropDownList, UserCard } from '@/components';
+import { ApricotDropDownList, UserCard, WhiteDropDownList } from '@/components';
 
 const styles = {
   container: styled.div`
@@ -45,7 +45,7 @@ const styles = {
     flex-direction: column;
     margin-top: 138px;
   `,
-  postFilter: styled.div`
+  userFilter: styled.div`
     width: 100%;
     display: flex;
     align-items: center;
@@ -55,6 +55,14 @@ const styles = {
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+    gap: 16px;
+
+    margin-bottom: 38px;
+  `,
+  postFilter: styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
     gap: 16px;
   `,
 };
@@ -100,21 +108,27 @@ export function MainPage() {
         </styles.mateRecommendation>
       </styles.mateRecommendationsContainer>
       <styles.postRecommendationsContainer>
-        <styles.postFilter>
-          <DropDownList
+        <styles.userFilter>
+          <ApricotDropDownList
             items={['김마루', '최정민', '정연수']}
             onSelect={item => {
               console.log(item);
             }}
           />
           님이
-          <DropDownList
+          <ApricotDropDownList
             items={['김마루', '최정민', '정연수']}
             onSelect={item => {
               console.log(item);
             }}
           />
           구해요
+        </styles.userFilter>
+        <styles.postFilter>
+          <WhiteDropDownList title="방 종류" items={['원룸', '기숙사']} />
+          <WhiteDropDownList title="거래 유형" items={['원룸', '기숙사']} />
+          <WhiteDropDownList title="비용" items={['원룸', '기숙사']} />
+          <WhiteDropDownList title="기타" items={['원룸', '기숙사']} />
         </styles.postFilter>
       </styles.postRecommendationsContainer>
     </styles.container>

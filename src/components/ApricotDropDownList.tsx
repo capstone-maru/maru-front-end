@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
-  container: styled.div<{ showList: boolean }>`
+  container: styled.div<{ $showList: boolean }>`
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -17,7 +17,8 @@ const styles = {
     display: flex;
     flex-direction: column;
     padding: 4px 6px;
-    border-radius: ${({ showList }) => (showList ? `5px 5px 0px 0px` : `5px`)};
+    border-radius: ${({ $showList }) =>
+      $showList ? `5px 5px 0px 0px` : `5px`};
     background: #fce8e3;
 
     cursor: pointer;
@@ -48,6 +49,7 @@ const styles = {
 
     background: #fce8e3;
     border-radius: 0 0 5px 5px;
+    z-index: 1;
   `,
   item: styled.button`
     all: unset;
@@ -60,7 +62,7 @@ interface Props {
   defaultValue?: string;
 }
 
-export function DropDownList({ items, onSelect, defaultValue }: Props) {
+export function ApricotDropDownList({ items, onSelect, defaultValue }: Props) {
   const [selected, setSelected] = useState(defaultValue);
   const [showList, setShowList] = useState(false);
 
@@ -84,14 +86,14 @@ export function DropDownList({ items, onSelect, defaultValue }: Props) {
 
   return (
     <styles.container
-      showList={showList}
-      onClick={e => {
+      $showList={showList}
+      onClick={() => {
         setShowList(true);
       }}
     >
       <styles.content>
         <p>{`${selected}`}</p>
-        <img alt="drop-down-button" src="/icon_drop_down.svg" />
+        <img alt="drop-down-button-1" src="/icon_drop_down_1.svg" />
       </styles.content>
       {showList && (
         <styles.list>
