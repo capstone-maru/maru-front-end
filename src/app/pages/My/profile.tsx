@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 const styles = {
@@ -13,6 +13,7 @@ const styles = {
   user_profile_container: styled.div`
     flex: none;
     display: flex;
+    position: relative;
     width: 100%;
     align-items: center;
     margin-top: 82px;
@@ -68,6 +69,8 @@ const styles = {
 
   switch_container: styled.div`
     flex: none;
+    position: absolute;
+    left: 280px;
     display: flex;
     height: 75px;
     margin: 0 500px 0 42px;
@@ -149,12 +152,65 @@ const styles = {
     line-height: 24px; /* 171.429% */
   `,
 
-  my_card_section: styled.div`
+  card_section: styled.div`
     height: 341px;
     width: 100%;
 
     display: flex;
+    flex-flow: wrap;
     margin: 62px 0 0 0;
+  `,
+
+  card_description: styled.p`
+    color: #000;
+
+    width: 100%;
+    font-family: 'Noto Sans KR';
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-bottom: 55px;
+  `,
+
+  card_container: styled.div`
+    width: 240px;
+    height: 240px;
+    padding: 0 0 0 24px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 20px;
+    border: 1px solid #8c95a8;
+    margin-left: 55px;
+    background: #fff;
+  `,
+
+  card_name: styled.p`
+    color: #494949;
+    font-family: 'Noto Sans KR';
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: 100%;
+  `,
+
+  card_default: styled.div`
+    width: 97px;
+    height: 41px;
+    flex-shrink: 0;
+    border-radius: 20px 0px 0px 20px;
+    background: #e15637;
+    color: #fff;
+
+    text-align: center;
+    font-family: 'Noto Sans KR';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 41px;
+    margin-top: 150px;
   `,
 };
 
@@ -248,7 +304,29 @@ function Auth() {
 function Card() {
   return (
     <>
-      <styles.my_card_section></styles.my_card_section>
+      <styles.card_section>
+        <styles.card_description>내 카드</styles.card_description>
+        <Link href="my/setting">
+          <styles.card_container>
+            <styles.card_name>김마루</styles.card_name>
+            <styles.card_default>기본</styles.card_default>
+          </styles.card_container>
+        </Link>
+      </styles.card_section>
+      <styles.card_section>
+        <styles.card_description>메이트 카드</styles.card_description>
+        <Link href="my/setting">
+          <styles.card_container>
+            <styles.card_name>메이트</styles.card_name>
+            <styles.card_default>기본</styles.card_default>
+          </styles.card_container>
+        </Link>
+        <Link href="my/setting">
+          <styles.card_container>
+            <styles.card_name>메이트</styles.card_name>
+          </styles.card_container>
+        </Link>
+      </styles.card_section>
     </>
   );
 }
