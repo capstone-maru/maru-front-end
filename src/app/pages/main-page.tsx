@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import styled from 'styled-components';
 
 import {
@@ -9,7 +8,7 @@ import {
   UserCard,
   WhiteDropDownList,
 } from '@/components';
-import { type MainPageFilter } from '@/entities/main-page-filter';
+import { useMainPageFilter } from '@/entities/main-page-filter';
 
 const styles = {
   container: styled.div`
@@ -98,7 +97,7 @@ const dummyUserCards = ['김마루', '최정민', '정연수'];
 const dummyFilters = ['원룸', '기숙사'];
 
 export function MainPage() {
-  const [filter, setFilter] = useState<MainPageFilter>({ hasRoom: false });
+  const [filter, setFilter] = useMainPageFilter();
 
   return (
     <styles.container>
@@ -145,7 +144,7 @@ export function MainPage() {
             items={dummyUserCards}
             selected={filter.userCard ?? dummyUserCards[0]}
             onSelect={userCard => {
-              setFilter(prev => ({ ...prev, userCard }));
+              setFilter({ userCard });
             }}
           />
           님이
@@ -153,7 +152,7 @@ export function MainPage() {
             items={dummyUserCards}
             selected={filter.recommendationCard ?? dummyUserCards[0]}
             onSelect={recommendationCard => {
-              setFilter(prev => ({ ...prev, recommendationCard }));
+              setFilter({ recommendationCard });
             }}
           />
           구해요
@@ -165,7 +164,7 @@ export function MainPage() {
               items={dummyFilters}
               selected={filter.roomType ?? '방 종류'}
               onSelect={roomType => {
-                setFilter(prev => ({ ...prev, roomType }));
+                setFilter({ roomType });
               }}
             />
             <WhiteDropDownList
@@ -173,7 +172,7 @@ export function MainPage() {
               items={dummyFilters}
               selected={filter.dealType ?? '거래 유형'}
               onSelect={dealType => {
-                setFilter(prev => ({ ...prev, dealType }));
+                setFilter({ dealType });
               }}
             />
             <WhiteDropDownList
@@ -181,7 +180,7 @@ export function MainPage() {
               items={dummyFilters}
               selected={filter.budgetAmount ?? '비용'}
               onSelect={budgetAmount => {
-                setFilter(prev => ({ ...prev, budgetAmount }));
+                setFilter({ budgetAmount });
               }}
             />
             <WhiteDropDownList
@@ -189,7 +188,7 @@ export function MainPage() {
               items={dummyFilters}
               selected={filter.etc ?? '기타'}
               onSelect={etc => {
-                setFilter(prev => ({ ...prev, etc }));
+                setFilter({ etc });
               }}
             />
           </styles.dropDownList>
