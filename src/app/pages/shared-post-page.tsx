@@ -2,8 +2,8 @@
 
 import styled from 'styled-components';
 
-import { Bookmark, CircularProgressBar } from '@/components';
-import { ImageGrid } from '@/components/detail-page';
+import { Bookmark } from '@/components';
+import { ImageGrid, CircularProfileImage } from '@/components/detail-page';
 import { type SharedPost } from '@/entities/shared-post';
 import { type User } from '@/entities/user';
 
@@ -40,6 +40,8 @@ const styles = {
   hostInfo: styled.div`
     display: flex;
     flex-direction: column;
+
+    position: relative;
 
     width: 25%;
     min-height: 50dvh;
@@ -193,7 +195,11 @@ export function SharedPostPage({ post, writer }: Props) {
         </styles.roomInfo>
       </styles.houseInfo>
       <styles.hostInfo>
-        <CircularProgressBar percentage={50} sqSize={110} strokeWidth={10} />
+        <CircularProfileImage
+          diameter={110}
+          percentage={50}
+          url="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=bS1lS~7-WQsD9x5vHJBOiMnhhFjI~VgCwJH6Bzz~IxFWob-PV-XZweWFIhU6yJC3XHv5qZKZxnP9RWT~0ciIbQfofuhbODEUxnMHe6oq8Dl45khsD30dnXOK~FLBPpWhMumJO-zPpuWjiRwsZ35mfWLbgyT7dND41I9yXCyRASQx9v2iAGzDoVzTfvtkjRyGw6es6fSXRsFGMqthnzYmv7DZT~FCz2avi3-NqXruXQpkijQHNEQUM61ThFiNYEIv8vb1wZWf-USbbJpE8bdbUneblY2T0cWwMRBtKbCrJ0Y~P9lvFbzqBv7h9WOzNyJW~~KeG9vVrBmLRRo1BsNdng__"
+        />
       </styles.hostInfo>
     </styles.container>
   );
