@@ -2,7 +2,7 @@
 
 import styled from 'styled-components';
 
-import { Bookmark } from '@/components';
+import { Bookmark, CircularProgressBar } from '@/components';
 import { ImageGrid } from '@/components/detail-page';
 import { type SharedPost } from '@/entities/shared-post';
 import { type User } from '@/entities/user';
@@ -38,11 +38,16 @@ const styles = {
     padding: 24px;
   `,
   hostInfo: styled.div`
+    display: flex;
+    flex-direction: column;
+
     width: 25%;
     min-height: 50dvh;
     height: 50%;
     border-radius: 16px;
     background: #fff;
+
+    padding: 35px 55px;
   `,
   titleRow: styled.div`
     display: flex;
@@ -187,7 +192,9 @@ export function SharedPostPage({ post, writer }: Props) {
           <styles.roomInfoTitle>방 정보</styles.roomInfoTitle>
         </styles.roomInfo>
       </styles.houseInfo>
-      <styles.hostInfo />
+      <styles.hostInfo>
+        <CircularProgressBar percentage={50} sqSize={110} strokeWidth={10} />
+      </styles.hostInfo>
     </styles.container>
   );
 }
