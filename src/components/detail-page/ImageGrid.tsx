@@ -67,6 +67,8 @@ const styles = {
       background-color: rgb(255 255 255 / 30%);
       backdrop-filter: blur(5px);
       border-radius: 0 0 16px 0;
+
+      cursor: pointer;
     }
   `,
 };

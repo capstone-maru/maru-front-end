@@ -2,6 +2,7 @@
 
 import styled from 'styled-components';
 
+import { Bookmark } from '@/components';
 import { ImageGrid } from '@/components/detail-page';
 import { type SharedPost } from '@/entities/shared-post';
 import { type User } from '@/entities/user';
@@ -43,6 +44,12 @@ const styles = {
     border-radius: 16px;
     background: #fff;
   `,
+  titleRow: styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 18px;
+  `,
   title: styled.h1`
     color: #000;
     font-family: 'Noto Sans KR';
@@ -72,7 +79,15 @@ export function SharedPostPage({ post, writer }: Props) {
     <styles.container>
       <styles.houseInfo>
         <ImageGrid images={dummyImages} />
-        <styles.title>{post.title}</styles.title>
+        <styles.titleRow>
+          <styles.title>{post.title}</styles.title>
+          <Bookmark
+            marked={false}
+            onToggle={() => {
+              console.log('Bookmark Clicked');
+            }}
+          />
+        </styles.titleRow>
       </styles.houseInfo>
       <styles.hostInfo />
     </styles.container>
