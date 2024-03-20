@@ -88,11 +88,11 @@ const styles = {
     height: 656px;
     flex-shrink: 0;
   `,
-  boxColumn: styled.div<{ margin: number }>`
+  boxColumn: styled.div<{ $margin: number }>`
     display: flex;
     flex-direction: column;
     gap: 16px;
-    margin-top: ${({ margin }) => `${margin}px`};
+    margin-top: ${({ $margin }) => `${$margin}px`};
   `,
   box: styled.div`
     display: flex;
@@ -191,7 +191,7 @@ export function LandingPage() {
       <styles.section3>
         <styles.imageBox>
           {images.map((column, i) => (
-            <styles.boxColumn key={JSON.stringify(column)} margin={16 * i}>
+            <styles.boxColumn key={JSON.stringify(column)} $margin={16 * i}>
               {column.map(url =>
                 url !== '' ? (
                   <styles.box key={url}>
