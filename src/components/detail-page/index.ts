@@ -1,1 +1,1 @@
-export * from './ImageContainer';
+export * from './ImageGrid';
