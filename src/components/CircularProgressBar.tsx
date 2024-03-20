@@ -20,22 +20,22 @@ const styles = {
 export function CircularProgressBar({
   percentage,
   strokeWidth,
-  sqSize,
+  diameter,
 }: {
   percentage: number;
   strokeWidth: number;
-  sqSize: number;
+  diameter: number;
 }) {
-  const radius = (sqSize - strokeWidth) / 2;
-  const cx = sqSize / 2;
-  const cy = sqSize / 2;
+  const radius = (diameter - strokeWidth) / 2;
+  const cx = diameter / 2;
+  const cy = diameter / 2;
   const circumference = 2 * Math.PI * radius;
   const dashArray = `${circumference} ${circumference}`;
   const dashOffset = circumference - (percentage / 100) * circumference;
 
   return (
     <styles.container>
-      <svg width={sqSize} height={sqSize}>
+      <svg width={diameter} height={diameter}>
         <circle
           className="circle-background"
           cx={cx}
