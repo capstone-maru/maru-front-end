@@ -14,6 +14,11 @@ const styles = {
     background-position: center;
   `,
   percentage: styled.div`
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
     width: 48px;
     height: 48px;
 

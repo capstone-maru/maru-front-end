@@ -137,6 +137,93 @@ const styles = {
     font-weight: 700;
     line-height: normal;
   `,
+  hostInfoContainer: styled.div`
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    margin-bottom: 50px;
+  `,
+  hostInfoContent: styled.div`
+    display: flex;
+    flex-direction: column;
+
+    h1 {
+      color: #000;
+      font-family: 'Noto Sans KR';
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      margin-bottom: 16px;
+    }
+
+    p {
+      color: #000;
+      font-family: 'Noto Sans KR';
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      margin-bottom: 4px;
+    }
+  `,
+  hostCardContent: styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+
+    margin-bottom: 85px;
+
+    .essential {
+      color: #e15637;
+    }
+  `,
+  hostButtonsContainer: styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    div {
+      display: flex;
+      gap: 17px;
+    }
+
+    button {
+      all: unset;
+      cursor: pointer;
+
+      flex-grow: 1;
+
+      display: flex;
+      padding: 8px 24px;
+      justify-content: center;
+      align-items: center;
+
+      border-radius: 8px;
+      border: 1px solid var(--Gray-3, #888);
+      background: var(--White, #fff);
+
+      color: var(--Gray-3, #888);
+      font-family: Pretendard;
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 24px;
+    }
+
+    .color {
+      background: var(--Main-1, #e15637);
+      border: 1px solid var(--Main-1);
+      color: #fff;
+    }
+  `,
 };
 
 const dummyImages = [
@@ -195,11 +282,38 @@ export function SharedPostPage({ post, writer }: Props) {
         </styles.roomInfo>
       </styles.houseInfo>
       <styles.hostInfo>
-        <CircularProfileImage
-          diameter={110}
-          percentage={50}
-          url="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=bS1lS~7-WQsD9x5vHJBOiMnhhFjI~VgCwJH6Bzz~IxFWob-PV-XZweWFIhU6yJC3XHv5qZKZxnP9RWT~0ciIbQfofuhbODEUxnMHe6oq8Dl45khsD30dnXOK~FLBPpWhMumJO-zPpuWjiRwsZ35mfWLbgyT7dND41I9yXCyRASQx9v2iAGzDoVzTfvtkjRyGw6es6fSXRsFGMqthnzYmv7DZT~FCz2avi3-NqXruXQpkijQHNEQUM61ThFiNYEIv8vb1wZWf-USbbJpE8bdbUneblY2T0cWwMRBtKbCrJ0Y~P9lvFbzqBv7h9WOzNyJW~~KeG9vVrBmLRRo1BsNdng__"
-        />
+        <styles.hostInfoContainer>
+          <CircularProfileImage
+            diameter={110}
+            percentage={50}
+            url="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=bS1lS~7-WQsD9x5vHJBOiMnhhFjI~VgCwJH6Bzz~IxFWob-PV-XZweWFIhU6yJC3XHv5qZKZxnP9RWT~0ciIbQfofuhbODEUxnMHe6oq8Dl45khsD30dnXOK~FLBPpWhMumJO-zPpuWjiRwsZ35mfWLbgyT7dND41I9yXCyRASQx9v2iAGzDoVzTfvtkjRyGw6es6fSXRsFGMqthnzYmv7DZT~FCz2avi3-NqXruXQpkijQHNEQUM61ThFiNYEIv8vb1wZWf-USbbJpE8bdbUneblY2T0cWwMRBtKbCrJ0Y~P9lvFbzqBv7h9WOzNyJW~~KeG9vVrBmLRRo1BsNdng__"
+          />
+          <styles.hostInfoContent>
+            <h1>김마루</h1>
+            <p>24세</p>
+            <p>성북 길음동</p>
+          </styles.hostInfoContent>
+        </styles.hostInfoContainer>
+        <styles.hostCardContent>
+          <p className="essential">비흡연</p>
+          <p>새벽형</p>
+          <p>친구초대 괜찮아요</p>
+          <p className="essential">실내취식 괜찮아요</p>
+        </styles.hostCardContent>
+        <styles.hostButtonsContainer>
+          <div>
+            <button type="button">프로필 보기</button>
+            <Bookmark
+              marked={false}
+              onToggle={() => {
+                console.log('host bookmark clicked');
+              }}
+            />
+          </div>
+          <button type="button" className="color">
+            채팅하기
+          </button>
+        </styles.hostButtonsContainer>
       </styles.hostInfo>
     </styles.container>
   );
