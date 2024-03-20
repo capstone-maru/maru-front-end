@@ -222,19 +222,22 @@ export function SettingPage() {
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedSmoking, setSelectedSmoking] = useState<string | null>(null);
-  const [selectedOptions, setSelectedOptions] = useState<{
-    [key: string]: boolean;
-  }>({});
 
-  const handleGenderClick = (item: string) =>
+  type SelectedOptions = Record<string, boolean>;
+
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+
+  function handleGenderClick(item: string) {
     setSelectedGender(prevSelectedItem =>
       prevSelectedItem === item ? null : item,
     );
+  }
 
-  const handleSmokingClick = (item: string) =>
+  function handleSmokingClick(item: string) {
     setSelectedSmoking(prevSelectedItem =>
       prevSelectedItem === item ? null : item,
     );
+  }
 
   const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const yearValue = parseInt(event.target.value, 10);
@@ -263,13 +266,17 @@ export function SettingPage() {
           <styles.vital_check_list_item>
             <CheckItem
               isSelected={selectedGender === '남성'}
-              onClick={() => handleGenderClick('남성')}
+              onClick={() => {
+                handleGenderClick('남성');
+              }}
             >
               남성
             </CheckItem>
             <CheckItem
               isSelected={selectedGender === '여성'}
-              onClick={() => handleGenderClick('여성')}
+              onClick={() => {
+                handleGenderClick('여성');
+              }}
             >
               여성
             </CheckItem>
@@ -296,13 +303,17 @@ export function SettingPage() {
           <styles.vital_check_list_item>
             <CheckItem
               isSelected={selectedSmoking === '흡연'}
-              onClick={() => handleSmokingClick('흡연')}
+              onClick={() => {
+                handleSmokingClick('흡연');
+              }}
             >
               흡연
             </CheckItem>
             <CheckItem
               isSelected={selectedSmoking === '비흡연'}
-              onClick={() => handleSmokingClick('비흡연')}
+              onClick={() => {
+                handleSmokingClick('비흡연');
+              }}
             >
               비흡연
             </CheckItem>
@@ -318,13 +329,17 @@ export function SettingPage() {
             <styles.option_list_check_item_container>
               <CheckItem
                 isSelected={selectedOptions['아침형']}
-                onClick={() => handleOptionClick('아침형')}
+                onClick={() => {
+                  handleOptionClick('아침형');
+                }}
               >
                 아침형
               </CheckItem>
               <CheckItem
                 isSelected={selectedOptions['새벽형']}
-                onClick={() => handleOptionClick('새벽형')}
+                onClick={() => {
+                  handleOptionClick('새벽형');
+                }}
               >
                 새벽형
               </CheckItem>
@@ -335,13 +350,17 @@ export function SettingPage() {
             <styles.option_list_check_item_container>
               <CheckItem
                 isSelected={selectedOptions['실내취식 싫어요']}
-                onClick={() => handleOptionClick('실내취식 싫어요')}
+                onClick={() => {
+                  handleOptionClick('실내취식 싫어요');
+                }}
               >
                 실내취식 싫어요
               </CheckItem>
               <CheckItem
                 isSelected={selectedOptions['야식 안먹어요']}
-                onClick={() => handleOptionClick('야식 안먹어요')}
+                onClick={() => {
+                  handleOptionClick('야식 안먹어요');
+                }}
               >
                 야식 안먹어요
               </CheckItem>
@@ -352,13 +371,17 @@ export function SettingPage() {
             <styles.option_list_check_item_container>
               <CheckItem
                 isSelected={selectedOptions['잠버릇 있어요']}
-                onClick={() => handleOptionClick('잠버릇 있어요')}
+                onClick={() => {
+                  handleOptionClick('잠버릇 있어요');
+                }}
               >
                 잠버릇 있어요
               </CheckItem>
               <CheckItem
                 isSelected={selectedOptions['알람 잘 못 들어요']}
-                onClick={() => handleOptionClick('알람 잘 못 들어요')}
+                onClick={() => {
+                  handleOptionClick('알람 잘 못 들어요');
+                }}
               >
                 알람 잘 못 들어요
               </CheckItem>
@@ -369,13 +392,17 @@ export function SettingPage() {
             <styles.option_list_check_item_container>
               <CheckItem
                 isSelected={selectedOptions['더위 많이 타요']}
-                onClick={() => handleOptionClick('더위 많이 타요')}
+                onClick={() => {
+                  handleOptionClick('더위 많이 타요');
+                }}
               >
                 더위 많이 타요
               </CheckItem>
               <CheckItem
                 isSelected={selectedOptions['추위 많이 타요']}
-                onClick={() => handleOptionClick('추위 많이 타요')}
+                onClick={() => {
+                  handleOptionClick('추위 많이 타요');
+                }}
               >
                 추위 많이 타요
               </CheckItem>
@@ -386,25 +413,33 @@ export function SettingPage() {
             <styles.option_list_check_item_container>
               <CheckItem
                 isSelected={selectedOptions['깔끔형']}
-                onClick={() => handleOptionClick('깔끔형')}
+                onClick={() => {
+                  handleOptionClick('깔끔형');
+                }}
               >
                 깔끔형
               </CheckItem>
               <CheckItem
                 isSelected={selectedOptions['둔감형']}
-                onClick={() => handleOptionClick('둔감형')}
+                onClick={() => {
+                  handleOptionClick('둔감형');
+                }}
               >
                 둔감형
               </CheckItem>
               <CheckItem
                 isSelected={selectedOptions['친구초대 괜찮아요']}
-                onClick={() => handleOptionClick('친구초대 괜찮아요')}
+                onClick={() => {
+                  handleOptionClick('친구초대 괜찮아요');
+                }}
               >
                 친구초대 괜찮아요
               </CheckItem>
               <CheckItem
                 isSelected={selectedOptions['취미 같이 즐겨요']}
-                onClick={() => handleOptionClick('취미 같이 즐겨요')}
+                onClick={() => {
+                  handleOptionClick('취미 같이 즐겨요');
+                }}
               >
                 취미 같이 즐겨요
               </CheckItem>
