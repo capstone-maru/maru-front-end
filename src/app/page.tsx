@@ -1,3 +1,11 @@
+'use client';
+
+import { LandingPage, MainPage } from './pages';
+
+import { useAuthIsLogin } from '@/features/auth';
+
 export default function Home() {
-  return <></>;
+  const isLogin = useAuthIsLogin();
+
+  return !isLogin ? <MainPage /> : <LandingPage />;
 }
