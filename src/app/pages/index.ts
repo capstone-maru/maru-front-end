@@ -1,1 +1,2 @@
-export * from './My/profile';
+export * from './profile-page';
+export * from './setting-page';

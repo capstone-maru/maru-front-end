@@ -1,7 +1,7 @@
 'use client';
 
-import { atom, useRecoilState } from 'recoil';
 import Link from 'next/link';
+import { atom, useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 const styles = {
@@ -10,6 +10,7 @@ const styles = {
     flex-flow: wrap;
     padding: 0px 33px;
   `,
+
   user_profile_container: styled.div`
     flex: none;
     display: flex;
@@ -158,7 +159,7 @@ const styles = {
 
     display: flex;
     flex-flow: wrap;
-    margin: 62px 0 0 0;
+    margin: 62px 0 30px 0;
   `,
 
   card_description: styled.p`
@@ -226,7 +227,7 @@ const isCheckedState = atom({
   default: false,
 });
 
-function UserProfileInfo({ src, name, age, addr }: UserProfileInfoProps) {
+function UserInfo({ src, name, age, addr }: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useRecoilState(isCheckedState);
 
   const toggleSwitch = () => {
@@ -290,8 +291,8 @@ function Auth() {
         fill="none"
       >
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M5.99993 10.7999L3.19993 7.99994L2.2666 8.93328L5.99993 12.6666L13.9999 4.66661L13.0666 3.73328L5.99993 10.7999Z"
           fill="white"
         />
@@ -331,15 +332,10 @@ function Card() {
   );
 }
 
-export function MyPage() {
+export function ProfilePage({ src, name, age, addr }: UserProfileInfoProps) {
   return (
     <styles.page_container>
-      <UserProfileInfo
-        src="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=bS1lS~7-WQsD9x5vHJBOiMnhhFjI~VgCwJH6Bzz~IxFWob-PV-XZweWFIhU6yJC3XHv5qZKZxnP9RWT~0ciIbQfofuhbODEUxnMHe6oq8Dl45khsD30dnXOK~FLBPpWhMumJO-zPpuWjiRwsZ35mfWLbgyT7dND41I9yXCyRASQx9v2iAGzDoVzTfvtkjRyGw6es6fSXRsFGMqthnzYmv7DZT~FCz2avi3-NqXruXQpkijQHNEQUM61ThFiNYEIv8vb1wZWf-USbbJpE8bdbUneblY2T0cWwMRBtKbCrJ0Y~P9lvFbzqBv7h9WOzNyJW~~KeG9vVrBmLRRo1BsNdng__"
-        name="김마루"
-        age="24세"
-        addr="성북 길음동"
-      />
+      <UserInfo src={src} name={name} age={age} addr={addr} />
       <Auth />
       <Card />
     </styles.page_container>
