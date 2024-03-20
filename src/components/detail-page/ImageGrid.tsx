@@ -58,6 +58,11 @@ const styles = {
     background-color: ${({ $url }) => ($url === 'none' ? '#c4c4c480' : '')};
 
     div {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+
       display: flex;
       align-items: center;
       justify-content: center;
