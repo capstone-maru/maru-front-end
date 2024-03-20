@@ -55,9 +55,6 @@ export function CircularProgressBar({
             strokeDashoffset: dashOffset,
           }}
         />
-        <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle">
-          {percentage}%
-        </text>
       </svg>
     </styles.container>
   );
