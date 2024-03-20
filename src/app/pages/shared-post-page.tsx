@@ -58,6 +58,78 @@ const styles = {
     font-weight: 700;
     line-height: normal;
   `,
+  roomBriefDescription: styled.p`
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  `,
+  content: styled.p`
+    color: var(--Black, #35373a);
+    font-family: 'Noto Sans KR';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 11px;
+  `,
+  divider: styled.div`
+    width: 100%;
+    height: 1px;
+    border: 1px solid #d3d0d7;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    border-left-width: 0px;
+  `,
+  dealInfo: styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  `,
+  dealTitle: styled.h2`
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  `,
+  dealContent: styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 42px;
+    margin: 25px 28px 0 30px;
+  `,
+  dealItemContainer: styled.div`
+    display: flex;
+    justify-content: space-between;
+
+    color: var(--Black, #35373a);
+    font-family: 'Noto Sans KR';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  `,
+  roomInfo: styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+
+    margin-top: 84px;
+  `,
+  roomInfoTitle: styled.h2`
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  `,
 };
 
 const dummyImages = [
@@ -74,6 +146,15 @@ interface Props {
   writer: User;
 }
 
+function DealItem({ label, data }: { label: string; data: string }) {
+  return (
+    <styles.dealItemContainer>
+      <p>{label}</p>
+      <p>{data}</p>
+    </styles.dealItemContainer>
+  );
+}
+
 export function SharedPostPage({ post, writer }: Props) {
   return (
     <styles.container>
@@ -88,6 +169,23 @@ export function SharedPostPage({ post, writer }: Props) {
             }}
           />
         </styles.titleRow>
+        <styles.roomBriefDescription>
+          방 간단한 설명
+        </styles.roomBriefDescription>
+        <styles.content>{post.content}</styles.content>
+        <styles.divider />
+        <styles.dealInfo>
+          <styles.dealTitle>거래 정보</styles.dealTitle>
+          <styles.dealContent>
+            <DealItem label="거래방식" data="월세 2,000만원/20만원" />
+            <DealItem label="관리비" data="4만 5천원" />
+            <DealItem label="융자금" data="융자금 없음" />
+            <DealItem label="입주가능일" data="2024. 03. 13. 이후" />
+          </styles.dealContent>
+        </styles.dealInfo>
+        <styles.roomInfo>
+          <styles.roomInfoTitle>방 정보</styles.roomInfoTitle>
+        </styles.roomInfo>
       </styles.houseInfo>
       <styles.hostInfo />
     </styles.container>
