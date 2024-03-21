@@ -23,6 +23,7 @@ const styles = {
   description: styled.div`
     display: flex;
     flex-direction: column;
+    align-items: end;
     gap: 28px;
     width: 445px;
     margin-top: 100px;
@@ -60,9 +61,11 @@ const styles = {
     }
 
     img {
+      width: 265px;
       height: 43px;
       flex-shrink: 0;
       border-radius: 8px;
+      object-fit: cover;
     }
   `,
   section2: styled.div`
