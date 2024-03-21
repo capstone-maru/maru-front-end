@@ -17,11 +17,11 @@ const styles = {
     box-shadow: 0px 0px 20px -2px rgba(0, 0, 0, 0.05);
   `,
   title: styled.h1`
-    color: #e15637;
-    font-family: 'Noto Sans KR';
+    color: var(--Main-1, #e15637);
+    font-family: 'Baloo 2';
     font-size: 30px;
     font-style: normal;
-    font-weight: 900;
+    font-weight: 700;
     line-height: normal;
   `,
   links: styled.div`
@@ -30,7 +30,7 @@ const styles = {
     align-items: center;
     gap: 24px;
   `,
-  my_page: styled.button`
+  logout: styled.button`
     all: unset;
     display: flex;
     padding: 8px 16px;
@@ -52,14 +52,12 @@ const styles = {
 export function NavigationBar() {
   return (
     <styles.container>
-      <styles.title>Maru</styles.title>
+      <styles.title>maru</styles.title>
       <styles.links>
-        <Link href="/search">찾기</Link>
-        <Link href="/maru">마루</Link>
+        <Link href="/shared">메이트찾기</Link>
         <Link href="/community">커뮤니티</Link>
-        <styles.my_page>
-          <Link href="/my">마이페이지</Link>
-        </styles.my_page>
+        <Link href="/my">마이페이지</Link>
+        <styles.logout>로그아웃</styles.logout>
       </styles.links>
     </styles.container>
   );
