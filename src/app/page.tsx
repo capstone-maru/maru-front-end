@@ -6,6 +6,5 @@ import { useAuthIsLogin } from '@/features/auth';
 
 export default function Home() {
   const isLogin = useAuthIsLogin();
-
-  return !isLogin ? <MainPage /> : <LandingPage />;
+  return <>{isLogin ? <MainPage /> : <LandingPage />}</>;
 }
