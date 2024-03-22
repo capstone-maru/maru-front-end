@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import styled from 'styled-components';
 
+import { useAuthActions, useAuthIsLogin } from '@/features/auth';
+
 const styles = {
   container: styled.nav`
-    position: sticky;
-
     display: flex;
     height: 72px;
-    padding: 14px 180px 15px 180px;
+    padding: 14px 240px 15px 240px;
     flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
@@ -19,11 +19,11 @@ const styles = {
     box-shadow: 0px 0px 20px -2px rgba(0, 0, 0, 0.05);
   `,
   title: styled.h1`
-    color: #e15637;
-    font-family: 'Noto Sans KR';
+    color: var(--Main-1, #e15637);
+    font-family: 'Baloo 2';
     font-size: 30px;
     font-style: normal;
-    font-weight: 900;
+    font-weight: 700;
     line-height: normal;
   `,
   links: styled.div`
@@ -32,7 +32,7 @@ const styles = {
     align-items: center;
     gap: 24px;
   `,
-  my_page: styled.button`
+  logout: styled.button`
     all: unset;
     display: flex;
     padding: 8px 16px;
@@ -48,20 +48,34 @@ const styles = {
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+
+    cursor: pointer;
   `,
 };
 
 export function NavigationBar() {
+  const isLogin = useAuthIsLogin();
+
+  const { logout } = useAuthActions();
+
   return (
     <styles.container>
-      <styles.title>Maru</styles.title>
+      <styles.title>
+        <Link href="/">maru</Link>
+      </styles.title>
       <styles.links>
-        <Link href="/search">찾기</Link>
-        <Link href="/maru">마루</Link>
+        <Link href="/shared">메이트찾기</Link>
         <Link href="/community">커뮤니티</Link>
-        <styles.my_page>
-          <Link href="/my">마이페이지</Link>
-        </styles.my_page>
+        <Link href="/my">마이페이지</Link>
+        {isLogin && (
+          <styles.logout
+            onClick={() => {
+              logout();
+            }}
+          >
+            로그아웃
+          </styles.logout>
+        )}
       </styles.links>
     </styles.container>
   );
