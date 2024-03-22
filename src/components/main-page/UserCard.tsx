@@ -2,7 +2,6 @@
 
 import styled from 'styled-components';
 
-import { type User } from '@/entities/user';
 import { getAge } from '@/shared';
 
 const styles = {
@@ -57,7 +56,15 @@ const styles = {
   `,
 };
 
-export function UserCard({ name, address, birth }: Partial<User>) {
+export function UserCard({
+  name,
+  address,
+  birth,
+}: {
+  name: string;
+  address: string;
+  birth: Date;
+}) {
   return (
     <styles.card>
       <styles.profile>

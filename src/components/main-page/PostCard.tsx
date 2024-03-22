@@ -3,7 +3,6 @@
 import styled from 'styled-components';
 
 import { type SharedPost } from '@/entities/shared-post';
-import { type User } from '@/entities/user';
 
 const styles = {
   container: styled.div`
@@ -99,7 +98,9 @@ function Thumbnail({ url }: { url?: string }) {
 interface Prop {
   url?: string;
   post: SharedPost;
-  writer: User;
+  writer: {
+    name: string;
+  };
 }
 
 export function PostCard({ url, post, writer }: Prop) {

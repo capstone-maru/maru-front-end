@@ -14,14 +14,6 @@ export default function Page({
       주로 밤에 작업을 하며 새벽 2시~3시쯤에 취침합니다.
       관심있으신 분들 연락 주세요!`,
       }}
-      writer={{
-        name: '정연수',
-        address: '정릉동',
-        birth: new Date(1999, 10, 8),
-        email: '',
-        gender: 'male',
-        phone: '',
-      }}
     />
   );
 }

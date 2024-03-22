@@ -3,9 +3,8 @@
 import styled from 'styled-components';
 
 import { Bookmark } from '@/components';
-import { ImageGrid, CircularProfileImage } from '@/components/detail-page';
+import { CircularProfileImage, ImageGrid } from '@/components/detail-page';
 import { type SharedPost } from '@/entities/shared-post';
-import { type User } from '@/entities/user';
 
 const styles = {
   container: styled.div`
@@ -237,7 +236,6 @@ const dummyImages = [
 
 interface Props {
   post: SharedPost;
-  writer: User;
 }
 
 function DealItem({ label, data }: { label: string; data: string }) {
@@ -249,7 +247,7 @@ function DealItem({ label, data }: { label: string; data: string }) {
   );
 }
 
-export function SharedPostPage({ post, writer }: Props) {
+export function SharedPostPage({ post }: Props) {
   return (
     <styles.container>
       <styles.houseInfo>
