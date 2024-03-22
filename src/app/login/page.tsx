@@ -24,7 +24,7 @@ function Page() {
   useEffect(() => {
     if (accessToken !== null && refreshToken !== null && expiresIn !== null) {
       login({ accessToken, refreshToken, expiresIn: +expiresIn });
-      router.push('/');
+      router.replace('/');
     }
   }, [accessToken, refreshToken, expiresIn, login, router]);
 
