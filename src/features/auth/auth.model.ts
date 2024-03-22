@@ -1,4 +1,8 @@
-export interface AuthState {
-  isLogin: boolean;
-  token?: string;
+import { type User } from '@/entities/user';
+
+export interface Auth {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  user?: User;
 }

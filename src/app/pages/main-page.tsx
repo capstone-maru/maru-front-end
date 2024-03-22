@@ -225,11 +225,6 @@ export function MainPage() {
             }}
             writer={{
               name: '정연수',
-              address: '정릉동',
-              birth: new Date(1999, 10, 8),
-              email: '',
-              gender: 'male',
-              phone: '',
             }}
           />
           <PostCard
@@ -239,11 +234,6 @@ export function MainPage() {
             }}
             writer={{
               name: '정연수',
-              address: '정릉동',
-              birth: new Date(1999, 10, 8),
-              email: '',
-              gender: 'male',
-              phone: '',
             }}
           />{' '}
           <PostCard
@@ -253,11 +243,6 @@ export function MainPage() {
             }}
             writer={{
               name: '정연수',
-              address: '정릉동',
-              birth: new Date(1999, 10, 8),
-              email: '',
-              gender: 'male',
-              phone: '',
             }}
           />{' '}
           <PostCard
@@ -267,11 +252,6 @@ export function MainPage() {
             }}
             writer={{
               name: '정연수',
-              address: '정릉동',
-              birth: new Date(1999, 10, 8),
-              email: '',
-              gender: 'male',
-              phone: '',
             }}
           />
         </styles.postList>

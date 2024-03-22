@@ -23,6 +23,7 @@ const styles = {
   description: styled.div`
     display: flex;
     flex-direction: column;
+    align-items: end;
     gap: 28px;
     width: 445px;
     margin-top: 100px;
@@ -60,9 +61,11 @@ const styles = {
     }
 
     img {
+      width: 265px;
       height: 43px;
       flex-shrink: 0;
       border-radius: 8px;
+      object-fit: cover;
     }
   `,
   section2: styled.div`
@@ -172,18 +175,22 @@ export function LandingPage() {
             <br /> 메이트를 만나보세요
           </p>
           <styles.loginButtons>
-            <button type="button">
+            <a
+              href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/kakao?redirect_uri=http://localhost:3000/login`}
+            >
               <img
                 alt="kakao"
                 src="https://s3-alpha-sig.figma.com/img/3d3c/d1f5/021fb8c1c71bbfcfdbd58571b78fafa3?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=ij7lN3-5mFIjG4smhXFKW2DLX6yvjrE0DAoSGQp5Gmi9JmVjWgo9WquW6CQOYAeSSNzP8kYDOmRzV2DC88iJ~D3cztENp6zfozg7rcIrDm~v~0EpX4QXCrYJThwRYyNlnLmwciPFwhbX8I4-TmivzhCOBjnE-U1WU-aAF2j~9GWfEio2sGOrh99SldlXU1b6H4Kfue7SlRsQayUGv4ArSFWdNz7y4765V1CE1pdbHmlQaPE2m495WapZDkx0BEkM6IyJo7xzsiXYZFrzIMFgqoWpfALfnIdDoxOb1kIttkhzrDm2eW-oJzZvMnYYSWxMVN7impkHDFDLVBdYSMXxYQ__"
               />
-            </button>
-            <button type="button">
+            </a>
+            <a
+              href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/naver?redirect_uri=http://localhost:3000/login`}
+            >
               <img
                 alt="naver"
                 src="https://s3-alpha-sig.figma.com/img/bc24/1c57/afda23776f60b331a41aa67a9eaaf66c?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=O67VG5oEK~e8y5lWE~bQGfiEUiXHHaQ0yCSIUUXpbWVfdm0amwAK-79zpYT7rKfXymBKwBxth01ywb96VRwakMMkU~1HXxHsBP3UKaGvBJtSi4Z-~uQI9n79t1aQhE4jTZb0u1mzFkJESOiNU9Rj2igRRN-lZ9OH~MBL8O3RjkHzBdy5jwm5xmr3OvSQ7~fIiN0GjzwZ3F3znhjNSufW1g0TErw59DmcLz8lXfGq9qut2ay8eL67~lJJV8fVi8AXuIEyAxfpgtOQl2JyAGiTgVMij-HKWGYQZ1EpNXA89KVPSOPjmF75o281Z8YwOiLtOev6ivUi0wuSGhFkSOq6Pw__"
               />
-            </button>
+            </a>
           </styles.loginButtons>
         </styles.description>
       </styles.section1>
