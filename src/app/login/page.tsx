@@ -1,11 +1,11 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 import { useAuthActions } from '@/features/auth';
 
-export default function Page() {
+function Page() {
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -29,4 +29,12 @@ export default function Page() {
   }, [accessToken, refreshToken, expiresIn, login, router]);
 
   return <></>;
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <Page />
+    </Suspense>
+  );
 }

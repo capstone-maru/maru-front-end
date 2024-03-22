@@ -1,6 +1,5 @@
 'use client';
 
-import { Suspense } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -161,7 +160,7 @@ const images = [
   ['', '', '/icon_house.svg', '/icon_camping.svg', 'icon_hanok.svg', '', ''],
 ];
 
-function Page() {
+export function LandingPage() {
   return (
     <styles.container>
       <styles.section1>
@@ -217,13 +216,5 @@ function Page() {
         <styles.findMateButton>메이트 찾아보기</styles.findMateButton>
       </styles.section4>
     </styles.container>
-  );
-}
-
-export function LandingPage() {
-  return (
-    <Suspense>
-      <Page />
-    </Suspense>
   );
 }
