@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import styled from 'styled-components';
 
+import { useAuthIsLogin } from '@/features/auth';
+
 const styles = {
   container: styled.nav`
     display: flex;
@@ -46,18 +48,24 @@ const styles = {
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+
+    cursor: pointer;
   `,
 };
 
 export function NavigationBar() {
+  const isLogin = useAuthIsLogin();
+
   return (
     <styles.container>
-      <styles.title>maru</styles.title>
+      <styles.title>
+        <Link href="/">maru</Link>
+      </styles.title>
       <styles.links>
         <Link href="/shared">메이트찾기</Link>
         <Link href="/community">커뮤니티</Link>
         <Link href="/my">마이페이지</Link>
-        <styles.logout>로그아웃</styles.logout>
+        {isLogin && <styles.logout>로그아웃</styles.logout>}
       </styles.links>
     </styles.container>
   );
