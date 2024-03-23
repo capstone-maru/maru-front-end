@@ -4,106 +4,113 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
-  vital_container: styled.div`
+  vitalContainer: styled.div`
     display: flex;
-    flex-flow: wrap;
+    flex-direction: column;
     width: 100%;
-    padding: 0 10px 0 10px;
+    padding-left: 0.44rem;
   `,
-  vital_description: styled.p`
+  vitalDescription: styled.p`
     color: var(--Main-1, #e15637);
     font-family: 'Noto Sans KR';
-    font-size: 16px;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    width: 100%;
   `,
-  vital_list: styled.ul`
-    width: 79px;
-    height: 283px;
-    margin: 49px 0 31px 3px;
+  vitalListContainer: styled.div`
+    width: 37.8125rem;
+    height: 17.6875rem;
+    flex-shrink: 0;
+    display: flex;
+    margin-top: 49px;
+    gap: 1.63rem;
   `,
-  vital_list_item: styled.li`
-    margin-bottom: 48px;
-    width: 76px;
+  vitalList: styled.ul`
+    display: inline-flex;
+    height: 17.6875rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3rem;
+    flex-shrink: 0;
+    margin-left: 3px;
+  `,
+  vitalListItem: styled.li`
     color: #000;
 
     font-family: 'Noto Sans KR';
-    font-size: 19px;
+    font-size: 1.25rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
 
     list-style-type: none;
   `,
-  vital_check_list: styled.ul`
-    width: 70%;
-    height: 198px;
-    margin: 49px 0 0 26px;
+  vitalCheckList: styled.ul`
+    width: 31.25rem;
+    height: 17rem;
+    flex-shrink: 0;
   `,
-  vital_check_list_item: styled.li`
+  vitalCheckListItem: styled.li`
     display: flex;
-    margin-bottom: 29px;
+    margin-bottom: 27px;
     list-style-type: none;
   `,
 
-  birth_year: styled.select`
+  birthYear: styled.select`
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
 
-    width: 109px;
-    height: 45px;
+    width: 6.125rem;
+    height: 3.125rem;
     display: inline-flex;
-    padding: 8px 16px;
+    padding: 0.75rem 1rem;
     justify-content: center;
     align-items: center;
-    gap: 16px;
+    gap: 0.5rem;
     border: 2px solid var(--Gray-4, #dfdfdf);
     background: #fff;
 
     color: var(--Gray-3, #888);
     font-family: 'Noto Sans KR';
-    font-size: 20px;
+    font-size: 1.125rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
 
     background-image: url('/Switch down.svg');
     background-repeat: no-repeat;
-    background-position: calc(100% - 11px) center;
+    background-position: calc(100% - 0.6875rem) center;
 
-    padding-right: 44px;
+    padding-right: 2.75rem;
   `,
 
-  search_box: styled.div`
-    width: 500px;
-    height: 50px;
-    display: flex;
-    padding: 8.182px 8px 6.364px 19px;
-    justify-content: flex-end;
+  searchBox: styled.div`
+    width: 31.25rem;
+    height: 3.125rem;
+    display: inline-flex;
+    padding: 0.51138rem 0.5rem 0.39775rem 1.1875rem;
     align-items: center;
-    gap: 210px;
+    gap: 13.5rem;
     border: 2px solid var(--Gray-4, #dfdfdf);
     background: var(--White, #fff);
   `,
-  map_input: styled.input`
+  mapInput: styled.input`
     color: var(--Gray-3, #888);
     font-family: 'Noto Sans KR';
-    font-size: 16px;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-    height: 40px;
     border: none;
     &:focus {
       outline: none;
     }
   `,
-  search_button: styled.button`
-    width: 39px;
-    height: 36px;
+  searchButton: styled.button`
+    width: 2.4375rem;
+    height: 2.21594rem;
     border: none;
     background-color: #fff;
     background-image: url('/search_button.svg');
@@ -118,14 +125,14 @@ interface CheckItemProps {
 }
 
 const CheckItem = styled.div<CheckItemProps>`
-  height: 45px;
+  margin-right: 8px;
   display: flex;
-  padding: 8px 24px;
-  margin: 0 8px 0 0;
+  padding: 0.5rem 1.5rem;
   justify-content: center;
   align-items: center;
+  gap: 0.5rem;
 
-  border-radius: 26px;
+  border-radius: 1.625rem;
   border: 2px solid #dfdfdf;
   background: #fff;
   cursor: pointer;
@@ -133,7 +140,7 @@ const CheckItem = styled.div<CheckItemProps>`
   color: #888;
 
   font-family: 'Noto Sans KR';
-  font-size: 20px;
+  font-size: 1.25rem;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -175,71 +182,73 @@ export function VitalSection() {
     setSelectedYear(Number.isNaN(yearValue) ? null : yearValue);
   };
   return (
-    <styles.vital_container>
-      <styles.vital_description>필수</styles.vital_description>
-      <styles.vital_list>
-        <styles.vital_list_item>성별</styles.vital_list_item>
-        <styles.vital_list_item>출생 연도</styles.vital_list_item>
-        <styles.vital_list_item>희망 지역</styles.vital_list_item>
-        <styles.vital_list_item>흡연 여부</styles.vital_list_item>
-      </styles.vital_list>
-      <styles.vital_check_list>
-        <styles.vital_check_list_item>
-          <CheckItem
-            isSelected={selectedGender === '남성'}
-            onClick={() => {
-              handleGenderClick('남성');
-            }}
-          >
-            남성
-          </CheckItem>
-          <CheckItem
-            isSelected={selectedGender === '여성'}
-            onClick={() => {
-              handleGenderClick('여성');
-            }}
-          >
-            여성
-          </CheckItem>
-        </styles.vital_check_list_item>
-        <styles.vital_check_list_item>
-          <styles.birth_year
-            value={selectedYear ?? ''}
-            onChange={handleYearChange}
-          >
-            <option value="">년도</option>
-            {years.map(year => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </styles.birth_year>
-        </styles.vital_check_list_item>
-        <styles.vital_check_list_item>
-          <styles.search_box>
-            <styles.map_input placeholder="ex) 한국동,한국역,한국대학교" />
-            <styles.search_button />
-          </styles.search_box>
-        </styles.vital_check_list_item>
-        <styles.vital_check_list_item>
-          <CheckItem
-            isSelected={selectedSmoking === '흡연'}
-            onClick={() => {
-              handleSmokingClick('흡연');
-            }}
-          >
-            흡연
-          </CheckItem>
-          <CheckItem
-            isSelected={selectedSmoking === '비흡연'}
-            onClick={() => {
-              handleSmokingClick('비흡연');
-            }}
-          >
-            비흡연
-          </CheckItem>
-        </styles.vital_check_list_item>
-      </styles.vital_check_list>
-    </styles.vital_container>
+    <styles.vitalContainer>
+      <styles.vitalDescription>필수</styles.vitalDescription>
+      <styles.vitalListContainer>
+        <styles.vitalList>
+          <styles.vitalListItem>성별</styles.vitalListItem>
+          <styles.vitalListItem>출생 연도</styles.vitalListItem>
+          <styles.vitalListItem>희망 지역</styles.vitalListItem>
+          <styles.vitalListItem>흡연 여부</styles.vitalListItem>
+        </styles.vitalList>
+        <styles.vitalCheckList>
+          <styles.vitalCheckListItem>
+            <CheckItem
+              isSelected={selectedGender === '남성'}
+              onClick={() => {
+                handleGenderClick('남성');
+              }}
+            >
+              남성
+            </CheckItem>
+            <CheckItem
+              isSelected={selectedGender === '여성'}
+              onClick={() => {
+                handleGenderClick('여성');
+              }}
+            >
+              여성
+            </CheckItem>
+          </styles.vitalCheckListItem>
+          <styles.vitalCheckListItem>
+            <styles.birthYear
+              value={selectedYear ?? ''}
+              onChange={handleYearChange}
+            >
+              <option value="">년도</option>
+              {years.map(year => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </styles.birthYear>
+          </styles.vitalCheckListItem>
+          <styles.vitalCheckListItem>
+            <styles.searchBox>
+              <styles.mapInput placeholder="ex) 한국동,한국역,한국대학교" />
+              <styles.searchButton />
+            </styles.searchBox>
+          </styles.vitalCheckListItem>
+          <styles.vitalCheckListItem>
+            <CheckItem
+              isSelected={selectedSmoking === '흡연'}
+              onClick={() => {
+                handleSmokingClick('흡연');
+              }}
+            >
+              흡연
+            </CheckItem>
+            <CheckItem
+              isSelected={selectedSmoking === '비흡연'}
+              onClick={() => {
+                handleSmokingClick('비흡연');
+              }}
+            >
+              비흡연
+            </CheckItem>
+          </styles.vitalCheckListItem>
+        </styles.vitalCheckList>
+      </styles.vitalListContainer>
+    </styles.vitalContainer>
   );
 }

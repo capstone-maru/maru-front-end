@@ -5,41 +5,41 @@ import styled from 'styled-components';
 import { VitalSection, OptionSection } from '@/components';
 
 const styles = {
-  page_container: styled.div`
+  pageContainer: styled.div`
     display: flex;
-    flex-flow: wrap;
-    padding: 0px 33px;
+    flex-direction: column;
+    padding: 0 1.5rem;
+    height: 85rem;
   `,
 
-  card_name: styled.p`
-    margin: 73px 0 73px 0;
-    width: 100%;
+  cardName: styled.p`
+    margin: 73px 0;
     color: #000;
 
     font-family: 'Noto Sans KR';
-    font-size: 32px;
+    font-size: 2rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
   `,
 
-  horizontal_line: styled.hr`
-    width: 1000px;
-    height: 0px;
+  horizontalLine: styled.hr`
+    width: 100%;
+    height: 0rem;
     flex-shrink: 0;
     stroke-width: 1px;
     stroke: #d3d0d7;
-    margin-bottom: 53px;
+    margin: 53px 0;
   `,
 };
 
 export function SettingPage() {
   return (
-    <styles.page_container>
-      <styles.card_name>내 카드 &gt; 김마루</styles.card_name>
+    <styles.pageContainer>
+      <styles.cardName>내 카드 &gt; 김마루</styles.cardName>
       <VitalSection />
-      <styles.horizontal_line />
+      <styles.horizontalLine />
       <OptionSection />
-    </styles.page_container>
+    </styles.pageContainer>
   );
 }
