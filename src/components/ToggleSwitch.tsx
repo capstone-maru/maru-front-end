@@ -3,16 +3,16 @@
 import styled from 'styled-components';
 
 const styles = {
-  switch_container: styled.div`
+  switchContainer: styled.div`
     display: flex;
   `,
-  switch_wrapper: styled.label`
+  switchWrapper: styled.label`
     position: relative;
     display: inline-block;
-    width: 40px;
-    height: 24px;
+    width: 2.5rem;
+    height: 1.5rem;
   `,
-  switch_input: styled.input`
+  switchInput: styled.input`
     opacity: 0;
     width: 0;
     height: 0;
@@ -30,20 +30,20 @@ const styles = {
     transition: 0.4s;
     border-radius: 24px;
   `,
-  slider_dot: styled.span<{ $isChecked: boolean }>`
+  sliderDot: styled.span<{ $isChecked: boolean }>`
     position: absolute;
     cursor: pointer;
-    top: 4px;
-    left: 4px;
-    bottom: 4px;
+    top: 0.25rem;
+    left: 0.25rem;
+    bottom: 0.25rem;
     background-color: white;
     -webkit-transition: 0.4s;
     transition: 0.4s;
     border-radius: 50%;
-    width: 16px;
-    height: 16px;
+    width: 1rem;
+    height: 1rem;
     transform: ${({ $isChecked }) =>
-      $isChecked ? 'translateX(16px)' : 'translateX(0)'};
+      $isChecked ? 'translateX(1rem)' : 'translateX(0)'};
   `,
 };
 
@@ -54,17 +54,17 @@ interface Props {
 
 export function ToggleSwitch({ isChecked, onToggle }: Props) {
   return (
-    <styles.switch_container>
-      <styles.switch_wrapper>
-        <styles.switch_input
+    <styles.switchContainer>
+      <styles.switchWrapper>
+        <styles.switchInput
           type="checkbox"
           checked={isChecked}
           onChange={onToggle}
         />
         <styles.slider $isChecked={isChecked}>
-          <styles.slider_dot $isChecked={isChecked} />
+          <styles.sliderDot $isChecked={isChecked} />
         </styles.slider>
-      </styles.switch_wrapper>
-    </styles.switch_container>
+      </styles.switchWrapper>
+    </styles.switchContainer>
   );
 }
