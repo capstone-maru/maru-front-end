@@ -6,8 +6,8 @@ import { CircularProgressBar } from '@/components';
 
 const styles = {
   container: styled.div<{ $diameter: number; $url: string }>`
-    width: ${({ $diameter }) => $diameter}px;
-    height: ${({ $diameter }) => $diameter}px;
+    width: ${({ $diameter }) => $diameter / 16}px;
+    height: ${({ $diameter }) => $diameter / 16}px;
     background-repeat: no-repeat;
     background-size: 80%;
     background-image: ${({ $url }) => `url("${$url}")`};
@@ -19,14 +19,14 @@ const styles = {
     -ms-user-select: none;
     user-select: none;
 
-    width: 48px;
-    height: 48px;
+    width: 3rem;
+    height: 3rem;
 
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
 
     border-radius: 200px;
     background: rgba(255, 255, 255, 0.8);
@@ -34,10 +34,10 @@ const styles = {
     color: #e15637;
 
     font-family: Pretendard;
-    font-size: 16px;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 600;
-    line-height: 24px;
+    line-height: 1.5rem;
 
     top: -40%;
     left: 65%;
