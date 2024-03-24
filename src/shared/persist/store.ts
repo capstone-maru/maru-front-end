@@ -7,12 +7,12 @@ export const save = ({
 }: {
   type: storeType;
   key: string;
-  value: object;
+  value: string;
 }) => {
   if (type === 'local') {
-    localStorage.setItem(key, JSON.stringify(value));
+    localStorage.setItem(key, value);
   } else {
-    sessionStorage.setItem(key, JSON.stringify(value));
+    sessionStorage.setItem(key, value);
   }
 };
 
@@ -21,4 +21,12 @@ export const load = ({ type, key }: { type: storeType; key: string }) => {
     return localStorage.getItem(key);
   }
   return sessionStorage.getItem(key);
+};
+
+export const remove = ({ type, key }: { type: storeType; key: string }) => {
+  if (type === 'local') {
+    localStorage.removeItem(key);
+  } else {
+    sessionStorage.removeItem(key);
+  }
 };
