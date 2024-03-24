@@ -16,28 +16,28 @@ const styles = {
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding-top: 70px;
+    padding-top: 4.375rem;
   `,
   mateRecommendationsContainer: styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 43px;
+    gap: 2.6875rem;
   `,
   mateRecommendationTitle: styled.h1`
     color: #000;
     font-family: 'Noto Sans KR';
-    font-size: 32px;
+    font-size: 2rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
-    margin-left: 24px;
+    margin-left: 1.5rem;
   `,
   mateRecommendation: styled.div`
     display: flex;
     flex-direction: row;
-    gap: 42px;
-    margin: 0 44px;
+    gap: 2.625rem;
+    margin: 0 2.75rem;
     overflow-x: auto;
 
     -ms-overflow-style: none;
@@ -50,7 +50,7 @@ const styles = {
     width: 100%;
     display: flex;
     flex-direction: column;
-    margin-top: 138px;
+    margin-top: 8.625rem;
   `,
   userFilter: styled.div`
     width: 100%;
@@ -58,13 +58,13 @@ const styles = {
     align-items: center;
     color: #000;
     font-family: 'Noto Sans KR';
-    font-size: 32px;
+    font-size: 2rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
-    gap: 16px;
+    gap: 1rem;
 
-    margin-bottom: 38px;
+    margin-bottom: 2.375rem;
   `,
   postFilter: styled.div`
     width: 100%;
@@ -76,31 +76,31 @@ const styles = {
   dropDownList: styled.div`
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 1rem;
   `,
   toggle: styled.div`
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 0.5rem;
   `,
   toggleLabel: styled.p`
     color: var(--Gray-3, #888);
     font-family: 'Noto Sans KR';
-    font-size: 20px;
+    font-size: 1.5rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
     cursor: pointer;
   `,
   postList: styled.div`
-    margin-top: 86px;
+    margin-top: 5.375rem;
 
     display: flex;
     flex-direction: column;
 
     align-items: center;
 
-    gap: 48px;
+    gap: 3rem;
   `,
 };
 
