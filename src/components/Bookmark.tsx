@@ -10,7 +10,7 @@ const styles = {
     user-select: none;
 
     display: inline-flex;
-    padding: 11px 24px;
+    padding: 0.6875rem 1.5rem;
     border-radius: 8px;
     border: 1px solid var(--Gray-3, #888);
 
