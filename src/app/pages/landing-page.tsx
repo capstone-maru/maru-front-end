@@ -27,6 +27,8 @@ const styles = {
     gap: 1.75rem;
     width: 27.8125rem;
     margin-top: 6.25rem;
+    flex-shrink: 0;
+
     h1 {
       color: #000;
       text-align: right;
