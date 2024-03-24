@@ -6,8 +6,8 @@ import { CircularProgressBar } from '@/components';
 
 const styles = {
   container: styled.div<{ $diameter: number; $url: string }>`
-    width: ${({ $diameter }) => $diameter / 16}px;
-    height: ${({ $diameter }) => $diameter / 16}px;
+    width: ${({ $diameter }) => $diameter}px;
+    height: ${({ $diameter }) => $diameter}px;
     background-repeat: no-repeat;
     background-size: 80%;
     background-image: ${({ $url }) => `url("${$url}")`};

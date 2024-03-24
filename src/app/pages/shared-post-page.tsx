@@ -11,7 +11,7 @@ const styles = {
     background: var(--background, #f7f6f9);
 
     position: relative;
-    left: -240px;
+    left: -15rem;
     width: 100dvw;
     min-height: 100%;
     height: fit-content;
@@ -19,22 +19,22 @@ const styles = {
     display: flex;
     justify-content: center;
     align-items: stretch;
-    padding: 48px 0;
-    gap: 15px;
+    padding: 3rem 0;
+    gap: 1rem;
 
     overflow: auto;
   `,
   houseInfo: styled.div`
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 1.5rem;
 
     width: 50%;
     min-height: 80dvh;
     height: 100%;
     border-radius: 16px;
     background: #fff;
-    padding: 24px;
+    padding: 1.5rem;
   `,
   hostInfo: styled.div`
     display: flex;
@@ -48,18 +48,18 @@ const styles = {
     border-radius: 16px;
     background: #fff;
 
-    padding: 35px 55px;
+    padding: 2rem 3.5rem;
   `,
   titleRow: styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-right: 18px;
+    padding-right: 1.125rem;
   `,
   title: styled.h1`
     color: #000;
     font-family: 'Noto Sans KR';
-    font-size: 24px;
+    font-size: 1.5rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -67,7 +67,7 @@ const styles = {
   roomBriefDescription: styled.p`
     color: #000;
     font-family: 'Noto Sans KR';
-    font-size: 16px;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
@@ -75,11 +75,11 @@ const styles = {
   content: styled.p`
     color: var(--Black, #35373a);
     font-family: 'Noto Sans KR';
-    font-size: 16px;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-    margin-bottom: 11px;
+    margin-bottom: 0.6875rem;
   `,
   divider: styled.div`
     width: 100%;
@@ -98,7 +98,7 @@ const styles = {
   dealTitle: styled.h2`
     color: #000;
     font-family: 'Noto Sans KR';
-    font-size: 20px;
+    font-size: 1.25rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -106,8 +106,8 @@ const styles = {
   dealContent: styled.div`
     display: flex;
     flex-direction: column;
-    gap: 42px;
-    margin: 25px 28px 0 30px;
+    gap: 2.625rem;
+    margin: 1.5625rem 1.75rem 0 1.875rem;
   `,
   dealItemContainer: styled.div`
     display: flex;
@@ -115,7 +115,7 @@ const styles = {
 
     color: var(--Black, #35373a);
     font-family: 'Noto Sans KR';
-    font-size: 16px;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
@@ -126,12 +126,12 @@ const styles = {
     width: 100%;
     height: 100%;
 
-    margin-top: 84px;
+    margin-top: 5.25rem;
   `,
   roomInfoTitle: styled.h2`
     color: #000;
     font-family: 'Noto Sans KR';
-    font-size: 20px;
+    font-size: 1.25rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -139,8 +139,8 @@ const styles = {
   hostInfoContainer: styled.div`
     display: flex;
     align-items: center;
-    gap: 50px;
-    margin-bottom: 50px;
+    gap: 3.125rem;
+    margin-bottom: 3.125rem;
   `,
   hostInfoContent: styled.div`
     display: flex;
@@ -149,36 +149,36 @@ const styles = {
     h1 {
       color: #000;
       font-family: 'Noto Sans KR';
-      font-size: 24px;
+      font-size: 1.5rem;
       font-style: normal;
       font-weight: 500;
       line-height: normal;
-      margin-bottom: 16px;
+      margin-bottom: 1rem;
     }
 
     p {
       color: #000;
       font-family: 'Noto Sans KR';
-      font-size: 16px;
+      font-size: 1rem;
       font-style: normal;
       font-weight: 500;
       line-height: normal;
-      margin-bottom: 4px;
+      margin-bottom: 0.25rem;
     }
   `,
   hostCardContent: styled.div`
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0.5rem;
 
     color: #000;
     font-family: 'Noto Sans KR';
-    font-size: 16px;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
 
-    margin-bottom: 85px;
+    margin-bottom: 5.375rem;
 
     .essential {
       color: #e15637;
@@ -187,11 +187,11 @@ const styles = {
   hostButtonsContainer: styled.div`
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 1rem;
 
     div {
       display: flex;
-      gap: 17px;
+      gap: 1rem;
     }
 
     button {
@@ -201,7 +201,7 @@ const styles = {
       flex-grow: 1;
 
       display: flex;
-      padding: 8px 24px;
+      padding: 0.5rem 1.5rem;
       justify-content: center;
       align-items: center;
 
@@ -211,10 +211,10 @@ const styles = {
 
       color: var(--Gray-3, #888);
       font-family: Pretendard;
-      font-size: 18px;
+      font-size: 1.125rem;
       font-style: normal;
       font-weight: 600;
-      line-height: 24px;
+      line-height: 1.5rem;
     }
 
     .color {
