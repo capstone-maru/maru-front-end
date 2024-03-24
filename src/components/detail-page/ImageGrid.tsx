@@ -6,22 +6,22 @@ import styled from 'styled-components';
 const styles = {
   container: styled.div<{ $imageCount: number }>`
     width: 100%;
-    height: 300px;
+    height: 18.75rem;
     border-radius: 16px;
 
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-auto-rows: 300px;
-    gap: 8px;
+    grid-auto-rows: 18.75rem;
+    gap: 0.5rem;
 
     .image-grid {
       display: grid;
-      height: 300px;
+      height: 18.75rem;
 
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: 146px 146px;
-      grid-auto-rows: 300px;
-      gap: 8px;
+      grid-template-rows: 9.125rem 9.125rem;
+      grid-auto-rows: 18.75rem;
+      gap: 0.5rem;
 
       img {
         width: 100%;
@@ -47,7 +47,7 @@ const styles = {
   imageCell: styled.div<{ $url: string }>`
     color: #000;
     font-family: 'Noto Sans KR';
-    font-size: 24px;
+    font-size: 1.5rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -70,7 +70,7 @@ const styles = {
       width: 100%;
       height: 100%;
       background-color: rgb(255 255 255 / 30%);
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(0.5rem);
       border-radius: 0 0 16px 0;
 
       cursor: pointer;
