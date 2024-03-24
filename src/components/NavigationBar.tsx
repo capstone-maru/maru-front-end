@@ -8,8 +8,8 @@ import { useAuthActions, useAuthIsLogin } from '@/features/auth';
 const styles = {
   container: styled.nav`
     display: flex;
-    height: 72px;
-    padding: 14px 240px 15px 240px;
+    height: 4.5rem;
+    padding: 1rem 11.25rem;
     flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
@@ -21,7 +21,7 @@ const styles = {
   title: styled.h1`
     color: var(--Main-1, #e15637);
     font-family: 'Baloo 2';
-    font-size: 30px;
+    font-size: 1.875rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -30,21 +30,20 @@ const styles = {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 24px;
+    gap: 1.5rem;
   `,
   logout: styled.button`
     all: unset;
     display: flex;
-    padding: 8px 16px;
+    padding: 0.5rem 1rem;
     align-items: flex-start;
-    gap: 8px;
 
     border-radius: 8px;
     background: #e15637;
 
     color: #fff;
     font-family: 'Noto Sans KR';
-    font-size: 16px;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
