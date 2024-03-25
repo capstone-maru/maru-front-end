@@ -93,7 +93,7 @@ export function WhiteDropDownList({ title, items, selected, onSelect }: Props) {
     >
       <styles.content>
         {selected}
-        <img alt="drop-down-button-2" src="/icon_drop_down_2.svg" />
+        <img alt="drop-down-button-2" src="/icon-drop-down_2.svg" />
       </styles.content>
       {showList && (
         <styles.list>
