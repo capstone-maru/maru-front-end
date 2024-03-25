@@ -144,22 +144,22 @@ const images = [
   [
     '',
     '',
-    '/icon_popular.svg',
-    '/icon_hanok.svg',
-    '/icon_building.svg',
+    '/icon-popular.svg',
+    '/icon-hanok.svg',
+    '/icon-building.svg',
     '',
     '',
   ],
   [
     '',
     '',
-    '/icon_building.svg',
-    '/icon_countryside.svg',
-    '/icon_camping.svg',
+    '/icon-building.svg',
+    '/icon-countryside.svg',
+    '/icon-camping.svg',
     '',
     '',
   ],
-  ['', '', '/icon_house.svg', '/icon_camping.svg', 'icon_hanok.svg', '', ''],
+  ['', '', '/icon-house.svg', '/icon-camping.svg', 'icon-hanok.svg', '', ''],
 ];
 
 export function LandingPage() {
