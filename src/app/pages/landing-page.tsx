@@ -124,6 +124,7 @@ const styles = {
   findMateButton: styled.button`
     all: unset;
     padding: 8px 24px;
+    flex-shrink: 0;
 
     border-radius: 8px;
     background: #e15637;
