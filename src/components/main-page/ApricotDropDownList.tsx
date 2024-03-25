@@ -84,7 +84,7 @@ export function ApricotDropDownList({ items, selected, onSelect }: Props) {
     >
       <styles.content>
         <p>{`${selected}`}</p>
-        <img alt="drop-down-button-1" src="/icon_drop_down_1.svg" />
+        <img alt="drop-down-button-1" src="/icon-drop-down_1.svg" />
       </styles.content>
       {showList && (
         <styles.list>

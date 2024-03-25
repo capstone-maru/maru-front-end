@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import styled from 'styled-components';
 
+import { SearchBox } from './SearchBox';
+
 import { useAuthActions, useAuthIsLogin } from '@/features/auth';
 
 const styles = {
@@ -17,6 +19,11 @@ const styles = {
     border-bottom: 1px solid #f7f6f9;
     background: #fff;
     box-shadow: 0px 0px 20px -2px rgba(0, 0, 0, 0.05);
+  `,
+  utils: styled.div`
+    display: flex;
+    align-items: center;
+    gap: 3.63rem;
   `,
   title: styled.h1`
     color: var(--Main-1, #e15637);
@@ -60,9 +67,12 @@ export function NavigationBar() {
 
   return (
     <styles.container>
-      <styles.title>
-        <Link href="/">maru</Link>
-      </styles.title>
+      <styles.utils>
+        <styles.title>
+          <Link href="/">maru</Link>
+        </styles.title>
+        <SearchBox />
+      </styles.utils>
       <styles.links>
         <Link href="/shared">메이트찾기</Link>
         <Link href="/community">커뮤니티</Link>
