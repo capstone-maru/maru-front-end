@@ -28,7 +28,9 @@ const styles = {
     font-weight: 600;
     line-height: 1.5rem;
 
-    transition: border 0.1s ease-in-out;
+    border-bottom: 2px solid transparent;
+
+    transition: border-bottom 0.1s ease-in-out;
     &[class~='selected'] {
       color: var(--Main-1, #e15637);
       font-family: Pretendard;
