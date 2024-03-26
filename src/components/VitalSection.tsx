@@ -8,7 +8,6 @@ const styles = {
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding-left: 0.44rem;
   `,
   vitalDescription: styled.p`
     color: var(--Main-1, #e15637);
@@ -19,21 +18,16 @@ const styles = {
     line-height: normal;
   `,
   vitalListContainer: styled.div`
-    width: 37.8125rem;
-    height: 17.6875rem;
-    flex-shrink: 0;
     display: flex;
-    margin-top: 49px;
-    gap: 1.63rem;
+    margin-top: 2.62rem;
+    gap: 3.12rem;
   `,
   vitalList: styled.ul`
     display: inline-flex;
-    height: 17.6875rem;
     flex-direction: column;
     align-items: flex-start;
-    gap: 3rem;
+    gap: 2.5rem;
     flex-shrink: 0;
-    margin-left: 3px;
   `,
   vitalListItem: styled.li`
     color: #000;
@@ -47,13 +41,13 @@ const styles = {
     list-style-type: none;
   `,
   vitalCheckList: styled.ul`
-    width: 31.25rem;
-    height: 17rem;
-    flex-shrink: 0;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
   `,
   vitalCheckListItem: styled.li`
     display: flex;
-    margin-bottom: 27px;
     list-style-type: none;
   `,
 
@@ -79,7 +73,7 @@ const styles = {
     font-weight: 500;
     line-height: normal;
 
-    background-image: url('/Switch down.svg');
+    background-image: url('/drop-icon.svg');
     background-repeat: no-repeat;
     background-position: calc(100% - 0.6875rem) center;
 
@@ -87,12 +81,9 @@ const styles = {
   `,
 
   searchBox: styled.div`
-    width: 31.25rem;
-    height: 3.125rem;
-    display: inline-flex;
-    padding: 0.51138rem 0.5rem 0.39775rem 1.1875rem;
+    display: flex;
+    padding: 0.875rem 3.0625rem 0.8125rem 1.1875rem;
     align-items: center;
-    gap: 13.5rem;
     border: 2px solid var(--Gray-4, #dfdfdf);
     background: var(--White, #fff);
   `,
@@ -108,16 +99,6 @@ const styles = {
       outline: none;
     }
   `,
-  searchButton: styled.button`
-    width: 2.4375rem;
-    height: 2.21594rem;
-    border: none;
-    background-color: #fff;
-    background-image: url('/search_button.svg');
-    background-repeat: no-repeat;
-    background-position: right center;
-    cursor: pointer;
-  `,
 };
 
 interface CheckItemProps {
@@ -125,13 +106,12 @@ interface CheckItemProps {
 }
 
 const CheckItem = styled.div<CheckItemProps>`
-  margin-right: 8px;
+  margin-right: 0.5rem;
   display: flex;
   padding: 0.5rem 1.5rem;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-
   border-radius: 1.625rem;
   border: 2px solid #dfdfdf;
   background: #fff;
@@ -140,7 +120,7 @@ const CheckItem = styled.div<CheckItemProps>`
   color: #888;
 
   font-family: 'Noto Sans KR';
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -148,9 +128,8 @@ const CheckItem = styled.div<CheckItemProps>`
   ${props =>
     props.isSelected
       ? {
-          backgroundColor: '#E15637',
-          color: '#FFF',
-          border: '2px solid #E15637,',
+          color: 'var(--Main-1, #E15637)',
+          border: '2px solid var(--Main-1, #E15637)',
         }
       : {
           backgroundColor: '#FFF',
@@ -164,9 +143,16 @@ export function VitalSection() {
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedSmoking, setSelectedSmoking] = useState<string | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
 
   function handleGenderClick(item: string) {
     setSelectedGender(prevSelectedItem =>
+      prevSelectedItem === item ? null : item,
+    );
+  }
+
+  function handleRoomClick(item: string) {
+    setSelectedRoom(prevSelectedItem =>
       prevSelectedItem === item ? null : item,
     );
   }
@@ -188,8 +174,9 @@ export function VitalSection() {
         <styles.vitalList>
           <styles.vitalListItem>성별</styles.vitalListItem>
           <styles.vitalListItem>출생 연도</styles.vitalListItem>
-          <styles.vitalListItem>희망 지역</styles.vitalListItem>
           <styles.vitalListItem>흡연 여부</styles.vitalListItem>
+          <styles.vitalListItem>메이트와</styles.vitalListItem>
+          <styles.vitalListItem>희망 지역</styles.vitalListItem>
         </styles.vitalList>
         <styles.vitalCheckList>
           <styles.vitalCheckListItem>
@@ -224,12 +211,6 @@ export function VitalSection() {
             </styles.birthYear>
           </styles.vitalCheckListItem>
           <styles.vitalCheckListItem>
-            <styles.searchBox>
-              <styles.mapInput placeholder="ex) 한국동,한국역,한국대학교" />
-              <styles.searchButton />
-            </styles.searchBox>
-          </styles.vitalCheckListItem>
-          <styles.vitalCheckListItem>
             <CheckItem
               isSelected={selectedSmoking === '흡연'}
               onClick={() => {
@@ -246,6 +227,37 @@ export function VitalSection() {
             >
               비흡연
             </CheckItem>
+          </styles.vitalCheckListItem>
+          <styles.vitalCheckListItem>
+            <CheckItem
+              isSelected={selectedRoom === '같은 방'}
+              onClick={() => {
+                handleRoomClick('같은 방');
+              }}
+            >
+              같은 방
+            </CheckItem>
+            <CheckItem
+              isSelected={selectedRoom === '다른 방'}
+              onClick={() => {
+                handleRoomClick('다른 방');
+              }}
+            >
+              다른 방
+            </CheckItem>
+            <CheckItem
+              isSelected={selectedRoom === '상관없어요'}
+              onClick={() => {
+                handleRoomClick('상관없어요');
+              }}
+            >
+              상관없어요
+            </CheckItem>
+          </styles.vitalCheckListItem>
+          <styles.vitalCheckListItem>
+            <styles.searchBox>
+              <styles.mapInput placeholder="ex) 한국동,한국역,한국대학교" />
+            </styles.searchBox>
           </styles.vitalCheckListItem>
         </styles.vitalCheckList>
       </styles.vitalListContainer>
