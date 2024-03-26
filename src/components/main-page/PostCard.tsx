@@ -2,6 +2,8 @@
 
 import styled from 'styled-components';
 
+import { HorizontalDivider } from '..';
+
 import { type SharedPost } from '@/entities/shared-post';
 
 const styles = {
@@ -81,14 +83,6 @@ const styles = {
       line-height: normal;
     }
   `,
-  divider: styled.hr`
-    width: 100%;
-    height: 1px;
-    border: 1px solid #d3d0d7;
-    border-right-width: 0px;
-    border-bottom-width: 0px;
-    border-left-width: 0px;
-  `,
 };
 
 function Thumbnail({ url }: { url?: string }) {
@@ -117,7 +111,7 @@ export function PostCard({ url, post, writer }: Prop) {
           <p>{writer.name}</p>
         </styles.writerInformation>
       </styles.wrapper>
-      <styles.divider />
+      <HorizontalDivider />
     </styles.container>
   );
 }
