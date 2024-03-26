@@ -254,6 +254,8 @@ export function SharedPostPage({ post }: Props) {
         <styles.titleRow>
           <styles.title>{post.title}</styles.title>
           <Bookmark
+            hasBorder={false}
+            color="#000"
             marked={false}
             onToggle={() => {
               console.log('Bookmark Clicked');
@@ -301,6 +303,8 @@ export function SharedPostPage({ post }: Props) {
           <div>
             <button type="button">프로필 보기</button>
             <Bookmark
+              color="#888"
+              hasBorder
               marked={false}
               onToggle={() => {
                 console.log('host bookmark clicked');
