@@ -257,7 +257,7 @@ export function SharedPostPage({ post }: Props) {
           <Bookmark
             marked={false}
             onToggle={() => {
-              console.log('Bookmark Clicked');
+              console.debug('Bookmark Clicked');
             }}
           />
         </styles.titleRow>
@@ -304,7 +304,7 @@ export function SharedPostPage({ post }: Props) {
             <Bookmark
               marked={false}
               onToggle={() => {
-                console.log('host bookmark clicked');
+                console.debug('host bookmark clicked');
               }}
             />
           </div>

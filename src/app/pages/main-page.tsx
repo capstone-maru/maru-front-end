@@ -1,5 +1,7 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { ToggleSwitch } from '@/components';
@@ -10,6 +12,8 @@ import {
   WhiteDropDownList,
 } from '@/components/main-page';
 import { useMainPageFilter } from '@/entities/main-page-filter';
+import { type User } from '@/entities/user';
+import { getUserData, useAuthState } from '@/features/auth';
 
 const styles = {
   container: styled.div`
@@ -108,7 +112,43 @@ const dummyUserCards = ['김마루', '최정민', '정연수'];
 const dummyFilters = ['원룸', '기숙사'];
 
 export function MainPage() {
+  const [auth] = useAuthState();
+  const { isError, isLoading, fetchStatus, data } = useQuery({
+    queryKey: ['/api/auth/info'],
+    queryFn: getUserData,
+    enabled: auth?.accessToken !== undefined,
+  });
   const [filter, setFilter] = useMainPageFilter();
+  const [userData, setUserData] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (data !== undefined) {
+      const { user } = data.data;
+      setUserData(user);
+      console.group();
+      console.debug(`setUserData called.`);
+      console.debug(`data: ${JSON.stringify(userData)}`);
+      console.groupEnd();
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (isError) {
+      console.debug('failed to fetch user data.');
+    }
+  }, [isError]);
+
+  useEffect(() => {
+    if (fetchStatus === 'fetching') {
+      console.debug(`query, fetchStatus: ${fetchStatus}`);
+    } else if (fetchStatus === 'idle') {
+      console.debug(`query, fetchStatus: ${fetchStatus}`);
+    } else if (fetchStatus === 'paused') {
+      console.debug(`query, fetchStatus: ${fetchStatus}`);
+    }
+  }, [fetchStatus]);
+
+  if (isLoading) <>Loading. Now</>;
 
   return (
     <styles.container>

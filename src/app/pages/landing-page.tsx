@@ -178,7 +178,7 @@ export function LandingPage() {
           </p>
           <styles.loginButtons>
             <a
-              href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/kakao?redirect_uri=${process.env.NEXT_PUBLIC_CLIENT_URL}login`}
+              href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/kakao?redirect_uri=${process.env.NEXT_PUBLIC_CLIENT_URL}/login`}
             >
               <img
                 alt="kakao"
@@ -186,7 +186,7 @@ export function LandingPage() {
               />
             </a>
             <a
-              href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/naver?redirect_uri=${process.env.NEXT_PUBLIC_CLIENT_URL}login`}
+              href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/naver?redirect_uri=${process.env.NEXT_PUBLIC_CLIENT_URL}/login`}
             >
               <img
                 alt="naver"
