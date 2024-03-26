@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { Bookmark, HorizontalDivider } from '@/components';
@@ -64,22 +65,37 @@ const styles = {
     font-weight: 700;
     line-height: normal;
   `,
-  roomBriefDescription: styled.p`
-    color: #000;
+  briefInfoContainer: styled.div`
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+
+    color: var(--Black, #35373a);
     font-family: 'Noto Sans KR';
     font-size: 1rem;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 500;
     line-height: normal;
+
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
   `,
-  content: styled.p`
+  viewCount: styled.p`
     color: var(--Black, #35373a);
     font-family: 'Noto Sans KR';
     font-size: 1rem;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-    margin-bottom: 0.6875rem;
+    margin-right: 1rem;
+  `,
+  content: styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   `,
   dealInfo: styled.div`
     display: flex;
@@ -94,12 +110,14 @@ const styles = {
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+
+    margin-bottom: 1.25rem;
   `,
   dealContent: styled.div`
     display: flex;
     flex-direction: column;
-    gap: 2.625rem;
-    margin: 1.5625rem 1.75rem 0 1.875rem;
+    gap: 2rem;
+    margin: 0 0.63rem;
   `,
   dealItemContainer: styled.div`
     display: flex;
@@ -117,8 +135,6 @@ const styles = {
     flex-direction: column;
     width: 100%;
     height: 100%;
-
-    margin-top: 5.25rem;
   `,
   roomInfoTitle: styled.h2`
     color: #000;
@@ -127,6 +143,74 @@ const styles = {
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+
+    margin-bottom: 1.25rem;
+  `,
+  roomInfoContent: styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 0 0.63rem;
+  `,
+  detailInfoContanier: styled.div`
+    display: flex;
+    flex-direction: column;
+  `,
+  detailInfoTitle: styled.h2`
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 1.25rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-bottom: 1.25rem;
+  `,
+  detailInfoContent: styled.p`
+    color: var(--Black, #35373a);
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  `,
+  locationInfoContainer: styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1.31rem;
+  `,
+  locationInfoTitle: styled.h2`
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 1.25rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  `,
+  locationInfoContent: styled.p`
+    color: var(--Black, #35373a);
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+    cursor: pointer;
+  `,
+  map: styled.div`
+    width: 100%;
+    height: 21.125rem;
+  `,
+  locationEnvInfo: styled.div`
+    color: var(--Black, #35373a);
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   `,
   hostInfoContainer: styled.div`
     display: flex;
@@ -229,7 +313,7 @@ interface Props {
   post: SharedPost;
 }
 
-function DealItem({ label, data }: { label: string; data: string }) {
+function Item({ label, data }: { label: string; data: string }) {
   return (
     <styles.dealItemContainer>
       <p>{label}</p>
@@ -239,6 +323,20 @@ function DealItem({ label, data }: { label: string; data: string }) {
 }
 
 export function SharedPostPage({ post }: Props) {
+  const [map, setMap] = useState<naver.maps.Map | null>(null);
+
+  const onMoveToCenter = () => {
+    if (map === null) return;
+
+    const center = new naver.maps.LatLng(37.6090857, 126.9966865);
+    map.setCenter(center);
+  };
+
+  useEffect(() => {
+    const center = new naver.maps.LatLng(37.6090857, 126.9966865);
+    setMap(new naver.maps.Map('map', { center }));
+  }, []);
+
   return (
     <styles.container>
       <styles.houseInfo>
@@ -254,19 +352,62 @@ export function SharedPostPage({ post }: Props) {
             }}
           />
         </styles.titleRow>
+        <styles.briefInfoContainer>
+          <div>
+            <p>모집 1명 / 총원 2명</p>
+            <p>원룸 · 방1</p>
+            <p>500 / 50 / 5</p>
+          </div>
+          <styles.viewCount>저장 4 · 조회 22</styles.viewCount>
+        </styles.briefInfoContainer>
         <HorizontalDivider />
-        <styles.dealInfo>
-          <styles.dealTitle>거래 정보</styles.dealTitle>
-          <styles.dealContent>
-            <DealItem label="거래방식" data="월세 2,000만원/20만원" />
-            <DealItem label="관리비" data="4만 5천원" />
-            <DealItem label="융자금" data="융자금 없음" />
-            <DealItem label="입주가능일" data="2024. 03. 13. 이후" />
-          </styles.dealContent>
-        </styles.dealInfo>
-        <styles.roomInfo>
-          <styles.roomInfoTitle>방 정보</styles.roomInfoTitle>
-        </styles.roomInfo>
+        <styles.content>
+          <styles.dealInfo>
+            <styles.dealTitle>거래 정보</styles.dealTitle>
+            <styles.dealContent>
+              <Item label="거래방식" data="월세" />
+              <Item label="보증금" data="500만원" />
+              <Item label="월세" data="50만원" />
+              <Item label="관리비" data="5만원" />
+            </styles.dealContent>
+          </styles.dealInfo>
+          <styles.roomInfo>
+            <styles.roomInfoTitle>방 정보</styles.roomInfoTitle>
+            <styles.roomInfoContent>
+              <Item label="방 종류" data="원룸" />
+              <Item label="구조" data="방 1" />
+              <Item label="면적" data="10평" />
+              <Item label="층수" data="지상 / 2층" />
+              <Item label="추가 옵션" data="주차가능, 에어컨" />
+            </styles.roomInfoContent>
+          </styles.roomInfo>
+          <styles.detailInfoContanier>
+            <styles.detailInfoTitle>상세 정보</styles.detailInfoTitle>
+            <styles.detailInfoContent>
+              안녕하세요! 저는 현재 룸메이트를 찾고 있는 정연수입니다. 서울시
+              정릉동에서 함께 살아갈 룸메이트를 구하고 있습니다. 주로 밤에
+              작업을 하며 새벽 2시~3시쯤에 취침합니다. 관심있으신 분들 연락
+              주세요!
+            </styles.detailInfoContent>
+          </styles.detailInfoContanier>
+          <styles.locationInfoContainer>
+            <styles.locationInfoTitle>위치 정보</styles.locationInfoTitle>
+            <styles.locationInfoContent
+              onClick={() => {
+                onMoveToCenter();
+              }}
+            >
+              서울특별시 성북구 정릉로 104
+            </styles.locationInfoContent>
+            <styles.map id="map" />
+            <styles.locationEnvInfo>
+              <Item label="정릉역" data="10분" />
+              <Item label="버스정류장" data="5분" />
+              <Item label="국민대학교" data="20분" />
+              <Item label="편의점" data="1분" />
+            </styles.locationEnvInfo>
+          </styles.locationInfoContainer>
+        </styles.content>
       </styles.houseInfo>
       <styles.hostInfo>
         <styles.hostInfoContainer>
