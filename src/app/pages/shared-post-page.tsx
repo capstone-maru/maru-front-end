@@ -4,7 +4,12 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { Bookmark, HorizontalDivider } from '@/components';
-import { CircularProfileImage, ImageGrid } from '@/components/detail-page';
+import {
+  CardToggleButton,
+  CircularProfileImage,
+  ImageGrid,
+  MiniCircularProfileImage,
+} from '@/components/detail-page';
 import { type SharedPost } from '@/entities/shared-post';
 
 const styles = {
@@ -43,9 +48,8 @@ const styles = {
 
     position: relative;
 
-    width: 25%;
-    min-height: 50dvh;
-    height: 50%;
+    width: 100%;
+    height: 100%;
     border-radius: 16px;
     background: #fff;
 
@@ -218,6 +222,27 @@ const styles = {
     gap: 3.125rem;
     margin-bottom: 3.125rem;
   `,
+  roomParticipantsContainer: styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    width: 25%;
+    min-height: 50dvh;
+    height: 50%;
+  `,
+  roomParticipants: styled.div`
+    display: flex;
+
+    width: 100%;
+    height: 6.125rem;
+    flex-shrink: 0;
+    border-radius: 16px;
+    background: #fff;
+
+    padding: 0.44rem 1.56rem;
+    overflow-x: auto;
+  `,
   hostInfoContent: styled.div`
     display: flex;
     flex-direction: column;
@@ -254,7 +279,7 @@ const styles = {
     font-weight: 500;
     line-height: normal;
 
-    margin-bottom: 5.375rem;
+    margin-bottom: 3.12rem;
 
     .essential {
       color: #e15637;
@@ -294,10 +319,22 @@ const styles = {
     }
 
     .color {
-      background: var(--Main-1, #e15637);
+      background: var(--Main-1, #35373a);
       border: 1px solid var(--Main-1);
       color: #fff;
     }
+
+    margin-bottom: 2.69rem;
+  `,
+  cardToggleButtonContainer: styled.div`
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    gap: 1.06rem;
+
+    left: -2.25rem;
+
+    width: calc(100% + 2.25rem);
   `,
 };
 
@@ -307,6 +344,15 @@ const dummyImages = [
   'https://s3-alpha-sig.figma.com/img/0de8/113e/7a56e61d0a97703ddef68f41508a60f9?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=SMYm-FhubQ80cjTUJD3g2DJc17u7aOu8~vo7FDtQpmPh4yrJen0RmaxnLXKRLoz1NhcLEG~x65veb7hZcZBgjf5m~ayGDhEwKE4P7gKWPYh3uPT8vW1aGQsAi0JB~fw7qA7nlaVCpPANPIaQLo9LgiRvCEuTRaxxFgwSBXcHxFbGhZCDmUzKvSJgk6Z5TE6jDqOj2nDSDRGu2U0keA5nJu8nvyD4HwJGRDLfNyVDFMa19HDaT2Ma34wVhOSClS-7jUhr4UYwjgLVostmHaFH9OcTtgRWw~UHXSsW30Yrjao2YsDVbskurQ81cjr7SusT-RRXJUQoL1sT91utNz4oBw__',
   'https://s3-alpha-sig.figma.com/img/2d52/bfda/0a900d41e2a6d77dd731fac06577540c?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=l0b7Up505QbH4ZH5Z0vATZlKNVq70rhtoZVCeabC7RT6kc9q-WQ5gGl4S2~s0JDCaB4lhVuvQMm3m0FxzvjTTmcW0il7~U1ozz2sdgOaxMpX35~0C0lS1nkVlnH6Karq4XQLCOVU1So~bjORg2CkS3mlXNbReSsNKgb-V594MzT25yZmaQ6Gnv3tS7f0pLH-QHRBvwqZRASrJ1ud8K2b1J-JD5KwUneP-gGi8-BKX36Is6VHdkAD1RwJnasfDee540UUCJzrxQAC4ODGFB8cnD0Mv4UsF4vtOncskz77EjclHb-FawpF2lLBYwsZDnSv21dGeF328LeNNS64a-wSCQ__',
   'https://s3-alpha-sig.figma.com/img/2006/8205/5f945443386acf4bfb5a6853b361442f?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=W8SbDFzsK1gVBUcE~OxQdVW5EI7fRPGiBeGf7loAp73pnO4gVffx7xuTeMQB7CiTd~2mlRDws4vB-5-eQEzrqk4W2lCwAC27tyEMJ-Oh55Pzo0KGDQhQgcbGZ~FRlj9vvgvVK-4cZiK3UrBWgrYN8eSXb~3sp7HQBDY~U0YBCZh9W6bcqlkjZUhV1YIRjdDy~d-b81FvYAI-GIU5JiU5SC0-IGNU5X3l33mcgbADRaC4mdV~uKSCGpOGtDEXOdwTtAODlW2aY28-JAM84hOl6YFXmjjVJlHk13YPcnb~KWo-bX0DOYBnY3Ad3rf0BdgkYjL2ejUS6DE2l613agQKcA__',
+];
+
+const dummyParticipants = [
+  'https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=bS1lS~7-WQsD9x5vHJBOiMnhhFjI~VgCwJH6Bzz~IxFWob-PV-XZweWFIhU6yJC3XHv5qZKZxnP9RWT~0ciIbQfofuhbODEUxnMHe6oq8Dl45khsD30dnXOK~FLBPpWhMumJO-zPpuWjiRwsZ35mfWLbgyT7dND41I9yXCyRASQx9v2iAGzDoVzTfvtkjRyGw6es6fSXRsFGMqthnzYmv7DZT~FCz2avi3-NqXruXQpkijQHNEQUM61ThFiNYEIv8vb1wZWf-USbbJpE8bdbUneblY2T0cWwMRBtKbCrJ0Y~P9lvFbzqBv7h9WOzNyJW~~KeG9vVrBmLRRo1BsNdng__',
+  'https://s3-alpha-sig.figma.com/img/2d52/bfda/0a900d41e2a6d77dd731fac06577540c?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=l0b7Up505QbH4ZH5Z0vATZlKNVq70rhtoZVCeabC7RT6kc9q-WQ5gGl4S2~s0JDCaB4lhVuvQMm3m0FxzvjTTmcW0il7~U1ozz2sdgOaxMpX35~0C0lS1nkVlnH6Karq4XQLCOVU1So~bjORg2CkS3mlXNbReSsNKgb-V594MzT25yZmaQ6Gnv3tS7f0pLH-QHRBvwqZRASrJ1ud8K2b1J-JD5KwUneP-gGi8-BKX36Is6VHdkAD1RwJnasfDee540UUCJzrxQAC4ODGFB8cnD0Mv4UsF4vtOncskz77EjclHb-FawpF2lLBYwsZDnSv21dGeF328LeNNS64a-wSCQ__',
+  'https://s3-alpha-sig.figma.com/img/2006/8205/5f945443386acf4bfb5a6853b361442f?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=W8SbDFzsK1gVBUcE~OxQdVW5EI7fRPGiBeGf7loAp73pnO4gVffx7xuTeMQB7CiTd~2mlRDws4vB-5-eQEzrqk4W2lCwAC27tyEMJ-Oh55Pzo0KGDQhQgcbGZ~FRlj9vvgvVK-4cZiK3UrBWgrYN8eSXb~3sp7HQBDY~U0YBCZh9W6bcqlkjZUhV1YIRjdDy~d-b81FvYAI-GIU5JiU5SC0-IGNU5X3l33mcgbADRaC4mdV~uKSCGpOGtDEXOdwTtAODlW2aY28-JAM84hOl6YFXmjjVJlHk13YPcnb~KWo-bX0DOYBnY3Ad3rf0BdgkYjL2ejUS6DE2l613agQKcA__',
+  'https://s3-alpha-sig.figma.com/img/0de8/113e/7a56e61d0a97703ddef68f41508a60f9?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=SMYm-FhubQ80cjTUJD3g2DJc17u7aOu8~vo7FDtQpmPh4yrJen0RmaxnLXKRLoz1NhcLEG~x65veb7hZcZBgjf5m~ayGDhEwKE4P7gKWPYh3uPT8vW1aGQsAi0JB~fw7qA7nlaVCpPANPIaQLo9LgiRvCEuTRaxxFgwSBXcHxFbGhZCDmUzKvSJgk6Z5TE6jDqOj2nDSDRGu2U0keA5nJu8nvyD4HwJGRDLfNyVDFMa19HDaT2Ma34wVhOSClS-7jUhr4UYwjgLVostmHaFH9OcTtgRWw~UHXSsW30Yrjao2YsDVbskurQ81cjr7SusT-RRXJUQoL1sT91utNz4oBw__',
+  'https://s3-alpha-sig.figma.com/img/ff85/788d/96b4a3ec1b31b6baf36b11c772529753?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=cjUTegC0Ory6cMHPNzEqOS8K3anjn8DBCi~2j6hiEcZS1exKyuo3g0jfke26Y~HVjFa0YhUjW8tjxjd7KBmgLWHxow2U8YwP6bNJBHeNgKMwpDHk2aF1vUPO-nfDEM7ZCfZCSsWcUz~eNS5XP5XwFvd7aP8g~62hJnvdtkdMpP3qiCS70w~QUAdwBtb57TjBD3EWelFbKg2JcWTVlIxYd7qtj~uuP8-0HXrgmdssska9T3tCF0aT6REa4QFa7dYggiKL3rk8aLyjJ46RbOm9l~mqbIs9PqQakObhU~621G1PeAX9ZtkgzryhtNWG6EKyGTzhEvm4~-~AWriZFAVebw__',
+  'https://s3-alpha-sig.figma.com/img/efd0/12b5/6a0078a4aa75b0e9a9fb53a6d9a7c560?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=B4Aqn-hPJ0ihHPDfRzMOJKsIyqx03layytoxWWfcKWjb5Y99kfmk79oYrVGeBG1r9Upf2S4T9qEoYombOIKwE5BQ-uHa5bHjqSrrGN-Ki4V9uwv-FoINnD1-yK8DFE75XlMlQAWIw7c19End47NjTtAF7aZwN~votmj7HtmRK5~ftLRDqNL~SuLN0-LoMGpuDPhN2DMbafK1KOZeP5ur-dZKNfLQlg7KoOk8DcfS6p1IkoLY56tYQgrDmNG9YzXPSRsjrXAO1BDvYQRw0xdepU9cc63~lYlFbQu0j15PcUKGt9BjkjLwxB5sibmX6qG4Ct4tu161kpw3~urASb84eg__',
 ];
 
 interface Props {
@@ -409,42 +455,63 @@ export function SharedPostPage({ post }: Props) {
           </styles.locationInfoContainer>
         </styles.content>
       </styles.houseInfo>
-      <styles.hostInfo>
-        <styles.hostInfoContainer>
-          <CircularProfileImage
-            diameter={110}
-            percentage={50}
-            url="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=bS1lS~7-WQsD9x5vHJBOiMnhhFjI~VgCwJH6Bzz~IxFWob-PV-XZweWFIhU6yJC3XHv5qZKZxnP9RWT~0ciIbQfofuhbODEUxnMHe6oq8Dl45khsD30dnXOK~FLBPpWhMumJO-zPpuWjiRwsZ35mfWLbgyT7dND41I9yXCyRASQx9v2iAGzDoVzTfvtkjRyGw6es6fSXRsFGMqthnzYmv7DZT~FCz2avi3-NqXruXQpkijQHNEQUM61ThFiNYEIv8vb1wZWf-USbbJpE8bdbUneblY2T0cWwMRBtKbCrJ0Y~P9lvFbzqBv7h9WOzNyJW~~KeG9vVrBmLRRo1BsNdng__"
-          />
-          <styles.hostInfoContent>
-            <h1>김마루</h1>
-            <p>24세</p>
-            <p>성북 길음동</p>
-          </styles.hostInfoContent>
-        </styles.hostInfoContainer>
-        <styles.hostCardContent>
-          <p className="essential">비흡연</p>
-          <p>새벽형</p>
-          <p>친구초대 괜찮아요</p>
-          <p className="essential">실내취식 괜찮아요</p>
-        </styles.hostCardContent>
-        <styles.hostButtonsContainer>
-          <div>
-            <button type="button">프로필 보기</button>
-            <Bookmark
-              color="#888"
-              hasBorder
-              marked={false}
-              onToggle={() => {
-                console.log('host bookmark clicked');
+      <styles.roomParticipantsContainer>
+        <styles.roomParticipants>
+          {dummyParticipants.map((participant, index) => (
+            <MiniCircularProfileImage
+              isHost={index === 0}
+              key={participant}
+              url={participant}
+              style={{
+                zIndex: dummyParticipants.length - index - 1,
+                transform: `translateX(-${1.31 * index}rem)`,
+                // position: 'relative',
+                // left: index !== 0 ? `-${1.31 * index}rem` : 0,
               }}
             />
-          </div>
-          <button type="button" className="color">
-            채팅하기
-          </button>
-        </styles.hostButtonsContainer>
-      </styles.hostInfo>
+          ))}
+        </styles.roomParticipants>
+        <styles.hostInfo>
+          <styles.hostInfoContainer>
+            <CircularProfileImage
+              diameter={110}
+              percentage={50}
+              url="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=bS1lS~7-WQsD9x5vHJBOiMnhhFjI~VgCwJH6Bzz~IxFWob-PV-XZweWFIhU6yJC3XHv5qZKZxnP9RWT~0ciIbQfofuhbODEUxnMHe6oq8Dl45khsD30dnXOK~FLBPpWhMumJO-zPpuWjiRwsZ35mfWLbgyT7dND41I9yXCyRASQx9v2iAGzDoVzTfvtkjRyGw6es6fSXRsFGMqthnzYmv7DZT~FCz2avi3-NqXruXQpkijQHNEQUM61ThFiNYEIv8vb1wZWf-USbbJpE8bdbUneblY2T0cWwMRBtKbCrJ0Y~P9lvFbzqBv7h9WOzNyJW~~KeG9vVrBmLRRo1BsNdng__"
+            />
+            <styles.hostInfoContent>
+              <h1>김마루</h1>
+              <p>24세</p>
+              <p>성북 길음동</p>
+            </styles.hostInfoContent>
+          </styles.hostInfoContainer>
+          <styles.hostCardContent>
+            <p className="essential">비흡연</p>
+            <p>새벽형</p>
+            <p>친구초대 괜찮아요</p>
+            <p className="essential">실내취식 괜찮아요</p>
+          </styles.hostCardContent>
+          <styles.hostButtonsContainer>
+            <button type="button" className="color">
+              채팅하기
+            </button>
+            <div>
+              <button type="button">프로필 보기</button>
+              <Bookmark
+                color="#888"
+                hasBorder
+                marked={false}
+                onToggle={() => {
+                  console.log('host bookmark clicked');
+                }}
+              />
+            </div>
+          </styles.hostButtonsContainer>
+          <styles.cardToggleButtonContainer>
+            <CardToggleButton label="마이카드" />
+            <CardToggleButton label="메이트카드" />
+          </styles.cardToggleButtonContainer>
+        </styles.hostInfo>
+      </styles.roomParticipantsContainer>
     </styles.container>
   );
 }
