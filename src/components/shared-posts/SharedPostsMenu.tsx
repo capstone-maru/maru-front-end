@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -9,8 +8,7 @@ const styles = {
     padding: 0 2.75rem;
 
     display: flex;
-    justify-content: center;
-    gap: 12.5rem;
+    justify-content: space-between;
   `,
   item: styled.div`
     -webkit-user-select: none;

@@ -16,9 +16,9 @@ const styles = {
 
     display: flex;
     flex-direction: column;
-    padding: 8px 24px;
+    padding: 0.75rem 1.25rem;
 
-    border-radius: ${({ $showList }) => ($showList ? '26px 26px 0 0' : '26px')};
+    border-radius: ${({ $showList }) => ($showList ? '12px 12px 0 0' : '12px')};
     border: 2px solid var(--Gray-4, #dfdfdf);
     border-bottom-width: ${({ $showList }) => ($showList ? '0' : '2px')};
 
@@ -27,11 +27,11 @@ const styles = {
   content: styled.div`
     display: flex;
     flex-direction: row;
-    gap: 16px;
+    gap: 0.5rem;
 
     color: var(--Gray-3, #888);
     font-family: 'Noto Sans KR';
-    font-size: 20px;
+    font-size: 1.25rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
@@ -40,22 +40,22 @@ const styles = {
     position: absolute;
     top: 100%;
     left: -2px;
-    padding: 8px 24px;
+    padding: 0.75rem 1.25rem;
 
     display: flex;
     width: calc(100% + 4px);
     flex-direction: column;
-    gap: 8px;
+    gap: 0.5rem;
 
     font-family: 'Noto Sans KR';
-    font-size: 20px;
+    font-size: 1.25rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
 
     border: 2px solid var(--Gray-4, #dfdfdf);
     border-top-width: 0px;
-    border-radius: 0 0 26px 26px;
+    border-radius: 0 0 12px 12px;
     z-index: 1;
   `,
   item: styled.button`
@@ -66,11 +66,11 @@ const styles = {
 interface Props {
   title: string;
   items: string[];
-  selected: string;
+  selected?: string;
   onSelect: (item: string) => void;
 }
 
-export function WhiteDropDownList({ title, items, selected, onSelect }: Props) {
+export function DropDownList({ title, items, selected, onSelect }: Props) {
   const [showList, setShowList] = useState(false);
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export function WhiteDropDownList({ title, items, selected, onSelect }: Props) {
       }}
     >
       <styles.content>
-        {selected}
+        {selected ?? title}
         <img alt="drop-down-button-2" src="/icon-drop-down_2.svg" />
       </styles.content>
       {showList && (
