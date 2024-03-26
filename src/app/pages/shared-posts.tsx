@@ -12,7 +12,12 @@ const styles = {
 
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+  `,
+  SharedPostsMenu: styled(SharedPostsMenu)`
+    margin-bottom: 2rem;
+  `,
+  SharedPostsFilter: styled(SharedPostsFilter)`
+    margin-bottom: 5.19rem;
   `,
 };
 
@@ -23,8 +28,8 @@ export function SharedPostsPage() {
 
   return (
     <styles.container>
-      <SharedPostsMenu selected={selected} onSelect={setSelected} />
-      <SharedPostsFilter />
+      <styles.SharedPostsMenu selected={selected} handleSelect={setSelected} />
+      <styles.SharedPostsFilter />
     </styles.container>
   );
 }

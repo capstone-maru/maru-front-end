@@ -1,5 +1,6 @@
 'use client';
 
+import { type HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -43,15 +44,19 @@ const styles = {
 
 interface Props {
   selected: 'hasRoom' | 'homeless' | 'dormitory';
-  onSelect: (selected: 'hasRoom' | 'homeless' | 'dormitory') => void;
+  handleSelect: (selected: 'hasRoom' | 'homeless' | 'dormitory') => void;
 }
 
-export function SharedPostsMenu({ selected, onSelect }: Props) {
+export function SharedPostsMenu({
+  selected,
+  handleSelect,
+  className,
+}: Props & HTMLAttributes<HTMLDivElement>) {
   return (
-    <styles.container>
+    <styles.container className={className}>
       <styles.item
         onClick={() => {
-          onSelect('hasRoom');
+          handleSelect('hasRoom');
         }}
         className={selected === 'hasRoom' ? 'selected' : ''}
       >
@@ -59,7 +64,7 @@ export function SharedPostsMenu({ selected, onSelect }: Props) {
       </styles.item>
       <styles.item
         onClick={() => {
-          onSelect('homeless');
+          handleSelect('homeless');
         }}
         className={selected === 'homeless' ? 'selected' : ''}
       >
@@ -67,7 +72,7 @@ export function SharedPostsMenu({ selected, onSelect }: Props) {
       </styles.item>
       <styles.item
         onClick={() => {
-          onSelect('dormitory');
+          handleSelect('dormitory');
         }}
         className={selected === 'dormitory' ? 'selected' : ''}
       >
