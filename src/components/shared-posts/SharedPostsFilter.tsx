@@ -1,5 +1,6 @@
 'use client';
 
+import { type HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 import { DropDownList } from './DropDownList';
@@ -13,11 +14,13 @@ const styles = {
   `,
 };
 
-export function SharedPostsFilter() {
+export function SharedPostsFilter({
+  className,
+}: HTMLAttributes<HTMLDivElement>) {
   // TODO: 필터 정보 저장 코드 필요.
 
   return (
-    <styles.container>
+    <styles.container className={className}>
       {Object.entries(SharedPostsFilterTypeValue).map(([key, value]) => (
         <DropDownList
           key={key}
