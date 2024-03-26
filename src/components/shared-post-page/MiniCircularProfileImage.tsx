@@ -4,7 +4,7 @@ import { type HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 const styles = {
-  container: styled.div<{ $isHost: boolean; $url: string }>`
+  container: styled.img<{ $isHost: boolean }>`
     display: flex;
     width: 5.25rem;
     height: 5.25rem;
@@ -19,10 +19,7 @@ const styles = {
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
     cursor: pointer;
 
-    background-repeat: no-repeat;
-    background-size: 100%;
-    background-image: ${({ $url }) => `url("${$url}")`};
-    background-position: center;
+    object-fit: center;
   `,
 };
 
@@ -34,5 +31,5 @@ export function MiniCircularProfileImage({
   isHost: boolean;
   url: string;
 } & HTMLAttributes<HTMLDivElement>) {
-  return <styles.container style={style} $isHost={isHost} $url={url} />;
+  return <styles.container style={style} $isHost={isHost} alt="" src={url} />;
 }
