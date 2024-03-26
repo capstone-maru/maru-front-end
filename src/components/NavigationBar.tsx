@@ -19,6 +19,7 @@ const styles = {
     border-bottom: 1px solid #f7f6f9;
     background: #fff;
     box-shadow: 0px 0px 20px -2px rgba(0, 0, 0, 0.05);
+    z-index: 2147483647;
   `,
   utils: styled.div`
     display: flex;
