@@ -5,5 +5,5 @@ export default function Page({
 }: {
   params: { userId: string };
 }) {
-  return <SettingPage />;
+  return <SettingPage type="내" name="김마루" />;
 }

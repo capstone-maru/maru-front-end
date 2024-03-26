@@ -5,92 +5,90 @@ import { atom, useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 const styles = {
-  page_container: styled.div`
+  pageContainer: styled.div`
     display: flex;
-    flex-flow: wrap;
-    padding: 0px 33px;
+    flex-direction: column;
+    padding: 0 1.5rem;
   `,
 
-  user_profile_container: styled.div`
-    flex: none;
-    display: flex;
-    position: relative;
-    width: 100%;
+  userProfileContainer: styled.div`
+    display: inline-flex;
+    align-items: flex-start;
+    flex-shrink: 0;
+    margin-top: 5.12rem;
+  `,
+  userProfileWithoutSwitch: styled.div`
+    display: inline-flex;
     align-items: center;
-    margin-top: 82px;
-    min-width: 0;
+    gap: 2.625rem;
   `,
-  user_pic_container: styled.div`
-    margin-right: 42px;
-
+  userPicContainer: styled.div`
     display: flex;
-    width: 133px;
-    height: 133px;
+    width: 8.3125rem;
+    height: 8.3125rem;
     justify-content: center;
     align-items: center;
-    border-radius: 100px;
+    border-radius: 6.25rem;
     border: 1px solid #dcddea;
 
     background: #c4c4c4;
   `,
-  user_pic: styled.img`
+  userPic: styled.img`
     width: 100%;
     height: 100%;
     border-radius: inherit;
     object-fit: cover;
     border: 0;
   `,
-
-  user_info: styled.div`
-    flex: 1 1;
-    min-width: 0;
-    color: #494949;
-  `,
-
-  user_name: styled.div`
-    color: #000;
-
-    font-family: 'Noto Sans KR';
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    margin-bottom: 8px;
-  `,
-
-  user_detailed_info: styled.p`
-    color: #000;
-
-    font-family: 'Noto Sans KR';
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-  `,
-
-  switch_container: styled.div`
-    flex: none;
-    position: absolute;
-    left: 280px;
+  userInfoContainer: styled.div`
     display: flex;
-    height: 75px;
-    margin: 0 500px 0 42px;
-    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  `,
+  userDetailedContainer: styled.div`
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  `,
+  userName: styled.div`
+    color: #000;
+
+    font-family: 'Noto Sans KR';
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  `,
+  userDetailedInfo: styled.p`
+    color: #000;
+
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
   `,
 
-  switch_wrapper: styled.label`
+  switchContainer: styled.div`
+    display: inline-flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin: 1.25rem 0 0 2.63rem;
+    gap: 0.375rem;
+  `,
+  switchWrapper: styled.label`
     position: relative;
     display: inline-block;
-    width: 40px;
-    height: 24px;
+    width: 2.5rem;
+    height: 1.5rem;
   `,
-
-  switch_input: styled.input`
+  switchInput: styled.input`
     opacity: 0;
     width: 0;
     height: 0;
   `,
-
   slider: styled.span`
     position: absolute;
     cursor: pointer;
@@ -101,117 +99,309 @@ const styles = {
     background-color: #bebebe;
     -webkit-transition: 0.4s;
     transition: 0.4s;
-    border-radius: 24px;
+    border-radius: 1.5rem;
   `,
-
-  slider_dot: styled.span`
+  sliderDot: styled.span`
     position: absolute;
     cursor: pointer;
-    top: 4px;
-    left: 4px;
-    bottom: 4px;
+    top: 0.25rem;
+    left: 0.25rem;
+    bottom: 0.25rem;
     background-color: white;
     -webkit-transition: 0.4s;
     transition: 0.4s;
     border-radius: 50%;
-    width: 16px;
-    height: 16px;
+    width: 1rem;
+    height: 1rem;
   `,
-
-  switch_description: styled.p`
-    color: #888;
+  switchDescription: styled.p`
+    color: var(--Gray-3, #888);
     font-family: 'Noto Sans KR';
-    font-size: 20px;
+    font-size: 1.25rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    margin-left: 7px;
   `,
 
-  auth_container: styled.div`
-    display: flex;
-    position: relative;
-    padding: 4px 8px;
-    height: 32px;
-    width: 85px;
+  authContainer: styled.div`
+    height: 2rem;
+    width: 5.3125rem;
+    border-radius: 1.625rem;
+    background: #5c6eb4;
+    margin: 1rem 1.4375rem 0 1.5625rem;
+    cursor: pointer;
+
+    display: inline-flex;
+    padding: 0.25rem 0.5rem;
     justify-content: center;
     align-items: center;
-    gap: 4px;
-    border-radius: 26px;
-    background: #5c6eb4;
-    margin: 16px 23px 0px 25px;
-    cursor: pointer;
+    gap: 0.25rem;
   `,
-
-  auth_description: styled.p`
+  authDescription: styled.p`
     color: #fff;
 
     font-family: Pretendard;
-    font-size: 11px;
+    font-size: 0.875rem;
     font-style: normal;
     font-weight: 600;
-    line-height: 24px; /* 171.429% */
+    line-height: 1.5rem;
+  `,
+  authCheckImg: styled.img`
+    width: 1rem;
+    height: 1rem;
   `,
 
-  card_section: styled.div`
-    height: 341px;
-    width: 100%;
-
+  cardSection: styled.div`
+    display: inline-flex;
+    gap: 11.5rem;
+    margin: 4.75rem 0 0 0;
+  `,
+  cardWrapper: styled.div`
     display: flex;
-    flex-flow: wrap;
-    margin: 62px 0 30px 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2.25rem;
+    flex-shrink: 0;
   `,
-
-  card_description: styled.p`
-    color: #000;
-
-    width: 100%;
-    font-family: 'Noto Sans KR';
-    font-size: 32px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    margin-bottom: 55px;
-  `,
-
-  card_container: styled.div`
-    width: 240px;
-    height: 240px;
-    padding: 0 0 0 24px;
+  cardDescriptionSection: styled.div`
+    margin: 0 1.125rem 0 4.9375rem;
+    width: 36.9375rem;
+    height: 2.875rem;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
-    flex-shrink: 0;
-    border-radius: 20px;
-    border: 1px solid #8c95a8;
-    margin-left: 55px;
-    background: #fff;
+    gap: 20rem;
   `,
-
-  card_name: styled.p`
-    color: #494949;
+  description32px: styled.p`
+    color: #000;
     font-family: 'Noto Sans KR';
-    font-size: 22px;
+    font-size: 2rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
-    width: 100%;
+  `,
+  description24px: styled.p`
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  `,
+  addButton: styled.button`
+    display: flex;
+    width: 6.1875rem;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--Gray-5, #828282);
+    background: var(--White, #fff);
+
+    color: var(--Gray-5, #828282);
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5rem;
+  `,
+  mateCardsContainer: styled.div`
+    display: flex;
+    gap: 1.69rem;
+    align-items: center;
+  `,
+  mateCards: styled.div`
+    display: flex;
+    gap: 2.88rem;
+  `,
+  cardContainer: styled.div`
+    padding: 0 0 0 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    width: 15rem;
+    height: 15rem;
+    flex-shrink: 0;
+    border-radius: 1.25rem;
+    border: 1pxs olid var(--background, #f7f6f9);
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
+    background: var(--grey-100, #fff);
+    position: relative;
+  `,
+  cardName: styled.p`
+    color: var(--grey-900, #494949);
+    font-family: 'Noto Sans KR';
+    font-size: 1.375rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  `,
+  cardDefault: styled.div`
+    color: #fff;
+    text-align: center;
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 2.5625rem;
+
+    width: 6.0625rem;
+    height: 2.5625rem;
+    flex-shrink: 0;
+    border-radius: 1.25rem 0rem 0rem 1.25rem;
+    background: var(--Main-1, #e15637);
+
+    position: absolute;
+    right: 0;
+    bottom: 1.5rem;
+  `,
+  nextButton: styled.button`
+    width: 3.125rem;
+    height: 3.12481rem;
+    flex-shrink: 0;
+    background-image: url('/next-button.svg');
+    background-repeat: no-repeat;
+    border: none;
+    background-color: #fff;
+    cursor: pointer;
+  `,
+  prevButton: styled.button`
+    width: 3.125rem;
+    height: 3.12481rem;
+    flex-shrink: 0;
+    background-image: url('/prev-button.svg');
+    background-repeat: no-repeat;
+    border: none;
+    background-color: #fff;
+    cursor: pointer;
   `,
 
-  card_default: styled.div`
-    width: 97px;
-    height: 41px;
+  maruContainer: styled.div`
+    margin-top: 9.5625rem;
+    display: flex;
+    flex-direction: column;
+  `,
+
+  weekContainer: styled.div`
+    display: flex;
+    width: 70.25rem;
+    height: 15.625rem;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1.5rem;
     flex-shrink: 0;
-    border-radius: 20px 0px 0px 20px;
-    background: #e15637;
-    color: #fff;
+    margin: 3.1875rem 0 4.0625rem 1.6875rem;
+  `,
+  dayContainer: styled.div`
+    width: 8.75rem;
+    height: 15.625rem;
+    padding: 1.5rem 0;
+    flex-shrink: 0;
+    border-radius: 1.25rem;
+    background: var(--background, #f7f6f9);
+
+    justify-content: center;
+    flex-direction: column;
+  `,
+  day: styled.p`
+    color: #000;
 
     text-align: center;
     font-family: 'Noto Sans KR';
-    font-size: 16px;
+    font-size: 1.5rem;
     font-style: normal;
-    font-weight: 700;
-    line-height: 41px;
-    margin-top: 150px;
+    font-weight: 500;
+    line-height: normal;
+    margin: 0 3.8125rem 0 3.5rem;
+  `,
+  dayRuleContainer: styled.div`
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 1.5rem;
+    gap: 0.25rem;
+  `,
+  dayRule: styled.p`
+    color: #000;
+    text-align: center;
+    font-family: 'Noto Sans KR';
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  `,
+  person: styled.div`
+    display: flex;
+    width: 4.3125rem;
+    padding: 0.375rem 0.75rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 1.625rem;
+    color: #fff;
+    text-align: center;
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+
+    background: var(--Purple, #6b5ee1);
+  `,
+
+  rulesContainer: styled.div`
+    display: flex;
+    width: 64.5rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1.375rem;
+    margin: 0 3rem 3.0625rem 4.4375rem;
+  `,
+  rulesDescriptionContainer: styled.div`
+    display: flex;
+    height: 2.6875rem;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 51.6875rem;
+  `,
+  editButton: styled.button`
+    display: flex;
+    padding: 0.63rem 1.13rem;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+    border: 1px solid var(--Main-1, #e15637);
+    background: var(--White, #fff);
+    color: var(--Main-1, #e15637);
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  `,
+  rulesContent: styled.div`
+    width: 100%;
+    height: 21.625rem;
+    border-radius: 1rem;
+    background: #f7f6f9;
+  `,
+
+  accountContainer: styled.div`
+    display: flex;
+    width: 63.9375rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1.375rem;
+    margin: 0 3rem 9.375rem 4.4375rem;
+  `,
+  accountContent: styled.div`
+    width: 64.5rem;
+    height: 12.4375rem;
+    border-radius: 1rem;
+    background: #f7f6f9;
   `,
 };
 
@@ -235,17 +425,21 @@ function UserInfo({ src, name, age, addr }: UserProfileInfoProps) {
   };
 
   return (
-    <styles.user_profile_container>
-      <styles.user_pic_container>
-        <styles.user_pic src={src} alt="User Profile Pic" />
-      </styles.user_pic_container>
-      <styles.user_info>
-        <styles.user_name>{name}</styles.user_name>
-        <styles.user_detailed_info>{age}</styles.user_detailed_info>
-        <styles.user_detailed_info>{addr}</styles.user_detailed_info>
-      </styles.user_info>
+    <styles.userProfileContainer>
+      <styles.userProfileWithoutSwitch>
+        <styles.userPicContainer>
+          <styles.userPic src={src} alt="User Profile Pic" />
+        </styles.userPicContainer>
+        <styles.userInfoContainer>
+          <styles.userName>{name}</styles.userName>
+          <styles.userDetailedContainer>
+            <styles.userDetailedInfo>{age}</styles.userDetailedInfo>
+            <styles.userDetailedInfo>{addr}</styles.userDetailedInfo>
+          </styles.userDetailedContainer>
+        </styles.userInfoContainer>
+      </styles.userProfileWithoutSwitch>
       <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
-    </styles.user_profile_container>
+    </styles.userProfileContainer>
   );
 }
 
@@ -256,9 +450,9 @@ interface ToggleSwitchProps {
 
 function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
   return (
-    <styles.switch_container>
-      <styles.switch_wrapper>
-        <styles.switch_input
+    <styles.switchContainer>
+      <styles.switchWrapper>
+        <styles.switchInput
           type="checkbox"
           checked={isChecked}
           onChange={onToggle}
@@ -268,76 +462,145 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
             backgroundColor: isChecked ? '#E15637' : '#BEBEBE',
           }}
         >
-          <styles.slider_dot
+          <styles.sliderDot
             style={{
-              transform: isChecked ? 'translateX(16px)' : 'translateX(0)',
+              transform: isChecked ? 'translateX(1rem)' : 'translateX(0)',
             }}
           />
         </styles.slider>
-      </styles.switch_wrapper>
-      <styles.switch_description>메이트 찾는 중</styles.switch_description>
-    </styles.switch_container>
+      </styles.switchWrapper>
+      <styles.switchDescription>메이트 찾는 중</styles.switchDescription>
+    </styles.switchContainer>
   );
 }
 
 function Auth() {
   return (
-    <styles.auth_container>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="none"
-      >
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M5.99993 10.7999L3.19993 7.99994L2.2666 8.93328L5.99993 12.6666L13.9999 4.66661L13.0666 3.73328L5.99993 10.7999Z"
-          fill="white"
-        />
-      </svg>
-      <styles.auth_description>본인인증</styles.auth_description>
-    </styles.auth_container>
+    <styles.authContainer>
+      <styles.authCheckImg src="/check_circle_24px copy.svg" />
+      <styles.authDescription>본인인증</styles.authDescription>
+    </styles.authContainer>
   );
 }
 
 function Card() {
   return (
-    <>
-      <styles.card_section>
-        <styles.card_description>내 카드</styles.card_description>
-        <Link href="my/setting">
-          <styles.card_container>
-            <styles.card_name>김마루</styles.card_name>
-            <styles.card_default>기본</styles.card_default>
-          </styles.card_container>
+    <styles.cardSection>
+      <styles.cardWrapper>
+        <styles.description32px>내 카드</styles.description32px>
+        <Link href="/setting">
+          <styles.cardContainer>
+            <styles.cardName>김마루</styles.cardName>
+            <styles.cardDefault>기본</styles.cardDefault>
+          </styles.cardContainer>
         </Link>
-      </styles.card_section>
-      <styles.card_section>
-        <styles.card_description>메이트 카드</styles.card_description>
-        <Link href="my/setting">
-          <styles.card_container>
-            <styles.card_name>메이트</styles.card_name>
-            <styles.card_default>기본</styles.card_default>
-          </styles.card_container>
-        </Link>
-        <Link href="my/setting">
-          <styles.card_container>
-            <styles.card_name>메이트</styles.card_name>
-          </styles.card_container>
-        </Link>
-      </styles.card_section>
-    </>
+      </styles.cardWrapper>
+      <styles.cardWrapper>
+        <styles.cardDescriptionSection>
+          <styles.description32px>메이트 카드</styles.description32px>
+          <styles.addButton>+ 추가</styles.addButton>
+        </styles.cardDescriptionSection>
+        <styles.mateCardsContainer>
+          <styles.prevButton />
+          <styles.mateCards>
+            <Link href="/setting">
+              <styles.cardContainer>
+                <styles.cardName>메이트</styles.cardName>
+                <styles.cardDefault>기본</styles.cardDefault>
+              </styles.cardContainer>
+            </Link>
+            <Link href="/setting">
+              <styles.cardContainer>
+                <styles.cardName>메이트</styles.cardName>
+              </styles.cardContainer>
+            </Link>
+          </styles.mateCards>
+          <styles.nextButton />
+        </styles.mateCardsContainer>
+      </styles.cardWrapper>
+    </styles.cardSection>
+  );
+}
+
+function Mon() {
+  return (
+    <styles.dayRuleContainer>
+      <styles.dayRule>분리수거</styles.dayRule>
+      <styles.person>김마루</styles.person>
+    </styles.dayRuleContainer>
+  );
+}
+
+function Wed() {
+  return (
+    <styles.dayRuleContainer>
+      <styles.dayRule>화장실청소</styles.dayRule>
+      <styles.person>김마루</styles.person>
+    </styles.dayRuleContainer>
+  );
+}
+
+function Sun() {
+  return (
+    <styles.dayRuleContainer>
+      <styles.dayRule>방청소</styles.dayRule>
+      <styles.person>김마루</styles.person>
+    </styles.dayRuleContainer>
+  );
+}
+
+function Maru() {
+  return (
+    <styles.maruContainer>
+      <styles.description32px>마이 마루</styles.description32px>
+      <styles.weekContainer>
+        <styles.dayContainer>
+          <styles.day>월</styles.day>
+          <Mon />
+        </styles.dayContainer>
+        <styles.dayContainer>
+          <styles.day>화</styles.day>
+        </styles.dayContainer>
+        <styles.dayContainer>
+          <styles.day>수</styles.day>
+          <Wed />
+        </styles.dayContainer>
+        <styles.dayContainer>
+          <styles.day>목</styles.day>
+        </styles.dayContainer>
+        <styles.dayContainer>
+          <styles.day>금</styles.day>
+        </styles.dayContainer>
+        <styles.dayContainer>
+          <styles.day>토</styles.day>
+        </styles.dayContainer>
+        <styles.dayContainer>
+          <styles.day>일</styles.day>
+          <Sun />
+        </styles.dayContainer>
+      </styles.weekContainer>
+      <styles.rulesContainer>
+        <styles.rulesDescriptionContainer>
+          <styles.description24px>생활 규칙</styles.description24px>
+          <styles.editButton>수정하기</styles.editButton>
+        </styles.rulesDescriptionContainer>
+        <styles.rulesContent />
+      </styles.rulesContainer>
+      <styles.accountContainer>
+        <styles.description24px>공용 계좌</styles.description24px>
+        <styles.accountContent />
+      </styles.accountContainer>
+    </styles.maruContainer>
   );
 }
 
 export function ProfilePage({ src, name, age, addr }: UserProfileInfoProps) {
   return (
-    <styles.page_container>
+    <styles.pageContainer>
       <UserInfo src={src} name={name} age={age} addr={addr} />
       <Auth />
       <Card />
-    </styles.page_container>
+      <Maru />
+    </styles.pageContainer>
   );
 }
