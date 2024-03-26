@@ -9,7 +9,7 @@ import {
   CircularProfileImage,
   ImageGrid,
   MiniCircularProfileImage,
-} from '@/components/detail-page';
+} from '@/components/shared-post-page';
 import { type SharedPost } from '@/entities/shared-post';
 
 const styles = {
