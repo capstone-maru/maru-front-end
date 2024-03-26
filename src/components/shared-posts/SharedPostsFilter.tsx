@@ -14,6 +14,8 @@ const styles = {
 };
 
 export function SharedPostsFilter() {
+  // TODO: 필터 정보 저장 코드 필요.
+
   return (
     <styles.container>
       {Object.entries(SharedPostsFilterTypeValue).map(([key, value]) => (
