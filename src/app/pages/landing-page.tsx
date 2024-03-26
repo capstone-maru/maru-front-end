@@ -79,11 +79,8 @@ const styles = {
     background: #f7f6f9;
   `,
   section3: styled.div`
-    display: flex;
     height: 31.25rem;
-    justify-content: flex-end;
-    align-items: center;
-    padding-right: 13.3125rem;
+    padding-left: calc(51.75rem - 15rem + 15rem);
   `,
   imageBox: styled.div`
     display: flex;
