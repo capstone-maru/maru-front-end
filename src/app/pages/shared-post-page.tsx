@@ -9,7 +9,7 @@ import {
   CircularProfileImage,
   ImageGrid,
   MiniCircularProfileImage,
-} from '@/components/detail-page';
+} from '@/components/shared-post-page';
 import { type SharedPost } from '@/entities/shared-post';
 
 const styles = {
@@ -465,8 +465,6 @@ export function SharedPostPage({ post }: Props) {
               style={{
                 zIndex: dummyParticipants.length - index - 1,
                 transform: `translateX(-${1.31 * index}rem)`,
-                // position: 'relative',
-                // left: index !== 0 ? `-${1.31 * index}rem` : 0,
               }}
             />
           ))}
