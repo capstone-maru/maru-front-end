@@ -1,21 +1,21 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { type MainPageFilter } from '.';
+import { type SharedPostsFilter } from '.';
 
-export const useMainPageFilter: () => [
-  MainPageFilter,
+export const useSharedPostsFilter: () => [
+  SharedPostsFilter,
   (
     optionOrUpdater:
-      | Partial<MainPageFilter>
-      | ((prev: MainPageFilter) => MainPageFilter),
+      | Partial<SharedPostsFilter>
+      | ((prev: SharedPostsFilter) => SharedPostsFilter),
   ) => void,
 ] = () => {
-  const [filter, setFilter] = useState<MainPageFilter>({ hasRoom: false });
+  const [filter, setFilter] = useState<SharedPostsFilter>({});
   const setter = useCallback(
     (
       optionOrUpdater:
-        | Partial<MainPageFilter>
-        | ((prev: MainPageFilter) => MainPageFilter),
+        | Partial<SharedPostsFilter>
+        | ((prev: SharedPostsFilter) => SharedPostsFilter),
     ) => {
       if (typeof optionOrUpdater === 'function') {
         setFilter(optionOrUpdater);
