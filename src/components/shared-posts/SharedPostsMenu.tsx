@@ -3,6 +3,8 @@
 import { type HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
+import { type SharedPostsType } from '@/entities/shared-posts-filter';
+
 const styles = {
   container: styled.div`
     width: 100%;
@@ -45,8 +47,8 @@ const styles = {
 };
 
 interface Props {
-  selected: 'hasRoom' | 'homeless' | 'dormitory';
-  handleSelect: (selected: 'hasRoom' | 'homeless' | 'dormitory') => void;
+  selected: SharedPostsType;
+  handleSelect: (selected: SharedPostsType) => void;
 }
 
 export function SharedPostsMenu({
