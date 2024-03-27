@@ -16,3 +16,5 @@ export const SharedPostsFilterTypeValue: Record<SharedPostsFilterType, string> =
     roomInfo: '방 정보',
     extraInfo: '추가 정보',
   };
+
+export type SharedPostsType = 'hasRoom' | 'homeless' | 'dormitory';

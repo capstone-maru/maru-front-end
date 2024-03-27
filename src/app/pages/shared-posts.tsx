@@ -8,6 +8,7 @@ import {
   SharedPostsFilter,
   PostCard,
 } from '@/components/shared-posts';
+import { type SharedPostsType } from '@/entities/shared-posts-filter';
 
 const styles = {
   container: styled.div`
@@ -31,21 +32,23 @@ const styles = {
 };
 
 export function SharedPostsPage() {
-  const [selected, setSelected] = useState<
-    'hasRoom' | 'homeless' | 'dormitory'
-  >('hasRoom');
+  const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
 
   return (
     <styles.container>
       <styles.SharedPostsMenu selected={selected} handleSelect={setSelected} />
-      <styles.SharedPostsFilter />
-      <styles.posts>
-        <PostCard />
-        <PostCard />
-        <PostCard />
-        <PostCard />
-        <PostCard />
-      </styles.posts>
+      <styles.SharedPostsFilter selected={selected} />
+      {selected === 'hasRoom' ? (
+        <styles.posts>
+          <PostCard />
+          <PostCard />
+          <PostCard />
+          <PostCard />
+          <PostCard />
+        </styles.posts>
+      ) : (
+        <></>
+      )}
     </styles.container>
   );
 }
