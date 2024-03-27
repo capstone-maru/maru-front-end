@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
@@ -58,9 +59,10 @@ export function FloatingChatting() {
   return (
     <>
       <styles.chattingButton onClick={toggleChat}>
-        <img
+        <Image
           src="/chatting.svg"
           style={{ width: '1.3rem', height: '1.3rem' }}
+          alt="chatting-icon"
         />
       </styles.chattingButton>
       {isChatOpen && (
