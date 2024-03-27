@@ -229,17 +229,31 @@ const styles = {
   `,
 };
 
+const DealOptions = ['월세', '전세'];
+const RoomOptions = ['원룸', '빌라/투룸이상', '아파트', '오피스텔'];
+const StructureOptions = ['방 1', '방 1·거실 1', '방 2', '방 3', '복층형'];
+const FloorOptions = ['지상', '반지하', '옥탑'];
+const AdditionalOptions = [
+  '주차가능',
+  '에어컨',
+  '냉장고',
+  '세탁기',
+  '베란다/테라스',
+];
+
 interface ButtonActiveProps {
   isSelected: boolean;
 }
 
-export function WritingPostPage() {
-  const [selectedBudget1, setSelectedBudget1] = useState<string | null>(null);
-  const [selectedRoom1, setSelectedRoom1] = useState<string | null>(null);
-  const [selectedRoom2, setSelectedRoom2] = useState<string | null>(null);
-  const [selectedRoom3, setSelectedRoom3] = useState<string | null>(null);
-  type SelectedOptions = Record<string, boolean>;
+interface SelectedStates {
+  budget1: string | null;
+  room1: string | null;
+  room2: string | null;
+  room3: string | null;
+}
 
+export function WritingPostPage() {
+  type SelectedOptions = Record<string, boolean>;
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
 
   const handleOptionClick = (option: string) => {
@@ -249,26 +263,20 @@ export function WritingPostPage() {
     }));
   };
 
-  function handleBudget1Click(item: string) {
-    setSelectedBudget1(prevSelectedItem =>
-      prevSelectedItem === item ? null : item,
-    );
+  const [selectedStates, setSelectedStates] = useState<SelectedStates>({
+    budget1: null,
+    room1: null,
+    room2: null,
+    room3: null,
+  });
+
+  function handleClick(optionName: keyof SelectedStates, item: string) {
+    setSelectedStates(prevState => ({
+      ...prevState,
+      [optionName]: prevState[optionName] === item ? null : item,
+    }));
   }
-  function handleRoom1Click(item: string) {
-    setSelectedRoom1(prevSelectedItem =>
-      prevSelectedItem === item ? null : item,
-    );
-  }
-  function handleRoom2Click(item: string) {
-    setSelectedRoom2(prevSelectedItem =>
-      prevSelectedItem === item ? null : item,
-    );
-  }
-  function handleRoom3Click(item: string) {
-    setSelectedRoom3(prevSelectedItem =>
-      prevSelectedItem === item ? null : item,
-    );
-  }
+
   return (
     <styles.pageContainer>
       <styles.postContainer>
@@ -296,28 +304,19 @@ export function WritingPostPage() {
           <styles.listContainer>
             <styles.listItem>
               <styles.listItemDescription>거래방식</styles.listItemDescription>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedBudget1 === '월세'}
-                  onClick={() => {
-                    handleBudget1Click('월세');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  월세
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedBudget1 === '전세'}
-                  onClick={() => {
-                    handleBudget1Click('전세');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  전세
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
+              {DealOptions.map(option => (
+                <styles.checkButtonContainer key={option}>
+                  <styles.customRadioButton
+                    isSelected={selectedStates.budget1 === option}
+                    onClick={() => {
+                      handleClick('budget1', option);
+                    }}
+                  />
+                  <styles.checkButtonDescription>
+                    {option}
+                  </styles.checkButtonDescription>
+                </styles.checkButtonContainer>
+              ))}
             </styles.listItem>
             <styles.listItem>
               <styles.listItemDescription>
@@ -368,108 +367,35 @@ export function WritingPostPage() {
           <styles.listContainer>
             <styles.listItem>
               <styles.listItemDescription>방 종류</styles.listItemDescription>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedRoom1 === '원룸'}
-                  onClick={() => {
-                    handleRoom1Click('원룸');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  원룸
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedRoom1 === '빌라/투룸이상'}
-                  onClick={() => {
-                    handleRoom1Click('빌라/투룸이상');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  빌라/투룸이상
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedRoom1 === '아파트'}
-                  onClick={() => {
-                    handleRoom1Click('아파트');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  아파트
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedRoom1 === '오피스텔'}
-                  onClick={() => {
-                    handleRoom1Click('오피스텔');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  오피스텔
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
+              {RoomOptions.map(option => (
+                <styles.checkButtonContainer key={option}>
+                  <styles.customRadioButton
+                    isSelected={selectedStates.room1 === option}
+                    onClick={() => {
+                      handleClick('room1', option);
+                    }}
+                  />
+                  <styles.checkButtonDescription>
+                    {option}
+                  </styles.checkButtonDescription>
+                </styles.checkButtonContainer>
+              ))}
             </styles.listItem>
             <styles.listItem>
               <styles.listItemDescription>구조</styles.listItemDescription>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedRoom2 === '방 1'}
-                  onClick={() => {
-                    handleRoom2Click('방 1');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  방 1
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedRoom2 === '방 1·거실 1'}
-                  onClick={() => {
-                    handleRoom2Click('방 1·거실 1');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  방 1·거실 1
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedRoom2 === '방 2'}
-                  onClick={() => {
-                    handleRoom2Click('방 2');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  방 2
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedRoom2 === '방 3'}
-                  onClick={() => {
-                    handleRoom2Click('방 3');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  방 3
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedRoom2 === '복층형'}
-                  onClick={() => {
-                    handleRoom2Click('복층형');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  복층형
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
+              {StructureOptions.map(option => (
+                <styles.checkButtonContainer key={option}>
+                  <styles.customRadioButton
+                    isSelected={selectedStates.room2 === option}
+                    onClick={() => {
+                      handleClick('room2', option);
+                    }}
+                  />
+                  <styles.checkButtonDescription>
+                    {option}
+                  </styles.checkButtonDescription>
+                </styles.checkButtonContainer>
+              ))}
             </styles.listItem>
             <styles.listItem>
               <styles.listItemDescription>
@@ -487,39 +413,22 @@ export function WritingPostPage() {
             </styles.listItem>
             <styles.listItem>
               <styles.listItemDescription>층수</styles.listItemDescription>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedRoom3 === '지상'}
-                  onClick={() => {
-                    handleRoom3Click('지상');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  지상
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customRadioButton
-                  isSelected={selectedRoom3 === '반지하'}
-                  onClick={() => {
-                    handleRoom3Click('반지하');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  반지하
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer style={{ marginRight: '0' }}>
-                <styles.customRadioButton
-                  isSelected={selectedRoom3 === '옥탑'}
-                  onClick={() => {
-                    handleRoom3Click('옥탑');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  옥탑
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
+              {FloorOptions.map(option => (
+                <styles.checkButtonContainer
+                  key={option}
+                  style={{ margin: option === '옥탑' ? '0' : '' }}
+                >
+                  <styles.customRadioButton
+                    isSelected={selectedStates.room3 === option}
+                    onClick={() => {
+                      handleClick('room3', option);
+                    }}
+                  />
+                  <styles.checkButtonDescription>
+                    {option}
+                  </styles.checkButtonDescription>
+                </styles.checkButtonContainer>
+              ))}
               <styles.slash>/</styles.slash>
               <styles.inputContainer>
                 <styles.userInput />
@@ -528,61 +437,19 @@ export function WritingPostPage() {
             </styles.listItem>
             <styles.listItem>
               <styles.listItemDescription>추가 옵션</styles.listItemDescription>
-              <styles.checkButtonContainer>
-                <styles.customCheckBox
-                  isSelected={selectedOptions['주차가능']}
-                  onClick={() => {
-                    handleOptionClick('주차가능');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  주차가능
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customCheckBox
-                  isSelected={selectedOptions['에어컨']}
-                  onClick={() => {
-                    handleOptionClick('에어컨');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  에어컨
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customCheckBox
-                  isSelected={selectedOptions['냉장고']}
-                  onClick={() => {
-                    handleOptionClick('냉장고');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  냉장고
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customCheckBox
-                  isSelected={selectedOptions['세탁기']}
-                  onClick={() => {
-                    handleOptionClick('세탁기');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  세탁기
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
-              <styles.checkButtonContainer>
-                <styles.customCheckBox
-                  isSelected={selectedOptions['베란다/테라스']}
-                  onClick={() => {
-                    handleOptionClick('베란다/테라스');
-                  }}
-                />
-                <styles.checkButtonDescription>
-                  베란다/테라스
-                </styles.checkButtonDescription>
-              </styles.checkButtonContainer>
+              {AdditionalOptions.map(option => (
+                <styles.checkButtonContainer key={option}>
+                  <styles.customCheckBox
+                    isSelected={selectedOptions[option]}
+                    onClick={() => {
+                      handleOptionClick(option);
+                    }}
+                  />
+                  <styles.checkButtonDescription>
+                    {option}
+                  </styles.checkButtonDescription>
+                </styles.checkButtonContainer>
+              ))}
             </styles.listItem>
           </styles.listContainer>
         </styles.roomContainer>
