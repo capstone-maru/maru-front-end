@@ -140,27 +140,27 @@ const CheckItem = styled.div<CheckItemProps>`
 const years = Array.from({ length: 100 }, (_, index) => 2024 - index);
 
 export function VitalSection() {
-  const [selectedGender, setSelectedGender] = useState<string | null>(null);
+  interface SelectedState {
+    gender: string | null;
+    smoking: string | null;
+    room: string | null;
+  }
+
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
-  const [selectedSmoking, setSelectedSmoking] = useState<string | null>(null);
-  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+  const [selectedState, setSelectedState] = useState<SelectedState>({
+    gender: null,
+    smoking: null,
+    room: null,
+  });
 
-  function handleGenderClick(item: string) {
-    setSelectedGender(prevSelectedItem =>
-      prevSelectedItem === item ? null : item,
-    );
-  }
-
-  function handleRoomClick(item: string) {
-    setSelectedRoom(prevSelectedItem =>
-      prevSelectedItem === item ? null : item,
-    );
-  }
-
-  function handleSmokingClick(item: string) {
-    setSelectedSmoking(prevSelectedItem =>
-      prevSelectedItem === item ? null : item,
-    );
+  function handleOptionClick(
+    optionName: keyof SelectedState,
+    item: string | number,
+  ) {
+    setSelectedState(prevState => ({
+      ...prevState,
+      [optionName]: prevState[optionName] === item ? null : item,
+    }));
   }
 
   const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -181,17 +181,17 @@ export function VitalSection() {
         <styles.vitalCheckList>
           <styles.vitalCheckListItem>
             <CheckItem
-              isSelected={selectedGender === '남성'}
+              isSelected={selectedState.gender === '남성'}
               onClick={() => {
-                handleGenderClick('남성');
+                handleOptionClick('gender', '남성');
               }}
             >
               남성
             </CheckItem>
             <CheckItem
-              isSelected={selectedGender === '여성'}
+              isSelected={selectedState.gender === '여성'}
               onClick={() => {
-                handleGenderClick('여성');
+                handleOptionClick('gender', '여성');
               }}
             >
               여성
@@ -212,17 +212,17 @@ export function VitalSection() {
           </styles.vitalCheckListItem>
           <styles.vitalCheckListItem>
             <CheckItem
-              isSelected={selectedSmoking === '흡연'}
+              isSelected={selectedState.smoking === '흡연'}
               onClick={() => {
-                handleSmokingClick('흡연');
+                handleOptionClick('smoking', '흡연');
               }}
             >
               흡연
             </CheckItem>
             <CheckItem
-              isSelected={selectedSmoking === '비흡연'}
+              isSelected={selectedState.smoking === '비흡연'}
               onClick={() => {
-                handleSmokingClick('비흡연');
+                handleOptionClick('smoking', '비흡연');
               }}
             >
               비흡연
@@ -230,25 +230,25 @@ export function VitalSection() {
           </styles.vitalCheckListItem>
           <styles.vitalCheckListItem>
             <CheckItem
-              isSelected={selectedRoom === '같은 방'}
+              isSelected={selectedState.room === '같은 방'}
               onClick={() => {
-                handleRoomClick('같은 방');
+                handleOptionClick('room', '같은 방');
               }}
             >
               같은 방
             </CheckItem>
             <CheckItem
-              isSelected={selectedRoom === '다른 방'}
+              isSelected={selectedState.room === '다른 방'}
               onClick={() => {
-                handleRoomClick('다른 방');
+                handleOptionClick('room', '다른 방');
               }}
             >
               다른 방
             </CheckItem>
             <CheckItem
-              isSelected={selectedRoom === '상관없어요'}
+              isSelected={selectedState.room === '상관없어요'}
               onClick={() => {
-                handleRoomClick('상관없어요');
+                handleOptionClick('room', '상관없어요');
               }}
             >
               상관없어요
