@@ -8,7 +8,7 @@ import {
   RecoilRootProvider,
   TanstackQueryProvider,
 } from '@/app/lib/providers';
-import { NavigationBar } from '@/components';
+import { NavigationBar, FloatingChatting } from '@/components';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -47,6 +47,7 @@ export default function RootLayout({
             <StyledComponentsRegistry>
               <NavigationBar />
               <main>{children}</main>
+              <FloatingChatting />
             </StyledComponentsRegistry>
           </RecoilRootProvider>
         </TanstackQueryProvider>
