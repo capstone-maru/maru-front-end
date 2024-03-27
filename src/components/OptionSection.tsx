@@ -84,7 +84,99 @@ const styles = {
     background: #d9d9d9;
     margin-bottom: 0.63rem;
   `,
+  mbtiSection: styled.div`
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2rem;
+    margin: 0.5rem 0;
+  `,
+  mbtiToggleContainer: styled.div`
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 1rem;
+
+    color: #000;
+
+    font-family: 'Noto Sans KR';
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  `,
+
+  switchContainer: styled.div`
+    display: inline-flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 0.375rem;
+  `,
+  switchWrapper: styled.label`
+    position: relative;
+    display: inline-block;
+    width: 2.5rem;
+    height: 1.5rem;
+  `,
+  switchInput: styled.input`
+    opacity: 0;
+    width: 0;
+    height: 0;
+  `,
+  slider: styled.span`
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #bebebe;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+    border-radius: 1.5rem;
+  `,
+  sliderDot: styled.span`
+    position: absolute;
+    cursor: pointer;
+    top: 0.25rem;
+    left: 0.25rem;
+    bottom: 0.25rem;
+    background-color: white;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+  `,
 };
+
+interface ToggleSwitchProps {
+  isChecked: boolean;
+  onToggle: () => void;
+}
+
+function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
+  return (
+    <styles.switchContainer>
+      <styles.switchWrapper>
+        <styles.switchInput
+          type="checkbox"
+          checked={isChecked}
+          onChange={onToggle}
+        />
+        <styles.slider
+          style={{
+            backgroundColor: isChecked ? '#E15637' : '#BEBEBE',
+          }}
+        >
+          <styles.sliderDot
+            style={{
+              transform: isChecked ? 'translateX(1rem)' : 'translateX(0)',
+            }}
+          />
+        </styles.slider>
+      </styles.switchWrapper>
+    </styles.switchContainer>
+  );
+}
 
 interface CheckItemProps {
   isSelected: boolean;
@@ -121,15 +213,51 @@ const CheckItem = styled.div<CheckItemProps>`
         }};
 `;
 
+const LivingPatternOptions = ['아침형', '올빼미형'];
+const EatingOptions = ['실내취식 싫어요', '야식 안먹어요', '음주'];
+const HearingOptions = [
+  '잠버릇 있어요',
+  '알람 잘 못 들어요',
+  '잠귀 밝아요',
+  '게임 소음 허용',
+];
+const WeatherOptions = ['더위 많이 타요', '추위 많이 타요'];
+const CleanOptions = ['상', '평범보통', '천하태평'];
+const PersonalOptions = [
+  '반려동물',
+  '차량 보유',
+  '집에서 활동',
+  '밖에서 활동',
+  '친구초대 허용',
+  '취미 같이 즐겨요',
+  '엠비티아이',
+  '전공',
+];
+const BudgetOptions = ['보증금', '월세'];
+
 export function OptionSection() {
   type SelectedOptions = Record<string, boolean>;
 
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
 
+  const [toggleStates, setToggleStates] = useState({
+    toggle1: false,
+    toggle2: false,
+    toggle3: false,
+    toggle4: false,
+  });
+
   const handleOptionClick = (option: string) => {
     setSelectedOptions(prevSelectedOptions => ({
       ...prevSelectedOptions,
       [option]: !prevSelectedOptions[option],
+    }));
+  };
+
+  const toggleSwitch = (toggleName: keyof typeof toggleStates) => {
+    setToggleStates(prevState => ({
+      ...prevState,
+      [toggleName]: !prevState[toggleName],
     }));
   };
 
@@ -140,109 +268,65 @@ export function OptionSection() {
         <styles.optionListItem>
           <styles.optionListImg src="/option-img/visibility.svg" />
           <styles.optionListCheckItemContainer>
-            <CheckItem
-              isSelected={selectedOptions['아침형']}
-              onClick={() => {
-                handleOptionClick('아침형');
-              }}
-            >
-              아침형
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['올빼미형']}
-              onClick={() => {
-                handleOptionClick('올빼미형');
-              }}
-            >
-              올빼미형
-            </CheckItem>
+            {LivingPatternOptions.map(option => (
+              <CheckItem
+                key={option}
+                isSelected={selectedOptions[option]}
+                onClick={() => {
+                  handleOptionClick(option);
+                }}
+              >
+                {option}
+              </CheckItem>
+            ))}
           </styles.optionListCheckItemContainer>
         </styles.optionListItem>
         <styles.optionListItem>
           <styles.optionListImg src="/option-img/restaurant.svg" />
           <styles.optionListCheckItemContainer>
-            <CheckItem
-              isSelected={selectedOptions['실내취식 싫어요']}
-              onClick={() => {
-                handleOptionClick('실내취식 싫어요');
-              }}
-            >
-              실내취식 싫어요
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['야식 안먹어요']}
-              onClick={() => {
-                handleOptionClick('야식 안먹어요');
-              }}
-            >
-              야식 안먹어요
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['음주']}
-              onClick={() => {
-                handleOptionClick('음주');
-              }}
-            >
-              음주
-            </CheckItem>
+            {EatingOptions.map(option => (
+              <CheckItem
+                key={option}
+                isSelected={selectedOptions[option]}
+                onClick={() => {
+                  handleOptionClick(option);
+                }}
+              >
+                {option}
+              </CheckItem>
+            ))}
           </styles.optionListCheckItemContainer>
         </styles.optionListItem>
         <styles.optionListItem>
           <styles.optionListImg src="/option-img/hearing.svg" />
           <styles.optionListCheckItemContainer>
-            <CheckItem
-              isSelected={selectedOptions['잠버릇 있어요']}
-              onClick={() => {
-                handleOptionClick('잠버릇 있어요');
-              }}
-            >
-              잠버릇 있어요
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['알람 잘 못 들어요']}
-              onClick={() => {
-                handleOptionClick('알람 잘 못 들어요');
-              }}
-            >
-              알람 잘 못 들어요
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['잠귀 밝아요']}
-              onClick={() => {
-                handleOptionClick('잠귀 밝아요');
-              }}
-            >
-              잠귀 밝아요
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['게임 소음 허용']}
-              onClick={() => {
-                handleOptionClick('게임 소음 허용');
-              }}
-            >
-              게임 소음 허용
-            </CheckItem>
+            {HearingOptions.map(option => (
+              <CheckItem
+                key={option}
+                isSelected={selectedOptions[option]}
+                onClick={() => {
+                  handleOptionClick(option);
+                }}
+              >
+                {option}
+              </CheckItem>
+            ))}
           </styles.optionListCheckItemContainer>
         </styles.optionListItem>
         <styles.optionListItem>
           <styles.optionListImg src="/option-img/device_thermostat.svg" />
           <styles.optionListCheckItemContainer>
-            <CheckItem
-              isSelected={selectedOptions['더위 많이 타요']}
-              onClick={() => {
-                handleOptionClick('더위 많이 타요');
-              }}
-            >
-              더위 많이 타요
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['추위 많이 타요']}
-              onClick={() => {
-                handleOptionClick('추위 많이 타요');
-              }}
-            >
-              추위 많이 타요
-            </CheckItem>
+            {WeatherOptions.map(option => (
+              <CheckItem
+                key={option}
+                isSelected={selectedOptions[option]}
+                onClick={() => {
+                  handleOptionClick(option);
+                }}
+              >
+                {option}
+              </CheckItem>
+            ))}
           </styles.optionListCheckItemContainer>
         </styles.optionListItem>
         <styles.optionListItem>
@@ -253,126 +337,97 @@ export function OptionSection() {
                 테스트 하기
               </styles.cleanTestDescription>
             </styles.cleanTestContainer>
-            <CheckItem
-              isSelected={selectedOptions['상']}
-              onClick={() => {
-                handleOptionClick('상');
-              }}
-            >
-              상
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['평범보통']}
-              onClick={() => {
-                handleOptionClick('평범보통');
-              }}
-            >
-              평범보통
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['천하태평']}
-              onClick={() => {
-                handleOptionClick('천하태평');
-              }}
-            >
-              천하태평
-            </CheckItem>
+            {CleanOptions.map(option => (
+              <CheckItem
+                key={option}
+                isSelected={selectedOptions[option]}
+                onClick={() => {
+                  handleOptionClick(option);
+                }}
+              >
+                {option}
+              </CheckItem>
+            ))}
           </styles.optionListCheckItemContainer>
         </styles.optionListItem>
         <styles.optionListItem>
           <styles.optionListImg src="/option-img/person.svg" />
           <styles.personalContainer>
-            <CheckItem
-              isSelected={selectedOptions['반려동물']}
-              onClick={() => {
-                handleOptionClick('반려동물');
-              }}
-            >
-              반려동물
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['차량 보유']}
-              onClick={() => {
-                handleOptionClick('차량 보유');
-              }}
-            >
-              차량 보유
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['집에서 활동']}
-              onClick={() => {
-                handleOptionClick('집에서 활동');
-              }}
-            >
-              집에서 활동
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['밖에서 활동']}
-              onClick={() => {
-                handleOptionClick('밖에서 활동');
-              }}
-            >
-              밖에서 활동
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['친구초대 허용']}
-              onClick={() => {
-                handleOptionClick('친구초대 허용');
-              }}
-            >
-              친구초대 허용
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['취미 같이 즐겨요']}
-              onClick={() => {
-                handleOptionClick('취미 같이 즐겨요');
-              }}
-            >
-              취미 같이 즐겨요
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['엠비티아이']}
-              onClick={() => {
-                handleOptionClick('엠비티아이');
-              }}
-            >
-              MBTI
-            </CheckItem>
-            <CheckItem
-              isSelected={selectedOptions['전공']}
-              onClick={() => {
-                handleOptionClick('전공');
-              }}
-            >
-              전공
-            </CheckItem>
+            {PersonalOptions.map(option => (
+              <CheckItem
+                key={option}
+                isSelected={selectedOptions[option]}
+                onClick={() => {
+                  handleOptionClick(option);
+                }}
+              >
+                {option === '엠비티아이' ? <>MBTI</> : option}
+              </CheckItem>
+            ))}
+            {selectedOptions['엠비티아이'] ? (
+              <styles.mbtiSection>
+                <styles.mbtiToggleContainer>
+                  E
+                  <ToggleSwitch
+                    isChecked={toggleStates.toggle1}
+                    onToggle={() => {
+                      toggleSwitch('toggle1');
+                    }}
+                  />
+                  I
+                </styles.mbtiToggleContainer>
+                <styles.mbtiToggleContainer>
+                  N
+                  <ToggleSwitch
+                    isChecked={toggleStates.toggle2}
+                    onToggle={() => {
+                      toggleSwitch('toggle2');
+                    }}
+                  />
+                  S
+                </styles.mbtiToggleContainer>
+                <styles.mbtiToggleContainer>
+                  F
+                  <ToggleSwitch
+                    isChecked={toggleStates.toggle3}
+                    onToggle={() => {
+                      toggleSwitch('toggle3');
+                    }}
+                  />
+                  T
+                </styles.mbtiToggleContainer>
+                <styles.mbtiToggleContainer>
+                  P
+                  <ToggleSwitch
+                    isChecked={toggleStates.toggle4}
+                    onToggle={() => {
+                      toggleSwitch('toggle4');
+                    }}
+                  />
+                  J
+                </styles.mbtiToggleContainer>
+              </styles.mbtiSection>
+            ) : (
+              <></>
+            )}
           </styles.personalContainer>
         </styles.optionListItem>
         <styles.optionListItem>
           <styles.optionListImg src="/option-img/home_work.svg" />
           <styles.optionListCheckItemContainer>
-            <styles.budgetContainer>
-              <CheckItem
-                isSelected={selectedOptions['보증금']}
-                onClick={() => {
-                  handleOptionClick('보증금');
-                }}
-              >
-                보증금
-              </CheckItem>
-              <styles.budgetBar />
-            </styles.budgetContainer>
-            <styles.budgetContainer>
-              <CheckItem
-                isSelected={selectedOptions['월세']}
-                onClick={() => {
-                  handleOptionClick('월세');
-                }}
-              >
-                월세
-              </CheckItem>
-              <styles.budgetBar />
-            </styles.budgetContainer>
+            {BudgetOptions.map(option => (
+              <styles.budgetContainer key={option}>
+                <CheckItem
+                  isSelected={selectedOptions[option]}
+                  onClick={() => {
+                    handleOptionClick(option);
+                  }}
+                >
+                  {option}
+                </CheckItem>
+                <styles.budgetBar />
+              </styles.budgetContainer>
+            ))}
           </styles.optionListCheckItemContainer>
         </styles.optionListItem>
       </styles.optionList>
