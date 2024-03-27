@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
+import { UserCard } from '@/components/main-page';
 import {
   SharedPostsMenu,
   SharedPostsFilter,
@@ -29,6 +30,12 @@ const styles = {
     flex-direction: column;
     gap: 2rem;
   `,
+  cards: styled.div`
+    padding-left: 2.62rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem 2.62rem;
+  `,
 };
 
 export function SharedPostsPage() {
@@ -47,7 +54,13 @@ export function SharedPostsPage() {
           <PostCard />
         </styles.posts>
       ) : (
-        <></>
+        <styles.cards>
+          <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+          <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+          <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+          <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+          <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+        </styles.cards>
       )}
     </styles.container>
   );
