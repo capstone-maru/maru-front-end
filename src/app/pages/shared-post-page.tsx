@@ -3,10 +3,13 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { Bookmark, HorizontalDivider } from '@/components';
+import {
+  Bookmark,
+  CircularProfileImage,
+  HorizontalDivider,
+} from '@/components';
 import {
   CardToggleButton,
-  CircularProfileImage,
   ImageGrid,
   MiniCircularProfileImage,
 } from '@/components/shared-post-page';
