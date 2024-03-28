@@ -56,8 +56,14 @@ export function MainPage() {
 
   useEffect(() => {
     if (data !== undefined) {
-      const { name, email, birthYear, gender, phoneNumber } = data.data;
-      setUserData({ name, email, birthYear, gender, phoneNumber });
+      const { name, email, birthYear, gender, phoneNumber, initialized } =
+        data.data;
+
+      if (initialized) {
+        // TODO: router.push('/initialized')
+      } else {
+        setUserData({ name, email, birthYear, gender, phoneNumber });
+      }
     }
   }, [data]);
 

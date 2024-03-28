@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         router.replace('/');
       }
     }
-  }, [auth, login, router]);
+  }, [auth, login, router, pathName]);
 
   return <>{children}</>;
 }
