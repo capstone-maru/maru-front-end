@@ -22,8 +22,8 @@ export const useAuthActions = () => {
 
   const logout = useCallback(() => {
     axios.defaults.headers.common.Authorization = '';
-    setAuth(undefined);
-  }, []);
+    setAuth(null);
+  }, [setAuth]);
 
   return useMemo(() => ({ login, logout }), [login, logout]);
 };

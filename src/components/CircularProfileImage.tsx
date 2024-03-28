@@ -2,16 +2,31 @@
 
 import styled from 'styled-components';
 
-import { CircularProgressBar } from '@/components';
+import { CircularProgressBar } from './CircularProgressBar';
 
 const styles = {
-  container: styled.div<{ $diameter: number; $url: string }>`
-    width: ${({ $diameter }) => $diameter}px;
-    height: ${({ $diameter }) => $diameter}px;
+  backgroundContainer: styled.div<{ $diameter: number; $url: string }>`
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
     background-repeat: no-repeat;
     background-size: 80%;
     background-image: ${({ $url }) => `url("${$url}")`};
     background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+  `,
+  container: styled.div<{ $diameter: number }>`
+    width: ${({ $diameter }) => $diameter}px;
+    height: ${({ $diameter }) => $diameter}px;
+    position: relative;
+  `,
+  CircularProgressBar: styled(CircularProgressBar)`
+    position: relative;
+    z-index: 1;
   `,
   percentage: styled.div`
     -webkit-user-select: none;
@@ -21,6 +36,7 @@ const styles = {
 
     width: 3rem;
     height: 3rem;
+    flex-shrink: 0;
 
     position: relative;
     display: flex;
@@ -41,6 +57,8 @@ const styles = {
 
     top: -40%;
     left: 65%;
+
+    z-index: 2;
   `,
 };
 
@@ -54,8 +72,9 @@ export function CircularProfileImage({
   diameter: number;
 }) {
   return (
-    <styles.container $diameter={diameter} $url={url}>
-      <CircularProgressBar
+    <styles.container $diameter={diameter}>
+      <styles.backgroundContainer $diameter={diameter} $url={url} />
+      <styles.CircularProgressBar
         diameter={diameter}
         percentage={percentage}
         strokeWidth={10}

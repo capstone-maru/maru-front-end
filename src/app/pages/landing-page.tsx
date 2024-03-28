@@ -79,11 +79,8 @@ const styles = {
     background: #f7f6f9;
   `,
   section3: styled.div`
-    display: flex;
     height: 31.25rem;
-    justify-content: flex-end;
-    align-items: center;
-    padding-right: 13.3125rem;
+    padding-left: calc(51.75rem - 15rem + 15rem);
   `,
   imageBox: styled.div`
     display: flex;
@@ -125,6 +122,7 @@ const styles = {
   `,
   findMateButton: styled.button`
     all: unset;
+    flex-shrink: 0;
     padding: 0.5rem 1.5rem;
 
     border-radius: 8px;
@@ -144,22 +142,22 @@ const images = [
   [
     '',
     '',
-    '/icon_popular.svg',
-    '/icon_hanok.svg',
-    '/icon_building.svg',
+    '/icon-popular.svg',
+    '/icon-hanok.svg',
+    '/icon-building.svg',
     '',
     '',
   ],
   [
     '',
     '',
-    '/icon_building.svg',
-    '/icon_countryside.svg',
-    '/icon_camping.svg',
+    '/icon-building.svg',
+    '/icon-countryside.svg',
+    '/icon-camping.svg',
     '',
     '',
   ],
-  ['', '', '/icon_house.svg', '/icon_camping.svg', 'icon_hanok.svg', '', ''],
+  ['', '', '/icon-house.svg', '/icon-camping.svg', 'icon-hanok.svg', '', ''],
 ];
 
 export function LandingPage() {
@@ -178,7 +176,7 @@ export function LandingPage() {
           </p>
           <styles.loginButtons>
             <a
-              href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/kakao?redirect_uri=${process.env.NEXT_PUBLIC_CLIENT_URL}login`}
+              href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/kakao?redirect_uri=${process.env.NEXT_PUBLIC_CLIENT_URL}/login`}
             >
               <img
                 alt="kakao"
@@ -186,7 +184,7 @@ export function LandingPage() {
               />
             </a>
             <a
-              href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/naver?redirect_uri=${process.env.NEXT_PUBLIC_CLIENT_URL}login`}
+              href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/naver?redirect_uri=${process.env.NEXT_PUBLIC_CLIENT_URL}/login`}
             >
               <img
                 alt="naver"
