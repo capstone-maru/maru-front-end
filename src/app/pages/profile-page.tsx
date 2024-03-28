@@ -488,7 +488,7 @@ function Card() {
     <styles.cardSection>
       <styles.cardWrapper>
         <styles.description32px>내 카드</styles.description32px>
-        <Link href="/setting">
+        <Link href="/setting/my">
           <styles.cardContainer>
             <styles.cardName>김마루</styles.cardName>
             <styles.cardDefault>기본</styles.cardDefault>
@@ -503,13 +503,13 @@ function Card() {
         <styles.mateCardsContainer>
           <styles.prevButton />
           <styles.mateCards>
-            <Link href="/setting">
+            <Link href="/setting/mate">
               <styles.cardContainer>
                 <styles.cardName>메이트</styles.cardName>
                 <styles.cardDefault>기본</styles.cardDefault>
               </styles.cardContainer>
             </Link>
-            <Link href="/setting">
+            <Link href="/setting/mate">
               <styles.cardContainer>
                 <styles.cardName>메이트</styles.cardName>
               </styles.cardContainer>
