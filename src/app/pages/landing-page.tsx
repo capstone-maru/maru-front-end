@@ -122,6 +122,7 @@ const styles = {
   `,
   findMateButton: styled.button`
     all: unset;
+    flex-shrink: 0;
     padding: 0.5rem 1.5rem;
     flex-shrink: 0;
 
