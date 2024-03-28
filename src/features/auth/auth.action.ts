@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil';
 import { authState } from './auth.atom';
 import { type Auth } from './auth.model';
 
-import { save } from '@/shared/persist';
+import { remove, save } from '@/shared/persist';
 
 export const useAuthActions = () => {
   const [, setAuth] = useRecoilState(authState);
@@ -13,8 +13,8 @@ export const useAuthActions = () => {
   const login = useCallback(
     (auth: Auth) => {
       axios.defaults.headers.common.Authorization = `Bearer ${auth.accessToken}`;
-      save({ type: 'session', key: 'refreshToken', value: auth.accessToken });
-      save({ type: 'session', key: 'expiresIn', value: `${auth.expiresIn}` });
+      save({ type: 'local', key: 'refreshToken', value: auth.refreshToken });
+      save({ type: 'local', key: 'expiresIn', value: `${auth.expiresIn}` });
       setAuth(auth);
     },
     [setAuth],
@@ -22,6 +22,8 @@ export const useAuthActions = () => {
 
   const logout = useCallback(() => {
     axios.defaults.headers.common.Authorization = '';
+    remove({ type: 'local', key: 'refreshToken' });
+    remove({ type: 'local', key: 'expiresIn' });
     setAuth(null);
   }, [setAuth]);
 

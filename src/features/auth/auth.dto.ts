@@ -1,6 +1,15 @@
-import { type User } from '@/entities/user';
-
 export interface GetUserDataDTO {
-  user: User;
+  memberId: string;
+  email: string;
+  name: string;
+  birthYear: string;
+  gender: string;
+  phoneNumber: string;
   initialized: boolean;
+}
+
+export interface PostTokenRefreshDTO {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
 }

@@ -5,7 +5,8 @@ import styled from 'styled-components';
 
 import { SearchBox } from './SearchBox';
 
-import { useAuthActions, useAuthIsLogin } from '@/features/auth';
+import { getAuthLogout, useAuthActions, useAuthIsLogin } from '@/features/auth';
+import { load } from '@/shared/persist';
 
 const styles = {
   container: styled.nav`
@@ -80,7 +81,16 @@ export function NavigationBar() {
         {isLogin && (
           <styles.logout
             onClick={() => {
-              logout();
+              const refreshToken = load({ type: 'local', key: 'refreshToken' });
+              if (refreshToken !== null) {
+                getAuthLogout(refreshToken)
+                  .then(() => {
+                    logout();
+                  })
+                  .catch(err => {
+                    console.error(err);
+                  });
+              }
             }}
           >
             로그아웃

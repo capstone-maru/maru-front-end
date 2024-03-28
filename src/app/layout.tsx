@@ -7,6 +7,7 @@ import {
   StyledComponentsRegistry,
   RecoilRootProvider,
   TanstackQueryProvider,
+  AuthProvider,
 } from '@/app/lib/providers';
 import { NavigationBar } from '@/components';
 
@@ -50,8 +51,10 @@ export default function RootLayout({
         <TanstackQueryProvider>
           <RecoilRootProvider>
             <StyledComponentsRegistry>
-              <NavigationBar />
-              <main>{children}</main>
+              <AuthProvider>
+                <NavigationBar />
+                <main>{children}</main>
+              </AuthProvider>
             </StyledComponentsRegistry>
           </RecoilRootProvider>
         </TanstackQueryProvider>

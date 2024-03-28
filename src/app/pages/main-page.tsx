@@ -48,16 +48,16 @@ const styles = {
 export function MainPage() {
   const [auth] = useAuthState();
   const { data } = useQuery({
-    queryKey: ['/api/auth/info'],
+    queryKey: ['/api/auth/initial/info'],
     queryFn: getUserData,
     enabled: auth?.accessToken !== undefined,
   });
-  const [, setUserData] = useState<User | null>(null);
+  const [user, setUserData] = useState<User | null>(null);
 
   useEffect(() => {
     if (data !== undefined) {
-      const { user } = data.data;
-      setUserData(user);
+      const { name, email, birthYear, gender, phoneNumber } = data.data;
+      setUserData({ name, email, birthYear, gender, phoneNumber });
     }
   }, [data]);
 
@@ -65,7 +65,7 @@ export function MainPage() {
     <styles.container>
       <styles.mateRecommendationsContainer>
         <styles.mateRecommendationTitle>
-          님의 추천 메이트
+          {user?.name}님의 추천 메이트
         </styles.mateRecommendationTitle>
         <styles.mateRecommendation>
           <UserCard
