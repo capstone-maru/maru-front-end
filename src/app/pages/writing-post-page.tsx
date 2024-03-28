@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import Image from 'next/image';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -20,7 +21,7 @@ const styles = {
   `,
   postContainer: styled.div`
     width: 75rem;
-    height: 114.125rem;
+    height: 120.125rem;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -79,6 +80,7 @@ const styles = {
   `,
   inputContainer: styled.div`
     display: flex;
+    width: 5.5rem;
     padding: 0.5rem;
     justify-content: center;
     align-items: center;
@@ -95,7 +97,7 @@ const styles = {
     line-height: normal;
   `,
   userInput: styled.input`
-    width: 2.5rem;
+    width: 2rem;
     color: var(--Gray-5, #828282);
     text-align: right;
     font-family: 'Noto Sans KR';
@@ -187,7 +189,7 @@ const styles = {
   `,
   searchButton: styled.div`
     display: flex;
-    width: 5.0675rem;
+    width: 5.5rem;
     padding: 0.5rem;
     justify-content: center;
     align-items: center;
@@ -270,12 +272,29 @@ export function WritingPostPage() {
     room3: null,
   });
 
-  function handleClick(optionName: keyof SelectedStates, item: string) {
+  const handleClick = (optionName: keyof SelectedStates, item: string) => {
     setSelectedStates(prevState => ({
       ...prevState,
       [optionName]: prevState[optionName] === item ? null : item,
     }));
-  }
+  };
+
+  const [images, setImages] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleImageClick = () => {
+    inputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { files } = event.target;
+    if (files !== null && files !== undefined) {
+      const imagesArray = Array.from(files).map(file =>
+        URL.createObjectURL(file),
+      );
+      setImages(prevImages => [...prevImages, ...imagesArray]);
+    }
+  };
 
   return (
     <styles.pageContainer>
@@ -285,11 +304,34 @@ export function WritingPostPage() {
           <styles.listContainer>
             <styles.listItem>
               <styles.listItemDescription>사진</styles.listItemDescription>
-              <styles.addImgButton>+ 사진 추가</styles.addImgButton>
+              <styles.addImgButton onClick={handleImageClick}>
+                + 사진 추가
+                <input
+                  ref={inputRef}
+                  type="file"
+                  multiple
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+              </styles.addImgButton>
               <styles.listItemDescription>
                 최소 2장 이상 업로드
               </styles.listItemDescription>
             </styles.listItem>
+            {images.length > 0 && (
+              <styles.listItem>
+                <styles.listItemDescription />
+                {images.map((image, index) => (
+                  <Image
+                    key={image}
+                    src={image}
+                    alt={`Uploaded ${index}`}
+                    width={120}
+                    height={90}
+                  />
+                ))}
+              </styles.listItem>
+            )}
             <styles.listItem>
               <styles.listItemDescription>인원</styles.listItemDescription>
               <styles.inputContainer>
@@ -480,9 +522,7 @@ export function WritingPostPage() {
               <styles.listItemDescription>
                 버스정류장
               </styles.listItemDescription>
-              <styles.slash style={{ marginLeft: '6.35rem' }}>
-                도보
-              </styles.slash>
+              <styles.slash style={{ marginLeft: '6.8rem' }}>도보</styles.slash>
               <styles.inputContainer>
                 <styles.userInput />
                 <styles.inputPlaceholder>분</styles.inputPlaceholder>
@@ -492,7 +532,7 @@ export function WritingPostPage() {
               <styles.listItemDescription>학교</styles.listItemDescription>
               <styles.inputContainer>
                 <styles.userInput />
-                <styles.inputPlaceholder>역</styles.inputPlaceholder>
+                <styles.inputPlaceholder>학교</styles.inputPlaceholder>
               </styles.inputContainer>
               <styles.slash>도보</styles.slash>
               <styles.inputContainer>
@@ -502,9 +542,7 @@ export function WritingPostPage() {
             </styles.listItem>
             <styles.listItem>
               <styles.listItemDescription>편의점</styles.listItemDescription>
-              <styles.slash style={{ marginLeft: '6.35rem' }}>
-                도보
-              </styles.slash>
+              <styles.slash style={{ marginLeft: '6.8rem' }}>도보</styles.slash>
               <styles.inputContainer>
                 <styles.userInput />
                 <styles.inputPlaceholder>분</styles.inputPlaceholder>

@@ -18,6 +18,7 @@ const styles = {
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
     z-index: 100;
     transition: transform 0.3s ease;
+    cursor: pointer;
 
     &:hover {
       transform: scale(1.1);
@@ -59,11 +60,7 @@ export function FloatingChatting() {
   return (
     <>
       <styles.chattingButton onClick={toggleChat}>
-        <Image
-          src="/chatting.svg"
-          style={{ width: '1.3rem', height: '1.3rem' }}
-          alt="chatting-icon"
-        />
+        <Image src="/chatting.svg" width={25} height={25} alt="chatting-icon" />
       </styles.chattingButton>
       {isChatOpen && (
         <styles.chattingContainer>
