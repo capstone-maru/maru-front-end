@@ -8,7 +8,7 @@ import {
   RecoilRootProvider,
   TanstackQueryProvider,
 } from '@/app/lib/providers';
-import { NavigationBar } from '@/components';
+import { NavigationBar, FloatingChatting } from '@/components';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -32,6 +32,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
         <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap"
+          rel="stylesheet"
+        />
+        <link
           rel="stylesheet"
           as="style"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
@@ -52,6 +56,7 @@ export default function RootLayout({
             <StyledComponentsRegistry>
               <NavigationBar />
               <main>{children}</main>
+              <FloatingChatting />
             </StyledComponentsRegistry>
           </RecoilRootProvider>
         </TanstackQueryProvider>
