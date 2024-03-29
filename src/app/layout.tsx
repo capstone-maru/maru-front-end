@@ -9,7 +9,7 @@ import {
   TanstackQueryProvider,
   AuthProvider,
 } from '@/app/lib/providers';
-import { NavigationBar } from '@/components';
+import { NavigationBar, FloatingChatting } from '@/components';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -30,6 +30,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
           href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap"
           rel="stylesheet"
         />
         <link
@@ -54,6 +58,7 @@ export default function RootLayout({
               <AuthProvider>
                 <NavigationBar />
                 <main>{children}</main>
+                <FloatingChatting />
               </AuthProvider>
             </StyledComponentsRegistry>
           </RecoilRootProvider>
