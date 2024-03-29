@@ -396,9 +396,7 @@ export function SharedPostPage({ post }: Props) {
             hasBorder={false}
             color="#000"
             marked={false}
-            onToggle={() => {
-              console.log('Bookmark Clicked');
-            }}
+            onToggle={() => {}}
           />
         </styles.titleRow>
         <styles.briefInfoContainer>
@@ -501,9 +499,7 @@ export function SharedPostPage({ post }: Props) {
                 color="#888"
                 hasBorder
                 marked={false}
-                onToggle={() => {
-                  console.log('host bookmark clicked');
-                }}
+                onToggle={() => {}}
               />
             </div>
           </styles.hostButtonsContainer>

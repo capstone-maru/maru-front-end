@@ -3,7 +3,6 @@
 import styled from 'styled-components';
 
 import { CircularProfileImage } from '@/components';
-import { getAge } from '@/shared';
 
 const styles = {
   container: styled.div`

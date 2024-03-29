@@ -124,6 +124,7 @@ const styles = {
     all: unset;
     flex-shrink: 0;
     padding: 0.5rem 1.5rem;
+    flex-shrink: 0;
 
     border-radius: 8px;
     background: #e15637;

@@ -1,8 +1,12 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { UserCard } from '@/components/main-page';
+import { type User } from '@/entities/user';
+import { getUserData, useAuthState } from '@/features/auth';
 
 const styles = {
   container: styled.div`
@@ -42,11 +46,32 @@ const styles = {
 };
 
 export function MainPage() {
+  const [auth] = useAuthState();
+  const { data } = useQuery({
+    queryKey: ['/api/auth/initial/info'],
+    queryFn: getUserData,
+    enabled: auth?.accessToken !== undefined,
+  });
+  const [user, setUserData] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (data !== undefined) {
+      const { name, email, birthYear, gender, phoneNumber, initialized } =
+        data.data;
+
+      if (initialized) {
+        // TODO: router.push('/initialized')
+      } else {
+        setUserData({ name, email, birthYear, gender, phoneNumber });
+      }
+    }
+  }, [data]);
+
   return (
     <styles.container>
       <styles.mateRecommendationsContainer>
         <styles.mateRecommendationTitle>
-          님의 추천 메이트
+          {user?.name}님의 추천 메이트
         </styles.mateRecommendationTitle>
         <styles.mateRecommendation>
           <UserCard

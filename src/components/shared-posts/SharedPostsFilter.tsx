@@ -43,9 +43,7 @@ export function SharedPostsFilter({
             key={key}
             title={value}
             items={[]}
-            onSelect={() => {
-              console.debug(`${value} clicked`);
-            }}
+            onSelect={() => {}}
           />
         ))}
     </styles.container>
