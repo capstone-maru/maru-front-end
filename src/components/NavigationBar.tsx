@@ -3,13 +3,16 @@
 import Link from 'next/link';
 import styled from 'styled-components';
 
-import { useAuthActions, useAuthIsLogin } from '@/features/auth';
+import { SearchBox } from './SearchBox';
+
+import { getAuthLogout, useAuthActions, useAuthIsLogin } from '@/features/auth';
+import { load } from '@/shared/persist';
 
 const styles = {
   container: styled.nav`
     display: flex;
-    height: 72px;
-    padding: 14px 240px 15px 240px;
+    height: 4.5rem;
+    padding: 1rem 11.25rem;
     flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
@@ -17,11 +20,17 @@ const styles = {
     border-bottom: 1px solid #f7f6f9;
     background: #fff;
     box-shadow: 0px 0px 20px -2px rgba(0, 0, 0, 0.05);
+    z-index: 2147483647;
+  `,
+  utils: styled.div`
+    display: flex;
+    align-items: center;
+    gap: 3.63rem;
   `,
   title: styled.h1`
     color: var(--Main-1, #e15637);
     font-family: 'Baloo 2';
-    font-size: 30px;
+    font-size: 1.875rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -30,21 +39,20 @@ const styles = {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 24px;
+    gap: 1.5rem;
   `,
   logout: styled.button`
     all: unset;
     display: flex;
-    padding: 8px 16px;
+    padding: 0.5rem 1rem;
     align-items: flex-start;
-    gap: 8px;
 
     border-radius: 8px;
     background: #e15637;
 
     color: #fff;
     font-family: 'Noto Sans KR';
-    font-size: 16px;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -60,9 +68,12 @@ export function NavigationBar() {
 
   return (
     <styles.container>
-      <styles.title>
-        <Link href="/">maru</Link>
-      </styles.title>
+      <styles.utils>
+        <styles.title>
+          <Link href="/">maru</Link>
+        </styles.title>
+        <SearchBox />
+      </styles.utils>
       <styles.links>
         <Link href="/shared">메이트찾기</Link>
         <Link href="/community">커뮤니티</Link>
@@ -70,7 +81,16 @@ export function NavigationBar() {
         {isLogin && (
           <styles.logout
             onClick={() => {
-              logout();
+              const refreshToken = load({ type: 'local', key: 'refreshToken' });
+              if (refreshToken !== null) {
+                getAuthLogout(refreshToken)
+                  .then(() => {
+                    logout();
+                  })
+                  .catch(err => {
+                    console.error(err);
+                  });
+              }
             }}
           >
             로그아웃

@@ -1,5 +1,6 @@
 'use client';
 
+import { type HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -21,11 +22,12 @@ export function CircularProgressBar({
   percentage,
   strokeWidth,
   diameter,
+  className,
 }: {
   percentage: number;
   strokeWidth: number;
   diameter: number;
-}) {
+} & HTMLAttributes<HTMLDivElement>) {
   const radius = (diameter - strokeWidth) / 2;
   const cx = diameter / 2;
   const cy = diameter / 2;
@@ -34,7 +36,7 @@ export function CircularProgressBar({
   const dashOffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <styles.container>
+    <styles.container className={className}>
       <svg width={diameter} height={diameter}>
         <circle
           className="circle-background"

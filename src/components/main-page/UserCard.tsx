@@ -2,57 +2,67 @@
 
 import styled from 'styled-components';
 
-import { getAge } from '@/shared';
+import { CircularProfileImage } from '@/components';
 
 const styles = {
-  card: styled.div`
-    width: 266px;
-    height: 300px;
+  container: styled.div`
+    width: 16.625rem;
+    height: 18.75rem;
     flex-shrink: 0;
-
     border-radius: 20px;
     background: var(--Gray-1, #f7f6f9);
 
-    padding: 12px 16px;
-  `,
-  profile: styled.div`
-    display: flex;
-    flex-direction: row;
-    gap: 23px;
-    height: 149px;
-  `,
-  profileImage: styled.img`
-    display: flex;
-    width: 133px;
-    height: 133px;
-    justify-content: center;
-    align-items: center;
-    border-radius: 100px;
-    border: 1px solid #dcddea;
-    background: #c4c4c4;
-    object-fit: cover;
+    padding: 1.88rem 1.25rem;
   `,
   profileInfo: styled.div`
     display: flex;
+    align-items: center;
+    gap: 1.44rem;
+
+    margin-bottom: 1.25rem;
+
+    div {
+      display: flex;
+      flex-direction: column;
+
+      h1 {
+        color: #000;
+        font-family: 'Noto Sans KR';
+        font-size: 1.5rem;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        color: #000;
+        font-family: 'Noto Sans KR';
+        font-size: 1rem;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        margin-bottom: 0.25rem;
+      }
+    }
+  `,
+  data: styled.div`
+    display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 4px;
+    gap: 0.5rem;
+
+    padding: 0 1.06rem;
 
     color: #000;
     font-family: 'Noto Sans KR';
-    font-size: 16px;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-  `,
-  profileName: styled.p`
-    color: #000;
-    font-family: 'Noto Sans KR';
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    margin-bottom: 4px;
+
+    .selected {
+      color: #e15637;
+    }
   `,
 };
 
@@ -66,15 +76,24 @@ export function UserCard({
   birth: Date;
 }) {
   return (
-    <styles.card>
-      <styles.profile>
-        <styles.profileImage src="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=bS1lS~7-WQsD9x5vHJBOiMnhhFjI~VgCwJH6Bzz~IxFWob-PV-XZweWFIhU6yJC3XHv5qZKZxnP9RWT~0ciIbQfofuhbODEUxnMHe6oq8Dl45khsD30dnXOK~FLBPpWhMumJO-zPpuWjiRwsZ35mfWLbgyT7dND41I9yXCyRASQx9v2iAGzDoVzTfvtkjRyGw6es6fSXRsFGMqthnzYmv7DZT~FCz2avi3-NqXruXQpkijQHNEQUM61ThFiNYEIv8vb1wZWf-USbbJpE8bdbUneblY2T0cWwMRBtKbCrJ0Y~P9lvFbzqBv7h9WOzNyJW~~KeG9vVrBmLRRo1BsNdng__" />
-        <styles.profileInfo>
-          <styles.profileName>{name}</styles.profileName>
-          <p>{getAge(birth ?? new Date())}세</p>
-          <p>{address}</p>
-        </styles.profileInfo>
-      </styles.profile>
-    </styles.card>
+    <styles.container>
+      <styles.profileInfo>
+        <CircularProfileImage
+          diameter={110}
+          percentage={50}
+          url="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1712534400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=otR4I8Y0NumUlQW6NsUkXOvTzPqQhjjq1BLNd~EcweuN0Q0vRcVUvMuhlAx2vlsr2lOiqAgoyuXkYlVrK2qknRxQffQDRjGbRsK6CyebC76kXWw5Zu0SxlwtUdiYVV8VI0lWwoRsKqnoI4DXOqChcEMKPQamtpUmTx~NHx8t5cKSdvAMu0tqlPPdF7Sa51Vcuzrryfj~mcZXXEdEltEACAxPsFxhCelyDPB2Se7ZihPK1RGrtvovJZkc-64whNnji8Z0AOm-~irZhl0WQh0jhsaUpp2T5h9drq8-UwVdco3GBNXLSk3ygioYruN0j4U7SkqKVt7~ng1G7IH7395B4A__"
+        />
+        <div>
+          <h1>김마루</h1>
+          <p>24세</p>
+          <p>성북 길음동</p>
+        </div>
+      </styles.profileInfo>
+      <styles.data>
+        <p className="selected">비흡연</p>
+        <p className="selected">아침형</p>
+        <p>실내취식 괜찮아요</p>
+      </styles.data>
+    </styles.container>
   );
 }

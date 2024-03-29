@@ -6,6 +6,6 @@ export const authIsLogin = selector<boolean>({
   key: 'auth/isLogin',
   get: ({ get }) => {
     const auth = get(authState);
-    return auth !== undefined;
+    return auth !== null;
   },
 });
