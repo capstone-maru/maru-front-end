@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 
 import { SearchBox } from './SearchBox';
@@ -63,6 +64,7 @@ const styles = {
 
 export function NavigationBar() {
   const isLogin = useAuthIsLogin();
+  const router = useRouter();
 
   const { logout } = useAuthActions();
 
@@ -85,6 +87,7 @@ export function NavigationBar() {
               if (refreshToken !== null) {
                 getAuthLogout(refreshToken)
                   .then(() => {
+                    router.replace('/');
                     logout();
                   })
                   .catch(err => {

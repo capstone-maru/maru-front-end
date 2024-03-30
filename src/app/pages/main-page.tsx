@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -54,18 +55,19 @@ export function MainPage() {
   });
   const [user, setUserData] = useState<User | null>(null);
 
+  const router = useRouter();
+
   useEffect(() => {
     if (data !== undefined) {
       const { name, email, birthYear, gender, phoneNumber, initialized } =
         data.data;
 
+      setUserData({ name, email, birthYear, gender, phoneNumber });
       if (initialized) {
-        // TODO: router.push('/initialized')
-      } else {
-        setUserData({ name, email, birthYear, gender, phoneNumber });
+        // router.push(`/setting/my`);
       }
     }
-  }, [data]);
+  }, [data, router]);
 
   return (
     <styles.container>
