@@ -1,13 +1,14 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { UserCard } from '@/components/main-page';
 import { type User } from '@/entities/user';
-import { getUserData, useAuthState } from '@/features/auth';
+import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
 
 const styles = {
   container: styled.div`
@@ -47,27 +48,29 @@ const styles = {
 };
 
 export function MainPage() {
-  const [auth] = useAuthState();
+  const router = useRouter();
+
+  const auth = useAuthValue();
+  const { setAuthUserData } = useAuthActions();
+  const [user, setUserData] = useState<User | null>(null);
+
   const { data } = useQuery({
     queryKey: ['/api/auth/initial/info'],
     queryFn: getUserData,
     enabled: auth?.accessToken !== undefined,
   });
-  const [user, setUserData] = useState<User | null>(null);
-
-  const router = useRouter();
 
   useEffect(() => {
     if (data !== undefined) {
-      const { name, email, birthYear, gender, phoneNumber, initialized } =
-        data.data;
+      const userData = data.data;
 
-      setUserData({ name, email, birthYear, gender, phoneNumber });
-      if (initialized) {
-        // router.push(`/setting/my`);
+      setAuthUserData(userData);
+      setUserData(userData);
+      if (userData.initialized) {
+        router.replace('/profile');
       }
     }
-  }, [data, router]);
+  }, [data, router, setAuthUserData]);
 
   return (
     <styles.container>
@@ -76,36 +79,48 @@ export function MainPage() {
           {user?.name}님의 추천 메이트
         </styles.mateRecommendationTitle>
         <styles.mateRecommendation>
-          <UserCard
-            name="김마루"
-            address="성북 길음동"
-            birth={new Date(2000, 5, 27)}
-          />
-          <UserCard
-            name="김마루"
-            address="성북 길음동"
-            birth={new Date(2000, 5, 27)}
-          />{' '}
-          <UserCard
-            name="김마루"
-            address="성북 길음동"
-            birth={new Date(2000, 5, 27)}
-          />{' '}
-          <UserCard
-            name="김마루"
-            address="성북 길음동"
-            birth={new Date(2000, 5, 27)}
-          />{' '}
-          <UserCard
-            name="김마루"
-            address="성북 길음동"
-            birth={new Date(2000, 5, 27)}
-          />{' '}
-          <UserCard
-            name="김마루"
-            address="성북 길음동"
-            birth={new Date(2000, 5, 27)}
-          />
+          <Link href="/profile/memberId">
+            <UserCard
+              name="김마루"
+              address="성북 길음동"
+              birth={new Date(2000, 5, 27)}
+            />
+          </Link>
+          <Link href="/profile/memberId">
+            <UserCard
+              name="김마루"
+              address="성북 길음동"
+              birth={new Date(2000, 5, 27)}
+            />
+          </Link>
+          <Link href="/profile/memberId">
+            <UserCard
+              name="김마루"
+              address="성북 길음동"
+              birth={new Date(2000, 5, 27)}
+            />
+          </Link>
+          <Link href="/profile/memberId">
+            <UserCard
+              name="김마루"
+              address="성북 길음동"
+              birth={new Date(2000, 5, 27)}
+            />
+          </Link>
+          <Link href="/profile/memberId">
+            <UserCard
+              name="김마루"
+              address="성북 길음동"
+              birth={new Date(2000, 5, 27)}
+            />
+          </Link>
+          <Link href="/profile/memberId">
+            <UserCard
+              name="김마루"
+              address="성북 길음동"
+              birth={new Date(2000, 5, 27)}
+            />
+          </Link>
         </styles.mateRecommendation>
       </styles.mateRecommendationsContainer>
     </styles.container>

@@ -5,6 +5,7 @@ import { useRecoilState } from 'recoil';
 import { authState } from './auth.atom';
 import { type Auth } from './auth.model';
 
+import { type User } from '@/entities/user';
 import { remove, save } from '@/shared/persist';
 
 export const useAuthActions = () => {
@@ -27,5 +28,22 @@ export const useAuthActions = () => {
     setAuth(null);
   }, [setAuth]);
 
-  return useMemo(() => ({ login, logout }), [login, logout]);
+  const setAuthUserData = useCallback(
+    (user: User) => {
+      console.log(user);
+      setAuth(prev => {
+        if (prev === null) return null;
+        return {
+          ...prev,
+          user,
+        };
+      });
+    },
+    [setAuth],
+  );
+
+  return useMemo(
+    () => ({ login, logout, setAuthUserData }),
+    [login, logout, setAuthUserData],
+  );
 };
