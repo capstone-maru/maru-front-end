@@ -54,22 +54,22 @@ export function MainPage() {
   const { user } = useUserState();
   const { setUser } = useUserAction();
 
-  const { data } = useQuery({
+  const { data: response } = useQuery({
     queryKey: ['/api/auth/initial/info'],
     queryFn: getUserData,
-    enabled: auth?.accessToken !== undefined,
+    enabled: auth?.accessToken !== undefined && user === null,
   });
 
   useEffect(() => {
-    if (data !== undefined) {
-      const userData = data.data;
+    if (response !== undefined) {
+      const userData = response.data;
 
       setUser(userData);
       if (userData.initialized) {
         router.replace('/profile');
       }
     }
-  }, [data, router, setUser]);
+  }, [response, router, setUser]);
 
   return (
     <styles.container>

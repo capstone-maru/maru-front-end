@@ -13,7 +13,7 @@ import {
   SharedPostsMenu,
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
-import { useUserAction } from '@/entities/user';
+import { useUserAction, useUserState } from '@/entities/user';
 import { getUserData, useAuthState } from '@/features/auth';
 
 const styles = {
@@ -47,25 +47,26 @@ export function SharedPostsPage() {
   const router = useRouter();
 
   const { auth } = useAuthState();
+  const { user } = useUserState();
   const { setUser } = useUserAction();
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
 
-  const { data } = useQuery({
+  const { data: response } = useQuery({
     queryKey: ['/api/auth/initial/info'],
     queryFn: getUserData,
-    enabled: auth?.accessToken !== undefined,
+    enabled: auth?.accessToken !== undefined && user === null,
   });
 
   useEffect(() => {
-    if (data !== undefined) {
-      const userData = data.data;
-      setUser(userData);
+    if (response !== undefined) {
+      const userData = response.data;
 
+      setUser(userData);
       if (userData.initialized) {
         router.replace('/profile');
       }
     }
-  }, [data, router, setUser]);
+  }, [response, router, setUser]);
 
   return (
     <styles.container>
