@@ -3,12 +3,12 @@
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { UserCard } from '@/components/main-page';
-import { useUserAction, useUserState } from '@/entities/user';
-import { getUserData, useAuthState } from '@/features/auth';
+import { type User } from '@/entities/user';
+import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
 
 const styles = {
   container: styled.div`
@@ -50,9 +50,9 @@ const styles = {
 export function MainPage() {
   const router = useRouter();
 
-  const { auth } = useAuthState();
-  const { user } = useUserState();
-  const { setUser } = useUserAction();
+  const auth = useAuthValue();
+  const { setAuthUserData } = useAuthActions();
+  const [user, setUserData] = useState<User | null>(null);
 
   const { data } = useQuery({
     queryKey: ['/api/auth/initial/info'],
@@ -64,12 +64,13 @@ export function MainPage() {
     if (data !== undefined) {
       const userData = data.data;
 
-      setUser(userData);
+      setAuthUserData(userData);
+      setUserData(userData);
       if (userData.initialized) {
         router.replace('/profile');
       }
     }
-  }, [data, router, setUser]);
+  }, [data, router, setAuthUserData]);
 
   return (
     <styles.container>

@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 
-import { useAuthAction } from '@/features/auth';
+import { useAuthActions } from '@/features/auth';
 
 function Page() {
   const router = useRouter();
@@ -13,7 +13,7 @@ function Page() {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [expiresIn, setExpiresIn] = useState<string | null>(null);
 
-  const { login } = useAuthAction();
+  const { login } = useAuthActions();
 
   useEffect(() => {
     setAccessToken(searchParams.get('access_token'));

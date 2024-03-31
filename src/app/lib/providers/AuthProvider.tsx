@@ -3,12 +3,16 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-import { postTokenRefresh, useAuthAction, useAuthState } from '@/features/auth';
+import {
+  postTokenRefresh,
+  useAuthActions,
+  useAuthValue,
+} from '@/features/auth';
 import { load } from '@/shared/persist';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { auth } = useAuthState();
-  const { login } = useAuthAction();
+  const auth = useAuthValue();
+  const { login } = useAuthActions();
 
   const router = useRouter();
   const pathName = usePathname();

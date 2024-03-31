@@ -1,2 +1,1 @@
-export * from './user.model';
-export * from './user.store';
+export type { User } from './user.model';
