@@ -2,9 +2,10 @@
 
 import { LandingPage, MainPage } from './pages';
 
-import { useAuthIsLogin } from '@/features/auth';
+import { useAuthState } from '@/features/auth';
 
 export default function Home() {
-  const isLogin = useAuthIsLogin();
+  const { isLogin } = useAuthState();
+
   return <>{isLogin ? <MainPage /> : <LandingPage />}</>;
 }

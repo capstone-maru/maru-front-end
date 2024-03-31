@@ -8,12 +8,13 @@ import styled from 'styled-components';
 
 import { UserCard } from '@/components/main-page';
 import {
-  SharedPostsMenu,
-  SharedPostsFilter,
   PostCard,
+  SharedPostsFilter,
+  SharedPostsMenu,
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
-import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
+import { useUserAction } from '@/entities/user';
+import { getUserData, useAuthState } from '@/features/auth';
 
 const styles = {
   container: styled.div`
@@ -45,9 +46,9 @@ const styles = {
 export function SharedPostsPage() {
   const router = useRouter();
 
-  const auth = useAuthValue();
+  const { auth } = useAuthState();
+  const { setUser } = useUserAction();
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
-  const { setAuthUserData } = useAuthActions();
 
   const { data } = useQuery({
     queryKey: ['/api/auth/initial/info'],
@@ -58,19 +59,13 @@ export function SharedPostsPage() {
   useEffect(() => {
     if (data !== undefined) {
       const userData = data.data;
+      setUser(userData);
 
-      setAuthUserData(userData);
       if (userData.initialized) {
         router.replace('/profile');
       }
     }
-  }, [data, router, setAuthUserData]);
-
-  useEffect(() => {
-    if (auth?.user?.initialized === true) {
-      router.replace('/profile');
-    }
-  }, [auth, router]);
+  }, [data, router, setUser]);
 
   return (
     <styles.container>

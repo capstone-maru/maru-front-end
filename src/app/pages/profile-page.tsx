@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { atom, useRecoilState } from 'recoil';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -412,13 +412,8 @@ interface UserProfileInfoProps {
   addr: string;
 }
 
-const isCheckedState = atom({
-  key: 'isCheckedState',
-  default: false,
-});
-
 function UserInfo({ src, name, age, addr }: UserProfileInfoProps) {
-  const [isChecked, setIsChecked] = useRecoilState(isCheckedState);
+  const [isChecked, setIsChecked] = useState(false);
 
   const toggleSwitch = () => {
     setIsChecked(!isChecked);

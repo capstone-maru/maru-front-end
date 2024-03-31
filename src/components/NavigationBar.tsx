@@ -6,12 +6,8 @@ import styled from 'styled-components';
 
 import { SearchBox } from './SearchBox';
 
-import {
-  getAuthLogout,
-  useAuthActions,
-  useAuthIsLogin,
-  useAuthValue,
-} from '@/features/auth';
+import { useUserState } from '@/entities/user';
+import { getAuthLogout, useAuthAction, useAuthState } from '@/features/auth';
 import { load } from '@/shared/persist';
 
 const styles = {
@@ -68,11 +64,11 @@ const styles = {
 };
 
 export function NavigationBar() {
-  const isLogin = useAuthIsLogin();
   const router = useRouter();
 
-  const auth = useAuthValue();
-  const { logout } = useAuthActions();
+  const { user } = useUserState();
+  const { isLogin } = useAuthState();
+  const { logout } = useAuthAction();
 
   return (
     <styles.container>
@@ -85,7 +81,7 @@ export function NavigationBar() {
       <styles.links>
         <Link href="/shared">메이트찾기</Link>
         <Link href="/community">커뮤니티</Link>
-        <Link href={`/profile/${auth?.user?.memberId}`}>마이페이지</Link>
+        <Link href={`/profile/${user?.name}`}>마이페이지</Link>
         {isLogin && (
           <styles.logout
             onClick={() => {
