@@ -12,11 +12,15 @@ export const useAuthActions = () => {
   const [, setAuth] = useRecoilState(authState);
 
   const login = useCallback(
-    (auth: Auth) => {
+    (auth: Auth & { accessToken: string }) => {
       axios.defaults.headers.common.Authorization = `Bearer ${auth.accessToken}`;
       save({ type: 'local', key: 'refreshToken', value: auth.refreshToken });
       save({ type: 'local', key: 'expiresIn', value: `${auth.expiresIn}` });
-      setAuth(auth);
+      setAuth({
+        expiresIn: auth.expiresIn,
+        refreshToken: auth.refreshToken,
+        user: auth.user,
+      });
     },
     [setAuth],
   );

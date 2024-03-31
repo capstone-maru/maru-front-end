@@ -57,7 +57,7 @@ export function MainPage() {
   const { data } = useQuery({
     queryKey: ['/api/auth/initial/info'],
     queryFn: getUserData,
-    enabled: auth?.accessToken !== undefined,
+    enabled: auth !== null,
   });
 
   useEffect(() => {
