@@ -9,6 +9,8 @@ export const save = ({
   key: string;
   value: string;
 }) => {
+  if (typeof window === 'undefined') return;
+
   if (type === 'local') {
     localStorage.setItem(key, value);
   } else {
@@ -17,6 +19,8 @@ export const save = ({
 };
 
 export const load = ({ type, key }: { type: StorageType; key: string }) => {
+  if (typeof window === 'undefined') return null;
+
   if (type === 'local') {
     return localStorage.getItem(key);
   }
@@ -24,6 +28,8 @@ export const load = ({ type, key }: { type: StorageType; key: string }) => {
 };
 
 export const remove = ({ type, key }: { type: StorageType; key: string }) => {
+  if (typeof window === 'undefined') return;
+
   if (type === 'local') {
     localStorage.removeItem(key);
   } else {

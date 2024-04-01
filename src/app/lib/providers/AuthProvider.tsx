@@ -8,7 +8,7 @@ import {
   useAuthActions,
   useAuthValue,
 } from '@/features/auth';
-import { load } from '@/shared/persist';
+import { load } from '@/shared/storage';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const auth = useAuthValue();

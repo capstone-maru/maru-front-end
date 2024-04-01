@@ -1,6 +1,6 @@
 import { type AtomEffect, type DefaultValue } from 'recoil';
 
-import { type StorageType } from '.';
+import { load, remove, save, type StorageType } from '@/shared/storage';
 
 export const storageEffect =
   <StoredType>({
@@ -12,18 +12,17 @@ export const storageEffect =
   }): AtomEffect<StoredType> =>
   ({ setSelf, onSet }) => {
     if (typeof window === 'undefined') return;
-    const storage = storageType === 'local' ? localStorage : sessionStorage;
 
-    const savedValue = storage.getItem(key);
+    const savedValue = load({ type: storageType, key });
     if (savedValue != null) {
-      setSelf(JSON.parse(savedValue) as StoredType);
+      setSelf(load({ type: storageType, key }) as StoredType);
     }
 
     onSet((newValue: StoredType | DefaultValue, _, isReset: boolean) => {
       if (isReset) {
-        storage.removeItem(key);
+        remove({ type: storageType, key });
       } else {
-        storage.setItem(key, JSON.stringify(newValue));
+        save({ type: storageType, key, value: JSON.stringify(newValue) });
       }
     });
   };

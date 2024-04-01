@@ -6,7 +6,7 @@ import { authState } from './auth.atom';
 import { type Auth } from './auth.model';
 
 import { type User } from '@/entities/user';
-import { remove, save } from '@/shared/persist';
+import { remove, save } from '@/shared/storage';
 
 export const useAuthActions = () => {
   const [, setAuth] = useRecoilState(authState);
