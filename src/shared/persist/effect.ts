@@ -14,8 +14,8 @@ export const storageEffect =
     if (typeof window === 'undefined') return;
 
     const savedValue = load({ type: storageType, key });
-    if (savedValue != null) {
-      setSelf(load({ type: storageType, key }) as StoredType);
+    if (savedValue !== null) {
+      setSelf(JSON.parse(savedValue) as StoredType);
     }
 
     onSet((newValue: StoredType | DefaultValue, _, isReset: boolean) => {

@@ -74,6 +74,20 @@ export function NavigationBar() {
   const auth = useAuthValue();
   const { logout } = useAuthActions();
 
+  const handleLogout = () => {
+    const refreshToken = load({ type: 'local', key: 'refreshToken' });
+    if (refreshToken !== null) {
+      getAuthLogout(refreshToken)
+        .then(() => {
+          router.replace('/');
+          logout();
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
+  };
+
   return (
     <styles.container>
       <styles.utils>
@@ -89,17 +103,7 @@ export function NavigationBar() {
         {isLogin && (
           <styles.logout
             onClick={() => {
-              const refreshToken = load({ type: 'local', key: 'refreshToken' });
-              if (refreshToken !== null) {
-                getAuthLogout(refreshToken)
-                  .then(() => {
-                    router.replace('/');
-                    logout();
-                  })
-                  .catch(err => {
-                    console.error(err);
-                  });
-              }
+              handleLogout();
             }}
           >
             로그아웃

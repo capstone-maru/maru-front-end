@@ -3,11 +3,10 @@
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 
 import { UserCard } from '@/components/main-page';
-import { type User } from '@/entities/user';
 import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
 
 const styles = {
@@ -52,7 +51,6 @@ export function MainPage() {
 
   const auth = useAuthValue();
   const { setAuthUserData } = useAuthActions();
-  const [user, setUserData] = useState<User | null>(null);
 
   const { data } = useQuery({
     queryKey: ['/api/auth/initial/info'],
@@ -65,7 +63,6 @@ export function MainPage() {
       const userData = data.data;
 
       setAuthUserData(userData);
-      setUserData(userData);
       if (userData.initialized) {
         router.replace('/profile');
       }
@@ -76,7 +73,7 @@ export function MainPage() {
     <styles.container>
       <styles.mateRecommendationsContainer>
         <styles.mateRecommendationTitle>
-          {user?.name}님의 추천 메이트
+          {auth?.user?.name}님의 추천 메이트
         </styles.mateRecommendationTitle>
         <styles.mateRecommendation>
           <Link href="/profile/memberId">

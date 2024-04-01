@@ -34,7 +34,6 @@ export const useAuthActions = () => {
 
   const setAuthUserData = useCallback(
     (user: User) => {
-      console.log(user);
       setAuth(prev => {
         if (prev === null) return null;
         return {
