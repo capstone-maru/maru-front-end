@@ -12,7 +12,7 @@ import {
   useAuthIsLogin,
   useAuthValue,
 } from '@/features/auth';
-import { load } from '@/shared/persist';
+import { load } from '@/shared/storage';
 
 const styles = {
   container: styled.nav`

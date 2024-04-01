@@ -1,14 +1,16 @@
-type storeType = 'session' | 'local';
+export type StorageType = 'session' | 'local';
 
 export const save = ({
   type,
   key,
   value,
 }: {
-  type: storeType;
+  type: StorageType;
   key: string;
   value: string;
 }) => {
+  if (typeof window === 'undefined') return;
+
   if (type === 'local') {
     localStorage.setItem(key, value);
   } else {
@@ -16,14 +18,18 @@ export const save = ({
   }
 };
 
-export const load = ({ type, key }: { type: storeType; key: string }) => {
+export const load = ({ type, key }: { type: StorageType; key: string }) => {
+  if (typeof window === 'undefined') return null;
+
   if (type === 'local') {
     return localStorage.getItem(key);
   }
   return sessionStorage.getItem(key);
 };
 
-export const remove = ({ type, key }: { type: storeType; key: string }) => {
+export const remove = ({ type, key }: { type: StorageType; key: string }) => {
+  if (typeof window === 'undefined') return;
+
   if (type === 'local') {
     localStorage.removeItem(key);
   } else {
