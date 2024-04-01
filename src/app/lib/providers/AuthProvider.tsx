@@ -6,12 +6,12 @@ import { useEffect } from 'react';
 import {
   postTokenRefresh,
   useAuthActions,
-  useAuthState,
+  useAuthValue,
 } from '@/features/auth';
 import { load } from '@/shared/persist';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [auth] = useAuthState();
+  const auth = useAuthValue();
   const { login } = useAuthActions();
 
   const router = useRouter();
