@@ -1,6 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { UserCard } from '@/components/main-page';
@@ -10,6 +13,7 @@ import {
   PostCard,
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
+import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
 
 const styles = {
   container: styled.div`
@@ -39,7 +43,34 @@ const styles = {
 };
 
 export function SharedPostsPage() {
+  const router = useRouter();
+
+  const auth = useAuthValue();
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
+  const { setAuthUserData } = useAuthActions();
+
+  const { data } = useQuery({
+    queryKey: ['/api/auth/initial/info'],
+    queryFn: getUserData,
+    enabled: auth?.accessToken !== undefined,
+  });
+
+  useEffect(() => {
+    if (data !== undefined) {
+      const userData = data.data;
+
+      setAuthUserData(userData);
+      if (userData.initialized) {
+        router.replace('/profile');
+      }
+    }
+  }, [data, router, setAuthUserData]);
+
+  useEffect(() => {
+    if (auth?.user?.initialized === true) {
+      router.replace('/profile');
+    }
+  }, [auth, router]);
 
   return (
     <styles.container>
@@ -47,19 +78,45 @@ export function SharedPostsPage() {
       <styles.SharedPostsFilter selected={selected} />
       {selected === 'hasRoom' ? (
         <styles.posts>
-          <PostCard />
-          <PostCard />
-          <PostCard />
-          <PostCard />
-          <PostCard />
+          <Link href="/shared/1">
+            <PostCard />
+          </Link>
+          <Link href="/shared/1">
+            <PostCard />
+          </Link>
+          <Link href="/shared/1">
+            <PostCard />
+          </Link>
+          <Link href="/shared/1">
+            <PostCard />
+          </Link>
+          <Link href="/shared/1">
+            <PostCard />
+          </Link>
+          <Link href="/shared/1">
+            <PostCard />
+          </Link>
         </styles.posts>
       ) : (
         <styles.cards>
-          <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
-          <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
-          <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
-          <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
-          <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+          <Link href="/profile/memberId">
+            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+          </Link>
+          <Link href="/profile/memberId">
+            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+          </Link>
+          <Link href="/profile/memberId">
+            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+          </Link>
+          <Link href="/profile/memberId">
+            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+          </Link>
+          <Link href="/profile/memberId">
+            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+          </Link>
+          <Link href="/profile/memberId">
+            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
+          </Link>
         </styles.cards>
       )}
     </styles.container>

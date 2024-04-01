@@ -374,7 +374,7 @@ function Item({ label, data }: { label: string; data: string }) {
 export function SharedPostPage({ post }: Props) {
   const [map, setMap] = useState<naver.maps.Map | null>(null);
 
-  const onMoveToCenter = () => {
+  const handleClickTitle = () => {
     if (map === null) return;
 
     const center = new naver.maps.LatLng(37.6090857, 126.9966865);
@@ -441,7 +441,7 @@ export function SharedPostPage({ post }: Props) {
             <styles.locationInfoTitle>위치 정보</styles.locationInfoTitle>
             <styles.locationInfoContent
               onClick={() => {
-                onMoveToCenter();
+                handleClickTitle();
               }}
             >
               서울특별시 성북구 정릉로 104
