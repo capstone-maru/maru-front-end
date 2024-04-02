@@ -47,7 +47,7 @@ const styles = {
     position: absolute;
     left: 0;
     top: calc(100% + 1rem);
-    z-index: 2147483647;
+    z-index: 10;
 
     padding: 2.31rem;
   `,

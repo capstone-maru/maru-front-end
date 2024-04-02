@@ -2,6 +2,7 @@
 
 import styled from 'styled-components';
 
+import { DealTypeFilter } from './filter';
 import { SharedPostFilterItem } from './SharedPostFilterItem';
 
 import {
@@ -38,12 +39,9 @@ export function SharedPostFilters({
       {filterEntries
         .filter(([, value]) => filter(value))
         .map(([key, value]) => (
-          <SharedPostFilterItem
-            key={key}
-            title={value}
-            items={[]}
-            onSelect={() => {}}
-          />
+          <SharedPostFilterItem key={key} title={value}>
+            <DealTypeFilter />
+          </SharedPostFilterItem>
         ))}
     </styles.container>
   );
