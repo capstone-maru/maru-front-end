@@ -3,9 +3,10 @@
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
 import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
 
@@ -21,13 +22,12 @@ const styles = {
     width: 100%;
     height: 59.6875rem;
   `,
-  mateRecommendationsContainer: styled.div`
+  mateRecommendationContainer: styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 2.6875rem;
 
-    padding: 0 7.75rem;
     margin-bottom: 5rem;
   `,
   mateRecommendationTitle: styled.h1`
@@ -37,13 +37,20 @@ const styles = {
     font-style: normal;
     font-weight: 700;
     line-height: normal;
-    margin-left: 1.5rem;
+    padding: 0 7.75rem;
+  `,
+  mateRecommendationRow: styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2.12rem;
+    padding: 0 2.5rem;
   `,
   mateRecommendation: styled.div`
     display: flex;
     flex-direction: row;
     gap: 2.625rem;
-    margin: 0 2.75rem;
     overflow-x: auto;
 
     -ms-overflow-style: none;
@@ -67,6 +74,20 @@ export function MainPage() {
   });
 
   const [, setMap] = useState<naver.maps.Map | null>(null);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScrollRight = () => {
+    if (scrollRef.current !== null) {
+      scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollLeft = () => {
+    if (scrollRef.current !== null) {
+      scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     const center = new naver.maps.LatLng(37.6090857, 126.9966865);
@@ -93,55 +114,67 @@ export function MainPage() {
   return (
     <styles.container>
       <styles.map id="map" />
-      <styles.mateRecommendationsContainer>
+      <styles.mateRecommendationContainer>
         <styles.mateRecommendationTitle>
           {auth?.user?.name}님의 추천 메이트
         </styles.mateRecommendationTitle>
-        <styles.mateRecommendation>
-          <Link href="/profile/memberId">
-            <UserCard
-              name="김마루"
-              address="성북 길음동"
-              birth={new Date(2000, 5, 27)}
-            />
-          </Link>
-          <Link href="/profile/memberId">
-            <UserCard
-              name="김마루"
-              address="성북 길음동"
-              birth={new Date(2000, 5, 27)}
-            />
-          </Link>
-          <Link href="/profile/memberId">
-            <UserCard
-              name="김마루"
-              address="성북 길음동"
-              birth={new Date(2000, 5, 27)}
-            />
-          </Link>
-          <Link href="/profile/memberId">
-            <UserCard
-              name="김마루"
-              address="성북 길음동"
-              birth={new Date(2000, 5, 27)}
-            />
-          </Link>
-          <Link href="/profile/memberId">
-            <UserCard
-              name="김마루"
-              address="성북 길음동"
-              birth={new Date(2000, 5, 27)}
-            />
-          </Link>
-          <Link href="/profile/memberId">
-            <UserCard
-              name="김마루"
-              address="성북 길음동"
-              birth={new Date(2000, 5, 27)}
-            />
-          </Link>
-        </styles.mateRecommendation>
-      </styles.mateRecommendationsContainer>
+        <styles.mateRecommendationRow>
+          <CircularButton
+            direction="left"
+            disabled={false}
+            onClick={handleScrollLeft}
+          />
+          <styles.mateRecommendation ref={scrollRef}>
+            <Link href="/profile/memberId">
+              <UserCard
+                name="김마루"
+                address="성북 길음동"
+                birth={new Date(2000, 5, 27)}
+              />
+            </Link>
+            <Link href="/profile/memberId">
+              <UserCard
+                name="김마루"
+                address="성북 길음동"
+                birth={new Date(2000, 5, 27)}
+              />
+            </Link>
+            <Link href="/profile/memberId">
+              <UserCard
+                name="김마루"
+                address="성북 길음동"
+                birth={new Date(2000, 5, 27)}
+              />
+            </Link>
+            <Link href="/profile/memberId">
+              <UserCard
+                name="김마루"
+                address="성북 길음동"
+                birth={new Date(2000, 5, 27)}
+              />
+            </Link>
+            <Link href="/profile/memberId">
+              <UserCard
+                name="김마루"
+                address="성북 길음동"
+                birth={new Date(2000, 5, 27)}
+              />
+            </Link>
+            <Link href="/profile/memberId">
+              <UserCard
+                name="김마루"
+                address="성북 길음동"
+                birth={new Date(2000, 5, 27)}
+              />
+            </Link>
+          </styles.mateRecommendation>
+          <CircularButton
+            direction="right"
+            disabled={false}
+            onClick={handleScrollRight}
+          />
+        </styles.mateRecommendationRow>
+      </styles.mateRecommendationContainer>
     </styles.container>
   );
 }

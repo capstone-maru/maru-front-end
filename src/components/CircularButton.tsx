@@ -24,7 +24,7 @@ const styles = {
   `,
 };
 
-export function ImageIndexButton({
+export function CircularButton({
   direction,
   disabled,
   onClick,
@@ -34,7 +34,13 @@ export function ImageIndexButton({
   onClick: () => void;
 }) {
   return (
-    <styles.container onClick={onClick} $disabled={disabled}>
+    <styles.container
+      onClick={() => {
+        if (disabled) return;
+        onClick();
+      }}
+      $disabled={disabled}
+    >
       <img alt="" src="/icon-ellipse.svg" />
       <img alt="" src={`/icon-${direction}.svg`} />
     </styles.container>
