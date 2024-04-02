@@ -22,7 +22,9 @@ main {
   width: 100%;
   height: calc(100% - 72px);
   max-height: fit-content;
-  padding: 0 15rem;
+
+  display: flex;
+  justify-content: center;
 }
 
 a {

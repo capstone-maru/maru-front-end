@@ -64,7 +64,7 @@ export function MainPage() {
 
       setAuthUserData(userData);
       if (userData.initialized) {
-        router.replace('/profile');
+        // router.replace('/profile');
       }
     }
   }, [data, router, setAuthUserData]);
