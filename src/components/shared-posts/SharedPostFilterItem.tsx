@@ -23,7 +23,7 @@ const styles = {
 
     cursor: pointer;
   `,
-  content: styled.div`
+  title: styled.div`
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
@@ -35,6 +35,20 @@ const styles = {
     font-weight: 500;
     line-height: normal;
   `,
+  content: styled.div<{ $hidden: boolean }>`
+    visibility: ${({ $hidden }) => ($hidden ? 'hidden' : 'visible')};
+
+    width: 30dvw;
+    height: 30dvw;
+    border-radius: 1.25rem;
+    background: #fff;
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
+
+    position: absolute;
+    left: 0;
+    top: calc(100% + 1rem);
+    z-index: 2147483647;
+  `,
 };
 
 interface Props {
@@ -42,6 +56,7 @@ interface Props {
   items: string[];
   selected?: string;
   onSelect: (item: string) => void;
+  filterComponent: React.ReactNode;
 }
 
 export function SharedPostFilterItem({
@@ -49,30 +64,32 @@ export function SharedPostFilterItem({
   items,
   selected,
   onSelect,
+  filterComponent,
 }: Props) {
-  const [showList, setShowList] = useState(false);
+  const [hidden, setHidden] = useState(true);
 
   useEffect(() => {
     const handler = () => {
-      setShowList(false);
+      setHidden(true);
     };
 
     document.addEventListener('click', handler);
     return () => {
       document.removeEventListener('click', handler);
     };
-  }, [showList, setShowList]);
+  }, [hidden, setHidden]);
 
   return (
     <styles.container
       onClick={() => {
-        setShowList(true);
+        setHidden(false);
       }}
     >
-      <styles.content>
+      <styles.title>
         {selected ?? title}
         <img alt="drop-down-button-2" src="/icon-drop-down_2.svg" />
-      </styles.content>
+      </styles.title>
+      <styles.content $hidden={hidden}>{filterComponent}</styles.content>
     </styles.container>
   );
 }
