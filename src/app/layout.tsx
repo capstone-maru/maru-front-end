@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import React from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './globals.scss';
 
 import {
-  StyledComponentsRegistry,
-  RecoilRootProvider,
-  TanstackQueryProvider,
   AuthProvider,
+  RecoilRootProvider,
+  StyledComponentsRegistry,
+  TanstackQueryProvider,
 } from '@/app/lib/providers';
-import { NavigationBar, FloatingChatting } from '@/components';
+import { FloatingChatting, NavigationBar } from '@/components';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -55,6 +57,7 @@ export default function RootLayout({
                 <NavigationBar />
                 <main>{children}</main>
                 <FloatingChatting />
+                <ToastContainer />
               </AuthProvider>
             </StyledComponentsRegistry>
           </RecoilRootProvider>
