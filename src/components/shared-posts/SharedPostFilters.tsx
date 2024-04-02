@@ -2,7 +2,7 @@
 
 import styled from 'styled-components';
 
-import { DropDownList } from './DropDownList';
+import { SharedPostFilterItem } from './SharedPostFilterItem';
 
 import {
   SharedPostsFilterTypeValue,
@@ -16,7 +16,7 @@ const styles = {
   `,
 };
 
-export function SharedPostsFilter({
+export function SharedPostFilters({
   selected,
   className,
 }: {
@@ -38,7 +38,7 @@ export function SharedPostsFilter({
       {filterEntries
         .filter(([, value]) => filter(value))
         .map(([key, value]) => (
-          <DropDownList
+          <SharedPostFilterItem
             key={key}
             title={value}
             items={[]}

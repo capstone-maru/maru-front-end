@@ -20,7 +20,7 @@ const styles = {
   `,
   map: styled.div`
     width: 100%;
-    height: 59.6875rem;
+    height: 50dvh;
   `,
   mateRecommendationContainer: styled.div`
     width: 100%;

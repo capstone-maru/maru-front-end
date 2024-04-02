@@ -24,17 +24,22 @@ const styles = {
   `,
 };
 
+interface Props {
+  direction: 'left' | 'right';
+  disabled: boolean;
+  onClick: () => void;
+  className?: string;
+}
+
 export function CircularButton({
   direction,
   disabled,
   onClick,
-}: {
-  direction: 'left' | 'right';
-  disabled: boolean;
-  onClick: () => void;
-}) {
+  className,
+}: Props) {
   return (
     <styles.container
+      className={className}
       onClick={() => {
         if (disabled) return;
         onClick();

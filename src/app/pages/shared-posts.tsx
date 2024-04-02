@@ -10,7 +10,7 @@ import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
 import {
   SharedPostsMenu,
-  SharedPostsFilter,
+  SharedPostFilters,
   PostCard,
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
@@ -30,7 +30,7 @@ const styles = {
   SharedPostsMenu: styled(SharedPostsMenu)`
     margin-bottom: 2rem;
   `,
-  SharedPostsFilter: styled(SharedPostsFilter)`
+  SharedPostsFilter: styled(SharedPostFilters)`
     margin-bottom: 2.81rem;
   `,
   createButtonRow: styled.div`
@@ -65,6 +65,9 @@ const styles = {
     flex-direction: column;
     padding-inline: 2rem;
     gap: 2rem;
+  `,
+  CircularButton: styled(CircularButton)`
+    scale: 0.9;
   `,
   pagingRow: styled.div`
     display: flex;
@@ -182,7 +185,7 @@ export function SharedPostsPage() {
             </Link>
           </styles.posts>
           <styles.pagingRow>
-            <CircularButton
+            <styles.CircularButton
               direction="left"
               disabled={isFirstPage}
               onClick={handlePrevPage}
@@ -208,7 +211,7 @@ export function SharedPostsPage() {
                 </button>
               ))}
             </styles.paging>
-            <CircularButton
+            <styles.CircularButton
               direction="right"
               disabled={isLastPage}
               onClick={handleNextPage}
