@@ -72,7 +72,6 @@ const styles = {
   `,
   section2: styled.div`
     position: relative;
-    left: -15rem;
     width: 100dvw;
     height: 31.25rem;
     flex-shrink: 0;
@@ -111,7 +110,6 @@ const styles = {
   section4: styled.div`
     display: flex;
     position: relative;
-    left: -15rem;
     width: 100dvw;
     height: 17.9375rem;
     padding: 10.0625rem 38.71875rem 5.0625rem 39.90625rem;

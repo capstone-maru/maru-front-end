@@ -20,7 +20,6 @@ const styles = {
     background: var(--background, #f7f6f9);
 
     position: relative;
-    left: -15rem;
     width: 100dvw;
     min-height: 100%;
     height: fit-content;
