@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { UserCard } from '@/components/main-page';
@@ -12,15 +12,23 @@ import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
 const styles = {
   container: styled.div`
     width: 100%;
+    height: fit-content;
     display: flex;
     flex-direction: column;
-    padding-top: 4.375rem;
+    gap: 4.44rem;
+  `,
+  map: styled.div`
+    width: 100%;
+    height: 59.6875rem;
   `,
   mateRecommendationsContainer: styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 2.6875rem;
+
+    padding: 0 7.75rem;
+    margin-bottom: 5rem;
   `,
   mateRecommendationTitle: styled.h1`
     color: #000;
@@ -58,6 +66,19 @@ export function MainPage() {
     enabled: auth?.refreshToken !== null,
   });
 
+  const [, setMap] = useState<naver.maps.Map | null>(null);
+
+  useEffect(() => {
+    const center = new naver.maps.LatLng(37.6090857, 126.9966865);
+    setMap(
+      new naver.maps.Map('map', {
+        center,
+        disableKineticPan: false,
+        scrollWheel: false,
+      }),
+    );
+  }, []);
+
   useEffect(() => {
     if (data !== undefined) {
       const userData = data.data;
@@ -71,6 +92,7 @@ export function MainPage() {
 
   return (
     <styles.container>
+      <styles.map id="map" />
       <styles.mateRecommendationsContainer>
         <styles.mateRecommendationTitle>
           {auth?.user?.name}님의 추천 메이트

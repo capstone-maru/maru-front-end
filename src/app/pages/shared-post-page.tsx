@@ -382,7 +382,13 @@ export function SharedPostPage({ post }: Props) {
 
   useEffect(() => {
     const center = new naver.maps.LatLng(37.6090857, 126.9966865);
-    setMap(new naver.maps.Map('map', { center }));
+    setMap(
+      new naver.maps.Map('map', {
+        center,
+        disableKineticPan: false,
+        scrollWheel: false,
+      }),
+    );
   }, []);
 
   return (
