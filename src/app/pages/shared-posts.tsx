@@ -42,6 +42,8 @@ const styles = {
   createButton: styled.button`
     all: unset;
 
+    cursor: pointer;
+
     display: flex;
     width: 7.125rem;
     padding: 0.5rem 1.5rem;
@@ -155,7 +157,9 @@ export function SharedPostsPage() {
       {selected === 'hasRoom' ? (
         <>
           <styles.createButtonRow>
-            <styles.createButton>작성하기</styles.createButton>
+            <Link href="/shared/writing">
+              <styles.createButton>작성하기</styles.createButton>
+            </Link>
           </styles.createButtonRow>
           <styles.posts>
             <Link href="/shared/1">
