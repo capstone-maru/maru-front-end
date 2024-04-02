@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 import { type User } from '@/entities/user';
@@ -203,6 +203,7 @@ const styles = {
     border-radius: 8px;
     border: 1px solid var(--Gray-5, #828282);
     background: var(--White, #fff);
+    cursor: pointer;
 
     color: var(--Gray-5, #828282);
     font-family: Pretendard;
@@ -218,6 +219,10 @@ const styles = {
   `,
   mateCards: styled.div`
     display: flex;
+    width: 35.6rem;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    padding: 1.5rem;
     gap: 2.88rem;
   `,
   cardContainer: styled.div`
@@ -226,7 +231,7 @@ const styles = {
     align-items: center;
     width: 15rem;
     height: 15rem;
-    flex-shrink: 0;
+    flex: 0 0 auto;
     border-radius: 20px;
     border: 1pxs olid var(--background, #f7f6f9);
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
@@ -481,38 +486,72 @@ function Auth() {
 }
 
 function Card({ name }: { name: string | undefined }) {
+  const [linkCount, setLinkCount] = useState(1);
+
+  const handleButtonClick = () => {
+    setLinkCount(prevCount => prevCount + 1);
+  };
+
+  const renderLinks = () => {
+    const links = [];
+    for (let i = 2; i < linkCount; i += 1) {
+      links.push(
+        <Link href={`/setting/mate/${i}`} key={i}>
+          <styles.cardContainer>
+            <styles.cardName>메이트 {i}</styles.cardName>
+          </styles.cardContainer>
+        </Link>,
+      );
+    }
+    return links;
+  };
+
+  const mateCardsRef = useRef<HTMLDivElement>(null);
+
+  const scrollToPrev = () => {
+    if (mateCardsRef.current !== null) {
+      mateCardsRef.current.scrollLeft -= 570;
+    }
+  };
+
+  const scrollToNext = () => {
+    if (mateCardsRef.current !== null) {
+      mateCardsRef.current.scrollLeft += 570;
+    }
+  };
+
   return (
     <styles.cardSection>
       <styles.cardWrapper>
         <styles.description32px>내 카드</styles.description32px>
-        <Link href="/setting/my">
-          <styles.cardContainer>
-            <styles.cardName>{name}</styles.cardName>
-            <styles.cardDefault>기본</styles.cardDefault>
-          </styles.cardContainer>
-        </Link>
+        <div style={{ padding: '1.5rem' }}>
+          <Link href="/setting/my">
+            <styles.cardContainer>
+              <styles.cardName>{name}</styles.cardName>
+              <styles.cardDefault>기본</styles.cardDefault>
+            </styles.cardContainer>
+          </Link>
+        </div>
       </styles.cardWrapper>
       <styles.cardWrapper>
         <styles.cardDescriptionSection>
           <styles.description32px>메이트 카드</styles.description32px>
-          <styles.addButton>+ 추가</styles.addButton>
+          <styles.addButton onClick={handleButtonClick}>
+            + 추가
+          </styles.addButton>
         </styles.cardDescriptionSection>
         <styles.mateCardsContainer>
-          <styles.prevButton />
-          <styles.mateCards>
-            <Link href="/setting/mate">
+          <styles.prevButton onClick={scrollToPrev} />
+          <styles.mateCards ref={mateCardsRef}>
+            <Link href={`/setting/mate/${1}`}>
               <styles.cardContainer>
-                <styles.cardName>메이트</styles.cardName>
+                <styles.cardName>메이트 1</styles.cardName>
                 <styles.cardDefault>기본</styles.cardDefault>
               </styles.cardContainer>
             </Link>
-            <Link href="/setting/mate">
-              <styles.cardContainer>
-                <styles.cardName>메이트</styles.cardName>
-              </styles.cardContainer>
-            </Link>
+            {renderLinks()}
           </styles.mateCards>
-          <styles.nextButton />
+          <styles.nextButton onClick={scrollToNext} />
         </styles.mateCardsContainer>
       </styles.cardWrapper>
     </styles.cardSection>

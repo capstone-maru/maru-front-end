@@ -210,7 +210,7 @@ function MyCard() {
   );
 }
 
-function MateCard() {
+function MateCard({ index }: { index: string | null }) {
   // type SelectedOptions = Record<string, boolean>;
   // const [selectedState, setSelectedState] = useState<SelectedState>({
   //   smoking: null,
@@ -235,7 +235,7 @@ function MateCard() {
   };
   return (
     <styles.pageContainer>
-      <styles.cardName>메이트 카드 &gt; </styles.cardName>
+      <styles.cardName>메이트 카드 &gt; 메이트{index}</styles.cardName>
       <styles.cardContainer>
         <styles.miniCard>
           <styles.miniCardName>메이트카드</styles.miniCardName>
@@ -270,6 +270,12 @@ function MateCard() {
   );
 }
 
-export function SettingPage({ type }: { type: string }) {
-  return <>{type === '내' ? <MyCard /> : <MateCard />}</>;
+export function SettingPage({
+  type,
+  index,
+}: {
+  type: string;
+  index: string | null;
+}) {
+  return <>{type === '내' ? <MyCard /> : <MateCard index={index} />}</>;
 }
