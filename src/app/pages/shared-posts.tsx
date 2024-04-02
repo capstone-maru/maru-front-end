@@ -18,6 +18,7 @@ import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
 const styles = {
   container: styled.div`
     padding-top: 4.12rem;
+    padding-inline: 16rem;
     width: 100%;
 
     display: flex;
@@ -27,11 +28,37 @@ const styles = {
     margin-bottom: 2rem;
   `,
   SharedPostsFilter: styled(SharedPostsFilter)`
-    margin-bottom: 5.19rem;
+    margin-bottom: 2.81rem;
+  `,
+  createButtonRow: styled.div`
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-bottom: 4.12rem;
+  `,
+  createButton: styled.button`
+    all: unset;
+
+    display: flex;
+    width: 7.125rem;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 8px;
+    background: var(--Black, #35373a);
+
+    color: #fff;
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5rem;
   `,
   posts: styled.div`
     display: flex;
     flex-direction: column;
+    padding-inline: 2rem;
     gap: 2rem;
   `,
   cards: styled.div`
@@ -61,42 +88,47 @@ export function SharedPostsPage() {
 
       setAuthUserData(userData);
       if (userData.initialized) {
-        router.replace('/profile');
+        // router.replace('/profile');
       }
     }
   }, [data, router, setAuthUserData]);
 
   useEffect(() => {
-    if (auth?.user?.initialized === true) {
-      router.replace('/profile');
+    if (data?.data.initialized === true) {
+      // router.replace('/profile');
     }
-  }, [auth, router]);
+  }, [data, router]);
 
   return (
     <styles.container>
       <styles.SharedPostsMenu selected={selected} handleSelect={setSelected} />
       <styles.SharedPostsFilter selected={selected} />
       {selected === 'hasRoom' ? (
-        <styles.posts>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-        </styles.posts>
+        <>
+          <styles.createButtonRow>
+            <styles.createButton>작성하기</styles.createButton>
+          </styles.createButtonRow>
+          <styles.posts>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+          </styles.posts>
+        </>
       ) : (
         <styles.cards>
           <Link href="/profile/memberId">
