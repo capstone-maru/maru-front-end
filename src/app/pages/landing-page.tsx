@@ -5,12 +5,12 @@ import styled from 'styled-components';
 const styles = {
   container: styled.div`
     width: 100%;
-    padding-right: 6rem;
   `,
   section1: styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    padding: 0rem 13.75rem;
   `,
   img: styled.img`
     width: 29.1875rem;
@@ -78,8 +78,11 @@ const styles = {
     background: #f7f6f9;
   `,
   section3: styled.div`
+    display: flex;
+    justify-content: end;
+
     height: 31.25rem;
-    padding-left: calc(51.75rem - 15rem + 15rem);
+    padding-right: 21.25rem;
   `,
   imageBox: styled.div`
     display: flex;
