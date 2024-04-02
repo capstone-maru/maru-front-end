@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -48,48 +48,57 @@ const styles = {
     left: 0;
     top: calc(100% + 1rem);
     z-index: 2147483647;
+
+    padding: 2.31rem;
   `,
 };
 
 interface Props {
   title: string;
-  items: string[];
-  selected?: string;
-  onSelect: (item: string) => void;
-  filterComponent: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export function SharedPostFilterItem({
   title,
-  items,
-  selected,
-  onSelect,
-  filterComponent,
+  children: filterComponent,
 }: Props) {
   const [hidden, setHidden] = useState(true);
-
+  const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const handler = () => {
-      setHidden(true);
+    const handler = (event: MouseEvent) => {
+      if (
+        containerRef.current !== null &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setHidden(true);
+      }
     };
 
     document.addEventListener('click', handler);
     return () => {
       document.removeEventListener('click', handler);
     };
-  }, [hidden, setHidden]);
+  }, []);
+
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    setHidden(!hidden);
+  };
 
   return (
-    <styles.container
-      onClick={() => {
-        setHidden(false);
-      }}
-    >
+    <styles.container onClick={handleContainerClick} ref={containerRef}>
       <styles.title>
-        {selected ?? title}
-        <img alt="drop-down-button-2" src="/icon-drop-down_2.svg" />
+        {title}
+        <img alt="drop-down-button" src="/icon-drop-down_2.svg" />
       </styles.title>
-      <styles.content $hidden={hidden}>{filterComponent}</styles.content>
+      <styles.content
+        $hidden={hidden}
+        onClick={e => {
+          e.stopPropagation();
+        }}
+      >
+        {filterComponent}
+      </styles.content>
     </styles.container>
   );
 }
