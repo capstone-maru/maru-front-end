@@ -13,7 +13,7 @@ const styles = {
     height: 3.12481rem;
     flex-shrink: 0;
 
-    cursor: pointer;
+    cursor: ${({ $disabled }) => ($disabled ? 'auto' : 'pointer')};
 
     opacity: ${({ $disabled }) => ($disabled ? 0.25 : 1)};
 

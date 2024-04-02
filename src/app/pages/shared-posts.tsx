@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
 import {
   SharedPostsMenu,
@@ -14,12 +15,14 @@ import {
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
 import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
+import { usePaging } from '@/features/shared';
 
 const styles = {
   container: styled.div`
     padding-top: 4.12rem;
     padding-inline: 16rem;
     width: 100%;
+    height: fit-content;
 
     display: flex;
     flex-direction: column;
@@ -61,6 +64,38 @@ const styles = {
     padding-inline: 2rem;
     gap: 2rem;
   `,
+  pagingRow: styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-block: 7rem;
+  `,
+  paging: styled.div`
+    display: flex;
+    gap: 3rem;
+
+    button {
+      all: unset;
+      cursor: pointer;
+
+      color: #b2b2b2;
+      font-family: 'Spoqa Han Sans Neo';
+      font-size: 1.25rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 120%;
+
+      &[class~='current'] {
+        color: var(--Black, #35373a);
+        font-family: 'Spoqa Han Sans Neo';
+        font-size: 1.25rem;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 120%;
+        text-decoration-line: underline;
+      }
+    }
+  `,
   cards: styled.div`
     padding-left: 2.62rem;
     display: flex;
@@ -80,6 +115,20 @@ export function SharedPostsPage() {
     queryKey: ['/api/auth/initial/info'],
     queryFn: getUserData,
     enabled: auth?.refreshToken !== null,
+  });
+
+  const {
+    page,
+    maxPostPage,
+    sliceSize,
+    currentSlice,
+    isFirstPage,
+    isLastPage,
+    handleNextPage,
+    handlePrevPage,
+  } = usePaging({
+    maxPostPage: 12,
+    sliceSize: 10,
   });
 
   useEffect(() => {
@@ -128,6 +177,39 @@ export function SharedPostsPage() {
               <PostCard />
             </Link>
           </styles.posts>
+          <styles.pagingRow>
+            <CircularButton
+              direction="left"
+              disabled={isFirstPage}
+              onClick={handlePrevPage}
+            />
+            <styles.paging>
+              {Array.from({
+                length: Math.min(
+                  maxPostPage - currentSlice * sliceSize,
+                  sliceSize,
+                ),
+              }).map((_, index) => (
+                <button
+                  type="button"
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${currentSlice}-${index}`}
+                  className={
+                    page === index + 1 + currentSlice * sliceSize
+                      ? 'current'
+                      : ''
+                  }
+                >
+                  {index + 1 + currentSlice * sliceSize}
+                </button>
+              ))}
+            </styles.paging>
+            <CircularButton
+              direction="right"
+              disabled={isLastPage}
+              onClick={handleNextPage}
+            />
+          </styles.pagingRow>
         </>
       ) : (
         <styles.cards>
