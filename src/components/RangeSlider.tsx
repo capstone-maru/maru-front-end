@@ -79,9 +79,10 @@ const styles = {
 interface Props {
   min: number;
   max: number;
+  onChange: ({ low, high }: { low: number; high: number }) => void;
 }
 
-export function RangeSlider({ min, max }: Props) {
+export function RangeSlider({ min, max, onChange }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [low, setLow] = useState(min);
@@ -107,6 +108,10 @@ export function RangeSlider({ min, max }: Props) {
     setLow((min + max) * 0.25);
     setHigh((min + max) * 0.75);
   }, []);
+
+  useEffect(() => {
+    onChange({ low, high });
+  }, [onChange, low, high]);
 
   return (
     <styles.container ref={containerRef} $width={width} $margin={margin}>
