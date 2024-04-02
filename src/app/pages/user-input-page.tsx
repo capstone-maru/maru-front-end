@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { VitalSection, OptionSection } from '@/components';
+import { useAuthState, getUserData } from '@/features/auth';
+import { usePutUserProfileData } from '@/features/profile';
 
 const styles = {
   pageContainer: styled.div`
@@ -38,26 +42,26 @@ const styles = {
     width: 23.0625rem;
     height: 17.5rem;
     flex-shrink: 0;
-    border-radius: 1.875rem;
+    border-radius: 30px;
     padding: 1.62rem 1.44rem;
     display: flex;
     flex-direction: column;
     background: ${props =>
-      props.active !== undefined && props.active !== null && props.active
+      props.$active !== undefined && props.$active !== null && props.$active
         ? 'var(--background, #f7f6f9)'
         : 'var(--White, #fff)'};
     box-shadow: ${props =>
-      props.active !== undefined && props.active !== null && props.active
+      props.$active !== undefined && props.$active !== null && props.$active
         ? '0px 4px 20px 0px rgba(0, 0, 0, 0.2)'
         : 'none'};
     border: ${props =>
-      props.active !== undefined && props.active !== null && props.active
+      props.$active !== undefined && props.$active !== null && props.$active
         ? 'none'
         : '2px solid var(--Light-gray, #DCDDEA)'};
   `,
   miniCardName: styled.p<CardActiveProps>`
     color: ${props =>
-      props.active !== undefined && props.active !== null && props.active
+      props.$active !== undefined && props.$active !== null && props.$active
         ? 'var(--Black, #35373A)'
         : 'var(--Gray-3, #888)'};
     font-family: 'Noto Sans KR';
@@ -78,7 +82,7 @@ const styles = {
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
-    border-radius: 1.625rem;
+    border-radius: 26px;
     border: 2px solid var(--Main-1, #e15637);
     background: #fff;
 
@@ -99,14 +103,14 @@ const styles = {
     width: 51.0625rem;
     height: 95.8125rem;
     flex-shrink: 0;
-    border-radius: 1.875rem;
+    border-radius: 30px;
     background: var(--background, #f7f6f9);
     padding: 3.56rem 0 0 1.56rem;
     margin-bottom: 7.5rem;
     position: absolute;
 
     display: ${props =>
-      props.active !== undefined && props.active !== null && props.active
+      props.$active !== undefined && props.$active !== null && props.$active
         ? ''
         : 'none'};
   `,
@@ -129,7 +133,7 @@ const styles = {
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     background: var(--Main-1, #e15637);
     margin: 4.06rem 31rem 9.06rem 31rem;
   `,
@@ -149,10 +153,102 @@ const styles = {
 };
 
 interface CardActiveProps {
-  active?: boolean;
+  $active?: boolean;
+}
+
+interface UserProps {
+  name: string | undefined;
+  gender: string | undefined;
+  birthYear: string | undefined;
+}
+
+interface SelectedState {
+  smoking: string | null;
+  room: string | null;
 }
 
 export function UserInputPage() {
+  const [auth] = useAuthState();
+  const { data } = useQuery({
+    queryKey: ['/api/auth/initial/info'],
+    queryFn: getUserData,
+    enabled: auth?.accessToken !== undefined,
+  });
+  const [user, setUserData] = useState<UserProps | null>(null);
+
+  useEffect(() => {
+    if (data !== undefined) {
+      const { name, gender, birthYear } = data.data;
+      setUserData({ name, gender, birthYear });
+    }
+  }, [data]);
+
+  type SelectedOptions = Record<string, boolean>;
+
+  // myState
+  const [selectedState, setSelectedState] = useState<SelectedState>({
+    smoking: null,
+    room: null,
+  });
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+
+  const handleFeatureChange = (
+    optionName: keyof SelectedState,
+    item: string | number,
+  ) => {
+    setSelectedState(prevState => ({
+      ...prevState,
+      [optionName]: prevState[optionName] === item ? null : item,
+    }));
+  };
+  const handleOptionClick = (option: string) => {
+    setSelectedOptions(prevSelectedOptions => ({
+      ...prevSelectedOptions,
+      [option]: !prevSelectedOptions[option],
+    }));
+  };
+
+  // mateState
+  // const [selectedMateState, setSelectedMateState] = useState<SelectedState>({
+  //   smoking: null,
+  //   room: null,
+  // });
+  // const [selectedMateOptions, setSelectedMateOptions] =
+  //   useState<SelectedOptions>({});
+
+  const handleMateFeatureChange = (
+    optionName: keyof SelectedState,
+    item: string | number,
+  ) => {
+    // setSelectedMateState(prevState => ({
+    //   ...prevState,
+    //   [optionName]: prevState[optionName] === item ? null : item,
+    // }));
+  };
+  const handleMateOptionClick = (option: string) => {
+    // setSelectedMateOptions(prevSelectedOptions => ({
+    //   ...prevSelectedOptions,
+    //   [option]: !prevSelectedOptions[option],
+    // }));
+  };
+
+  const { mutate } = usePutUserProfileData();
+
+  const handleButtonClick = () => {
+    const array = Object.keys(selectedOptions).filter(
+      key => selectedOptions[key],
+    );
+
+    const address = '성북 길음동';
+    const myFeatures = [selectedState.smoking, selectedState.room, ...array];
+
+    try {
+      mutate({ address: address, myFeatures: myFeatures });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const [activeContainer, setActiveContainer] = useState<'my' | 'mate'>('my');
 
   const handleMyCardClick = () => {
@@ -163,71 +259,108 @@ export function UserInputPage() {
     setActiveContainer('mate');
   };
 
+  let genderText = null;
+
+  if (user?.gender === 'MALE') {
+    genderText = '남성';
+  } else if (user?.gender === 'FEMALE') {
+    genderText = '여성';
+  }
+
   return (
     <styles.pageContainer>
       <styles.pageDescription>
-        김마루 님과 희망 메이트에 대해서 알려주세요
+        {user?.name} 님과 희망 메이트에 대해서 알려주세요
       </styles.pageDescription>
       <styles.cardContainer>
         <styles.cardNameSection>
           <styles.miniCard
             onClick={handleMyCardClick}
-            active={activeContainer === 'my'}
+            $active={activeContainer === 'my'}
           >
-            <styles.miniCardName active={activeContainer === 'my'}>
+            <styles.miniCardName $active={activeContainer === 'my'}>
               내카드
             </styles.miniCardName>
             <styles.miniCardKeywordsContainer>
-              <styles.miniCardKeyword>여성</styles.miniCardKeyword>
-              <styles.miniCardKeyword style={{ right: '0' }}>
-                비흡연
+              <styles.miniCardKeyword
+                style={{
+                  border: 'none',
+                  background: 'var(--Gray-5, #828282)',
+                  color: '#fff',
+                }}
+              >
+                {genderText}
               </styles.miniCardKeyword>
-              <styles.miniCardKeyword style={{ bottom: '0' }}>
-                아침형
-              </styles.miniCardKeyword>
+              {selectedState.smoking !== null ? (
+                <styles.miniCardKeyword style={{ right: '0' }}>
+                  {selectedState.smoking}
+                </styles.miniCardKeyword>
+              ) : null}
             </styles.miniCardKeywordsContainer>
           </styles.miniCard>
           <styles.miniCard
             onClick={handleMateCardClick}
-            active={activeContainer === 'mate'}
+            $active={activeContainer === 'mate'}
           >
-            <styles.miniCardName active={activeContainer === 'mate'}>
+            <styles.miniCardName $active={activeContainer === 'mate'}>
               메이트카드
             </styles.miniCardName>
             <styles.miniCardKeywordsContainer>
-              <styles.miniCardKeyword>여성</styles.miniCardKeyword>
-              <styles.miniCardKeyword style={{ right: '0' }}>
-                비흡연
-              </styles.miniCardKeyword>
-              <styles.miniCardKeyword style={{ bottom: '0' }}>
-                아침형
+              <styles.miniCardKeyword
+                style={{
+                  border: 'none',
+                  background: 'var(--Gray-5, #828282)',
+                  color: '#fff',
+                }}
+              >
+                {genderText}
               </styles.miniCardKeyword>
             </styles.miniCardKeywordsContainer>
           </styles.miniCard>
         </styles.cardNameSection>
         <styles.checkSection>
-          <styles.checkContainer active={activeContainer === 'my'}>
-            <VitalSection />
+          <styles.checkContainer $active={activeContainer === 'my'}>
+            <VitalSection
+              gender={user?.gender}
+              birthYear={user?.birthYear}
+              smoking={undefined}
+              room={undefined}
+              onFeatureChange={handleFeatureChange}
+            />
             <styles.lineContainer>
               <styles.horizontalLine />
             </styles.lineContainer>
-            <OptionSection />
+            <OptionSection
+              optionFeatures={[]}
+              onFeatureChange={handleOptionClick}
+            />
           </styles.checkContainer>
-          <styles.checkContainer active={activeContainer === 'mate'}>
-            <VitalSection />
+          <styles.checkContainer $active={activeContainer === 'mate'}>
+            <VitalSection
+              gender={user?.gender}
+              birthYear={user?.birthYear}
+              smoking={undefined}
+              room={undefined}
+              onFeatureChange={handleMateFeatureChange}
+            />
             <styles.lineContainer>
               <styles.horizontalLine />
             </styles.lineContainer>
-            <OptionSection />
+            <OptionSection
+              optionFeatures={[]}
+              onFeatureChange={handleMateOptionClick}
+            />
           </styles.checkContainer>
         </styles.checkSection>
       </styles.cardContainer>
-      <styles.mateButtonContainer>
-        <styles.mateButtonDescription>
-          나의 메이트 확인하기
-        </styles.mateButtonDescription>
-        <styles.mateButtonIcon src="/chevron-right.svg" />
-      </styles.mateButtonContainer>
+      <Link href="/">
+        <styles.mateButtonContainer onClick={handleButtonClick}>
+          <styles.mateButtonDescription>
+            나의 메이트 확인하기
+          </styles.mateButtonDescription>
+          <styles.mateButtonIcon src="/chevron-right.svg" />
+        </styles.mateButtonContainer>
+      </Link>
     </styles.pageContainer>
   );
 }

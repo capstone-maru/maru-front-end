@@ -1,8 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { atom, useRecoilState } from 'recoil';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+
+import { type User } from '@/entities/user';
+import { useProfileData } from '@/features/profile';
+import { getAge } from '@/shared';
 
 const styles = {
   pageContainer: styled.div`
@@ -28,7 +32,7 @@ const styles = {
     height: 8.3125rem;
     justify-content: center;
     align-items: center;
-    border-radius: 6.25rem;
+    border-radius: 100px;
     border: 1px solid #dcddea;
 
     background: #c4c4c4;
@@ -99,7 +103,7 @@ const styles = {
     background-color: #bebebe;
     -webkit-transition: 0.4s;
     transition: 0.4s;
-    border-radius: 1.5rem;
+    border-radius: 24px;
   `,
   sliderDot: styled.span`
     position: absolute;
@@ -126,7 +130,7 @@ const styles = {
   authContainer: styled.div`
     height: 2rem;
     width: 5.3125rem;
-    border-radius: 1.625rem;
+    border-radius: 26px;
     background: #5c6eb4;
     margin: 1rem 1.4375rem 0 1.5625rem;
     cursor: pointer;
@@ -196,7 +200,7 @@ const styles = {
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     border: 1px solid var(--Gray-5, #828282);
     background: var(--White, #fff);
 
@@ -223,7 +227,7 @@ const styles = {
     width: 15rem;
     height: 15rem;
     flex-shrink: 0;
-    border-radius: 1.25rem;
+    border-radius: 20px;
     border: 1pxs olid var(--background, #f7f6f9);
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
     background: var(--grey-100, #fff);
@@ -249,7 +253,7 @@ const styles = {
     width: 6.0625rem;
     height: 2.5625rem;
     flex-shrink: 0;
-    border-radius: 1.25rem 0rem 0rem 1.25rem;
+    border-radius: 20px 0 0 20px;
     background: var(--Main-1, #e15637);
 
     position: absolute;
@@ -298,7 +302,7 @@ const styles = {
     height: 15.625rem;
     padding: 1.5rem 0;
     flex-shrink: 0;
-    border-radius: 1.25rem;
+    border-radius: 20px;
     background: var(--background, #f7f6f9);
 
     justify-content: center;
@@ -338,7 +342,7 @@ const styles = {
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
-    border-radius: 1.625rem;
+    border-radius: 26px;
     color: #fff;
     text-align: center;
     font-family: 'Noto Sans KR';
@@ -371,7 +375,7 @@ const styles = {
     padding: 0.63rem 1.13rem;
     justify-content: center;
     align-items: center;
-    border-radius: 1rem;
+    border-radius: 16px;
     border: 1px solid var(--Main-1, #e15637);
     background: var(--White, #fff);
     color: var(--Main-1, #e15637);
@@ -384,7 +388,7 @@ const styles = {
   rulesContent: styled.div`
     width: 100%;
     height: 21.625rem;
-    border-radius: 1rem;
+    border-radius: 16px;
     background: #f7f6f9;
   `,
 
@@ -400,25 +404,18 @@ const styles = {
   accountContent: styled.div`
     width: 64.5rem;
     height: 12.4375rem;
-    border-radius: 1rem;
+    border-radius: 16px;
     background: #f7f6f9;
   `,
 };
 
 interface UserProfileInfoProps {
-  src: string;
-  name: string;
+  name: string | undefined;
   age: string;
-  addr: string;
 }
 
-const isCheckedState = atom({
-  key: 'isCheckedState',
-  default: false,
-});
-
-function UserInfo({ src, name, age, addr }: UserProfileInfoProps) {
-  const [isChecked, setIsChecked] = useRecoilState(isCheckedState);
+function UserInfo({ name, age }: UserProfileInfoProps) {
+  const [isChecked, setIsChecked] = useState(false);
 
   const toggleSwitch = () => {
     setIsChecked(!isChecked);
@@ -428,13 +425,13 @@ function UserInfo({ src, name, age, addr }: UserProfileInfoProps) {
     <styles.userProfileContainer>
       <styles.userProfileWithoutSwitch>
         <styles.userPicContainer>
-          <styles.userPic src={src} alt="User Profile Pic" />
+          <styles.userPic src="" alt="User Profile Pic" />
         </styles.userPicContainer>
         <styles.userInfoContainer>
           <styles.userName>{name}</styles.userName>
           <styles.userDetailedContainer>
             <styles.userDetailedInfo>{age}</styles.userDetailedInfo>
-            <styles.userDetailedInfo>{addr}</styles.userDetailedInfo>
+            <styles.userDetailedInfo>성북 길음동</styles.userDetailedInfo>
           </styles.userDetailedContainer>
         </styles.userInfoContainer>
       </styles.userProfileWithoutSwitch>
@@ -483,14 +480,14 @@ function Auth() {
   );
 }
 
-function Card() {
+function Card({ name }: { name: string | undefined }) {
   return (
     <styles.cardSection>
       <styles.cardWrapper>
         <styles.description32px>내 카드</styles.description32px>
         <Link href="/setting/my">
           <styles.cardContainer>
-            <styles.cardName>김마루</styles.cardName>
+            <styles.cardName>{name}</styles.cardName>
             <styles.cardDefault>기본</styles.cardDefault>
           </styles.cardContainer>
         </Link>
@@ -594,12 +591,38 @@ function Maru() {
   );
 }
 
-export function ProfilePage({ src, name, age, addr }: UserProfileInfoProps) {
+export function ProfilePage({ memberId }: { memberId: string }) {
+  const { data } = useProfileData(memberId);
+  const [user, setUserData] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (data !== undefined) {
+      const userProfileData = data.data.authResponse;
+
+      if (userProfileData.memberId === memberId) {
+        const { name, email, birthYear, gender, phoneNumber } = userProfileData;
+        setUserData({ name, email, birthYear, gender, phoneNumber });
+      } else {
+        // 로그인 된 사용자와 요청된 id가 다를 때
+      }
+    }
+  }, [data, memberId]);
+
+  const birthYearString: string = user?.birthYear ?? '';
+  const birthYearDate: Date = new Date(birthYearString);
+
   return (
     <styles.pageContainer>
-      <UserInfo src={src} name={name} age={age} addr={addr} />
+      <UserInfo
+        name={user?.name ?? ''}
+        age={
+          String(getAge(birthYearDate)) !== ''
+            ? String(getAge(birthYearDate))
+            : ''
+        }
+      />
       <Auth />
-      <Card />
+      <Card name={user?.name} />
       <Maru />
     </styles.pageContainer>
   );

@@ -80,7 +80,7 @@ const styles = {
     width: 25rem;
     height: 0.3125rem;
     flex-shrink: 0;
-    border-radius: 1.25rem;
+    border-radius: 20px;
     background: #d9d9d9;
     margin-bottom: 0.63rem;
   `,
@@ -131,7 +131,7 @@ const styles = {
     background-color: #bebebe;
     -webkit-transition: 0.4s;
     transition: 0.4s;
-    border-radius: 1.5rem;
+    border-radius: 24px;
   `,
   sliderDot: styled.span`
     position: absolute;
@@ -179,7 +179,7 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
 }
 
 interface CheckItemProps {
-  isSelected: boolean;
+  $isSelected: boolean;
 }
 
 const CheckItem = styled.div<CheckItemProps>`
@@ -188,7 +188,7 @@ const CheckItem = styled.div<CheckItemProps>`
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-  border-radius: 1.625rem;
+  border-radius: 26px;
   border: 2px solid #dfdfdf;
   background: #fff;
   cursor: pointer;
@@ -202,7 +202,7 @@ const CheckItem = styled.div<CheckItemProps>`
   line-height: normal;
 
   ${props =>
-    props.isSelected
+    props.$isSelected
       ? {
           color: 'var(--Main-1, #E15637)',
           border: '2px solid var(--Main-1, #E15637)',
@@ -235,9 +235,14 @@ const PersonalOptions = [
 ];
 const BudgetOptions = ['보증금', '월세'];
 
-export function OptionSection() {
+export function OptionSection({
+  optionFeatures,
+  onFeatureChange,
+}: {
+  optionFeatures: string[] | undefined;
+  onFeatureChange: (option: string) => void;
+}) {
   type SelectedOptions = Record<string, boolean>;
-
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
 
   const [toggleStates, setToggleStates] = useState({
@@ -252,6 +257,7 @@ export function OptionSection() {
       ...prevSelectedOptions,
       [option]: !prevSelectedOptions[option],
     }));
+    onFeatureChange(option);
   };
 
   const toggleSwitch = (toggleName: keyof typeof toggleStates) => {
@@ -271,7 +277,11 @@ export function OptionSection() {
             {LivingPatternOptions.map(option => (
               <CheckItem
                 key={option}
-                isSelected={selectedOptions[option]}
+                $isSelected={
+                  selectedOptions[option] ||
+                  (optionFeatures !== undefined &&
+                    optionFeatures?.includes(option))
+                }
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -287,7 +297,11 @@ export function OptionSection() {
             {EatingOptions.map(option => (
               <CheckItem
                 key={option}
-                isSelected={selectedOptions[option]}
+                $isSelected={
+                  selectedOptions[option] ||
+                  (optionFeatures !== undefined &&
+                    optionFeatures?.includes(option))
+                }
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -303,7 +317,11 @@ export function OptionSection() {
             {HearingOptions.map(option => (
               <CheckItem
                 key={option}
-                isSelected={selectedOptions[option]}
+                $isSelected={
+                  selectedOptions[option] ||
+                  (optionFeatures !== undefined &&
+                    optionFeatures?.includes(option))
+                }
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -319,7 +337,11 @@ export function OptionSection() {
             {WeatherOptions.map(option => (
               <CheckItem
                 key={option}
-                isSelected={selectedOptions[option]}
+                $isSelected={
+                  selectedOptions[option] ||
+                  (optionFeatures !== undefined &&
+                    optionFeatures?.includes(option))
+                }
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -340,7 +362,11 @@ export function OptionSection() {
             {CleanOptions.map(option => (
               <CheckItem
                 key={option}
-                isSelected={selectedOptions[option]}
+                $isSelected={
+                  selectedOptions[option] ||
+                  (optionFeatures !== undefined &&
+                    optionFeatures?.includes(option))
+                }
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -356,7 +382,11 @@ export function OptionSection() {
             {PersonalOptions.map(option => (
               <CheckItem
                 key={option}
-                isSelected={selectedOptions[option]}
+                $isSelected={
+                  selectedOptions[option] ||
+                  (optionFeatures !== undefined &&
+                    optionFeatures?.includes(option))
+                }
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -418,7 +448,11 @@ export function OptionSection() {
             {BudgetOptions.map(option => (
               <styles.budgetContainer key={option}>
                 <CheckItem
-                  isSelected={selectedOptions[option]}
+                  $isSelected={
+                    selectedOptions[option] ||
+                    (optionFeatures !== undefined &&
+                      optionFeatures?.includes(option))
+                  }
                   onClick={() => {
                     handleOptionClick(option);
                   }}

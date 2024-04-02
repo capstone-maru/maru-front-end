@@ -17,19 +17,20 @@ const styles = {
     font-weight: 500;
     line-height: normal;
   `,
-  vitalListContainer: styled.div`
+  vitalListContainer: styled.ul`
     display: flex;
-    margin-top: 2.62rem;
-    gap: 3.12rem;
-  `,
-  vitalList: styled.ul`
-    display: inline-flex;
     flex-direction: column;
-    align-items: flex-start;
+    margin-top: 2.62rem;
+    gap: 1.5rem;
+  `,
+  vitalList: styled.li`
+    display: inline-flex;
+    align-items: center;
     gap: 2.5rem;
     flex-shrink: 0;
   `,
-  vitalListItem: styled.li`
+  vitalListItemDescription: styled.p`
+    width: 5.125rem;
     color: #000;
 
     font-family: 'Noto Sans KR';
@@ -40,15 +41,10 @@ const styles = {
 
     list-style-type: none;
   `,
-  vitalCheckList: styled.ul`
+  vitalCheckListContainer: styled.div`
     display: inline-flex;
-    flex-direction: column;
     align-items: flex-start;
-    gap: 1.5rem;
-  `,
-  vitalCheckListItem: styled.li`
-    display: flex;
-    list-style-type: none;
+    gap: 0.5rem;
   `,
 
   birthYear: styled.select`
@@ -56,7 +52,7 @@ const styles = {
     -moz-appearance: none;
     appearance: none;
 
-    width: 6.125rem;
+    width: 6.7rem;
     height: 3.125rem;
     display: inline-flex;
     padding: 0.75rem 1rem;
@@ -102,7 +98,7 @@ const styles = {
 };
 
 interface CheckItemProps {
-  isSelected: boolean;
+  $isSelected: boolean;
 }
 
 const CheckItem = styled.div<CheckItemProps>`
@@ -112,7 +108,7 @@ const CheckItem = styled.div<CheckItemProps>`
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-  border-radius: 1.625rem;
+  border-radius: 26px;
   border: 2px solid #dfdfdf;
   background: #fff;
   cursor: pointer;
@@ -126,7 +122,7 @@ const CheckItem = styled.div<CheckItemProps>`
   line-height: normal;
 
   ${props =>
-    props.isSelected
+    props.$isSelected
       ? {
           color: 'var(--Main-1, #E15637)',
           border: '2px solid var(--Main-1, #E15637)',
@@ -139,18 +135,31 @@ const CheckItem = styled.div<CheckItemProps>`
 
 const years = Array.from({ length: 100 }, (_, index) => 2024 - index);
 
-export function VitalSection() {
-  interface SelectedState {
-    gender: string | null;
-    smoking: string | null;
-    room: string | null;
-  }
+interface SelectedState {
+  smoking: string | undefined;
+  room: string | undefined;
+}
 
+export function VitalSection({
+  gender,
+  birthYear,
+  smoking,
+  room,
+  onFeatureChange,
+}: {
+  gender: string | undefined;
+  birthYear: string | undefined;
+  smoking: string | undefined;
+  room: string | undefined;
+  onFeatureChange: (
+    optionName: keyof SelectedState,
+    item: string | number,
+  ) => void;
+}) {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedState, setSelectedState] = useState<SelectedState>({
-    gender: null,
-    smoking: null,
-    room: null,
+    smoking: smoking,
+    room: room,
   });
 
   function handleOptionClick(
@@ -161,6 +170,7 @@ export function VitalSection() {
       ...prevState,
       [optionName]: prevState[optionName] === item ? null : item,
     }));
+    onFeatureChange(optionName, item);
   }
 
   const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -172,47 +182,49 @@ export function VitalSection() {
       <styles.vitalDescription>필수</styles.vitalDescription>
       <styles.vitalListContainer>
         <styles.vitalList>
-          <styles.vitalListItem>성별</styles.vitalListItem>
-          <styles.vitalListItem>출생 연도</styles.vitalListItem>
-          <styles.vitalListItem>흡연 여부</styles.vitalListItem>
-          <styles.vitalListItem>메이트와</styles.vitalListItem>
-          <styles.vitalListItem>희망 지역</styles.vitalListItem>
-        </styles.vitalList>
-        <styles.vitalCheckList>
-          <styles.vitalCheckListItem>
+          <styles.vitalListItemDescription>
+            성별
+          </styles.vitalListItemDescription>
+          <styles.vitalCheckListContainer>
             <CheckItem
-              isSelected={selectedState.gender === '남성'}
-              onClick={() => {
-                handleOptionClick('gender', '남성');
+              $isSelected={gender === 'MALE'}
+              style={{
+                border: gender === 'MALE' ? 'none' : '',
+                background: gender === 'MALE' ? 'var(--Gray-5, #828282)' : '',
+                color: gender === 'MALE' ? '#fff' : '',
               }}
             >
               남성
             </CheckItem>
             <CheckItem
-              isSelected={selectedState.gender === '여성'}
-              onClick={() => {
-                handleOptionClick('gender', '여성');
+              $isSelected={gender === 'FEMALE'}
+              style={{
+                border: gender === 'FEMALE' ? 'none' : '',
+                background: gender === 'FEMALE' ? 'var(--Gray-5, #828282)' : '',
+                color: gender === 'FEMALE' ? '#fff' : '',
               }}
             >
               여성
             </CheckItem>
-          </styles.vitalCheckListItem>
-          <styles.vitalCheckListItem>
-            <styles.birthYear
-              value={selectedYear ?? ''}
-              onChange={handleYearChange}
-            >
-              <option value="">년도</option>
-              {years.map(year => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </styles.birthYear>
-          </styles.vitalCheckListItem>
-          <styles.vitalCheckListItem>
+          </styles.vitalCheckListContainer>
+        </styles.vitalList>
+        <styles.vitalList>
+          <styles.vitalListItemDescription>
+            희망 지역
+          </styles.vitalListItemDescription>
+          <styles.searchBox>
+            <styles.mapInput placeholder="ex) 한국동,한국역,한국대학교" />
+          </styles.searchBox>
+        </styles.vitalList>
+        <styles.vitalList>
+          <styles.vitalListItemDescription>
+            흡연 여부
+          </styles.vitalListItemDescription>
+          <styles.vitalCheckListContainer>
             <CheckItem
-              isSelected={selectedState.smoking === '흡연'}
+              $isSelected={
+                selectedState.smoking === '흡연' || smoking === '흡연'
+              }
               onClick={() => {
                 handleOptionClick('smoking', '흡연');
               }}
@@ -220,17 +232,37 @@ export function VitalSection() {
               흡연
             </CheckItem>
             <CheckItem
-              isSelected={selectedState.smoking === '비흡연'}
+              $isSelected={
+                selectedState.smoking === '비흡연' || smoking === '비흡연'
+              }
               onClick={() => {
                 handleOptionClick('smoking', '비흡연');
               }}
             >
               비흡연
             </CheckItem>
-          </styles.vitalCheckListItem>
-          <styles.vitalCheckListItem>
             <CheckItem
-              isSelected={selectedState.room === '같은 방'}
+              $isSelected={
+                selectedState.smoking === '상관없어요' ||
+                smoking === '상관없어요'
+              }
+              onClick={() => {
+                handleOptionClick('smoking', '상관없어요');
+              }}
+            >
+              상관없어요
+            </CheckItem>
+          </styles.vitalCheckListContainer>
+        </styles.vitalList>
+        <styles.vitalList>
+          <styles.vitalListItemDescription>
+            메이트와
+          </styles.vitalListItemDescription>
+          <styles.vitalCheckListContainer>
+            <CheckItem
+              $isSelected={
+                selectedState.room === '같은 방' || room === '같은 방'
+              }
               onClick={() => {
                 handleOptionClick('room', '같은 방');
               }}
@@ -238,7 +270,9 @@ export function VitalSection() {
               같은 방
             </CheckItem>
             <CheckItem
-              isSelected={selectedState.room === '다른 방'}
+              $isSelected={
+                selectedState.room === '다른 방' || room === '다른 방'
+              }
               onClick={() => {
                 handleOptionClick('room', '다른 방');
               }}
@@ -246,20 +280,34 @@ export function VitalSection() {
               다른 방
             </CheckItem>
             <CheckItem
-              isSelected={selectedState.room === '상관없어요'}
+              $isSelected={
+                selectedState.room === '상관없어요' || room === '상관없어요'
+              }
               onClick={() => {
                 handleOptionClick('room', '상관없어요');
               }}
             >
               상관없어요
             </CheckItem>
-          </styles.vitalCheckListItem>
-          <styles.vitalCheckListItem>
-            <styles.searchBox>
-              <styles.mapInput placeholder="ex) 한국동,한국역,한국대학교" />
-            </styles.searchBox>
-          </styles.vitalCheckListItem>
-        </styles.vitalCheckList>
+          </styles.vitalCheckListContainer>
+        </styles.vitalList>
+        <styles.vitalList>
+          <styles.vitalListItemDescription>
+            출생 연도
+          </styles.vitalListItemDescription>
+          <styles.birthYear
+            value={selectedYear ?? birthYear}
+            onChange={handleYearChange}
+            disabled={birthYear !== undefined}
+          >
+            <option value="">년도</option>
+            {years.map(year => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </styles.birthYear>
+        </styles.vitalList>
       </styles.vitalListContainer>
     </styles.vitalContainer>
   );
