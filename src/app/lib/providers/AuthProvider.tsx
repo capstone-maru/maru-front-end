@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     if (auth === null) {
-      const refreshToken = load({ type: 'local', key: 'refreshToken' });
+      const refreshToken = load<string>({ type: 'local', key: 'refreshToken' });
       if (refreshToken !== null) {
         postTokenRefresh(refreshToken)
           .then(({ data }) => {
