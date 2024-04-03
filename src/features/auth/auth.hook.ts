@@ -5,8 +5,8 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { getUserData } from './auth.api';
 import { authState } from './auth.atom';
-import { type Auth } from './auth.type';
 import { authIsLogin } from './auth.selector';
+import { type Auth } from './auth.type';
 
 import { type User } from '@/entities/user';
 import { remove, save } from '@/shared/storage';
