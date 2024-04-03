@@ -22,3 +22,15 @@ export interface PutUserProfileDTO {
     myFeatures: string[];
   };
 }
+
+export interface GetFollowingListDTO {
+  message: string;
+  data: {
+    followingList: string[];
+  };
+}
+
+export interface PostFollowDTO {
+  message: string;
+  data: string;
+}
