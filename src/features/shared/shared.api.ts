@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-import { type GetSharedPostDTO } from './shared.dto';
+import { type GetSharedPostsDTO } from './shared.dto';
 import {
   type GetSharedPostsProps,
   type GetSharedPostsFilter,
-} from './shared.model';
+} from './shared.type';
 
 import { RentalTypeValue, RoomTypeValue } from '@/shared/types';
 
@@ -46,5 +46,5 @@ export const getSharedPosts = async ({
     return `${baseURL}?${encodeURIComponent(baseURL)}`;
   };
 
-  return await axios.get<GetSharedPostDTO>(getURI());
+  return await axios.get<GetSharedPostsDTO>(getURI());
 };
