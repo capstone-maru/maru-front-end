@@ -1,4 +1,7 @@
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
+
+import { getSharedPosts, type GetSharedPostsProps } from './shared.api';
 
 export const usePaging = ({
   maxPostPage,
@@ -56,3 +59,15 @@ export const usePaging = ({
     ],
   );
 };
+
+export const useSharedPosts = ({
+  filter,
+  search,
+  enabled,
+}: GetSharedPostsProps & { enabled: boolean }) =>
+  useQuery({
+    queryKey: ['/api/shared/posts/studio', { filter, search }],
+    queryFn: async () => await getSharedPosts({ filter, search }),
+    staleTime: 60000,
+    enabled,
+  });

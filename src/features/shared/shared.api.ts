@@ -1,7 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
-import { type GetSharedPostDTO } from '.';
+import { type GetSharedPostDTO } from './shared.dto';
 
 import {
   RentalTypeValue,
@@ -10,18 +9,18 @@ import {
   type RoomType,
 } from '@/shared/types';
 
-interface Filter {
+export interface GetSharedPostsFilter {
   roomType?: RoomType[];
   rentalType?: RentalType[];
 }
 
-interface GetSharedPostsProps {
-  filter?: Filter;
+export interface GetSharedPostsProps {
+  filter?: GetSharedPostsFilter;
   search?: string;
 }
 
-const filterConvertToValues = (filter: Filter) => {
-  const res: Partial<Record<keyof Filter, number[]>> = {};
+const filterConvertToValues = (filter: GetSharedPostsFilter) => {
+  const res: Partial<Record<keyof GetSharedPostsFilter, number[]>> = {};
 
   if (filter.roomType !== undefined) {
     res.roomType = Object.values(filter.roomType).map(
@@ -60,15 +59,3 @@ export const getSharedPosts = async ({
 
   return await axios.get<GetSharedPostDTO>(getURI());
 };
-
-export const useSharedPosts = ({
-  filter,
-  search,
-  enabled,
-}: GetSharedPostsProps & { enabled: boolean }) =>
-  useQuery({
-    queryKey: ['/api/shared/posts/studio', { filter, search }],
-    queryFn: async () => await getSharedPosts({ filter, search }),
-    staleTime: 60000,
-    enabled,
-  });
