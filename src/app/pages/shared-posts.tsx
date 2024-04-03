@@ -1,6 +1,5 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -14,7 +13,7 @@ import {
   SharedPostsMenu,
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
-import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
+import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
 import { usePaging, useSharedPosts } from '@/features/shared';
 
 const styles = {
@@ -116,11 +115,7 @@ export function SharedPostsPage() {
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
   const { setAuthUserData } = useAuthActions();
 
-  const { data: userInfoData } = useQuery({
-    queryKey: ['/api/auth/initial/info'],
-    queryFn: getUserData,
-    enabled: auth?.refreshToken !== null,
-  });
+  const { data: userInfoData } = useUserData(auth?.accessToken !== null);
 
   const { data: sharedPostsData } = useSharedPosts({
     enabled: auth?.refreshToken !== null,

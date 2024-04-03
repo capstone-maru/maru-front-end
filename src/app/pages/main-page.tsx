@@ -1,6 +1,5 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -8,7 +7,7 @@ import styled from 'styled-components';
 
 import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
-import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
+import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
 
 const styles = {
   container: styled.div`
@@ -67,11 +66,7 @@ export function MainPage() {
   const auth = useAuthValue();
   const { setAuthUserData } = useAuthActions();
 
-  const { data } = useQuery({
-    queryKey: ['/api/auth/initial/info'],
-    queryFn: getUserData,
-    enabled: auth?.refreshToken !== null,
-  });
+  const { data } = useUserData(auth?.accessToken !== null);
 
   const [, setMap] = useState<naver.maps.Map | null>(null);
 
