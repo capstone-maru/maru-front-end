@@ -9,7 +9,7 @@ export const getUserProfileData = async (memberId: string) =>
 
 export const putUserProfileData = async (
   address: string,
-  myFeatures: Array<string | null>,
+  myFeatures: Array<string | undefined>,
 ) =>
   await axios
     .put<PutUserProfileDTO>(`/api/profile`, {

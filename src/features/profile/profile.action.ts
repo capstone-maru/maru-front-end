@@ -13,6 +13,6 @@ export const usePutUserProfileData = () =>
   useMutation({
     mutationFn: async (data: {
       address: string;
-      myFeatures: Array<string | null>;
+      myFeatures: Array<string | undefined>;
     }) => await putUserProfileData(data.address, data.myFeatures),
   });

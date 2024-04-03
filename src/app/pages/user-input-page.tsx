@@ -163,8 +163,8 @@ interface UserProps {
 }
 
 interface SelectedState {
-  smoking: string | null;
-  room: string | null;
+  smoking: string | undefined;
+  room: string | undefined;
 }
 
 export function UserInputPage() {
@@ -187,8 +187,8 @@ export function UserInputPage() {
 
   // myState
   const [selectedState, setSelectedState] = useState<SelectedState>({
-    smoking: null,
-    room: null,
+    smoking: undefined,
+    room: undefined,
   });
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
 
@@ -291,7 +291,7 @@ export function UserInputPage() {
               >
                 {genderText}
               </styles.miniCardKeyword>
-              {selectedState.smoking !== null ? (
+              {selectedState.smoking != null ? (
                 <styles.miniCardKeyword style={{ right: '0' }}>
                   {selectedState.smoking}
                 </styles.miniCardKeyword>

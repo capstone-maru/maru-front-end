@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -245,6 +245,16 @@ export function OptionSection({
   type SelectedOptions = Record<string, boolean>;
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
 
+  useEffect(() => {
+    if (optionFeatures !== undefined) {
+      const initialOptions: SelectedOptions = {};
+      optionFeatures.forEach(option => {
+        initialOptions[option] = true;
+      });
+      setSelectedOptions(initialOptions);
+    }
+  }, [optionFeatures]);
+
   const [toggleStates, setToggleStates] = useState({
     toggle1: false,
     toggle2: false,
@@ -277,11 +287,7 @@ export function OptionSection({
             {LivingPatternOptions.map(option => (
               <CheckItem
                 key={option}
-                $isSelected={
-                  selectedOptions[option] ||
-                  (optionFeatures !== undefined &&
-                    optionFeatures?.includes(option))
-                }
+                $isSelected={selectedOptions[option]}
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -297,11 +303,7 @@ export function OptionSection({
             {EatingOptions.map(option => (
               <CheckItem
                 key={option}
-                $isSelected={
-                  selectedOptions[option] ||
-                  (optionFeatures !== undefined &&
-                    optionFeatures?.includes(option))
-                }
+                $isSelected={selectedOptions[option]}
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -317,11 +319,7 @@ export function OptionSection({
             {HearingOptions.map(option => (
               <CheckItem
                 key={option}
-                $isSelected={
-                  selectedOptions[option] ||
-                  (optionFeatures !== undefined &&
-                    optionFeatures?.includes(option))
-                }
+                $isSelected={selectedOptions[option]}
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -337,11 +335,7 @@ export function OptionSection({
             {WeatherOptions.map(option => (
               <CheckItem
                 key={option}
-                $isSelected={
-                  selectedOptions[option] ||
-                  (optionFeatures !== undefined &&
-                    optionFeatures?.includes(option))
-                }
+                $isSelected={selectedOptions[option]}
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -362,11 +356,7 @@ export function OptionSection({
             {CleanOptions.map(option => (
               <CheckItem
                 key={option}
-                $isSelected={
-                  selectedOptions[option] ||
-                  (optionFeatures !== undefined &&
-                    optionFeatures?.includes(option))
-                }
+                $isSelected={selectedOptions[option]}
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -382,11 +372,7 @@ export function OptionSection({
             {PersonalOptions.map(option => (
               <CheckItem
                 key={option}
-                $isSelected={
-                  selectedOptions[option] ||
-                  (optionFeatures !== undefined &&
-                    optionFeatures?.includes(option))
-                }
+                $isSelected={selectedOptions[option]}
                 onClick={() => {
                   handleOptionClick(option);
                 }}
@@ -448,11 +434,7 @@ export function OptionSection({
             {BudgetOptions.map(option => (
               <styles.budgetContainer key={option}>
                 <CheckItem
-                  $isSelected={
-                    selectedOptions[option] ||
-                    (optionFeatures !== undefined &&
-                      optionFeatures?.includes(option))
-                  }
+                  $isSelected={selectedOptions[option]}
                   onClick={() => {
                     handleOptionClick(option);
                   }}

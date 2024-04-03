@@ -1,10 +1,12 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 import { type User } from '@/entities/user';
+import { getUserData, useAuthState } from '@/features/auth';
 import { useProfileData } from '@/features/profile';
 import { getAge } from '@/shared';
 
@@ -631,29 +633,42 @@ function Maru() {
 }
 
 export function ProfilePage({ memberId }: { memberId: string }) {
-  const { data } = useProfileData(memberId);
-  const [user, setUserData] = useState<User | null>(null);
+  // 로그인된 사용자의 id 가져오기
+  const [auth] = useAuthState();
+  const { data } = useQuery({
+    queryKey: ['/api/auth/initial/info'],
+    queryFn: getUserData,
+    enabled: auth?.accessToken !== undefined,
+  });
+
+  const id = data?.data.memberId;
+
+  // 파라미터로 받은 유저의 데이터 가져오기
+  const user = useProfileData(memberId);
+  const [userData, setUserData] = useState<User | null>(null);
 
   useEffect(() => {
-    if (data !== undefined) {
-      const userProfileData = data.data.authResponse;
+    if (user.data !== undefined) {
+      const userProfileData = user.data.data.authResponse;
 
-      if (userProfileData.memberId === memberId) {
+      if (id === memberId) {
         const { name, email, birthYear, gender, phoneNumber } = userProfileData;
         setUserData({ name, email, birthYear, gender, phoneNumber });
       } else {
         // 로그인 된 사용자와 요청된 id가 다를 때
+        const { name, email, birthYear, gender, phoneNumber } = userProfileData;
+        setUserData({ name, email, birthYear, gender, phoneNumber });
       }
     }
-  }, [data, memberId]);
+  }, [user.data, memberId]);
 
-  const birthYearString: string = user?.birthYear ?? '';
+  const birthYearString: string = userData?.birthYear ?? '';
   const birthYearDate: Date = new Date(birthYearString);
 
   return (
     <styles.pageContainer>
       <UserInfo
-        name={user?.name ?? ''}
+        name={userData?.name ?? ''}
         age={
           String(getAge(birthYearDate)) !== ''
             ? String(getAge(birthYearDate))
@@ -661,7 +676,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         }
       />
       <Auth />
-      <Card name={user?.name} />
+      <Card name={userData?.name} />
       <Maru />
     </styles.pageContainer>
   );

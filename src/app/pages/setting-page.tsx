@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { VitalSection, OptionSection } from '@/components';
 import { getUserData, useAuthState } from '@/features/auth';
-import { useProfileData } from '@/features/profile';
+import { useProfileData, usePutUserProfileData } from '@/features/profile';
 
 const styles = {
   pageContainer: styled.div`
@@ -94,6 +94,31 @@ const styles = {
     stroke-width: 1px;
     stroke: #d3d0d7;
   `,
+  mateButtonContainer: styled.div`
+    display: inline-flex;
+    width: 13.5625rem;
+    padding: 0.75rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 8px;
+    background: var(--Main-1, #e15637);
+    margin: 4.06rem 31rem 9.06rem 31rem;
+    cursor: pointer;
+  `,
+  mateButtonDescription: styled.p`
+    color: #fff;
+
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5rem;
+  `,
+  mateButtonIcon: styled.img`
+    width: 1rem;
+    height: 1rem;
+  `,
 };
 
 interface UserProps {
@@ -104,8 +129,8 @@ interface UserProps {
 }
 
 interface SelectedState {
-  smoking: string | null;
-  room: string | null;
+  smoking: string | undefined;
+  room: string | undefined;
 }
 
 const miniCardKeywordStyle = {
@@ -143,31 +168,67 @@ function MyCard() {
     }
   }, [user.data]);
 
-  // type SelectedOptions = Record<string, boolean>;
-  // const [selectedState, setSelectedState] = useState<SelectedState>({
-  //   smoking: null,
-  //   room: null,
-  // });
-  // const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+  const [selectedState, setSelectedState] = useState<SelectedState>({
+    smoking: undefined,
+    room: undefined,
+  });
+  useEffect(() => {
+    setSelectedState({
+      ...selectedState,
+      smoking: userData?.myFeatures[0],
+      room: userData?.myFeatures[1],
+    });
+  }, [userData?.myFeatures]);
+
+  type SelectedOptions = Record<string, boolean>;
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+  useEffect(() => {
+    if (userData?.myFeatures !== null) {
+      const initialOptions: SelectedOptions = {};
+      userData?.myFeatures.forEach(option => {
+        initialOptions[option] = true;
+      });
+      setSelectedOptions(initialOptions);
+    }
+  }, [userData?.myFeatures]);
 
   const handleFeatureChange = (
     optionName: keyof SelectedState,
     item: string | number,
   ) => {
-    // setSelectedState(prevState => ({
-    //   ...prevState,
-    //   [optionName]: prevState[optionName] === item ? null : item,
-    // }));
+    setSelectedState(prevState => ({
+      ...prevState,
+      [optionName]: prevState[optionName] === item ? null : item,
+    }));
   };
   const handleOptionClick = (option: string) => {
-    // setSelectedOptions(prevSelectedOptions => ({
-    //   ...prevSelectedOptions,
-    //   [option]: !prevSelectedOptions[option],
-    // }));
+    setSelectedOptions(prevSelectedOptions => ({
+      ...prevSelectedOptions,
+      [option]: !prevSelectedOptions[option],
+    }));
   };
 
-  let genderText = null;
+  const { mutate } = usePutUserProfileData();
 
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      const array = Object.keys(selectedOptions).filter(
+        key => selectedOptions[key],
+      );
+
+      const address = '성북 길음동';
+      const myFeatures = [selectedState.smoking, selectedState.room, ...array];
+
+      mutate({ address: address, myFeatures: myFeatures });
+      return undefined;
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [selectedState, selectedOptions]);
+
+  let genderText = null;
   if (userData?.gender === 'MALE') {
     genderText = '남성';
   } else if (userData?.gender === 'FEMALE') {
@@ -184,9 +245,11 @@ function MyCard() {
             <styles.miniCardKeyword style={miniCardKeywordStyle}>
               {genderText}
             </styles.miniCardKeyword>
-            <styles.miniCardKeyword style={{ right: '0' }}>
-              {userData?.myFeatures[0]}
-            </styles.miniCardKeyword>
+            {userData?.myFeatures[0] != null ? (
+              <styles.miniCardKeyword style={{ right: '0' }}>
+                {userData?.myFeatures[0]}
+              </styles.miniCardKeyword>
+            ) : null}
           </styles.miniCardKeywordsContainer>
         </styles.miniCard>
         <styles.checkContainer>
