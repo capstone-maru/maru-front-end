@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 
 import { getSharedPosts } from './shared.api';
-import { type GetSharedPostsProps } from './shared.type';
+import { type GetSharedPostsProps } from './shared.model';
 
 export const usePaging = ({
   maxPostPage,

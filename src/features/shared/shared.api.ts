@@ -4,7 +4,7 @@ import { type GetSharedPostDTO } from './shared.dto';
 import {
   type GetSharedPostsProps,
   type GetSharedPostsFilter,
-} from './shared.type';
+} from './shared.model';
 
 import { RentalTypeValue, RoomTypeValue } from '@/shared/types';
 
