@@ -6,19 +6,23 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
 import {
   SharedPostsMenu,
-  SharedPostsFilter,
+  SharedPostFilters,
   PostCard,
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
 import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
+import { usePaging } from '@/features/shared';
 
 const styles = {
   container: styled.div`
     padding-top: 4.12rem;
+    padding-inline: 16rem;
     width: 100%;
+    height: fit-content;
 
     display: flex;
     flex-direction: column;
@@ -26,13 +30,76 @@ const styles = {
   SharedPostsMenu: styled(SharedPostsMenu)`
     margin-bottom: 2rem;
   `,
-  SharedPostsFilter: styled(SharedPostsFilter)`
-    margin-bottom: 5.19rem;
+  SharedPostsFilter: styled(SharedPostFilters)`
+    margin-bottom: 2.81rem;
+  `,
+  createButtonRow: styled.div`
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-bottom: 4.12rem;
+  `,
+  createButton: styled.button`
+    all: unset;
+
+    cursor: pointer;
+
+    display: flex;
+    width: 7.125rem;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 8px;
+    background: var(--Black, #35373a);
+
+    color: #fff;
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5rem;
   `,
   posts: styled.div`
     display: flex;
     flex-direction: column;
+    padding-inline: 2rem;
     gap: 2rem;
+  `,
+  CircularButton: styled(CircularButton)`
+    scale: 0.9;
+  `,
+  pagingRow: styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-block: 7rem;
+  `,
+  paging: styled.div`
+    display: flex;
+    gap: 3rem;
+
+    button {
+      all: unset;
+      cursor: pointer;
+
+      color: #b2b2b2;
+      font-family: 'Spoqa Han Sans Neo';
+      font-size: 1.25rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 120%;
+
+      &[class~='current'] {
+        color: var(--Black, #35373a);
+        font-family: 'Spoqa Han Sans Neo';
+        font-size: 1.25rem;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 120%;
+        text-decoration-line: underline;
+      }
+    }
   `,
   cards: styled.div`
     padding-left: 2.62rem;
@@ -55,48 +122,102 @@ export function SharedPostsPage() {
     enabled: auth?.refreshToken !== null,
   });
 
+  const {
+    page,
+    maxPostPage,
+    sliceSize,
+    currentSlice,
+    isFirstPage,
+    isLastPage,
+    handleNextPage,
+    handlePrevPage,
+  } = usePaging({
+    maxPostPage: 12,
+    sliceSize: 10,
+  });
+
   useEffect(() => {
     if (data !== undefined) {
       const userData = data.data;
 
       setAuthUserData(userData);
       if (userData.initialized) {
-        router.replace('/profile');
+        // router.replace('/profile');
       }
     }
   }, [data, router, setAuthUserData]);
 
   useEffect(() => {
-    if (auth?.user?.initialized === true) {
-      router.replace('/profile');
+    if (data?.data.initialized === true) {
+      // router.replace('/profile');
     }
-  }, [auth, router]);
+  }, [data, router]);
 
   return (
     <styles.container>
       <styles.SharedPostsMenu selected={selected} handleSelect={setSelected} />
       <styles.SharedPostsFilter selected={selected} />
       {selected === 'hasRoom' ? (
-        <styles.posts>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-          <Link href="/shared/1">
-            <PostCard />
-          </Link>
-        </styles.posts>
+        <>
+          <styles.createButtonRow>
+            <Link href="/shared/writing">
+              <styles.createButton>작성하기</styles.createButton>
+            </Link>
+          </styles.createButtonRow>
+          <styles.posts>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+            <Link href="/shared/1">
+              <PostCard />
+            </Link>
+          </styles.posts>
+          <styles.pagingRow>
+            <styles.CircularButton
+              direction="left"
+              disabled={isFirstPage}
+              onClick={handlePrevPage}
+            />
+            <styles.paging>
+              {Array.from({
+                length: Math.min(
+                  maxPostPage - currentSlice * sliceSize,
+                  sliceSize,
+                ),
+              }).map((_, index) => (
+                <button
+                  type="button"
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${currentSlice}-${index}`}
+                  className={
+                    page === index + 1 + currentSlice * sliceSize
+                      ? 'current'
+                      : ''
+                  }
+                >
+                  {index + 1 + currentSlice * sliceSize}
+                </button>
+              ))}
+            </styles.paging>
+            <styles.CircularButton
+              direction="right"
+              disabled={isLastPage}
+              onClick={handleNextPage}
+            />
+          </styles.pagingRow>
+        </>
       ) : (
         <styles.cards>
           <Link href="/profile/memberId">
