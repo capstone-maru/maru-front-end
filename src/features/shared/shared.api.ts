@@ -1,23 +1,12 @@
 import axios from 'axios';
 
 import { type GetSharedPostDTO } from './shared.dto';
-
 import {
-  RentalTypeValue,
-  RoomTypeValue,
-  type RentalType,
-  type RoomType,
-} from '@/shared/types';
+  type GetSharedPostsProps,
+  type GetSharedPostsFilter,
+} from './shared.type';
 
-export interface GetSharedPostsFilter {
-  roomType?: RoomType[];
-  rentalType?: RentalType[];
-}
-
-export interface GetSharedPostsProps {
-  filter?: GetSharedPostsFilter;
-  search?: string;
-}
+import { RentalTypeValue, RoomTypeValue } from '@/shared/types';
 
 const filterConvertToValues = (filter: GetSharedPostsFilter) => {
   const res: Partial<Record<keyof GetSharedPostsFilter, number[]>> = {};
