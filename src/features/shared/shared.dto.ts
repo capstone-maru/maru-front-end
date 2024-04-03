@@ -1,15 +1,18 @@
 export interface GetSharedPostDTO {
-  content: PostContentObject[];
-  pageable: PageableObject;
-  last: boolean;
-  totalPages: number;
-  totalElements: number;
-  first: boolean;
-  size: number;
-  number: number;
-  sort: SortObject;
-  numberOfElements: number;
-  empty: boolean;
+  message: string;
+  data: {
+    content: PostContentObject[];
+    pageable: PageableObject;
+    last: boolean;
+    totalPages: number;
+    totalElements: number;
+    first: boolean;
+    size: number;
+    number: number;
+    sort: SortObject;
+    numberOfElements: number;
+    empty: boolean;
+  };
 }
 
 export interface PostContentObject {
