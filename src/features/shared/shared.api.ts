@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { type GetSharedPostsDTO } from './shared.dto';
+import { type GetSharedPostDTO, type GetSharedPostsDTO } from './shared.dto';
 import {
   type GetSharedPostsProps,
   type GetSharedPostsFilter,
@@ -48,3 +48,6 @@ export const getSharedPosts = async ({
 
   return await axios.get<GetSharedPostsDTO>(getURI());
 };
+
+export const getSharedPost = async (postId: number) =>
+  await axios.get<GetSharedPostDTO>(`/api/shared/posts/studio/${postId}`);
