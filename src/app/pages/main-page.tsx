@@ -97,10 +97,8 @@ export function MainPage() {
 
   useEffect(() => {
     if (data !== undefined) {
-      const userData = data.data;
-
-      setAuthUserData(userData);
-      if (userData.initialized) {
+      setAuthUserData(data);
+      if (data.initialized) {
         // router.replace('/profile');
       }
     }

@@ -102,7 +102,7 @@ export function NavigationBar() {
       <styles.links>
         <Link href="/shared">메이트찾기</Link>
         <Link href="/community">커뮤니티</Link>
-        <Link href={`/profile/${data?.data.memberId}`}>마이페이지</Link>
+        <Link href={`/profile/${data?.memberId}`}>마이페이지</Link>
         {isLogin && (
           <styles.logout
             onClick={() => {

@@ -139,20 +139,12 @@ export function SharedPostsPage() {
 
   useEffect(() => {
     if (userInfoData !== undefined) {
-      const userData = userInfoData.data;
-
-      setAuthUserData(userData);
-      if (userData.initialized) {
+      setAuthUserData(userInfoData);
+      if (userInfoData.initialized) {
         // router.replace('/profile');
       }
     }
   }, [userInfoData, router, setAuthUserData]);
-
-  useEffect(() => {
-    if (userInfoData?.data.initialized === true) {
-      // router.replace('/profile');
-    }
-  }, [userInfoData, router]);
 
   return (
     <styles.container>

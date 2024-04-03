@@ -68,7 +68,8 @@ export const useSharedPosts = ({
 }: GetSharedPostsProps & { enabled: boolean }) =>
   useQuery({
     queryKey: ['/api/shared/posts/studio', { filter, search }],
-    queryFn: async () => await getSharedPosts({ filter, search }),
+    queryFn: async () =>
+      await getSharedPosts({ filter, search }).then(res => res.data),
     staleTime: 60000,
     enabled,
   });
