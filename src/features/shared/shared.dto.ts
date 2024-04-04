@@ -89,15 +89,10 @@ export interface GetSharedPostDTO extends SuccessBaseDTO {
   id: number;
   title: string;
   content: string;
-  publisherGender: string;
   roomImages: Set<{
     fileName: string;
     isThumbnail: boolean;
     order: number;
-    createdAt: Date;
-    createdBy: string;
-    modifiedAt: Date;
-    modifiedBy: string;
   }>;
   publisherAccount: {
     memberId: string;
@@ -106,12 +101,8 @@ export interface GetSharedPostDTO extends SuccessBaseDTO {
     birthYear: string;
     gender: string;
     phoneNumber: string;
-    myCard: {
-      myFeatures: string[];
-    };
-    mateCard: {
-      myFeatures: string[];
-    };
+    myCardFeatures: string[];
+    mateCardFeatures: string[];
     createdAt: Date;
     createdBy: string;
     modifiedAt: Date;
@@ -136,11 +127,12 @@ export interface GetSharedPostDTO extends SuccessBaseDTO {
     numberOfRoom: number;
     rentalType: RentalType;
     price: number;
-    monthlyFee: number;
     managementFee: number;
     expectedPayment: number;
-    recruitmentCapacity: number;
+    monthlyFee: number;
   };
+  isScrapped: boolean;
+  scrapCount: number;
   createdAt: Date;
   createdBy: string;
   modifiedAt: Date;
