@@ -13,6 +13,8 @@ import {
   ImageGrid,
   MiniCircularProfileImage,
 } from '@/components/shared-post-page';
+import { useAuthValue } from '@/features/auth';
+import { useSharedPost } from '@/features/shared';
 
 const styles = {
   container: styled.div`
@@ -348,10 +350,6 @@ const dummyParticipants = [
   'https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1713139200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=UL1aEtuLGKayYQ5L9ORuMtrpAC9EkOdVY6s2yYhNVuMpzbgXJ0Umi48NzpdET9P6fgCeOxrrwPA9gUVlTpWXWMNPapo-SJmV-7h~kNl23ClcmQ0I1ybBXrNn7ywYZWbnuNvFjSaBmtqBPaWR1F-E69qwN6ohhNS2j3piYxrCuR~ep6iAxAyrGP7Bt9mvDg9NYw5R~HsYWkcyEIF7kdfeJMsZ~SKhJ5aQTfngxKZEW7eB31bO5bXxQcCXi3Qia~zNkUAysBPp8Tx-pZQafjLHGM-ZogjUgOcKT9TyEDufX436AQUx~cBooRbkfXJpyexKXzs20iU4Y8HswRwXVJyJuw__',
 ];
 
-interface Props {
-  post: { title: string; content: string };
-}
-
 function Item({ label, data }: { label: string; data: string }) {
   return (
     <styles.dealItemContainer>
@@ -361,7 +359,7 @@ function Item({ label, data }: { label: string; data: string }) {
   );
 }
 
-export function SharedPostPage({ post }: Props) {
+export function SharedPostPage({ postId }: { postId: number }) {
   const [map, setMap] = useState<naver.maps.Map | null>(null);
 
   const handleClickTitle = () => {
@@ -382,12 +380,19 @@ export function SharedPostPage({ post }: Props) {
     );
   }, []);
 
+  const auth = useAuthValue();
+
+  const { data: sharedPost } = useSharedPost({
+    postId,
+    enabled: auth?.accessToken !== undefined,
+  });
+
   return (
     <styles.container>
       <styles.houseInfo>
         <ImageGrid images={dummyImages} />
         <styles.titleRow>
-          <styles.title>{post.title}</styles.title>
+          <styles.title>{sharedPost?.data?.title}</styles.title>
           <Bookmark
             hasBorder={false}
             color="#000"
