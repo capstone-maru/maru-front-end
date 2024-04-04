@@ -158,8 +158,8 @@ export function VitalSection({
 }) {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedState, setSelectedState] = useState<SelectedState>({
-    smoking: smoking,
-    room: room,
+    smoking: undefined,
+    room: undefined,
   });
   useEffect(() => {
     setSelectedState({

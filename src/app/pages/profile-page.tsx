@@ -1,12 +1,12 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+// import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 import { type User } from '@/entities/user';
-import { getUserData, useAuthState } from '@/features/auth';
+// import { getUserData, useAuthState } from '@/features/auth';
 import { useProfileData } from '@/features/profile';
 import { getAge } from '@/shared';
 
@@ -633,32 +633,27 @@ function Maru() {
 }
 
 export function ProfilePage({ memberId }: { memberId: string }) {
-  // 로그인된 사용자의 id 가져오기
-  const [auth] = useAuthState();
-  const { data } = useQuery({
-    queryKey: ['/api/auth/initial/info'],
-    queryFn: getUserData,
-    enabled: auth?.accessToken !== undefined,
-  });
+  // const [auth] = useAuthState();
+  // const { data } = useQuery({
+  //   queryKey: ['/api/auth/initial/info'],
+  //   queryFn: getUserData,
+  //   enabled: auth?.accessToken !== undefined,
+  // });
 
-  const id = data?.data.memberId;
+  // const id = data?.data.memberId;
 
-  // 파라미터로 받은 유저의 데이터 가져오기
   const user = useProfileData(memberId);
   const [userData, setUserData] = useState<User | null>(null);
+  // const [isMySelf, setIsMySelf] = useState(false);
 
   useEffect(() => {
     if (user.data !== undefined) {
       const userProfileData = user.data.data.authResponse;
-
-      if (id === memberId) {
-        const { name, email, birthYear, gender, phoneNumber } = userProfileData;
-        setUserData({ name, email, birthYear, gender, phoneNumber });
-      } else {
-        // 로그인 된 사용자와 요청된 id가 다를 때
-        const { name, email, birthYear, gender, phoneNumber } = userProfileData;
-        setUserData({ name, email, birthYear, gender, phoneNumber });
-      }
+      const { name, email, birthYear, gender, phoneNumber } = userProfileData;
+      setUserData({ name, email, birthYear, gender, phoneNumber });
+      // if (id === memberId) {
+      //   setIsMySelf(true);
+      // }
     }
   }, [user.data, memberId]);
 

@@ -331,14 +331,14 @@ export function UserInputPage() {
               <styles.horizontalLine />
             </styles.lineContainer>
             <OptionSection
-              optionFeatures={[]}
+              optionFeatures={undefined}
               onFeatureChange={handleOptionClick}
             />
           </styles.checkContainer>
           <styles.checkContainer $active={activeContainer === 'mate'}>
             <VitalSection
               gender={user?.gender}
-              birthYear={user?.birthYear}
+              birthYear={undefined}
               smoking={undefined}
               room={undefined}
               onFeatureChange={handleMateFeatureChange}
@@ -347,7 +347,7 @@ export function UserInputPage() {
               <styles.horizontalLine />
             </styles.lineContainer>
             <OptionSection
-              optionFeatures={[]}
+              optionFeatures={undefined}
               onFeatureChange={handleMateOptionClick}
             />
           </styles.checkContainer>

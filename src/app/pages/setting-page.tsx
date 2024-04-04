@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -94,31 +95,6 @@ const styles = {
     stroke-width: 1px;
     stroke: #d3d0d7;
   `,
-  mateButtonContainer: styled.div`
-    display: inline-flex;
-    width: 13.5625rem;
-    padding: 0.75rem 1.5rem;
-    justify-content: center;
-    align-items: center;
-    gap: 0.25rem;
-    border-radius: 8px;
-    background: var(--Main-1, #e15637);
-    margin: 4.06rem 31rem 9.06rem 31rem;
-    cursor: pointer;
-  `,
-  mateButtonDescription: styled.p`
-    color: #fff;
-
-    font-family: Pretendard;
-    font-size: 1.125rem;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 1.5rem;
-  `,
-  mateButtonIcon: styled.img`
-    width: 1rem;
-    height: 1rem;
-  `,
 };
 
 interface UserProps {
@@ -133,13 +109,15 @@ interface SelectedState {
   room: string | undefined;
 }
 
+type SelectedOptions = Record<string, boolean>;
+
 const miniCardKeywordStyle = {
   border: 'none',
   background: 'var(--Gray-5, #828282)',
   color: '#fff',
 };
 
-function MyCard() {
+export function SettingPage({ type }: { type: string }) {
   const [auth] = useAuthState();
   const { data } = useQuery({
     queryKey: ['/api/auth/initial/info'],
@@ -180,12 +158,11 @@ function MyCard() {
     });
   }, [userData?.myFeatures]);
 
-  type SelectedOptions = Record<string, boolean>;
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
   useEffect(() => {
     if (userData?.myFeatures !== null) {
       const initialOptions: SelectedOptions = {};
-      userData?.myFeatures.forEach(option => {
+      userData?.myFeatures.slice(2).forEach(option => {
         initialOptions[option] = true;
       });
       setSelectedOptions(initialOptions);
@@ -209,41 +186,72 @@ function MyCard() {
   };
 
   const { mutate } = usePutUserProfileData();
+  const router = useRouter();
+  // const isClickedFirst = useRef(false);
+  const isSaved = true;
+
+  const saveData = () => {
+    const array = Object.keys(selectedOptions).filter(
+      key => selectedOptions[key],
+    );
+
+    const address = '성북 길음동';
+    const myFeatures = [selectedState.smoking, selectedState.room, ...array];
+
+    mutate({ address: address, myFeatures: myFeatures });
+  };
+
+  const handleBeforeUnload = () => {
+    saveData();
+  };
+
+  // const handlePopState = () => {
+  //   saveData();
+  //   history.go(-1);
+  // };
+
+  // useEffect(() => {
+  //   if (!isClickedFirst.current) {
+  //     history.pushState(null, '', '');
+  //     isClickedFirst.current = true;
+  //   }
+  // }, []);
 
   useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      const array = Object.keys(selectedOptions).filter(
-        key => selectedOptions[key],
-      );
-
-      const address = '성북 길음동';
-      const myFeatures = [selectedState.smoking, selectedState.room, ...array];
-
-      mutate({ address: address, myFeatures: myFeatures });
-      return undefined;
+    const originalPush = router.push.bind(router);
+    router.push = (href: string): void => {
+      if (!isSaved) {
+        originalPush(href);
+        return;
+      }
+      saveData();
     };
+    return () => {
+      router.push = originalPush;
+    };
+  }, [isSaved, saveData]);
+
+  useEffect(() => {
     window.addEventListener('beforeunload', handleBeforeUnload);
+    // window.addEventListener('popstate', handlePopState);
+
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
+      // window.removeEventListener('popstate', handlePopState);
     };
-  }, [selectedState, selectedOptions]);
-
-  let genderText = null;
-  if (userData?.gender === 'MALE') {
-    genderText = '남성';
-  } else if (userData?.gender === 'FEMALE') {
-    genderText = '여성';
-  }
+  }, [handleBeforeUnload]);
 
   return (
     <styles.pageContainer>
-      <styles.cardName>내 카드 &gt; {userData?.name}</styles.cardName>
+      <styles.cardName>
+        {type} 카드 &gt; {userData?.name}
+      </styles.cardName>
       <styles.cardContainer>
         <styles.miniCard>
-          <styles.miniCardName>내카드</styles.miniCardName>
+          <styles.miniCardName>{type}카드</styles.miniCardName>
           <styles.miniCardKeywordsContainer>
             <styles.miniCardKeyword style={miniCardKeywordStyle}>
-              {genderText}
+              {userData?.gender === 'MALE' ? '남성' : '여성'}
             </styles.miniCardKeyword>
             {userData?.myFeatures[0] != null ? (
               <styles.miniCardKeyword style={{ right: '0' }}>
@@ -271,74 +279,4 @@ function MyCard() {
       </styles.cardContainer>
     </styles.pageContainer>
   );
-}
-
-function MateCard({ index }: { index: string | null }) {
-  // type SelectedOptions = Record<string, boolean>;
-  // const [selectedState, setSelectedState] = useState<SelectedState>({
-  //   smoking: null,
-  //   room: null,
-  // });
-  // const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
-
-  const handleFeatureChange = (
-    optionName: keyof SelectedState,
-    item: string | number,
-  ) => {
-    // setSelectedState(prevState => ({
-    //   ...prevState,
-    //   [optionName]: prevState[optionName] === item ? null : item,
-    // }));
-  };
-  const handleOptionClick = (option: string) => {
-    // setSelectedOptions(prevSelectedOptions => ({
-    //   ...prevSelectedOptions,
-    //   [option]: !prevSelectedOptions[option],
-    // }));
-  };
-  return (
-    <styles.pageContainer>
-      <styles.cardName>메이트 카드 &gt; 메이트{index}</styles.cardName>
-      <styles.cardContainer>
-        <styles.miniCard>
-          <styles.miniCardName>메이트카드</styles.miniCardName>
-          <styles.miniCardKeywordsContainer>
-            <styles.miniCardKeyword>여성</styles.miniCardKeyword>
-            <styles.miniCardKeyword style={{ right: '0' }}>
-              비흡연
-            </styles.miniCardKeyword>
-            <styles.miniCardKeyword style={{ bottom: '0' }}>
-              아침형
-            </styles.miniCardKeyword>
-          </styles.miniCardKeywordsContainer>
-        </styles.miniCard>
-        <styles.checkContainer>
-          <VitalSection
-            gender={undefined}
-            birthYear={undefined}
-            smoking={undefined}
-            room={undefined}
-            onFeatureChange={handleFeatureChange}
-          />
-          <styles.lineContainer>
-            <styles.horizontalLine />
-          </styles.lineContainer>
-          <OptionSection
-            optionFeatures={undefined}
-            onFeatureChange={handleOptionClick}
-          />
-        </styles.checkContainer>
-      </styles.cardContainer>
-    </styles.pageContainer>
-  );
-}
-
-export function SettingPage({
-  type,
-  index,
-}: {
-  type: string;
-  index: string | null;
-}) {
-  return <>{type === '내' ? <MyCard /> : <MateCard index={index} />}</>;
 }
