@@ -1,38 +1,34 @@
 export type StorageType = 'session' | 'local';
 
-export const save = ({
+export const save = <T>({
   type,
   key,
   value,
 }: {
   type: StorageType;
   key: string;
-  value: string;
+  value: T;
 }) => {
   if (typeof window === 'undefined') return;
 
-  if (type === 'local') {
-    localStorage.setItem(key, value);
-  } else {
-    sessionStorage.setItem(key, value);
-  }
+  const storage = type === 'local' ? localStorage : sessionStorage;
+  storage.setItem(key, JSON.stringify(value));
 };
 
-export const load = ({ type, key }: { type: StorageType; key: string }) => {
+export const load = <T>({ type, key }: { type: StorageType; key: string }) => {
   if (typeof window === 'undefined') return null;
 
-  if (type === 'local') {
-    return localStorage.getItem(key);
-  }
-  return sessionStorage.getItem(key);
+  const storage = type === 'local' ? localStorage : sessionStorage;
+  const storedValue = storage.getItem(key);
+  if (storedValue === null) return null;
+
+  const parsedValue = JSON.parse(storedValue) as T;
+  return parsedValue;
 };
 
 export const remove = ({ type, key }: { type: StorageType; key: string }) => {
   if (typeof window === 'undefined') return;
 
-  if (type === 'local') {
-    localStorage.removeItem(key);
-  } else {
-    sessionStorage.removeItem(key);
-  }
+  const storage = type === 'local' ? localStorage : sessionStorage;
+  storage.removeItem(key);
 };
