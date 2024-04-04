@@ -1,6 +1,5 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
@@ -9,10 +8,10 @@ import { SearchBox } from './SearchBox';
 
 import {
   getAuthLogout,
-  getUserData,
   useAuthActions,
   useAuthIsLogin,
   useAuthValue,
+  useUserData,
 } from '@/features/auth';
 import { load } from '@/shared/storage';
 
@@ -76,11 +75,7 @@ export function NavigationBar() {
   const auth = useAuthValue();
   const { logout } = useAuthActions();
 
-  const { data } = useQuery({
-    queryKey: ['/api/auth/initial/info'],
-    queryFn: getUserData,
-    enabled: auth?.refreshToken !== null,
-  });
+  const { data } = useUserData(auth?.accessToken !== undefined);
 
   const handleLogout = () => {
     const refreshToken = load<string>({ type: 'local', key: 'refreshToken' });
@@ -107,7 +102,7 @@ export function NavigationBar() {
       <styles.links>
         <Link href="/shared">메이트찾기</Link>
         <Link href="/community">커뮤니티</Link>
-        <Link href={`/profile/${data?.data.memberId}`}>마이페이지</Link>
+        <Link href={`/profile/${data?.memberId}`}>마이페이지</Link>
         {isLogin && (
           <styles.logout
             onClick={() => {

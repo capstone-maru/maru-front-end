@@ -1,6 +1,5 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -14,8 +13,8 @@ import {
   PostCard,
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
-import { getUserData, useAuthActions, useAuthValue } from '@/features/auth';
-import { usePaging } from '@/features/shared';
+import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
+import { usePaging, useSharedPosts } from '@/features/shared';
 
 const styles = {
   container: styled.div`
@@ -114,17 +113,13 @@ export function SharedPostsPage() {
 
   const auth = useAuthValue();
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
+  const [totalPageCount, setTotalPageCount] = useState(0);
   const { setAuthUserData } = useAuthActions();
 
-  const { data } = useQuery({
-    queryKey: ['/api/auth/initial/info'],
-    queryFn: getUserData,
-    enabled: auth?.refreshToken !== null,
-  });
+  const { data: userData } = useUserData(auth?.accessToken !== undefined);
 
   const {
     page,
-    maxPostPage,
     sliceSize,
     currentSlice,
     isFirstPage,
@@ -132,26 +127,29 @@ export function SharedPostsPage() {
     handleNextPage,
     handlePrevPage,
   } = usePaging({
-    maxPostPage: 12,
+    totalPages: totalPageCount,
     sliceSize: 10,
   });
 
-  useEffect(() => {
-    if (data !== undefined) {
-      const userData = data.data;
+  const { data: sharedPosts } = useSharedPosts({
+    enabled: auth?.accessToken !== undefined && selected === 'hasRoom',
+    page: page - 1,
+  });
 
+  useEffect(() => {
+    if (sharedPosts !== undefined) {
+      setTotalPageCount(sharedPosts.data.totalPages);
+    }
+  }, [sharedPosts]);
+
+  useEffect(() => {
+    if (userData !== undefined) {
       setAuthUserData(userData);
       if (userData.initialized) {
         // router.replace('/profile');
       }
     }
-  }, [data, router, setAuthUserData]);
-
-  useEffect(() => {
-    if (data?.data.initialized === true) {
-      // router.replace('/profile');
-    }
-  }, [data, router]);
+  }, [userData, router, setAuthUserData]);
 
   return (
     <styles.container>
@@ -165,24 +163,11 @@ export function SharedPostsPage() {
             </Link>
           </styles.createButtonRow>
           <styles.posts>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
+            {sharedPosts?.data.content.map(post => (
+              <Link key={post.id} href={`/shared/${post.id}`}>
+                <PostCard />
+              </Link>
+            ))}
           </styles.posts>
           <styles.pagingRow>
             <styles.CircularButton
@@ -193,7 +178,7 @@ export function SharedPostsPage() {
             <styles.paging>
               {Array.from({
                 length: Math.min(
-                  maxPostPage - currentSlice * sliceSize,
+                  totalPageCount - currentSlice * sliceSize,
                   sliceSize,
                 ),
               }).map((_, index) => (
