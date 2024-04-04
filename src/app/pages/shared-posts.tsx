@@ -117,7 +117,7 @@ export function SharedPostsPage() {
 
   const { data: userInfoData } = useUserData(auth?.accessToken !== undefined);
 
-  const { data: sharedPostsData } = useSharedPosts({
+  const {} = useSharedPosts({
     enabled: auth?.accessToken !== undefined,
   });
 
@@ -134,10 +134,6 @@ export function SharedPostsPage() {
     maxPostPage: 12,
     sliceSize: 10,
   });
-
-  useEffect(() => {
-    console.log(sharedPostsData?.data);
-  }, [sharedPostsData]);
 
   useEffect(() => {
     if (userInfoData !== undefined) {
