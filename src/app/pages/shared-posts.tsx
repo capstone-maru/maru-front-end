@@ -115,7 +115,7 @@ export function SharedPostsPage() {
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
   const { setAuthUserData } = useAuthActions();
 
-  const { data: userInfoData } = useUserData(auth?.accessToken !== null);
+  const { data: userInfoData } = useUserData(auth?.accessToken !== undefined);
 
   const { data: sharedPostsData } = useSharedPosts({
     enabled: auth?.refreshToken !== null,
@@ -135,7 +135,9 @@ export function SharedPostsPage() {
     sliceSize: 10,
   });
 
-  useEffect(() => {}, [sharedPostsData]);
+  useEffect(() => {
+    console.log(sharedPostsData?.data);
+  }, [sharedPostsData]);
 
   useEffect(() => {
     if (userInfoData !== undefined) {

@@ -75,7 +75,7 @@ export function NavigationBar() {
   const auth = useAuthValue();
   const { logout } = useAuthActions();
 
-  const { data } = useUserData(auth?.accessToken !== null);
+  const { data } = useUserData(auth?.accessToken !== undefined);
 
   const handleLogout = () => {
     const refreshToken = load<string>({ type: 'local', key: 'refreshToken' });

@@ -66,7 +66,7 @@ export function MainPage() {
   const auth = useAuthValue();
   const { setAuthUserData } = useAuthActions();
 
-  const { data } = useUserData(auth?.accessToken !== null);
+  const { data } = useUserData(auth?.accessToken !== undefined);
 
   const [, setMap] = useState<naver.maps.Map | null>(null);
 
