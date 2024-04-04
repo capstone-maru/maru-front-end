@@ -33,6 +33,7 @@ const filterConvertToValues = (filter: GetSharedPostsFilter) => {
 export const getSharedPosts = async ({
   filter,
   search,
+  page,
 }: GetSharedPostsProps) => {
   const getURI = () => {
     const baseURL = '/api/shared/posts/studio';
@@ -46,8 +47,12 @@ export const getSharedPosts = async ({
       query += `&search=${search}`;
     }
 
+    if (page !== undefined) {
+      query += `&page=${page}`;
+    }
+
     if (query === '') return baseURL;
-    return `${baseURL}?${encodeURIComponent(baseURL)}`;
+    return `${baseURL}?${encodeURIComponent(query)}`;
   };
 
   return await axios.get<GetSharedPostsDTO>(getURI());

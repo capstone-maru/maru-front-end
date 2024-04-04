@@ -8,9 +8,9 @@ import styled from 'styled-components';
 import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
 import {
-  PostCard,
-  SharedPostFilters,
   SharedPostsMenu,
+  SharedPostFilters,
+  PostCard,
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
@@ -113,17 +113,13 @@ export function SharedPostsPage() {
 
   const auth = useAuthValue();
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
+  const [totalPageCount, setTotalPageCount] = useState(0);
   const { setAuthUserData } = useAuthActions();
 
-  const { data: userInfoData } = useUserData(auth?.accessToken !== undefined);
-
-  const {} = useSharedPosts({
-    enabled: auth?.accessToken !== undefined,
-  });
+  const { data: userData } = useUserData(auth?.accessToken !== undefined);
 
   const {
     page,
-    maxPostPage,
     sliceSize,
     currentSlice,
     isFirstPage,
@@ -131,18 +127,29 @@ export function SharedPostsPage() {
     handleNextPage,
     handlePrevPage,
   } = usePaging({
-    maxPostPage: 12,
+    totalPages: totalPageCount,
     sliceSize: 10,
   });
 
+  const { data: sharedPosts } = useSharedPosts({
+    enabled: auth?.accessToken !== undefined && selected === 'hasRoom',
+    page: page - 1,
+  });
+
   useEffect(() => {
-    if (userInfoData !== undefined) {
-      setAuthUserData(userInfoData);
-      if (userInfoData.initialized) {
+    if (sharedPosts !== undefined) {
+      setTotalPageCount(sharedPosts.data.totalPages);
+    }
+  }, [sharedPosts]);
+
+  useEffect(() => {
+    if (userData !== undefined) {
+      setAuthUserData(userData);
+      if (userData.initialized) {
         // router.replace('/profile');
       }
     }
-  }, [userInfoData, router, setAuthUserData]);
+  }, [userData, router, setAuthUserData]);
 
   return (
     <styles.container>
@@ -156,24 +163,11 @@ export function SharedPostsPage() {
             </Link>
           </styles.createButtonRow>
           <styles.posts>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
-            <Link href="/shared/1">
-              <PostCard />
-            </Link>
+            {sharedPosts?.data.content.map(post => (
+              <Link key={post.id} href={`/shared/${post.id}`}>
+                <PostCard />
+              </Link>
+            ))}
           </styles.posts>
           <styles.pagingRow>
             <styles.CircularButton
@@ -184,7 +178,7 @@ export function SharedPostsPage() {
             <styles.paging>
               {Array.from({
                 length: Math.min(
-                  maxPostPage - currentSlice * sliceSize,
+                  totalPageCount - currentSlice * sliceSize,
                   sliceSize,
                 ),
               }).map((_, index) => (

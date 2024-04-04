@@ -8,4 +8,5 @@ export interface GetSharedPostsFilter {
 export interface GetSharedPostsProps {
   filter?: GetSharedPostsFilter;
   search?: string;
+  page?: number;
 }
