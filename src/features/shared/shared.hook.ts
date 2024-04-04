@@ -1,7 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 
-import { getSharedPost, getSharedPosts, scrapPost } from './shared.api';
+import {
+  deleteSharedPost,
+  getSharedPost,
+  getSharedPosts,
+  scrapPost,
+} from './shared.api';
 import { type GetSharedPostsProps } from './shared.type';
 
 import { type SuccessBaseDTO } from '@/shared/types';
@@ -90,7 +95,23 @@ export const useSharedPost = ({
     enabled,
   });
 
-export const useScrapPost = ({
+export const useDeleteSharedPost = ({
+  postId,
+  onSuccess,
+  onError,
+}: {
+  postId: number;
+  onSuccess: (data: SuccessBaseDTO) => void;
+  onError: (error: Error) => void;
+}) =>
+  useMutation({
+    mutationFn: async () =>
+      await deleteSharedPost(postId).then(response => response.data),
+    onSuccess,
+    onError,
+  });
+
+export const useScrapSharedPost = ({
   postId,
   onSuccess,
   onError,

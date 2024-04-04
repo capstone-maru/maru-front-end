@@ -56,5 +56,8 @@ export const getSharedPosts = async ({
 export const getSharedPost = async (postId: number) =>
   await axios.get<GetSharedPostDTO>(`/api/shared/posts/studio/${postId}`);
 
+export const deleteSharedPost = async (postId: number) =>
+  await axios.delete<SuccessBaseDTO>(`/api/shared/posts/studio/${postId}`);
+
 export const scrapPost = async (postId: number) =>
   await axios.get<SuccessBaseDTO>(`/api/shared/posts/studio/${postId}/scrap`);
