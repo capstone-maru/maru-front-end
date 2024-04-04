@@ -1,10 +1,4 @@
 import {
-  type SortObject,
-  type PageableObject,
-  type PostContentObject,
-} from './shared.type';
-
-import {
   type RentalType,
   type RoomType,
   type SuccessBaseDTO,
@@ -13,15 +7,79 @@ import {
 export interface GetSharedPostsDTO extends SuccessBaseDTO {
   message: string;
   data: {
-    content: PostContentObject[];
-    pageable: PageableObject;
+    content: Array<{
+      id: number;
+      title: string;
+      content: string;
+      thumbnail: {
+        fileName: string;
+        isThumbnail: boolean;
+        order: number;
+      };
+      publisherAccount: {
+        memberId: string;
+        email: string;
+        nickname: string;
+        birthYear: string;
+        gender: string;
+        phoneNumber: string;
+        createdAt: Date;
+        createdBy: string;
+        modifiedAt: Date;
+        modifiedBy: string;
+      };
+      roomInfo: {
+        id: number;
+        address: {
+          city: string;
+          oldAddress: string;
+          roadAddress: string;
+          detailAddress?: string;
+          stationName: string;
+          stationTime: number;
+          busStopTime: number;
+          schoolName: string;
+          schoolTime: number;
+          convenienceStortTime: number;
+        };
+        roomType: RoomType;
+        size: number;
+        numberOfRoom: number;
+        rentalType: RentalType;
+        price: number;
+        managementFee: number;
+        expectedPayment: number;
+        monthlyFee: number;
+      };
+      isScrapped: boolean;
+      createdAt: Date;
+      createdBy: string;
+      modifiedAt: Date;
+      modifiedBy: string;
+    }>;
+    pageable: {
+      pageNumber: number;
+      pageSize: number;
+      sort: {
+        empty: boolean;
+        unsorted: boolean;
+        sorted: boolean;
+      };
+      offset: number;
+      paged: boolean;
+      unpaged: boolean;
+    };
     last: boolean;
     totalPages: number;
     totalElements: number;
     first: boolean;
     size: number;
     number: number;
-    sort: SortObject;
+    sort: {
+      empty: boolean;
+      unsorted: boolean;
+      sorted: boolean;
+    };
     numberOfElements: number;
     empty: boolean;
   };
