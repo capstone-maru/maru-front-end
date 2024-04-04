@@ -1,8 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 
-import { getSharedPost, getSharedPosts } from './shared.api';
+import { getSharedPost, getSharedPosts, scrapPost } from './shared.api';
 import { type GetSharedPostsProps } from './shared.type';
+
+import { type SuccessBaseDTO } from '@/shared/types';
 
 export const usePaging = ({
   maxPostPage,
@@ -69,7 +71,7 @@ export const useSharedPosts = ({
   useQuery({
     queryKey: ['/api/shared/posts/studio', { filter, search }],
     queryFn: async () =>
-      await getSharedPosts({ filter, search }).then(res => res.data),
+      await getSharedPosts({ filter, search }).then(response => response.data),
     staleTime: 60000,
     enabled,
   });
@@ -83,6 +85,23 @@ export const useSharedPost = ({
 }) =>
   useQuery({
     queryKey: [`/api/shared/posts/studio/${postId}`],
-    queryFn: async () => await getSharedPost(postId).then(res => res.data),
+    queryFn: async () =>
+      await getSharedPost(postId).then(response => response.data),
     enabled,
+  });
+
+export const useScrapPost = ({
+  postId,
+  onSuccess,
+  onError,
+}: {
+  postId: number;
+  onSuccess: (data: SuccessBaseDTO) => void;
+  onError: (error: Error) => void;
+}) =>
+  useMutation({
+    mutationFn: async () =>
+      await scrapPost(postId).then(response => response.data),
+    onSuccess,
+    onError,
   });

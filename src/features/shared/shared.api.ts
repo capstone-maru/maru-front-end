@@ -6,24 +6,28 @@ import {
   type GetSharedPostsFilter,
 } from './shared.type';
 
-import { RentalTypeValue, RoomTypeValue } from '@/shared/types';
+import {
+  RentalTypeValue,
+  RoomTypeValue,
+  type SuccessBaseDTO,
+} from '@/shared/types';
 
 const filterConvertToValues = (filter: GetSharedPostsFilter) => {
-  const res: Partial<Record<keyof GetSharedPostsFilter, number[]>> = {};
+  const result: Partial<Record<keyof GetSharedPostsFilter, number[]>> = {};
 
   if (filter.roomType !== undefined) {
-    res.roomType = Object.values(filter.roomType).map(
+    result.roomType = Object.values(filter.roomType).map(
       value => RoomTypeValue[value],
     );
   }
 
   if (filter.rentalType !== undefined) {
-    res.rentalType = Object.values(filter.rentalType).map(
+    result.rentalType = Object.values(filter.rentalType).map(
       value => RentalTypeValue[value],
     );
   }
 
-  return res;
+  return result;
 };
 
 export const getSharedPosts = async ({
@@ -51,3 +55,6 @@ export const getSharedPosts = async ({
 
 export const getSharedPost = async (postId: number) =>
   await axios.get<GetSharedPostDTO>(`/api/shared/posts/studio/${postId}`);
+
+export const scrapPost = async (postId: number) =>
+  await axios.get<SuccessBaseDTO>(`/api/shared/posts/studio/${postId}/scrap`);

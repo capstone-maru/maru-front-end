@@ -1,6 +1,6 @@
 export interface SuccessBaseDTO {
   message: string;
-  data: object;
+  data: object | null | undefined;
 }
 
 export interface FailureDTO {
