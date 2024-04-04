@@ -52,7 +52,7 @@ export const getSharedPosts = async ({
     }
 
     if (query === '') return baseURL;
-    return `${baseURL}?${encodeURIComponent(query)}`;
+    return `${baseURL}?${encodeURI(query)}`;
   };
 
   return await axios.get<GetSharedPostsDTO>(getURI());
