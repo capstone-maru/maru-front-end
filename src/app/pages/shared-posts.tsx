@@ -118,7 +118,7 @@ export function SharedPostsPage() {
   const { data: userInfoData } = useUserData(auth?.accessToken !== undefined);
 
   const { data: sharedPostsData } = useSharedPosts({
-    enabled: auth?.refreshToken !== null,
+    enabled: auth?.accessToken !== undefined,
   });
 
   const {
