@@ -165,7 +165,7 @@ export function SharedPostsPage() {
           <styles.posts>
             {sharedPosts?.data.content.map(post => (
               <Link key={post.id} href={`/shared/${post.id}`}>
-                <PostCard />
+                <PostCard post={post} />
               </Link>
             ))}
           </styles.posts>
