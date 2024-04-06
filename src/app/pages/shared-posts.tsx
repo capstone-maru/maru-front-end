@@ -169,39 +169,41 @@ export function SharedPostsPage() {
               </Link>
             ))}
           </styles.posts>
-          <styles.pagingRow>
-            <styles.CircularButton
-              direction="left"
-              disabled={isFirstPage}
-              onClick={handlePrevPage}
-            />
-            <styles.paging>
-              {Array.from({
-                length: Math.min(
-                  totalPageCount - currentSlice * sliceSize,
-                  sliceSize,
-                ),
-              }).map((_, index) => (
-                <button
-                  type="button"
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={`${currentSlice}-${index}`}
-                  className={
-                    page === index + 1 + currentSlice * sliceSize
-                      ? 'current'
-                      : ''
-                  }
-                >
-                  {index + 1 + currentSlice * sliceSize}
-                </button>
-              ))}
-            </styles.paging>
-            <styles.CircularButton
-              direction="right"
-              disabled={isLastPage}
-              onClick={handleNextPage}
-            />
-          </styles.pagingRow>
+          {sharedPosts?.data.content.length !== 0 && (
+            <styles.pagingRow>
+              <styles.CircularButton
+                direction="left"
+                disabled={isFirstPage}
+                onClick={handlePrevPage}
+              />
+              <styles.paging>
+                {Array.from({
+                  length: Math.min(
+                    totalPageCount - currentSlice * sliceSize,
+                    sliceSize,
+                  ),
+                }).map((_, index) => (
+                  <button
+                    type="button"
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={`${currentSlice}-${index}`}
+                    className={
+                      page === index + 1 + currentSlice * sliceSize
+                        ? 'current'
+                        : ''
+                    }
+                  >
+                    {index + 1 + currentSlice * sliceSize}
+                  </button>
+                ))}
+              </styles.paging>
+              <styles.CircularButton
+                direction="right"
+                disabled={isLastPage}
+                onClick={handleNextPage}
+              />
+            </styles.pagingRow>
+          )}
         </>
       ) : (
         <styles.cards>
