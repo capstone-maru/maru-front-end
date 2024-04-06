@@ -25,7 +25,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     background-color: #fff;
-    border-radius: 2rem;
+    border-radius: 32px;
     margin: 3rem 7.5rem;
     padding: 3.69rem 0 0 4.19rem;
   `,
@@ -171,7 +171,7 @@ const styles = {
     padding: 0.5rem 1rem 3.5rem 1rem;
 
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     background: var(--Gray-6, #efefef);
 
     color: #9a95a3;

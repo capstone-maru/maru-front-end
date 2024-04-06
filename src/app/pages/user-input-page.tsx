@@ -38,7 +38,7 @@ const styles = {
     width: 23.0625rem;
     height: 17.5rem;
     flex-shrink: 0;
-    border-radius: 1.875rem;
+    border-radius: 30px;
     padding: 1.62rem 1.44rem;
     display: flex;
     flex-direction: column;
@@ -78,7 +78,7 @@ const styles = {
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
-    border-radius: 1.625rem;
+    border-radius: 26px;
     border: 2px solid var(--Main-1, #e15637);
     background: #fff;
 
@@ -99,7 +99,7 @@ const styles = {
     width: 51.0625rem;
     height: 95.8125rem;
     flex-shrink: 0;
-    border-radius: 1.875rem;
+    border-radius: 30px;
     background: var(--background, #f7f6f9);
     padding: 3.56rem 0 0 1.56rem;
     margin-bottom: 7.5rem;
@@ -129,7 +129,7 @@ const styles = {
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     background: var(--Main-1, #e15637);
     margin: 4.06rem 31rem 9.06rem 31rem;
   `,

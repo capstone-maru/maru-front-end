@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+import { CleanTest } from './options/CleanTest';
+import { MajorSelector } from './options/MajorSelector';
+
 const styles = {
   optionContainer: styled.div`
     display: flex;
@@ -19,6 +22,7 @@ const styles = {
     line-height: normal;
   `,
   optionList: styled.ul`
+    position: relative;
     width: 100%;
     margin-top: 2.25rem;
   `,
@@ -80,7 +84,7 @@ const styles = {
     width: 25rem;
     height: 0.3125rem;
     flex-shrink: 0;
-    border-radius: 1.25rem;
+    border-radius: 20px;
     background: #d9d9d9;
     margin-bottom: 0.63rem;
   `,
@@ -131,7 +135,7 @@ const styles = {
     background-color: #bebebe;
     -webkit-transition: 0.4s;
     transition: 0.4s;
-    border-radius: 1.5rem;
+    border-radius: 24px;
   `,
   sliderDot: styled.span`
     position: absolute;
@@ -188,7 +192,7 @@ const CheckItem = styled.div<CheckItemProps>`
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-  border-radius: 1.625rem;
+  border-radius: 26px;
   border: 2px solid #dfdfdf;
   background: #fff;
   cursor: pointer;
@@ -222,7 +226,6 @@ const HearingOptions = [
   '게임 소음 허용',
 ];
 const WeatherOptions = ['더위 많이 타요', '추위 많이 타요'];
-const CleanOptions = ['상', '평범보통', '천하태평'];
 const PersonalOptions = [
   '반려동물',
   '차량 보유',
@@ -233,7 +236,6 @@ const PersonalOptions = [
   '엠비티아이',
   '전공',
 ];
-const BudgetOptions = ['보증금', '월세'];
 
 export function OptionSection() {
   type SelectedOptions = Record<string, boolean>;
@@ -259,6 +261,17 @@ export function OptionSection() {
       ...prevState,
       [toggleName]: !prevState[toggleName],
     }));
+  };
+
+  const [isTestVisible, setIsTestVisible] = useState(false);
+  const [score, setScore] = useState(-1);
+
+  const toggleTestVisibility = () => {
+    setIsTestVisible(prev => !prev);
+  };
+
+  const handleTestCompletion = (cleanScore: number) => {
+    setScore(cleanScore);
   };
 
   return (
@@ -333,23 +346,37 @@ export function OptionSection() {
           <styles.optionListImg src="/option-img/mop.svg" />
           <styles.optionListCheckItemContainer>
             <styles.cleanTestContainer>
-              <styles.cleanTestDescription>
+              <styles.cleanTestDescription onClick={toggleTestVisibility}>
                 테스트 하기
               </styles.cleanTestDescription>
             </styles.cleanTestContainer>
-            {CleanOptions.map(option => (
-              <CheckItem
-                key={option}
-                $isSelected={selectedOptions[option]}
-                onClick={() => {
-                  handleOptionClick(option);
-                }}
-              >
-                {option}
-              </CheckItem>
-            ))}
+            <CheckItem
+              $isSelected={score >= 0 && score < 5.34}
+              onClick={() => {
+                handleOptionClick('상');
+              }}
+            >
+              상
+            </CheckItem>
+            <CheckItem
+              $isSelected={score > 5.34 && score < 10.67}
+              onClick={() => {
+                handleOptionClick('중');
+              }}
+            >
+              평범보통
+            </CheckItem>
+            <CheckItem
+              $isSelected={score > 10.67}
+              onClick={() => {
+                handleOptionClick('하');
+              }}
+            >
+              천하태평
+            </CheckItem>
           </styles.optionListCheckItemContainer>
         </styles.optionListItem>
+        {isTestVisible && <CleanTest onComplete={handleTestCompletion} />}
         <styles.optionListItem>
           <styles.optionListImg src="/option-img/person.svg" />
           <styles.personalContainer>
@@ -364,6 +391,7 @@ export function OptionSection() {
                 {option === '엠비티아이' ? <>MBTI</> : option}
               </CheckItem>
             ))}
+            {selectedOptions['전공'] ? <MajorSelector /> : null}
             {selectedOptions['엠비티아이'] ? (
               <styles.mbtiSection>
                 <styles.mbtiToggleContainer>
@@ -407,27 +435,16 @@ export function OptionSection() {
                   J
                 </styles.mbtiToggleContainer>
               </styles.mbtiSection>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </styles.personalContainer>
         </styles.optionListItem>
         <styles.optionListItem>
           <styles.optionListImg src="/option-img/home_work.svg" />
           <styles.optionListCheckItemContainer>
-            {BudgetOptions.map(option => (
-              <styles.budgetContainer key={option}>
-                <CheckItem
-                  $isSelected={selectedOptions[option]}
-                  onClick={() => {
-                    handleOptionClick(option);
-                  }}
-                >
-                  {option}
-                </CheckItem>
-                <styles.budgetBar />
-              </styles.budgetContainer>
-            ))}
+            <styles.budgetContainer>
+              <CheckItem $isSelected={false}>금액</CheckItem>
+              <styles.budgetBar />
+            </styles.budgetContainer>
           </styles.optionListCheckItemContainer>
         </styles.optionListItem>
       </styles.optionList>

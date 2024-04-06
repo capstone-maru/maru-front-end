@@ -28,7 +28,7 @@ const styles = {
     height: 8.3125rem;
     justify-content: center;
     align-items: center;
-    border-radius: 6.25rem;
+    border-radius: 100px;
     border: 1px solid #dcddea;
 
     background: #c4c4c4;
@@ -99,7 +99,7 @@ const styles = {
     background-color: #bebebe;
     -webkit-transition: 0.4s;
     transition: 0.4s;
-    border-radius: 1.5rem;
+    border-radius: 24px;
   `,
   sliderDot: styled.span`
     position: absolute;
@@ -126,7 +126,7 @@ const styles = {
   authContainer: styled.div`
     height: 2rem;
     width: 5.3125rem;
-    border-radius: 1.625rem;
+    border-radius: 26px;
     background: #5c6eb4;
     margin: 1rem 1.4375rem 0 1.5625rem;
     cursor: pointer;
@@ -196,7 +196,7 @@ const styles = {
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     border: 1px solid var(--Gray-5, #828282);
     background: var(--White, #fff);
 
@@ -223,7 +223,7 @@ const styles = {
     width: 15rem;
     height: 15rem;
     flex-shrink: 0;
-    border-radius: 1.25rem;
+    border-radius: 20px;
     border: 1pxs olid var(--background, #f7f6f9);
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
     background: var(--grey-100, #fff);
@@ -249,7 +249,7 @@ const styles = {
     width: 6.0625rem;
     height: 2.5625rem;
     flex-shrink: 0;
-    border-radius: 1.25rem 0rem 0rem 1.25rem;
+    border-radius: 20px 0 0 20px;
     background: var(--Main-1, #e15637);
 
     position: absolute;
@@ -298,7 +298,7 @@ const styles = {
     height: 15.625rem;
     padding: 1.5rem 0;
     flex-shrink: 0;
-    border-radius: 1.25rem;
+    border-radius: 20px;
     background: var(--background, #f7f6f9);
 
     justify-content: center;
@@ -338,7 +338,7 @@ const styles = {
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
-    border-radius: 1.625rem;
+    border-radius: 26px;
     color: #fff;
     text-align: center;
     font-family: 'Noto Sans KR';
@@ -371,7 +371,7 @@ const styles = {
     padding: 0.63rem 1.13rem;
     justify-content: center;
     align-items: center;
-    border-radius: 1rem;
+    border-radius: 16px;
     border: 1px solid var(--Main-1, #e15637);
     background: var(--White, #fff);
     color: var(--Main-1, #e15637);
@@ -384,7 +384,7 @@ const styles = {
   rulesContent: styled.div`
     width: 100%;
     height: 21.625rem;
-    border-radius: 1rem;
+    border-radius: 16px;
     background: #f7f6f9;
   `,
 
@@ -400,7 +400,7 @@ const styles = {
   accountContent: styled.div`
     width: 64.5rem;
     height: 12.4375rem;
-    border-radius: 1rem;
+    border-radius: 16px;
     background: #f7f6f9;
   `,
 };
