@@ -47,11 +47,8 @@ export const getSharedPosts = async ({
       query += `&search=${search}`;
     }
 
-    if (page !== undefined) {
-      query += `&page=${page}`;
-    }
+    query += `&page=${page}`;
 
-    if (query === '') return baseURL;
     return `${baseURL}?${encodeURI(query)}`;
   };
 

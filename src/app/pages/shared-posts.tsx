@@ -8,13 +8,14 @@ import styled from 'styled-components';
 import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
 import {
-  SharedPostsMenu,
-  SharedPostFilters,
   PostCard,
+  SharedPostFilters,
+  SharedPostsMenu,
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
 import { usePaging, useSharedPosts } from '@/features/shared';
+import { type GetSharedPostsDTO } from '@/features/shared/shared.dto';
 
 const styles = {
   container: styled.div`
@@ -114,6 +115,8 @@ export function SharedPostsPage() {
   const auth = useAuthValue();
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
   const [totalPageCount, setTotalPageCount] = useState(0);
+  const [prevSharedPosts, setPrevSharedPosts] =
+    useState<GetSharedPostsDTO | null>(null);
   const { setAuthUserData } = useAuthActions();
 
   const { data: userData } = useUserData(auth?.accessToken !== undefined);
@@ -132,18 +135,19 @@ export function SharedPostsPage() {
   });
 
   const { data: sharedPosts } = useSharedPosts({
-    enabled: auth?.accessToken !== undefined && selected === 'hasRoom',
+    enabled: auth?.accessToken != null && selected === 'hasRoom',
     page: page - 1,
   });
 
   useEffect(() => {
-    if (sharedPosts !== undefined) {
+    if (sharedPosts != null) {
       setTotalPageCount(sharedPosts.data.totalPages);
+      setPrevSharedPosts(null);
     }
   }, [sharedPosts]);
 
   useEffect(() => {
-    if (userData !== undefined) {
+    if (userData != null) {
       setAuthUserData(userData);
       if (userData.initialized) {
         // router.replace('/profile');
@@ -163,18 +167,30 @@ export function SharedPostsPage() {
             </Link>
           </styles.createButtonRow>
           <styles.posts>
-            {sharedPosts?.data.content.map(post => (
-              <Link key={post.id} href={`/shared/${post.id}`}>
-                <PostCard post={post} />
-              </Link>
-            ))}
+            {prevSharedPosts != null
+              ? prevSharedPosts.data.content.map(post => (
+                  <Link key={post.id} href={`/shared/${post.id}`}>
+                    <PostCard post={post} />
+                  </Link>
+                ))
+              : sharedPosts?.data.content.map(post => (
+                  <Link key={post.id} href={`/shared/${post.id}`}>
+                    <PostCard post={post} />
+                  </Link>
+                ))}
           </styles.posts>
           {sharedPosts?.data.content.length !== 0 && (
             <styles.pagingRow>
               <styles.CircularButton
                 direction="left"
                 disabled={isFirstPage}
-                onClick={handlePrevPage}
+                onClick={() => {
+                  if (sharedPosts != null) {
+                    setPrevSharedPosts(sharedPosts);
+                  }
+                  handlePrevPage();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
               />
               <styles.paging>
                 {Array.from({
@@ -200,7 +216,13 @@ export function SharedPostsPage() {
               <styles.CircularButton
                 direction="right"
                 disabled={isLastPage}
-                onClick={handleNextPage}
+                onClick={() => {
+                  if (sharedPosts != null) {
+                    setPrevSharedPosts(sharedPosts);
+                  }
+                  handleNextPage();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
               />
             </styles.pagingRow>
           )}
