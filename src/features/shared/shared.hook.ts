@@ -32,6 +32,14 @@ export const usePaging = ({
   const isFirstPage = useMemo(() => page === 1, [page]);
   const isLastPage = useMemo(() => page === totalPages, [page, totalPages]);
 
+  const handleSetPage = useCallback(
+    (newPage: number) => {
+      if (page < 0 || page > totalPages) return;
+      setPage(newPage);
+    },
+    [page, totalPages],
+  );
+
   const handleNextPage = useCallback(() => {
     if (isLastPage) return;
     setPage(prev => prev + 1);
@@ -51,6 +59,7 @@ export const usePaging = ({
       sliceCount,
       isFirstPage,
       isLastPage,
+      handleSetPage,
       handleNextPage,
       handlePrevPage,
     }),
@@ -62,6 +71,7 @@ export const usePaging = ({
       sliceCount,
       isFirstPage,
       isLastPage,
+      handleSetPage,
       handleNextPage,
       handlePrevPage,
     ],

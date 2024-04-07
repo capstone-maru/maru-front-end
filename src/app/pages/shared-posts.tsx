@@ -127,6 +127,7 @@ export function SharedPostsPage() {
     currentSlice,
     isFirstPage,
     isLastPage,
+    handleSetPage,
     handleNextPage,
     handlePrevPage,
   } = usePaging({
@@ -201,6 +202,13 @@ export function SharedPostsPage() {
                 }).map((_, index) => (
                   <button
                     type="button"
+                    onClick={() => {
+                      if (sharedPosts != null) {
+                        setPrevSharedPosts(sharedPosts);
+                      }
+                      handleSetPage(index + 1 + currentSlice * sliceSize);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
                     // eslint-disable-next-line react/no-array-index-key
                     key={`${currentSlice}-${index}`}
                     className={
