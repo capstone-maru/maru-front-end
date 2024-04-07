@@ -1,13 +1,12 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { VitalSection, OptionSection } from '@/components';
-import { useAuthState, getUserData } from '@/features/auth';
-import { usePutUserProfileData } from '@/features/profile';
+import { useAuthValue, useUserData } from '@/features/auth';
+import { usePutUserCard } from '@/features/profile';
 
 const styles = {
   pageContainer: styled.div`
@@ -157,35 +156,26 @@ interface CardActiveProps {
 }
 
 interface UserProps {
+  memberId: string | undefined;
   name: string | undefined;
   gender: string | undefined;
   birthYear: string | undefined;
+  myCardId: number | undefined;
+  mateCardId: number | undefined;
 }
 
 interface SelectedState {
   smoking: string | undefined;
   room: string | undefined;
 }
+type SelectedOptions = Record<string, boolean>;
 
-export function UserInputPage() {
-  const [auth] = useAuthState();
-  const { data } = useQuery({
-    queryKey: ['/api/auth/initial/info'],
-    queryFn: getUserData,
-    enabled: auth?.accessToken !== undefined,
-  });
-  const [user, setUserData] = useState<UserProps | null>(null);
-
-  useEffect(() => {
-    if (data !== undefined) {
-      const { name, gender, birthYear } = data.data;
-      setUserData({ name, gender, birthYear });
-    }
-  }, [data]);
-
-  type SelectedOptions = Record<string, boolean>;
-
-  // myState
+const useSelectedState = (): [
+  SelectedState,
+  SelectedOptions,
+  (optionName: keyof SelectedState, item: string | number) => void,
+  (option: string) => void,
+] => {
   const [selectedState, setSelectedState] = useState<SelectedState>({
     smoking: undefined,
     room: undefined,
@@ -198,9 +188,10 @@ export function UserInputPage() {
   ) => {
     setSelectedState(prevState => ({
       ...prevState,
-      [optionName]: prevState[optionName] === item ? null : item,
+      [optionName]: prevState[optionName] === item ? undefined : item,
     }));
   };
+
   const handleOptionClick = (option: string) => {
     setSelectedOptions(prevSelectedOptions => ({
       ...prevSelectedOptions,
@@ -208,42 +199,78 @@ export function UserInputPage() {
     }));
   };
 
-  // mateState
-  // const [selectedMateState, setSelectedMateState] = useState<SelectedState>({
-  //   smoking: null,
-  //   room: null,
-  // });
-  // const [selectedMateOptions, setSelectedMateOptions] =
-  //   useState<SelectedOptions>({});
+  return [
+    selectedState,
+    selectedOptions,
+    handleFeatureChange,
+    handleOptionClick,
+  ];
+};
 
-  const handleMateFeatureChange = (
-    optionName: keyof SelectedState,
-    item: string | number,
-  ) => {
-    // setSelectedMateState(prevState => ({
-    //   ...prevState,
-    //   [optionName]: prevState[optionName] === item ? null : item,
-    // }));
-  };
-  const handleMateOptionClick = (option: string) => {
-    // setSelectedMateOptions(prevSelectedOptions => ({
-    //   ...prevSelectedOptions,
-    //   [option]: !prevSelectedOptions[option],
-    // }));
-  };
+export function UserInputPage() {
+  const auth = useAuthValue();
+  const { data } = useUserData(auth?.accessToken !== undefined);
+  const [user, setUserData] = useState<UserProps | null>(null);
 
-  const { mutate } = usePutUserProfileData();
+  useEffect(() => {
+    if (data !== undefined) {
+      const { name, gender, birthYear, memberId, myCardId, mateCardId } = data;
+      setUserData({ name, gender, birthYear, memberId, myCardId, mateCardId });
+    }
+  }, [data]);
+
+  const [
+    selectedState,
+    selectedOptions,
+    handleFeatureChange,
+    handleOptionClick,
+  ] = useSelectedState();
+  const [
+    selectedMateState,
+    selectedMateOptions,
+    handleMateFeatureChange,
+    handleMateOptionClick,
+  ] = useSelectedState();
+
+  const myCardId = user?.myCardId ?? 0;
+  const mateCardId = user?.mateCardId ?? 0;
+
+  const { mutate: mutateMyCard } = usePutUserCard(myCardId);
+  const { mutate: mutateMateCard } = usePutUserCard(mateCardId);
 
   const handleButtonClick = () => {
-    const array = Object.keys(selectedOptions).filter(
+    const myOptions = Object.keys(selectedOptions).filter(
       key => selectedOptions[key],
     );
+    const mateOptions = Object.keys(selectedMateOptions).filter(
+      key => selectedMateOptions[key],
+    );
 
-    const address = '성북 길음동';
-    const myFeatures = [selectedState.smoking, selectedState.room, ...array];
+    const location = '성북 길음동';
+    const myFeatures = [
+      selectedState.smoking,
+      selectedState.room,
+      ...myOptions,
+    ];
+    console.log(myFeatures);
+
+    const mateFeatures = [
+      selectedMateState.smoking,
+      selectedMateState.room,
+      ...mateOptions,
+    ];
 
     try {
-      mutate({ address: address, myFeatures: myFeatures });
+      mutateMyCard({
+        id: myCardId,
+        location: location,
+        myFeatures: myFeatures,
+      });
+      mutateMateCard({
+        id: mateCardId,
+        location: location,
+        myFeatures: mateFeatures,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -315,6 +342,11 @@ export function UserInputPage() {
               >
                 {genderText}
               </styles.miniCardKeyword>
+              {selectedMateState.smoking != null ? (
+                <styles.miniCardKeyword style={{ right: '0' }}>
+                  {selectedMateState.smoking}
+                </styles.miniCardKeyword>
+              ) : null}
             </styles.miniCardKeywordsContainer>
           </styles.miniCard>
         </styles.cardNameSection>

@@ -1,12 +1,10 @@
 'use client';
 
-// import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import { type User } from '@/entities/user';
-// import { getUserData, useAuthState } from '@/features/auth';
+import { useAuthValue, useUserData } from '@/features/auth';
 import { useProfileData } from '@/features/profile';
 import { getAge } from '@/shared';
 
@@ -419,9 +417,10 @@ const styles = {
 interface UserProfileInfoProps {
   name: string | undefined;
   age: string;
+  src: string | undefined;
 }
 
-function UserInfo({ name, age }: UserProfileInfoProps) {
+function UserInfo({ name, age, src }: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(false);
 
   const toggleSwitch = () => {
@@ -432,7 +431,7 @@ function UserInfo({ name, age }: UserProfileInfoProps) {
     <styles.userProfileContainer>
       <styles.userProfileWithoutSwitch>
         <styles.userPicContainer>
-          <styles.userPic src="" alt="User Profile Pic" />
+          <styles.userPic src={src} alt="User Profile Pic" />
         </styles.userPicContainer>
         <styles.userInfoContainer>
           <styles.userName>{name}</styles.userName>
@@ -478,7 +477,7 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
   );
 }
 
-function Auth() {
+function Auth({ isMySelf }: { isMySelf: boolean }) {
   return (
     <styles.authContainer>
       <styles.authCheckImg src="/check_circle_24px copy.svg" />
@@ -487,74 +486,36 @@ function Auth() {
   );
 }
 
-function Card({ name }: { name: string | undefined }) {
-  const [linkCount, setLinkCount] = useState(1);
-
-  const handleButtonClick = () => {
-    setLinkCount(prevCount => prevCount + 1);
-  };
-
-  const renderLinks = () => {
-    const links = [];
-    for (let i = 2; i < linkCount; i += 1) {
-      links.push(
-        <Link href={`/setting/mate/${i}`} key={i}>
-          <styles.cardContainer>
-            <styles.cardName>메이트 {i}</styles.cardName>
-          </styles.cardContainer>
-        </Link>,
-      );
-    }
-    return links;
-  };
-
-  const mateCardsRef = useRef<HTMLDivElement>(null);
-
-  const scrollToPrev = () => {
-    if (mateCardsRef.current !== null) {
-      mateCardsRef.current.scrollLeft -= 570;
-    }
-  };
-
-  const scrollToNext = () => {
-    if (mateCardsRef.current !== null) {
-      mateCardsRef.current.scrollLeft += 570;
-    }
-  };
-
+function Card({
+  name,
+  myCardId,
+  mateCardId,
+  isMySelf,
+}: {
+  name: string | undefined;
+  myCardId: number | undefined;
+  mateCardId: number | undefined;
+  isMySelf: boolean;
+}) {
   return (
     <styles.cardSection>
       <styles.cardWrapper>
         <styles.description32px>내 카드</styles.description32px>
-        <div style={{ padding: '1.5rem' }}>
-          <Link href="/setting/my">
-            <styles.cardContainer>
-              <styles.cardName>{name}</styles.cardName>
-              <styles.cardDefault>기본</styles.cardDefault>
-            </styles.cardContainer>
-          </Link>
-        </div>
+        <Link href={`/profile/card/${myCardId}?isMySelf=${isMySelf}`}>
+          <styles.cardContainer>
+            <styles.cardName>{name}</styles.cardName>
+            <styles.cardDefault>기본</styles.cardDefault>
+          </styles.cardContainer>
+        </Link>
       </styles.cardWrapper>
       <styles.cardWrapper>
-        <styles.cardDescriptionSection>
-          <styles.description32px>메이트 카드</styles.description32px>
-          <styles.addButton onClick={handleButtonClick}>
-            + 추가
-          </styles.addButton>
-        </styles.cardDescriptionSection>
-        <styles.mateCardsContainer>
-          <styles.prevButton onClick={scrollToPrev} />
-          <styles.mateCards ref={mateCardsRef}>
-            <Link href={`/setting/mate/${1}`}>
-              <styles.cardContainer>
-                <styles.cardName>메이트 1</styles.cardName>
-                <styles.cardDefault>기본</styles.cardDefault>
-              </styles.cardContainer>
-            </Link>
-            {renderLinks()}
-          </styles.mateCards>
-          <styles.nextButton onClick={scrollToNext} />
-        </styles.mateCardsContainer>
+        <styles.description32px>메이트 카드</styles.description32px>
+        <Link href={`/profile/card/${mateCardId}?isMySelf=${isMySelf}`}>
+          <styles.cardContainer>
+            <styles.cardName>메이트</styles.cardName>
+            <styles.cardDefault>기본</styles.cardDefault>
+          </styles.cardContainer>
+        </Link>
       </styles.cardWrapper>
     </styles.cardSection>
   );
@@ -632,28 +593,55 @@ function Maru() {
   );
 }
 
-export function ProfilePage({ memberId }: { memberId: string }) {
-  // const [auth] = useAuthState();
-  // const { data } = useQuery({
-  //   queryKey: ['/api/auth/initial/info'],
-  //   queryFn: getUserData,
-  //   enabled: auth?.accessToken !== undefined,
-  // });
+interface UserProps {
+  memberId: string;
+  email: string;
+  name: string;
+  birthYear: string;
+  gender: string;
+  phoneNumber: string;
+  initialized: boolean;
+  myCardId: number;
+  mateCardId: number;
+}
 
-  // const id = data?.data.memberId;
+export function ProfilePage({ memberId }: { memberId: string }) {
+  const auth = useAuthValue();
+  const { data } = useUserData(auth?.accessToken !== undefined);
+
+  const id = data?.memberId;
 
   const user = useProfileData(memberId);
-  const [userData, setUserData] = useState<User | null>(null);
-  // const [isMySelf, setIsMySelf] = useState(false);
+  const [userData, setUserData] = useState<UserProps | null>(null);
+  const [isMySelf, setIsMySelf] = useState(false);
 
   useEffect(() => {
     if (user.data !== undefined) {
       const userProfileData = user.data.data.authResponse;
-      const { name, email, birthYear, gender, phoneNumber } = userProfileData;
-      setUserData({ name, email, birthYear, gender, phoneNumber });
-      // if (id === memberId) {
-      //   setIsMySelf(true);
-      // }
+      const {
+        name,
+        email,
+        birthYear,
+        gender,
+        phoneNumber,
+        initialized,
+        myCardId,
+        mateCardId,
+      } = userProfileData;
+      setUserData({
+        memberId,
+        name,
+        email,
+        birthYear,
+        gender,
+        phoneNumber,
+        initialized,
+        myCardId,
+        mateCardId,
+      });
+      if (id === memberId) {
+        setIsMySelf(true);
+      }
     }
   }, [user.data, memberId]);
 
@@ -669,9 +657,15 @@ export function ProfilePage({ memberId }: { memberId: string }) {
             ? String(getAge(birthYearDate))
             : ''
         }
+        src={user.data?.data.profileImage}
       />
-      <Auth />
-      <Card name={userData?.name} />
+      <Auth isMySelf={isMySelf} />
+      <Card
+        name={userData?.name}
+        myCardId={userData?.myCardId}
+        mateCardId={userData?.mateCardId}
+        isMySelf={isMySelf}
+      />
       <Maru />
     </styles.pageContainer>
   );

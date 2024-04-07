@@ -1,9 +1,6 @@
 export interface GetUserProfileDTO {
   message: string;
   data: {
-    memberCard: {
-      myFeatures: string[];
-    };
     authResponse: {
       memberId: string;
       email: string;
@@ -12,13 +9,37 @@ export interface GetUserProfileDTO {
       gender: string;
       phoneNumber: string;
       initialized: boolean;
+      myCardId: number;
+      mateCardId: number;
+    };
+    profileImage: string;
+    myCard: {
+      id: number;
+      location: string;
+      myFeatures: string[];
+    };
+    mateCard: {
+      id: number;
+      location: string;
+      myFeatures: string[];
     };
   };
 }
 
-export interface PutUserProfileDTO {
+export interface GetUserCardDTO {
   message: string;
   data: {
+    id: number;
+    location: string;
+    myFeatures: string[];
+  };
+}
+
+export interface PutUserCardDTO {
+  message: string;
+  data: {
+    id: number;
+    location: string;
     myFeatures: string[];
   };
 }

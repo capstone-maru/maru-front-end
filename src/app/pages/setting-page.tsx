@@ -1,13 +1,12 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { VitalSection, OptionSection } from '@/components';
-import { getUserData, useAuthState } from '@/features/auth';
-import { useProfileData, usePutUserProfileData } from '@/features/profile';
+import { useAuthValue, useUserData } from '@/features/auth';
+import { usePutUserCard, useUserCard } from '@/features/profile';
 
 const styles = {
   pageContainer: styled.div`
@@ -97,16 +96,15 @@ const styles = {
   `,
 };
 
-interface UserProps {
-  name: string;
-  birthYear: string;
-  gender: string;
-  myFeatures: string[];
-}
-
 interface SelectedState {
   smoking: string | undefined;
   room: string | undefined;
+}
+
+interface UserProps {
+  name: string;
+  gender: string;
+  birthYear: string;
 }
 
 type SelectedOptions = Record<string, boolean>;
@@ -117,57 +115,53 @@ const miniCardKeywordStyle = {
   color: '#fff',
 };
 
-export function SettingPage({ type }: { type: string }) {
-  const [auth] = useAuthState();
-  const { data } = useQuery({
-    queryKey: ['/api/auth/initial/info'],
-    queryFn: getUserData,
-    enabled: auth?.accessToken !== undefined,
-  });
-  const [id, setId] = useState<string>('');
-  const [userData, setUserData] = useState<UserProps | null>(null);
+export function SettingPage({ cardId }: { cardId: number }) {
+  const auth = useAuthValue();
+  const { data } = useUserData(auth?.accessToken !== undefined);
+  const [userData, setUserData] = useState<UserProps | null>(null); // name, gender, birthYear
 
   useEffect(() => {
     if (data !== undefined) {
-      const { memberId } = data.data;
-      setId(memberId);
+      const { name, gender, birthYear } = data;
+      setUserData({ name, gender, birthYear });
     }
   }, [data]);
 
-  const user = useProfileData(id);
+  const card = useUserCard(cardId);
+  const [features, setFeatures] = useState<string[] | null>(null);
 
   useEffect(() => {
-    if (user.data !== undefined) {
-      const userProfileData = user.data.data;
-
-      const { name, gender, birthYear } = userProfileData.authResponse;
-      const { myFeatures } = userProfileData.memberCard;
-      setUserData({ name, gender, birthYear, myFeatures });
+    if (card !== undefined) {
+      const featuresData = card.data?.data.myFeatures ?? null;
+      setFeatures(featuresData);
     }
-  }, [user.data]);
+  }, [card]);
 
   const [selectedState, setSelectedState] = useState<SelectedState>({
     smoking: undefined,
     room: undefined,
   });
+
   useEffect(() => {
-    setSelectedState({
-      ...selectedState,
-      smoking: userData?.myFeatures[0],
-      room: userData?.myFeatures[1],
-    });
-  }, [userData?.myFeatures]);
+    if (features !== null) {
+      setSelectedState({
+        ...selectedState,
+        smoking: features[0],
+        room: features[1],
+      });
+    }
+  }, [features]);
 
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
   useEffect(() => {
-    if (userData?.myFeatures !== null) {
+    if (features !== null) {
       const initialOptions: SelectedOptions = {};
-      userData?.myFeatures.slice(2).forEach(option => {
+      features.slice(2).forEach(option => {
         initialOptions[option] = true;
       });
       setSelectedOptions(initialOptions);
     }
-  }, [userData?.myFeatures]);
+  }, [features]);
 
   const handleFeatureChange = (
     optionName: keyof SelectedState,
@@ -185,9 +179,8 @@ export function SettingPage({ type }: { type: string }) {
     }));
   };
 
-  const { mutate } = usePutUserProfileData();
+  const { mutate } = usePutUserCard(cardId);
   const router = useRouter();
-  // const isClickedFirst = useRef(false);
   const isSaved = true;
 
   const saveData = () => {
@@ -195,27 +188,20 @@ export function SettingPage({ type }: { type: string }) {
       key => selectedOptions[key],
     );
 
-    const address = '성북 길음동';
+    const location = '성북 길음동';
     const myFeatures = [selectedState.smoking, selectedState.room, ...array];
 
-    mutate({ address: address, myFeatures: myFeatures });
+    mutate({ id: cardId, location: location, myFeatures: myFeatures });
   };
 
   const handleBeforeUnload = () => {
     saveData();
   };
 
-  // const handlePopState = () => {
-  //   saveData();
-  //   history.go(-1);
-  // };
-
-  // useEffect(() => {
-  //   if (!isClickedFirst.current) {
-  //     history.pushState(null, '', '');
-  //     isClickedFirst.current = true;
-  //   }
-  // }, []);
+  const handlePopState = () => {
+    saveData();
+    router.back();
+  };
 
   useEffect(() => {
     const originalPush = router.push.bind(router);
@@ -233,29 +219,27 @@ export function SettingPage({ type }: { type: string }) {
 
   useEffect(() => {
     window.addEventListener('beforeunload', handleBeforeUnload);
-    // window.addEventListener('popstate', handlePopState);
+    window.addEventListener('popstate', handlePopState);
 
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      // window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('popstate', handlePopState);
     };
   }, [handleBeforeUnload]);
 
   return (
     <styles.pageContainer>
-      <styles.cardName>
-        {type} 카드 &gt; {userData?.name}
-      </styles.cardName>
+      <styles.cardName>내 카드 &gt; {userData?.name}</styles.cardName>
       <styles.cardContainer>
         <styles.miniCard>
-          <styles.miniCardName>{type}카드</styles.miniCardName>
+          <styles.miniCardName>내카드</styles.miniCardName>
           <styles.miniCardKeywordsContainer>
             <styles.miniCardKeyword style={miniCardKeywordStyle}>
               {userData?.gender === 'MALE' ? '남성' : '여성'}
             </styles.miniCardKeyword>
-            {userData?.myFeatures[0] != null ? (
+            {features?.[0] !== null && features !== null ? (
               <styles.miniCardKeyword style={{ right: '0' }}>
-                {userData?.myFeatures[0]}
+                {features[0]}
               </styles.miniCardKeyword>
             ) : null}
           </styles.miniCardKeywordsContainer>
@@ -264,15 +248,15 @@ export function SettingPage({ type }: { type: string }) {
           <VitalSection
             gender={userData?.gender}
             birthYear={userData?.birthYear}
-            smoking={userData?.myFeatures[0]}
-            room={userData?.myFeatures[1]}
+            smoking={undefined}
+            room={undefined}
             onFeatureChange={handleFeatureChange}
           />
           <styles.lineContainer>
             <styles.horizontalLine />
           </styles.lineContainer>
           <OptionSection
-            optionFeatures={userData?.myFeatures}
+            optionFeatures={undefined}
             onFeatureChange={handleOptionClick}
           />
         </styles.checkContainer>

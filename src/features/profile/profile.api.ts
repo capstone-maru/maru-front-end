@@ -2,7 +2,8 @@ import axios from 'axios';
 
 import {
   type GetUserProfileDTO,
-  type PutUserProfileDTO,
+  type GetUserCardDTO,
+  type PutUserCardDTO,
   type PostFollowDTO,
   type GetFollowingListDTO,
 } from './profile.dto';
@@ -12,16 +13,26 @@ export const getUserProfileData = async (memberId: string) =>
     .get<GetUserProfileDTO>(`/api/profile/${memberId}`)
     .then(res => res.data);
 
-export const putUserProfileData = async (
-  address: string,
+export const getUserCard = async (cardId: number) =>
+  await axios
+    .get<GetUserCardDTO>(`/api/profile/card/${cardId}`)
+    .then(res => res.data);
+
+export const putUserCard = async (
+  cardId: number,
+  location: string,
   myFeatures: Array<string | undefined>,
 ) =>
   await axios
-    .put<PutUserProfileDTO>(`/api/profile`, {
-      address: address,
+    .put<PutUserCardDTO>(`/api/profile/${cardId}`, {
+      id: cardId,
+      location: location,
       myFeatures: myFeatures,
     })
-    .then(res => res.data);
+    .then(res => {
+      console.log(res.data);
+      return res.data;
+    });
 
 export const getFollowingListData = async () =>
   await axios
