@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -120,22 +120,31 @@ export function SettingPage({ cardId }: { cardId: number }) {
   const { data } = useUserData(auth?.accessToken !== undefined);
   const [userData, setUserData] = useState<UserProps | null>(null); // name, gender, birthYear
 
+  const params = useSearchParams();
+  const isMySelfStr = params.get('isMySelf');
+  const isMySelf = isMySelfStr === 'true';
+
   useEffect(() => {
-    if (data !== undefined) {
-      const { name, gender, birthYear } = data;
-      setUserData({ name, gender, birthYear });
+    if (isMySelf) {
+      if (data !== undefined) {
+        const { name, gender, birthYear } = data;
+        console.log(data);
+        setUserData({ name, gender, birthYear });
+      }
     }
-  }, [data]);
+  }, [data, isMySelf]);
 
   const card = useUserCard(cardId);
   const [features, setFeatures] = useState<string[] | null>(null);
 
   useEffect(() => {
-    if (card !== undefined) {
-      const featuresData = card.data?.data.myFeatures ?? null;
-      setFeatures(featuresData);
+    if (isMySelf) {
+      if (card !== undefined) {
+        const featuresData = card.data?.data.myFeatures ?? null;
+        setFeatures(featuresData);
+      }
     }
-  }, [card]);
+  }, [card, isMySelf]);
 
   const [selectedState, setSelectedState] = useState<SelectedState>({
     smoking: undefined,
@@ -143,45 +152,53 @@ export function SettingPage({ cardId }: { cardId: number }) {
   });
 
   useEffect(() => {
-    if (features !== null) {
-      setSelectedState({
-        ...selectedState,
-        smoking: features[0],
-        room: features[1],
-      });
+    if (isMySelf) {
+      if (features !== null) {
+        setSelectedState({
+          ...selectedState,
+          smoking: features[0],
+          room: features[1],
+        });
+      }
     }
-  }, [features]);
+  }, [features, isMySelf]);
 
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+
   useEffect(() => {
-    if (features !== null) {
-      const initialOptions: SelectedOptions = {};
-      features.slice(2).forEach(option => {
-        initialOptions[option] = true;
-      });
-      setSelectedOptions(initialOptions);
+    if (isMySelf) {
+      if (features !== null) {
+        const initialOptions: SelectedOptions = {};
+        features.slice(2).forEach(option => {
+          initialOptions[option] = true;
+        });
+        setSelectedOptions(initialOptions);
+      }
     }
-  }, [features]);
+  }, [features, isMySelf]);
 
   const handleFeatureChange = (
     optionName: keyof SelectedState,
     item: string | number,
   ) => {
-    setSelectedState(prevState => ({
-      ...prevState,
-      [optionName]: prevState[optionName] === item ? null : item,
-    }));
+    if (isMySelf) {
+      setSelectedState(prevState => ({
+        ...prevState,
+        [optionName]: prevState[optionName] === item ? null : item,
+      }));
+    }
   };
   const handleOptionClick = (option: string) => {
-    setSelectedOptions(prevSelectedOptions => ({
-      ...prevSelectedOptions,
-      [option]: !prevSelectedOptions[option],
-    }));
+    if (isMySelf) {
+      setSelectedOptions(prevSelectedOptions => ({
+        ...prevSelectedOptions,
+        [option]: !prevSelectedOptions[option],
+      }));
+    }
   };
 
   const { mutate } = usePutUserCard(cardId);
   const router = useRouter();
-  const isSaved = true;
 
   const saveData = () => {
     const array = Object.keys(selectedOptions).filter(
@@ -191,31 +208,29 @@ export function SettingPage({ cardId }: { cardId: number }) {
     const location = '성북 길음동';
     const myFeatures = [selectedState.smoking, selectedState.room, ...array];
 
-    mutate({ id: cardId, location: location, myFeatures: myFeatures });
+    mutate({ location: location, myFeatures: myFeatures });
   };
 
   const handleBeforeUnload = () => {
-    saveData();
+    if (isMySelf) saveData();
   };
 
   const handlePopState = () => {
-    saveData();
-    router.back();
+    if (isMySelf) {
+      saveData();
+      router.back();
+    }
   };
 
   useEffect(() => {
     const originalPush = router.push.bind(router);
-    router.push = (href: string): void => {
-      if (!isSaved) {
-        originalPush(href);
-        return;
-      }
-      saveData();
+    router.push = (): void => {
+      if (isMySelf) saveData();
     };
     return () => {
       router.push = originalPush;
     };
-  }, [isSaved, saveData]);
+  }, [saveData]);
 
   useEffect(() => {
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -225,7 +240,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [handleBeforeUnload]);
+  }, [handleBeforeUnload, handlePopState]);
 
   return (
     <styles.pageContainer>
@@ -251,6 +266,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
             smoking={undefined}
             room={undefined}
             onFeatureChange={handleFeatureChange}
+            isMySelf={isMySelf}
           />
           <styles.lineContainer>
             <styles.horizontalLine />
@@ -258,6 +274,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
           <OptionSection
             optionFeatures={undefined}
             onFeatureChange={handleOptionClick}
+            isMySelf={isMySelf}
           />
         </styles.checkContainer>
       </styles.cardContainer>

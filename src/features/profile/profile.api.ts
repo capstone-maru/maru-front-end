@@ -25,7 +25,6 @@ export const putUserCard = async (
 ) =>
   await axios
     .put<PutUserCardDTO>(`/api/profile/${cardId}`, {
-      id: cardId,
       location: location,
       myFeatures: myFeatures,
     })

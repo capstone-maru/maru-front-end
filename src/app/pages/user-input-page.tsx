@@ -262,12 +262,10 @@ export function UserInputPage() {
 
     try {
       mutateMyCard({
-        id: myCardId,
         location: location,
         myFeatures: myFeatures,
       });
       mutateMateCard({
-        id: mateCardId,
         location: location,
         myFeatures: mateFeatures,
       });
@@ -358,6 +356,7 @@ export function UserInputPage() {
               smoking={undefined}
               room={undefined}
               onFeatureChange={handleFeatureChange}
+              isMySelf
             />
             <styles.lineContainer>
               <styles.horizontalLine />
@@ -365,6 +364,7 @@ export function UserInputPage() {
             <OptionSection
               optionFeatures={undefined}
               onFeatureChange={handleOptionClick}
+              isMySelf
             />
           </styles.checkContainer>
           <styles.checkContainer $active={activeContainer === 'mate'}>
@@ -374,6 +374,7 @@ export function UserInputPage() {
               smoking={undefined}
               room={undefined}
               onFeatureChange={handleMateFeatureChange}
+              isMySelf
             />
             <styles.lineContainer>
               <styles.horizontalLine />
@@ -381,6 +382,7 @@ export function UserInputPage() {
             <OptionSection
               optionFeatures={undefined}
               onFeatureChange={handleMateOptionClick}
+              isMySelf
             />
           </styles.checkContainer>
         </styles.checkSection>
