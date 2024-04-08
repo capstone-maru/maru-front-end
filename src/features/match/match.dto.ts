@@ -1,7 +1,8 @@
 export interface GetRecommendationMateDTO {
   user: { userId: string; gender: string };
-  recommendation: {
+  recommendation: Array<{
     userId: string;
+    name: string;
     similarity: number;
-  };
+  }>;
 }

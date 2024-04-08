@@ -146,8 +146,6 @@ export function SharedPostsPage() {
     enabled: auth?.accessToken != null && selected === 'homeless',
   });
 
-  useEffect(() => {}, [recommendationMates]);
-
   useEffect(() => {
     if (sharedPosts != null) {
       setTotalPageCount(sharedPosts.data.totalPages);
@@ -245,24 +243,11 @@ export function SharedPostsPage() {
         </>
       ) : (
         <styles.cards>
-          <Link href="/profile/memberId">
-            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
-          </Link>
-          <Link href="/profile/memberId">
-            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
-          </Link>
-          <Link href="/profile/memberId">
-            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
-          </Link>
-          <Link href="/profile/memberId">
-            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
-          </Link>
-          <Link href="/profile/memberId">
-            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
-          </Link>
-          <Link href="/profile/memberId">
-            <UserCard name="" address="" birth={new Date(2000, 5, 27)} />
-          </Link>
+          {recommendationMates?.map(({ userId, name, similarity }) => (
+            <Link href={`/profile/${userId}`} key={userId}>
+              <UserCard name={name} percentage={Math.floor(similarity * 100)} />
+            </Link>
+          ))}
         </styles.cards>
       )}
     </styles.container>
