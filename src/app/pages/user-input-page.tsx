@@ -252,7 +252,6 @@ export function UserInputPage() {
       selectedState.room,
       ...myOptions,
     ];
-    console.log(myFeatures);
 
     const mateFeatures = [
       selectedMateState.smoking,
@@ -263,11 +262,11 @@ export function UserInputPage() {
     try {
       mutateMyCard({
         location: location,
-        myFeatures: myFeatures,
+        features: myFeatures,
       });
       mutateMateCard({
         location: location,
-        myFeatures: mateFeatures,
+        features: mateFeatures,
       });
     } catch (error) {
       console.error(error);
@@ -362,7 +361,7 @@ export function UserInputPage() {
               <styles.horizontalLine />
             </styles.lineContainer>
             <OptionSection
-              optionFeatures={undefined}
+              optionFeatures={null}
               onFeatureChange={handleOptionClick}
               isMySelf
             />
@@ -380,7 +379,7 @@ export function UserInputPage() {
               <styles.horizontalLine />
             </styles.lineContainer>
             <OptionSection
-              optionFeatures={undefined}
+              optionFeatures={null}
               onFeatureChange={handleMateOptionClick}
               isMySelf
             />

@@ -21,12 +21,12 @@ export const getUserCard = async (cardId: number) =>
 export const putUserCard = async (
   cardId: number,
   location: string,
-  myFeatures: Array<string | undefined>,
+  features: Array<string | undefined>,
 ) =>
   await axios
     .put<PutUserCardDTO>(`/api/profile/${cardId}`, {
       location: location,
-      myFeatures: myFeatures,
+      features: features,
     })
     .then(res => {
       console.log(res.data);

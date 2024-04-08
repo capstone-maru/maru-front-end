@@ -240,7 +240,7 @@ export function OptionSection({
   onFeatureChange,
   isMySelf,
 }: {
-  optionFeatures: string[] | undefined;
+  optionFeatures: string[] | null;
   onFeatureChange: (option: string) => void;
   isMySelf: boolean;
 }) {
@@ -248,7 +248,7 @@ export function OptionSection({
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
 
   useEffect(() => {
-    if (optionFeatures !== undefined) {
+    if (optionFeatures !== null) {
       const initialOptions: SelectedOptions = {};
       optionFeatures.forEach(option => {
         initialOptions[option] = true;

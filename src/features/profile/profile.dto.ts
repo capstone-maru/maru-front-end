@@ -38,9 +38,8 @@ export interface GetUserCardDTO {
 export interface PutUserCardDTO {
   message: string;
   data: {
-    id: number;
     location: string;
-    myFeatures: string[];
+    features: string[];
   };
 }
 

@@ -26,8 +26,8 @@ export const usePutUserCard = (cardId: number) =>
   useMutation({
     mutationFn: async (data: {
       location: string;
-      myFeatures: Array<string | undefined>;
-    }) => await putUserCard(cardId, data.location, data.myFeatures),
+      features: Array<string | undefined>;
+    }) => await putUserCard(cardId, data.location, data.features),
   });
 
 export const useFollowingListData = () =>

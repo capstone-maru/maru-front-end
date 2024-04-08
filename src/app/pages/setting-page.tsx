@@ -1,12 +1,16 @@
 'use client';
 
+import { type NavigateOptions } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 
 import { VitalSection, OptionSection } from '@/components';
-import { useAuthValue, useUserData } from '@/features/auth';
-import { usePutUserCard, useUserCard } from '@/features/profile';
+import {
+  useProfileData,
+  usePutUserCard,
+  useUserCard,
+} from '@/features/profile';
 
 const styles = {
   pageContainer: styled.div`
@@ -116,23 +120,24 @@ const miniCardKeywordStyle = {
 };
 
 export function SettingPage({ cardId }: { cardId: number }) {
-  const auth = useAuthValue();
-  const { data } = useUserData(auth?.accessToken !== undefined);
-  const [userData, setUserData] = useState<UserProps | null>(null); // name, gender, birthYear
-
   const params = useSearchParams();
+  const memberIdParams = params.get('memberId');
+  const memberId = memberIdParams ?? '';
   const isMySelfStr = params.get('isMySelf');
   const isMySelf = isMySelfStr === 'true';
 
+  const user = useProfileData(memberId);
+  const [userData, setUserData] = useState<UserProps | null>(null);
+
   useEffect(() => {
-    if (isMySelf) {
-      if (data !== undefined) {
-        const { name, gender, birthYear } = data;
-        console.log(data);
+    if (user.data !== undefined) {
+      const userProfileData = user.data.data.authResponse;
+      if (userProfileData !== undefined) {
+        const { name, birthYear, gender } = userProfileData;
         setUserData({ name, gender, birthYear });
       }
     }
-  }, [data, isMySelf]);
+  }, [user.data]);
 
   const card = useUserCard(cardId);
   const [features, setFeatures] = useState<string[] | null>(null);
@@ -208,39 +213,50 @@ export function SettingPage({ cardId }: { cardId: number }) {
     const location = '성북 길음동';
     const myFeatures = [selectedState.smoking, selectedState.room, ...array];
 
-    mutate({ location: location, myFeatures: myFeatures });
+    mutate({ location: location, features: myFeatures });
   };
 
   const handleBeforeUnload = () => {
-    if (isMySelf) saveData();
+    saveData();
   };
 
+  const isClickedFirst = useRef(false);
+
   const handlePopState = () => {
-    if (isMySelf) {
-      saveData();
-      router.back();
-    }
+    saveData();
+    history.back();
   };
 
   useEffect(() => {
     const originalPush = router.push.bind(router);
-    router.push = (): void => {
-      if (isMySelf) saveData();
+    const newPush = (
+      href: string,
+      options?: NavigateOptions | undefined,
+    ): void => {
+      saveData();
+      originalPush(href, options);
     };
+    router.push = newPush;
+    window.onbeforeunload = handleBeforeUnload;
     return () => {
       router.push = originalPush;
+      window.onbeforeunload = null;
     };
-  }, [saveData]);
+  }, [router, handleBeforeUnload]);
 
   useEffect(() => {
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('popstate', handlePopState);
+    if (!isClickedFirst.current) {
+      history.pushState(null, '', '');
+      isClickedFirst.current = true;
+    }
+  }, []);
 
+  useEffect(() => {
+    window.addEventListener('popstate', handlePopState);
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [handleBeforeUnload, handlePopState]);
+  }, [handlePopState]);
 
   return (
     <styles.pageContainer>
@@ -263,8 +279,8 @@ export function SettingPage({ cardId }: { cardId: number }) {
           <VitalSection
             gender={userData?.gender}
             birthYear={userData?.birthYear}
-            smoking={undefined}
-            room={undefined}
+            smoking={selectedState.smoking}
+            room={selectedState.room}
             onFeatureChange={handleFeatureChange}
             isMySelf={isMySelf}
           />
@@ -272,7 +288,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
             <styles.horizontalLine />
           </styles.lineContainer>
           <OptionSection
-            optionFeatures={undefined}
+            optionFeatures={features}
             onFeatureChange={handleOptionClick}
             isMySelf={isMySelf}
           />

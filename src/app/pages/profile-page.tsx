@@ -488,11 +488,13 @@ function Auth({ isMySelf }: { isMySelf: boolean }) {
 
 function Card({
   name,
+  memberId,
   myCardId,
   mateCardId,
   isMySelf,
 }: {
   name: string | undefined;
+  memberId: string | undefined;
   myCardId: number | undefined;
   mateCardId: number | undefined;
   isMySelf: boolean;
@@ -501,7 +503,9 @@ function Card({
     <styles.cardSection>
       <styles.cardWrapper>
         <styles.description32px>내 카드</styles.description32px>
-        <Link href={`/profile/card/${myCardId}?isMySelf=${isMySelf}`}>
+        <Link
+          href={`/profile/card/${myCardId}?memberId=${memberId}&isMySelf=${isMySelf}`}
+        >
           <styles.cardContainer>
             <styles.cardName>{name}</styles.cardName>
             <styles.cardDefault>기본</styles.cardDefault>
@@ -510,7 +514,9 @@ function Card({
       </styles.cardWrapper>
       <styles.cardWrapper>
         <styles.description32px>메이트 카드</styles.description32px>
-        <Link href={`/profile/card/${mateCardId}?isMySelf=${isMySelf}`}>
+        <Link
+          href={`/profile/card/${mateCardId}?memberId=${memberId}&isMySelf=${isMySelf}`}
+        >
           <styles.cardContainer>
             <styles.cardName>메이트</styles.cardName>
             <styles.cardDefault>기본</styles.cardDefault>
@@ -662,6 +668,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
       <Auth isMySelf={isMySelf} />
       <Card
         name={userData?.name}
+        memberId={userData?.memberId}
         myCardId={userData?.myCardId}
         mateCardId={userData?.mateCardId}
         isMySelf={isMySelf}
