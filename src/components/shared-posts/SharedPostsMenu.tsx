@@ -10,7 +10,7 @@ const styles = {
     padding: 0 2.75rem;
 
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
   `,
   item: styled.div`
     -webkit-user-select: none;
@@ -72,14 +72,6 @@ export function SharedPostsMenu({
         className={selected === 'homeless' ? 'selected' : ''}
       >
         방 없는 메이트
-      </styles.item>
-      <styles.item
-        onClick={() => {
-          handleSelect('dormitory');
-        }}
-        className={selected === 'dormitory' ? 'selected' : ''}
-      >
-        기숙사 메이트
       </styles.item>
     </styles.container>
   );
