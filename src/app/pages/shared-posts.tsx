@@ -14,6 +14,7 @@ import {
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
+import { useRecommendationMate } from '@/features/match';
 import { usePaging, useSharedPosts } from '@/features/shared';
 import { type GetSharedPostsDTO } from '@/features/shared/shared.dto';
 
@@ -139,6 +140,13 @@ export function SharedPostsPage() {
     enabled: auth?.accessToken != null && selected === 'hasRoom',
     page: page - 1,
   });
+
+  const { data: recommendationMates } = useRecommendationMate({
+    memberId: auth?.user?.memberId ?? 'undefined',
+    enabled: auth?.accessToken != null && selected === 'homeless',
+  });
+
+  useEffect(() => {}, [recommendationMates]);
 
   useEffect(() => {
     if (sharedPosts != null) {
