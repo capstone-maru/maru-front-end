@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { CancelButton } from '@/components';
+import { AddButton, CancelButton } from '@/components';
 import { getImageURL, putImage } from '@/features/image';
 import { useCreateSharedPost } from '@/features/shared';
 
@@ -505,6 +505,7 @@ export function WritingPostPage() {
                         position: 'relative',
                         width: '14.4375rem',
                         height: '9.875rem',
+                        border: '1px solid #19191920',
                         flexShrink: 0,
                       }}
                     >
@@ -533,6 +534,10 @@ export function WritingPostPage() {
                 <styles.userInput />
                 <styles.inputPlaceholder>명</styles.inputPlaceholder>
               </styles.inputContainer>
+            </styles.listItem>
+            <styles.listItem>
+              <styles.listItemDescription>메이트</styles.listItemDescription>
+              <AddButton onClick={() => {}} />
             </styles.listItem>
           </styles.listContainer>
         </styles.vitalContainer>
