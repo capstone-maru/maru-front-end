@@ -7,5 +7,10 @@ export const getImageURL = async (fileExtension: string) =>
     `/api/image/upload?extension=${fileExtension}`,
   );
 
-export const putImage = async (url: string, imageFile: File) =>
-  await axios.put(url, imageFile);
+export const putImage = async (url: string, image: File) =>
+  await axios.put(url, image, {
+    headers: {
+      'Content-Type': image.type,
+      Authorization: null,
+    },
+  });
