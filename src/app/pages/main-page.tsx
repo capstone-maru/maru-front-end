@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
-import { useRecommendationMate } from '@/features/match';
+import { useRecommendationMate } from '@/features/recommendation';
 
 const styles = {
   container: styled.div`

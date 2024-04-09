@@ -14,7 +14,7 @@ import {
 } from '@/components/shared-posts';
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
-import { useRecommendationMate } from '@/features/match';
+import { useRecommendationMate } from '@/features/recommendation';
 import { usePaging, useSharedPosts } from '@/features/shared';
 import { type GetSharedPostsDTO } from '@/features/shared/shared.dto';
 

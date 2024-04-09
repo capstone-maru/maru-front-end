@@ -1,15 +1,20 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { type AxiosResponse } from 'axios';
 import { useCallback, useMemo, useState } from 'react';
 
 import {
+  createSharedPost,
   deleteSharedPost,
   getSharedPost,
   getSharedPosts,
   scrapPost,
 } from './shared.api';
-import { type GetSharedPostsProps } from './shared.type';
+import {
+  type CreateSharedPostProps,
+  type GetSharedPostsProps,
+} from './shared.type';
 
-import { type SuccessBaseDTO } from '@/shared/types';
+import { type FailureDTO, type SuccessBaseDTO } from '@/shared/types';
 
 export const usePaging = ({
   totalPages,
@@ -77,6 +82,13 @@ export const usePaging = ({
     ],
   );
 };
+
+export const useCreateSharedPost = () =>
+  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, CreateSharedPostProps>(
+    {
+      mutationFn: createSharedPost,
+    },
+  );
 
 export const useSharedPosts = ({
   filter,

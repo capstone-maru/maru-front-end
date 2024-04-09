@@ -10,7 +10,7 @@ const styles = {
     padding: 0 2.75rem;
 
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
   `,
   item: styled.div`
     -webkit-user-select: none;

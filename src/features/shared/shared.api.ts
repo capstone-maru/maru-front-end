@@ -2,8 +2,9 @@ import axios from 'axios';
 
 import { type GetSharedPostDTO, type GetSharedPostsDTO } from './shared.dto';
 import {
-  type GetSharedPostsProps,
+  type CreateSharedPostProps,
   type GetSharedPostsFilter,
+  type GetSharedPostsProps,
 } from './shared.type';
 
 import {
@@ -53,6 +54,29 @@ export const getSharedPosts = async ({
   };
 
   return await axios.get<GetSharedPostsDTO>(getURI());
+};
+
+export const createSharedPost = async ({
+  imageFilesData,
+  postData,
+  transactionData,
+  roomDetailData,
+  locationData,
+}: CreateSharedPostProps) => {
+  const formData = new FormData();
+  formData.append('imageFilesData', JSON.stringify(imageFilesData));
+  formData.append('postData', JSON.stringify(postData));
+  formData.append('transactionData', JSON.stringify(transactionData));
+  formData.append('roomDetailData', JSON.stringify(roomDetailData));
+  formData.append('locationData', JSON.stringify(locationData));
+
+  return await axios.post<SuccessBaseDTO>(
+    `/api/shared/posts/studio`,
+    formData,
+    {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    },
+  );
 };
 
 export const getSharedPost = async (postId: number) =>
