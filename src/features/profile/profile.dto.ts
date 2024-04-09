@@ -1,5 +1,6 @@
-export interface GetUserProfileDTO {
-  message: string;
+import { type SuccessBaseDTO } from '@/shared/types';
+
+export interface GetUserProfileDTO extends SuccessBaseDTO {
   data: {
     authResponse: {
       memberId: string;
@@ -26,8 +27,7 @@ export interface GetUserProfileDTO {
   };
 }
 
-export interface GetUserCardDTO {
-  message: string;
+export interface GetUserCardDTO extends SuccessBaseDTO {
   data: {
     id: number;
     location: string;
@@ -35,22 +35,19 @@ export interface GetUserCardDTO {
   };
 }
 
-export interface PutUserCardDTO {
-  message: string;
+export interface PutUserCardDTO extends SuccessBaseDTO {
   data: {
     location: string;
     features: string[];
   };
 }
 
-export interface GetFollowingListDTO {
-  message: string;
+export interface GetFollowingListDTO extends SuccessBaseDTO {
   data: {
     followingList: string[];
   };
 }
 
-export interface PostFollowDTO {
-  message: string;
-  data: string;
+export interface PostFollowDTO extends SuccessBaseDTO {
+  data: null;
 }
