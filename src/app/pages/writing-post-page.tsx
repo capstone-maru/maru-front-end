@@ -4,6 +4,7 @@ import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { CancelButton } from '@/components';
 import { getImageURL, putImage } from '@/features/image';
 import { useCreateSharedPost } from '@/features/shared';
 
@@ -23,7 +24,8 @@ const styles = {
   `,
   postContainer: styled.div`
     width: 75rem;
-    height: 120.125rem;
+    height: 100%;
+    max-height: fit-content;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -278,6 +280,22 @@ const styles = {
     font-weight: 600;
     line-height: 1.5rem;
   `,
+  images: styled.div`
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+
+    overflow-x: auto;
+  `,
+  cancelButton: styled.button`
+    all: unset;
+    position: relative;
+    cursor: pointer;
+
+    top: 0.69rem;
+    left: 85%;
+  `,
 };
 
 const DealOptions = ['월세', '전세'];
@@ -358,6 +376,10 @@ export function WritingPostPage() {
       }));
       setImages(prevImages => [...prevImages, ...imagesArray]);
     }
+  };
+
+  const handleRemoveImage = (removeImage: ImageFile) => {
+    setImages(prev => prev.filter(image => image.url !== removeImage.url));
   };
 
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -475,15 +497,34 @@ export function WritingPostPage() {
             {images.length > 0 && (
               <styles.listItem>
                 <styles.listItemDescription />
-                {images.map((image, index) => (
-                  <Image
-                    key={image.url}
-                    src={image.url}
-                    alt={`Uploaded ${index}`}
-                    width={120}
-                    height={90}
-                  />
-                ))}
+                <styles.images>
+                  {images.map((image, index) => (
+                    <div
+                      key={image.url}
+                      style={{
+                        position: 'relative',
+                        width: '14.4375rem',
+                        height: '9.875rem',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Image
+                        src={image.url}
+                        alt={`Uploaded ${index}`}
+                        layout="fill"
+                        objectFit="cover"
+                      />
+                      <styles.cancelButton>
+                        <CancelButton
+                          onClick={() => {
+                            handleRemoveImage(image);
+                          }}
+                          fill="black"
+                        />
+                      </styles.cancelButton>
+                    </div>
+                  ))}
+                </styles.images>
               </styles.listItem>
             )}
             <styles.listItem>
