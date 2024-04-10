@@ -13,7 +13,6 @@ import {
   ImageGrid,
   MiniCircularProfileImage,
 } from '@/components/shared-post-page';
-import { type SharedPost } from '@/entities/shared-post';
 
 const styles = {
   container: styled.div`
@@ -350,7 +349,7 @@ const dummyParticipants = [
 ];
 
 interface Props {
-  post: SharedPost;
+  post: { title: string; content: string };
 }
 
 function Item({ label, data }: { label: string; data: string }) {
