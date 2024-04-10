@@ -13,13 +13,16 @@ import {
   ImageGrid,
   MiniCircularProfileImage,
 } from '@/components/shared-post-page';
+import { useAuthValue } from '@/features/auth';
+import { useSharedPost } from '@/features/shared';
+import { getAge } from '@/shared';
 
 const styles = {
   container: styled.div`
     background: var(--background, #f7f6f9);
 
     position: relative;
-    width: 100dvw;
+    width: 100%;
     min-height: 100%;
     height: fit-content;
 
@@ -348,10 +351,6 @@ const dummyParticipants = [
   'https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1713139200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=UL1aEtuLGKayYQ5L9ORuMtrpAC9EkOdVY6s2yYhNVuMpzbgXJ0Umi48NzpdET9P6fgCeOxrrwPA9gUVlTpWXWMNPapo-SJmV-7h~kNl23ClcmQ0I1ybBXrNn7ywYZWbnuNvFjSaBmtqBPaWR1F-E69qwN6ohhNS2j3piYxrCuR~ep6iAxAyrGP7Bt9mvDg9NYw5R~HsYWkcyEIF7kdfeJMsZ~SKhJ5aQTfngxKZEW7eB31bO5bXxQcCXi3Qia~zNkUAysBPp8Tx-pZQafjLHGM-ZogjUgOcKT9TyEDufX436AQUx~cBooRbkfXJpyexKXzs20iU4Y8HswRwXVJyJuw__',
 ];
 
-interface Props {
-  post: { title: string; content: string };
-}
-
 function Item({ label, data }: { label: string; data: string }) {
   return (
     <styles.dealItemContainer>
@@ -361,7 +360,7 @@ function Item({ label, data }: { label: string; data: string }) {
   );
 }
 
-export function SharedPostPage({ post }: Props) {
+export function SharedPostPage({ postId }: { postId: number }) {
   const [map, setMap] = useState<naver.maps.Map | null>(null);
 
   const handleClickTitle = () => {
@@ -382,12 +381,19 @@ export function SharedPostPage({ post }: Props) {
     );
   }, []);
 
+  const auth = useAuthValue();
+
+  const { data: sharedPost } = useSharedPost({
+    postId,
+    enabled: auth?.accessToken !== undefined,
+  });
+
   return (
     <styles.container>
       <styles.houseInfo>
         <ImageGrid images={dummyImages} />
         <styles.titleRow>
-          <styles.title>{post.title}</styles.title>
+          <styles.title>{sharedPost?.data?.title}</styles.title>
           <Bookmark
             hasBorder={false}
             color="#000"
@@ -427,10 +433,7 @@ export function SharedPostPage({ post }: Props) {
           <styles.detailInfoContanier>
             <styles.detailInfoTitle>상세 정보</styles.detailInfoTitle>
             <styles.detailInfoContent>
-              안녕하세요! 저는 현재 룸메이트를 찾고 있는 정연수입니다. 서울시
-              정릉동에서 함께 살아갈 룸메이트를 구하고 있습니다. 주로 밤에
-              작업을 하며 새벽 2시~3시쯤에 취침합니다. 관심있으신 분들 연락
-              주세요!
+              {sharedPost?.data.content}
             </styles.detailInfoContent>
           </styles.detailInfoContanier>
           <styles.locationInfoContainer>
@@ -440,7 +443,7 @@ export function SharedPostPage({ post }: Props) {
                 handleClickTitle();
               }}
             >
-              서울특별시 성북구 정릉로 104
+              {sharedPost?.data.roomInfo.address.roadAddress}
             </styles.locationInfoContent>
             <styles.map id="map" />
             <styles.locationEnvInfo>
@@ -474,16 +477,19 @@ export function SharedPostPage({ post }: Props) {
               url="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1713139200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=UL1aEtuLGKayYQ5L9ORuMtrpAC9EkOdVY6s2yYhNVuMpzbgXJ0Umi48NzpdET9P6fgCeOxrrwPA9gUVlTpWXWMNPapo-SJmV-7h~kNl23ClcmQ0I1ybBXrNn7ywYZWbnuNvFjSaBmtqBPaWR1F-E69qwN6ohhNS2j3piYxrCuR~ep6iAxAyrGP7Bt9mvDg9NYw5R~HsYWkcyEIF7kdfeJMsZ~SKhJ5aQTfngxKZEW7eB31bO5bXxQcCXi3Qia~zNkUAysBPp8Tx-pZQafjLHGM-ZogjUgOcKT9TyEDufX436AQUx~cBooRbkfXJpyexKXzs20iU4Y8HswRwXVJyJuw__"
             />
             <styles.hostInfoContent>
-              <h1>김마루</h1>
-              <p>24세</p>
+              <h1>{sharedPost?.data.publisherAccount.nickname}</h1>
+              <p>
+                {sharedPost != null
+                  ? `${getAge(+sharedPost.data.publisherAccount.birthYear)}세`
+                  : ''}
+              </p>
               <p>성북 길음동</p>
             </styles.hostInfoContent>
           </styles.hostInfoContainer>
           <styles.hostCardContent>
-            <p className="essential">비흡연</p>
-            <p>새벽형</p>
-            <p>친구초대 괜찮아요</p>
-            <p className="essential">실내취식 괜찮아요</p>
+            {sharedPost?.data.publisherAccount.myCardFeatures.map(value => (
+              <p key={value}>{value}</p>
+            ))}
           </styles.hostCardContent>
           <styles.hostButtonsContainer>
             <button type="button" className="color">

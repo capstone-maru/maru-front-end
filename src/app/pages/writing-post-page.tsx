@@ -1,8 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
+
+import { getImageURL, putImage } from '@/features/image';
+import { useCreateSharedPost } from '@/features/shared';
 
 const styles = {
   pageContainer: styled.div`
@@ -27,7 +30,7 @@ const styles = {
     background-color: #fff;
     border-radius: 2rem;
     margin: 3rem 7.5rem;
-    padding: 3.69rem 0 0 4.19rem;
+    padding: 3.69rem 4.19rem 0 4.19rem;
   `,
   containerDescription: styled.p`
     color: #000;
@@ -165,7 +168,27 @@ const styles = {
             backgroundImage: `url('/button-icon/Check box outline blank.svg')`,
           }};
   `,
-  detailedInputBox: styled.input`
+  titleInputBox: styled.input<{ $empty: boolean }>`
+    width: 41.125rem;
+    padding: 0.5rem 1rem;
+
+    border: none;
+    border-radius: 0.5rem;
+    background: var(--Gray-6, #efefef);
+
+    color: ${({ $empty }) => ($empty ? '#9a95a3' : '#000')};
+
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+    &:focus {
+      outline: none;
+    }
+  `,
+  detailedInputBox: styled.input<{ $empty: boolean }>`
     width: 41.125rem;
     height: 5.4375rem;
     padding: 0.5rem 1rem 3.5rem 1rem;
@@ -174,7 +197,7 @@ const styles = {
     border-radius: 0.5rem;
     background: var(--Gray-6, #efefef);
 
-    color: #9a95a3;
+    color: ${({ $empty }) => ($empty ? '#9a95a3' : '#000')};
 
     font-family: 'Noto Sans KR';
     font-size: 1rem;
@@ -228,6 +251,33 @@ const styles = {
     flex-direction: column;
     margin-top: 6rem;
   `,
+  row: styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  `,
+  createButton: styled.button`
+    all: unset;
+
+    cursor: pointer;
+
+    display: flex;
+    width: 7.125rem;
+    height: fit-content;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 8px;
+    background: var(--Black, #35373a);
+
+    color: #fff;
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5rem;
+  `,
 };
 
 const DealOptions = ['월세', '전세'];
@@ -246,67 +296,172 @@ interface ButtonActiveProps {
   $isSelected: boolean;
 }
 
-interface SelectedStates {
+interface SelectedOptions {
   budget1: string | null;
   room1: string | null;
   room2: string | null;
   room3: string | null;
 }
 
+type SelectedExtraOptions = Record<string, boolean>;
+
+interface ImageFile {
+  url: string;
+  file: File;
+  extension: string;
+}
+
 export function WritingPostPage() {
-  type SelectedOptions = Record<string, boolean>;
-  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
-
-  const handleOptionClick = (option: string) => {
-    setSelectedOptions(prevSelectedOptions => ({
-      ...prevSelectedOptions,
-      [option]: !prevSelectedOptions[option],
-    }));
-  };
-
-  const [selectedStates, setSelectedStates] = useState<SelectedStates>({
+  const [images, setImages] = useState<ImageFile[]>([]);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedExtraOptions, setSelectedExtraOptions] =
+    useState<SelectedExtraOptions>({});
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({
     budget1: null,
     room1: null,
     room2: null,
     room3: null,
   });
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
 
-  const handleClick = (optionName: keyof SelectedStates, item: string) => {
-    setSelectedStates(prevState => ({
+  const { mutate } = useCreateSharedPost();
+
+  const handleExtraOptionClick = (option: string) => {
+    setSelectedExtraOptions(prevSelectedOptions => ({
+      ...prevSelectedOptions,
+      [option]: !prevSelectedOptions[option],
+    }));
+  };
+
+  const handleOptionClick = (
+    optionName: keyof SelectedOptions,
+    item: string,
+  ) => {
+    setSelectedOptions(prevState => ({
       ...prevState,
       [optionName]: prevState[optionName] === item ? null : item,
     }));
   };
 
-  const [images, setImages] = useState<string[]>([]);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const handleImageClick = () => {
-    inputRef.current?.click();
+  const handleImageInputClick = () => {
+    imageInputRef.current?.click();
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = event.target;
-    if (files !== null && files !== undefined) {
-      const imagesArray = Array.from(files).map(file =>
-        URL.createObjectURL(file),
-      );
+    if (files != null) {
+      const imagesArray = Array.from(files).map(file => ({
+        file,
+        url: URL.createObjectURL(file),
+        extension: `.${file.type.split('/')[1]}`,
+      }));
       setImages(prevImages => [...prevImages, ...imagesArray]);
     }
+  };
+
+  const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
+    (async () => {
+      if (images.length > 0) {
+        try {
+          const getResults = await Promise.allSettled(
+            images.map(async ({ extension, file }) => {
+              const result = await getImageURL(extension);
+              return {
+                ...result.data.data,
+                file,
+              };
+            }),
+          );
+
+          const urls = getResults.reduce<
+            Array<{ file: File; fileName: string; url: string }>
+          >((prev, result) => {
+            if (result.status === 'rejected') return prev;
+            return prev.concat(result.value);
+          }, []);
+
+          const putResults = await Promise.allSettled(
+            urls.map(async url => {
+              await putImage(url.url, url.file);
+              return { fileName: url.fileName };
+            }),
+          );
+
+          const uploadedImages = putResults.reduce<
+            Array<{ fileName: string; isThumbNail: boolean; order: number }>
+          >((prev, result) => {
+            if (result.status === 'rejected') return prev;
+            return prev.concat({
+              fileName: result.value.fileName,
+              isThumbNail: prev.length === 0,
+              order: prev.length + 1,
+            });
+          }, []);
+
+          mutate(
+            {
+              imageFilesData: uploadedImages,
+              postData: { content, title },
+              transactionData: {
+                rentalType: '0',
+                price: 100000,
+                monthlyFee: 10000,
+                managementFee: 1000,
+              },
+              roomDetailData: {
+                roomType: '0',
+                size: 5,
+                numberOfRoom: 1,
+                recruitmentCapacity: 2,
+              },
+              locationData: {
+                city: 'SEOUL',
+                oldAddress: 'test old address',
+                roadAddress: 'test road address',
+                stationName: 'mokdong',
+                stationTime: 10,
+                busStopTime: 3,
+                schoolName: 'kookmin',
+                schoolTime: 20,
+                convenienceStoreTime: 2,
+              },
+            },
+            {
+              onSuccess: () => {
+                console.log('success');
+              },
+              onError: error => {
+                console.log('failure', error);
+              },
+            },
+          );
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    })().catch((error: Error) => {
+      console.error(error);
+    });
   };
 
   return (
     <styles.pageContainer>
       <styles.postContainer>
         <styles.vitalContainer>
-          <styles.containerDescription>기본 정보</styles.containerDescription>
+          <styles.row>
+            <styles.containerDescription>기본 정보</styles.containerDescription>
+            <styles.createButton onClick={handleCreatePost}>
+              작성하기
+            </styles.createButton>
+          </styles.row>
           <styles.listContainer>
             <styles.listItem>
               <styles.listItemDescription>사진</styles.listItemDescription>
-              <styles.addImgButton onClick={handleImageClick}>
+              <styles.addImgButton onClick={handleImageInputClick}>
                 + 사진 추가
                 <input
-                  ref={inputRef}
+                  ref={imageInputRef}
                   type="file"
                   multiple
                   onChange={handleFileChange}
@@ -322,8 +477,8 @@ export function WritingPostPage() {
                 <styles.listItemDescription />
                 {images.map((image, index) => (
                   <Image
-                    key={image}
-                    src={image}
+                    key={image.url}
+                    src={image.url}
                     alt={`Uploaded ${index}`}
                     width={120}
                     height={90}
@@ -348,9 +503,9 @@ export function WritingPostPage() {
               {DealOptions.map(option => (
                 <styles.checkButtonContainer key={option}>
                   <styles.customRadioButton
-                    $isSelected={selectedStates.budget1 === option}
+                    $isSelected={selectedOptions.budget1 === option}
                     onClick={() => {
-                      handleClick('budget1', option);
+                      handleOptionClick('budget1', option);
                     }}
                   />
                   <styles.checkButtonDescription>
@@ -411,9 +566,9 @@ export function WritingPostPage() {
               {RoomOptions.map(option => (
                 <styles.checkButtonContainer key={option}>
                   <styles.customRadioButton
-                    $isSelected={selectedStates.room1 === option}
+                    $isSelected={selectedOptions.room1 === option}
                     onClick={() => {
-                      handleClick('room1', option);
+                      handleOptionClick('room1', option);
                     }}
                   />
                   <styles.checkButtonDescription>
@@ -427,9 +582,9 @@ export function WritingPostPage() {
               {StructureOptions.map(option => (
                 <styles.checkButtonContainer key={option}>
                   <styles.customRadioButton
-                    $isSelected={selectedStates.room2 === option}
+                    $isSelected={selectedOptions.room2 === option}
                     onClick={() => {
-                      handleClick('room2', option);
+                      handleOptionClick('room2', option);
                     }}
                   />
                   <styles.checkButtonDescription>
@@ -460,9 +615,9 @@ export function WritingPostPage() {
                   style={{ margin: option === '옥탑' ? '0' : '' }}
                 >
                   <styles.customRadioButton
-                    $isSelected={selectedStates.room3 === option}
+                    $isSelected={selectedOptions.room3 === option}
                     onClick={() => {
-                      handleClick('room3', option);
+                      handleOptionClick('room3', option);
                     }}
                   />
                   <styles.checkButtonDescription>
@@ -481,9 +636,9 @@ export function WritingPostPage() {
               {AdditionalOptions.map(option => (
                 <styles.checkButtonContainer key={option}>
                   <styles.customCheckBox
-                    $isSelected={selectedOptions[option]}
+                    $isSelected={selectedExtraOptions[option]}
                     onClick={() => {
-                      handleOptionClick(option);
+                      handleExtraOptionClick(option);
                     }}
                   />
                   <styles.checkButtonDescription>
@@ -495,8 +650,28 @@ export function WritingPostPage() {
           </styles.listContainer>
         </styles.roomContainer>
         <styles.detailedContainer>
+          <styles.containerDescription>제목</styles.containerDescription>
+          <styles.titleInputBox
+            $empty={title.length === 0}
+            value={title}
+            onChange={e => {
+              setTitle(e.target.value);
+            }}
+            placeholder="입력"
+            type="text"
+          />
+        </styles.detailedContainer>
+        <styles.detailedContainer>
           <styles.containerDescription>상세 정보</styles.containerDescription>
-          <styles.detailedInputBox placeholder="입력" type="text" />
+          <styles.detailedInputBox
+            $empty={content.length === 0}
+            value={content}
+            onChange={e => {
+              setContent(e.target.value);
+            }}
+            placeholder="입력"
+            type="text"
+          />
         </styles.detailedContainer>
         <styles.locationContainer>
           <styles.containerDescription>위치 정보</styles.containerDescription>
