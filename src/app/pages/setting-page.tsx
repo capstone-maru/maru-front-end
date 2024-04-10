@@ -2,7 +2,13 @@
 
 import styled from 'styled-components';
 
+import Location from '../../../public/option-img/location_on.svg';
+import Meeting from '../../../public/option-img/meeting_room.svg';
+import Person from '../../../public/option-img/person.svg';
+import Visibility from '../../../public/option-img/visibility.svg';
+
 import { VitalSection, OptionSection } from '@/components';
+import { SelfIntroduction } from '@/components/card';
 
 const styles = {
   pageContainer: styled.div`
@@ -46,28 +52,56 @@ const styles = {
     line-height: normal;
     margin-bottom: 1.69rem;
   `,
-  miniCardKeywordsContainer: styled.div`
-    width: 17.5625rem;
-    height: 5.6875rem;
-    position: relative;
+  miniCardKeywordsContainer: styled.ul`
+    display: flex;
+    width: 18.375rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   `,
-  miniCardKeyword: styled.div`
-    display: inline-flex;
-    padding: 0.5rem 1.5rem;
-    justify-content: center;
+  miniCardList: styled.li`
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
-    border-radius: 26px;
-    border: 2px solid var(--Main-1, #e15637);
-    background: #fff;
-
-    color: var(--Main-1, #e15637);
+    gap: 2rem;
+    align-self: stretch;
+  `,
+  miniCardPerson: styled(Person)`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: var(--Main-1, #e15637);
+    }
+  `,
+  miniCardLocation: styled(Location)`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: var(--Main-1, #e15637);
+    }
+  `,
+  miniCardMeeting: styled(Meeting)`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: var(--Main-1, #e15637);
+    }
+  `,
+  miniCardVisibility: styled(Visibility)`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: var(--Main-1, #e15637);
+    }
+  `,
+  miniCardText: styled.p`
+    flex: 1 0 0;
+    height: 1.5rem;
     font-family: 'Noto Sans KR';
     font-size: 1rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    position: absolute;
+    color: var(--Main-1, #e15637);
   `,
   checkContainer: styled.div`
     width: 51.0625rem;
@@ -107,13 +141,24 @@ export function SettingPage({ type, name }: SettingPageProps) {
         <styles.miniCard>
           <styles.miniCardName>{type}카드</styles.miniCardName>
           <styles.miniCardKeywordsContainer>
-            <styles.miniCardKeyword>여성</styles.miniCardKeyword>
-            <styles.miniCardKeyword style={{ right: '0' }}>
-              비흡연
-            </styles.miniCardKeyword>
-            <styles.miniCardKeyword style={{ bottom: '0' }}>
-              아침형
-            </styles.miniCardKeyword>
+            <styles.miniCardList>
+              <styles.miniCardPerson />
+              <styles.miniCardText>여성 · 00년생 · 비흡연</styles.miniCardText>
+            </styles.miniCardList>
+            <styles.miniCardList>
+              <styles.miniCardLocation />
+              <styles.miniCardText>
+                서울특별시 성북구 정릉동
+              </styles.miniCardText>
+            </styles.miniCardList>
+            <styles.miniCardList>
+              <styles.miniCardMeeting />
+              <styles.miniCardText>메이트와 다른 방</styles.miniCardText>
+            </styles.miniCardList>
+            <styles.miniCardList>
+              <styles.miniCardVisibility />
+              <styles.miniCardText>아침형</styles.miniCardText>
+            </styles.miniCardList>
           </styles.miniCardKeywordsContainer>
         </styles.miniCard>
         <styles.checkContainer>
@@ -122,6 +167,7 @@ export function SettingPage({ type, name }: SettingPageProps) {
             <styles.horizontalLine />
           </styles.lineContainer>
           <OptionSection />
+          <SelfIntroduction />
         </styles.checkContainer>
       </styles.cardContainer>
     </styles.pageContainer>
