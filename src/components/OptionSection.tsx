@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import { CleanTest } from './options/CleanTest';
-import { MajorSelector } from './options/MajorSelector';
+import { CleanTest } from './card/CleanTest';
+import { MajorSelector } from './card/MajorSelector';
 
 const styles = {
   optionContainer: styled.div`

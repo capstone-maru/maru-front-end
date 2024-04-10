@@ -3,6 +3,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+import Location from '../../../public/option-img/location_on.svg';
+import Meeting from '../../../public/option-img/meeting_room.svg';
+import Person from '../../../public/option-img/person.svg';
+import Visibility from '../../../public/option-img/visibility.svg';
+
 import { VitalSection, OptionSection } from '@/components';
 
 const styles = {
@@ -67,28 +72,72 @@ const styles = {
     line-height: normal;
     margin-bottom: 1.69rem;
   `,
-  miniCardKeywordsContainer: styled.div`
-    width: 17.5625rem;
-    height: 5.6875rem;
-    position: relative;
+  miniCardKeywordsContainer: styled.ul`
+    display: flex;
+    width: 18.375rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   `,
-  miniCardKeyword: styled.div<CardActiveProps>`
-    display: inline-flex;
-    padding: 0.5rem 1.5rem;
-    justify-content: center;
+  miniCardList: styled.li`
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
-    border-radius: 26px;
-    border: 2px solid var(--Main-1, #e15637);
-    background: #fff;
-
-    color: var(--Main-1, #e15637);
+    gap: 2rem;
+    align-self: stretch;
+  `,
+  miniCardPerson: styled(Person)<CardActiveProps>`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: ${props =>
+        props.$active !== undefined && props.$active !== null && props.$active
+          ? 'var(--Main-1, #e15637)'
+          : 'var(--Main-2, #767D86)'};
+    }
+  `,
+  miniCardLocation: styled(Location)<CardActiveProps>`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: ${props =>
+        props.$active !== undefined && props.$active !== null && props.$active
+          ? 'var(--Main-1, #e15637)'
+          : 'var(--Main-2, #767D86)'};
+    }
+  `,
+  miniCardMeeting: styled(Meeting)<CardActiveProps>`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: ${props =>
+        props.$active !== undefined && props.$active !== null && props.$active
+          ? 'var(--Main-1, #e15637)'
+          : 'var(--Main-2, #767D86)'};
+    }
+  `,
+  miniCardVisibility: styled(Visibility)<CardActiveProps>`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: ${props =>
+        props.$active !== undefined && props.$active !== null && props.$active
+          ? 'var(--Main-1, #e15637)'
+          : 'var(--Main-2, #767D86)'};
+    }
+  `,
+  miniCardText: styled.p<CardActiveProps>`
+    flex: 1 0 0;
+    height: 1.5rem;
     font-family: 'Noto Sans KR';
     font-size: 1rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    position: absolute;
+
+    color: ${props =>
+      props.$active !== undefined && props.$active !== null && props.$active
+        ? 'var(--Main-1, #e15637)'
+        : 'var(--Main-2, #767D86)'};
   `,
   checkSection: styled.div`
     width: calc(100% - 23.0625rem);
@@ -178,13 +227,30 @@ export function UserInputPage() {
               내카드
             </styles.miniCardName>
             <styles.miniCardKeywordsContainer>
-              <styles.miniCardKeyword>여성</styles.miniCardKeyword>
-              <styles.miniCardKeyword style={{ right: '0' }}>
-                비흡연
-              </styles.miniCardKeyword>
-              <styles.miniCardKeyword style={{ bottom: '0' }}>
-                아침형
-              </styles.miniCardKeyword>
+              <styles.miniCardList>
+                <styles.miniCardPerson $active={activeContainer === 'my'} />
+                <styles.miniCardText $active={activeContainer === 'my'}>
+                  여성 · 00년생 · 비흡연
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardLocation $active={activeContainer === 'my'} />
+                <styles.miniCardText $active={activeContainer === 'my'}>
+                  서울특별시 성북구 정릉동
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardMeeting $active={activeContainer === 'my'} />
+                <styles.miniCardText $active={activeContainer === 'my'}>
+                  메이트와 다른 방
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardVisibility $active={activeContainer === 'my'} />
+                <styles.miniCardText $active={activeContainer === 'my'}>
+                  아침형
+                </styles.miniCardText>
+              </styles.miniCardList>
             </styles.miniCardKeywordsContainer>
           </styles.miniCard>
           <styles.miniCard
@@ -195,13 +261,32 @@ export function UserInputPage() {
               메이트카드
             </styles.miniCardName>
             <styles.miniCardKeywordsContainer>
-              <styles.miniCardKeyword>여성</styles.miniCardKeyword>
-              <styles.miniCardKeyword style={{ right: '0' }}>
-                비흡연
-              </styles.miniCardKeyword>
-              <styles.miniCardKeyword style={{ bottom: '0' }}>
-                아침형
-              </styles.miniCardKeyword>
+              <styles.miniCardList>
+                <styles.miniCardPerson $active={activeContainer === 'mate'} />
+                <styles.miniCardText $active={activeContainer === 'mate'}>
+                  여성 · 00년생 · 비흡연
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardLocation $active={activeContainer === 'mate'} />
+                <styles.miniCardText $active={activeContainer === 'mate'}>
+                  서울특별시 성북구 정릉동
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardMeeting $active={activeContainer === 'mate'} />
+                <styles.miniCardText $active={activeContainer === 'mate'}>
+                  메이트와 다른 방
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardVisibility
+                  $active={activeContainer === 'mate'}
+                />
+                <styles.miniCardText $active={activeContainer === 'mate'}>
+                  아침형
+                </styles.miniCardText>
+              </styles.miniCardList>
             </styles.miniCardKeywordsContainer>
           </styles.miniCard>
         </styles.cardNameSection>
