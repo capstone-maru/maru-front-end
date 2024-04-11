@@ -62,6 +62,16 @@ const styles = {
     display: flex;
     align-items: center;
     margin-bottom: 1.5rem;
+
+    transition: background-color 200ms ease-in-out;
+    &[class~='location-info-item'] {
+      cursor: pointer;
+      padding: 1.1rem;
+
+      &:hover {
+        background-color: #ededed;
+      }
+    }
   `,
   listItemDescription: styled.p`
     width: 12.125rem;
@@ -270,7 +280,7 @@ const styles = {
   detailedContainer: styled.div`
     display: inline-flex;
     flex-direction: column;
-    margin-top: 6.44rem;
+    margin-bottom: 5rem;
   `,
   locationContainer: styled.div`
     display: inline-flex;
@@ -422,6 +432,14 @@ export function WritingPostPage() {
     setImages(prev => prev.filter(image => image.url !== removeImage.url));
   };
 
+  const handleRemoveLocationInfoItem = (removeItem: [string, string]) => {
+    setLocationInfoList(prev =>
+      prev.filter(
+        item => item[0] !== removeItem[0] && item[1] !== removeItem[1],
+      ),
+    );
+  };
+
   const convertToNumber = (value: string) => {
     const updatedValue = value.replace(/^0+/, '');
 
@@ -541,13 +559,37 @@ export function WritingPostPage() {
   return (
     <styles.pageContainer>
       <styles.postContainer>
-        <styles.vitalContainer>
+        <styles.detailedContainer>
           <styles.row>
-            <styles.containerDescription>기본 정보</styles.containerDescription>
+            <styles.containerDescription>제목</styles.containerDescription>
             <styles.createButton onClick={handleCreatePost}>
               작성하기
             </styles.createButton>
           </styles.row>
+          <styles.titleInputBox
+            $empty={title.length === 0}
+            value={title}
+            onChange={event => {
+              setTitle(event.target.value);
+            }}
+            placeholder="입력"
+            type="text"
+          />
+        </styles.detailedContainer>
+        <styles.detailedContainer>
+          <styles.containerDescription>상세 정보</styles.containerDescription>
+          <styles.detailedInputBox
+            $empty={content.length === 0}
+            value={content}
+            onChange={event => {
+              setContent(event.target.value);
+            }}
+            placeholder="입력"
+            type="text"
+          />
+        </styles.detailedContainer>
+        <styles.vitalContainer>
+          <styles.containerDescription>기본 정보</styles.containerDescription>
           <styles.listContainer>
             <styles.listItem>
               <styles.listItemDescription>사진</styles.listItemDescription>
@@ -806,30 +848,6 @@ export function WritingPostPage() {
             </styles.listItem>
           </styles.listContainer>
         </styles.roomContainer>
-        <styles.detailedContainer>
-          <styles.containerDescription>제목</styles.containerDescription>
-          <styles.titleInputBox
-            $empty={title.length === 0}
-            value={title}
-            onChange={event => {
-              setTitle(event.target.value);
-            }}
-            placeholder="입력"
-            type="text"
-          />
-        </styles.detailedContainer>
-        <styles.detailedContainer>
-          <styles.containerDescription>상세 정보</styles.containerDescription>
-          <styles.detailedInputBox
-            $empty={content.length === 0}
-            value={content}
-            onChange={event => {
-              setContent(event.target.value);
-            }}
-            placeholder="입력"
-            type="text"
-          />
-        </styles.detailedContainer>
         <styles.locationContainer>
           <styles.containerDescription>위치 정보</styles.containerDescription>
           <styles.listContainer>
@@ -906,7 +924,13 @@ export function WritingPostPage() {
               </div>
             </styles.listItem>
             {locationInfoList.map(([key, value], index) => (
-              <styles.listItem key={`${key}-${index}`}>
+              <styles.listItem
+                className="location-info-item"
+                key={`${key}-${index}`}
+                onClick={() => {
+                  handleRemoveLocationInfoItem([key, value]);
+                }}
+              >
                 <styles.listItemDescription>{key}</styles.listItemDescription>
                 <styles.listItemDescription>{value}</styles.listItemDescription>
               </styles.listItem>
