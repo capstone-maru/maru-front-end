@@ -7,6 +7,8 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
 import { AddButton, CancelButton } from '@/components';
+import { LocationSearchBox } from '@/components/writing-post-page';
+import { type NaverAddress } from '@/features/geocoding';
 import { getImageURL, putImage } from '@/features/image';
 import { useCreateSharedPost } from '@/features/shared';
 
@@ -228,7 +230,9 @@ const styles = {
       outline: none;
     }
   `,
-  searchButton: styled.div`
+  searchButton: styled.button`
+    all: unset;
+
     display: flex;
     width: 5.5rem;
     padding: 0.5rem;
@@ -363,7 +367,9 @@ export function WritingPostPage() {
   const [houseSize, setHouseSize] = useState<number>(0);
   const [roomSize, setRoomSize] = useState<number>(0);
   const [floor, setFloor] = useState<number>(0);
-  // const [location, setLocation] = useState<string>('');
+
+  const [address, setAddress] = useState<NaverAddress | null>(null);
+  const [showSearchBox, setShowSearchBox] = useState<boolean>(false);
   const [station, setStation] = useState<string>('');
   const [stationTime, setStationTime] = useState<number>(0);
   const [busStopTime, setBusStopTime] = useState<number>(0);
@@ -812,8 +818,32 @@ export function WritingPostPage() {
           <styles.listContainer>
             <styles.listItem>
               <styles.listItemDescription>상세 주소</styles.listItemDescription>
-              <styles.searchButton>검색</styles.searchButton>
+              {showSearchBox && (
+                <LocationSearchBox
+                  setHidden={() => {
+                    setShowSearchBox(false);
+                  }}
+                  onSelect={selectedAddress => {
+                    setShowSearchBox(false);
+                    setAddress(selectedAddress);
+                  }}
+                />
+              )}
+              <styles.searchButton
+                onClick={() => {
+                  setShowSearchBox(prev => !prev);
+                }}
+              >
+                검색
+              </styles.searchButton>
             </styles.listItem>
+            {address != null && (
+              <styles.listItem>
+                <styles.listItemDescription>
+                  {address.roadAddress}
+                </styles.listItemDescription>
+              </styles.listItem>
+            )}
             <styles.listItem>
               <styles.listItemDescription>지하철역</styles.listItemDescription>
               <styles.inputContainer>
