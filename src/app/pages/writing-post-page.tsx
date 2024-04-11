@@ -360,6 +360,9 @@ export function WritingPostPage() {
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [expectedMonthlyFee, setExpectedMonthlyFee] = useState<number>(0);
+  const [houseSize, setHouseSize] = useState<number>(0);
+  const [roomSize, setRoomSize] = useState<number>(0);
+  const [floor, setFloor] = useState<number>(0);
 
   const { mutate } = useCreateSharedPost();
 
@@ -400,21 +403,50 @@ export function WritingPostPage() {
     setImages(prev => prev.filter(image => image.url !== removeImage.url));
   };
 
+  const convertToNumber = (value: string) => {
+    const updatedValue = value.replace(/^0+/, '');
+
+    if (updatedValue.length === 0) return 0;
+
+    const numberUpdateValue = Number(updatedValue);
+    if (!Number.isNaN(numberUpdateValue)) return numberUpdateValue;
+    return null;
+  };
+
   const handleExpectedMonthlyFeeChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const { value } = event.target;
-
-    const updatedValue = value.replace(/^0+/, '');
-
-    if (updatedValue.length === 0) {
-      setExpectedMonthlyFee(0);
-      return;
+    const updateValue = convertToNumber(value);
+    if (updateValue != null) {
+      setExpectedMonthlyFee(updateValue);
     }
+  };
 
-    const numberUpdateValue = Number(updatedValue);
-    if (!Number.isNaN(numberUpdateValue))
-      setExpectedMonthlyFee(Number(updatedValue));
+  const handleHouseSizeChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const { value } = event.target;
+    const updateValue = convertToNumber(value);
+    if (updateValue != null) {
+      setHouseSize(updateValue);
+    }
+  };
+
+  const handleRoomSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    const updateValue = convertToNumber(value);
+    if (updateValue != null) {
+      setRoomSize(updateValue);
+    }
+  };
+
+  const handleFloorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    const updateValue = convertToNumber(value);
+    if (updateValue != null) {
+      setFloor(updateValue);
+    }
   };
 
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -695,12 +727,18 @@ export function WritingPostPage() {
                 전체 면적 / 방 면적
               </styles.listItemDescription>
               <styles.inputContainer>
-                <styles.userInput />
+                <styles.userInput
+                  value={houseSize}
+                  onChange={handleHouseSizeChange}
+                />
                 <styles.inputPlaceholder>평</styles.inputPlaceholder>
               </styles.inputContainer>
               <styles.slash>/</styles.slash>
               <styles.inputContainer>
-                <styles.userInput />
+                <styles.userInput
+                  value={roomSize}
+                  onChange={handleRoomSizeChange}
+                />
                 <styles.inputPlaceholder>평</styles.inputPlaceholder>
               </styles.inputContainer>
             </styles.listItem>
@@ -724,7 +762,7 @@ export function WritingPostPage() {
               ))}
               <styles.slash>/</styles.slash>
               <styles.inputContainer>
-                <styles.userInput />
+                <styles.userInput value={floor} onChange={handleFloorChange} />
                 <styles.inputPlaceholder>층</styles.inputPlaceholder>
               </styles.inputContainer>
             </styles.listItem>
