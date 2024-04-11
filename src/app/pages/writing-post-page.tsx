@@ -375,12 +375,13 @@ export function WritingPostPage() {
 
   const [address, setAddress] = useState<NaverAddress | null>(null);
   const [showSearchBox, setShowSearchBox] = useState<boolean>(false);
-  const [station, setStation] = useState<string>('');
-  const [stationTime, setStationTime] = useState<number>(0);
-  const [busStopTime, setBusStopTime] = useState<number>(0);
-  const [univ, setUniv] = useState<string>('');
-  const [univTime, setUnivTime] = useState<number>(0);
-  const [convenienceStoreTime, setConvenienceStoreTime] = useState<number>(0);
+
+  const [locationInfoList, setLocationInfoList] = useState<
+    Array<[string, string]>
+  >([]);
+  const [locationExtraInfoKey, setLocationExtraInfoKey] = useState<string>('');
+  const [locationExtraInfoValue, setLocationExtraInfoValue] =
+    useState<string>('');
 
   const { mutate } = useCreateSharedPost();
 
@@ -861,85 +862,55 @@ export function WritingPostPage() {
               </styles.listItem>
             )}
             <styles.listItem>
-              <styles.listItemDescription>지하철역</styles.listItemDescription>
-              <styles.inputContainer>
-                <styles.userInput
-                  value={station}
-                  onChange={event => {
-                    setStation(event.target.value);
-                  }}
-                />
-                <styles.inputPlaceholder>역</styles.inputPlaceholder>
-              </styles.inputContainer>
-              <styles.slash>도보</styles.slash>
-              <styles.inputContainer>
-                <styles.userInput
-                  value={stationTime}
-                  onChange={event => {
-                    handleNumberInput(event.target.value, value => {
-                      setStationTime(value);
-                    });
-                  }}
-                />
-                <styles.inputPlaceholder>분</styles.inputPlaceholder>
-              </styles.inputContainer>
+              <styles.listItemDescription>
+                추가 정보 기입
+              </styles.listItemDescription>
             </styles.listItem>
             <styles.listItem>
               <styles.listItemDescription>
-                버스정류장
+                장소 / 시간
               </styles.listItemDescription>
-              <styles.slash style={{ marginLeft: '6.8rem' }}>도보</styles.slash>
               <styles.inputContainer>
                 <styles.userInput
-                  value={busStopTime}
+                  value={locationExtraInfoKey}
                   onChange={event => {
-                    handleNumberInput(event.target.value, value => {
-                      setBusStopTime(value);
-                    });
+                    setLocationExtraInfoKey(event.target.value);
                   }}
                 />
-                <styles.inputPlaceholder>분</styles.inputPlaceholder>
               </styles.inputContainer>
+              <styles.slash>/</styles.slash>
+              <styles.inputContainer>
+                <styles.userInput
+                  value={locationExtraInfoValue}
+                  onChange={event => {
+                    setLocationExtraInfoValue(event.target.value);
+                  }}
+                />
+              </styles.inputContainer>
+              <div style={{ marginLeft: '1rem' }}>
+                <AddButton
+                  onClick={() => {
+                    if (
+                      locationExtraInfoKey.length !== 0 ||
+                      locationExtraInfoValue.length !== 0
+                    ) {
+                      setLocationInfoList([
+                        ...locationInfoList,
+                        [locationExtraInfoKey, locationExtraInfoValue],
+                      ]);
+                      setLocationExtraInfoKey(() => '');
+                      setLocationExtraInfoValue(() => '');
+                    }
+                  }}
+                />
+              </div>
             </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>학교</styles.listItemDescription>
-              <styles.inputContainer>
-                <styles.userInput
-                  value={univ}
-                  onChange={event => {
-                    setUniv(event.target.value);
-                  }}
-                />
-                <styles.inputPlaceholder>학교</styles.inputPlaceholder>
-              </styles.inputContainer>
-              <styles.slash>도보</styles.slash>
-              <styles.inputContainer>
-                <styles.userInput
-                  value={univTime}
-                  onChange={event => {
-                    handleNumberInput(event.target.value, value => {
-                      setUnivTime(value);
-                    });
-                  }}
-                />
-                <styles.inputPlaceholder>분</styles.inputPlaceholder>
-              </styles.inputContainer>
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>편의점</styles.listItemDescription>
-              <styles.slash style={{ marginLeft: '6.8rem' }}>도보</styles.slash>
-              <styles.inputContainer>
-                <styles.userInput
-                  value={convenienceStoreTime}
-                  onChange={event => {
-                    handleNumberInput(event.target.value, value => {
-                      setConvenienceStoreTime(value);
-                    });
-                  }}
-                />
-                <styles.inputPlaceholder>분</styles.inputPlaceholder>
-              </styles.inputContainer>
-            </styles.listItem>
+            {locationInfoList.map(([key, value], index) => (
+              <styles.listItem key={`${key}-${index}`}>
+                <styles.listItemDescription>{key}</styles.listItemDescription>
+                <styles.listItemDescription>{value}</styles.listItemDescription>
+              </styles.listItem>
+            ))}
           </styles.listContainer>
         </styles.locationContainer>
       </styles.postContainer>

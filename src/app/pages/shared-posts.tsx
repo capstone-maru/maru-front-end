@@ -215,7 +215,6 @@ export function SharedPostsPage() {
                       handleSetPage(index + 1 + currentSlice * sliceSize);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    // eslint-disable-next-line react/no-array-index-key
                     key={`${currentSlice}-${index}`}
                     className={
                       page === index + 1 + currentSlice * sliceSize
