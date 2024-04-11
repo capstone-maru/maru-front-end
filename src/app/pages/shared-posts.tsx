@@ -12,7 +12,10 @@ import {
   SharedPostFilters,
   SharedPostsMenu,
 } from '@/components/shared-posts';
-import { type SharedPostsType } from '@/entities/shared-posts-filter';
+import {
+  useSharedPostsFilter,
+  type SharedPostsType,
+} from '@/entities/shared-posts-filter';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
 import { useRecommendationMate } from '@/features/recommendation';
 import { usePaging, useSharedPosts } from '@/features/shared';
@@ -120,6 +123,8 @@ export function SharedPostsPage() {
     useState<GetSharedPostsDTO | null>(null);
   const { setAuthUserData } = useAuthActions();
 
+  const [filter, setFilter] = useSharedPostsFilter();
+
   const { data: userData } = useUserData(auth?.accessToken !== undefined);
 
   const {
@@ -143,7 +148,7 @@ export function SharedPostsPage() {
 
   const { data: recommendationMates } = useRecommendationMate({
     memberId: auth?.user?.memberId ?? 'undefined',
-    cardType: 'mate',
+    cardType: filter.cardType ?? 'mate',
     enabled: auth?.accessToken != null && selected === 'homeless',
   });
 
@@ -166,7 +171,11 @@ export function SharedPostsPage() {
   return (
     <styles.container>
       <styles.SharedPostsMenu selected={selected} handleSelect={setSelected} />
-      <styles.SharedPostsFilter selected={selected} />
+      <styles.SharedPostsFilter
+        filter={filter}
+        setFilter={setFilter}
+        selected={selected}
+      />
       {selected === 'hasRoom' ? (
         <>
           <styles.createButtonRow>

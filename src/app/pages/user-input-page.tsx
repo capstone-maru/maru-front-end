@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import { VitalSection, OptionSection } from '@/components';
+import { type CardType } from '@/entities/shared-posts-filter';
 
 const styles = {
   pageContainer: styled.div`
@@ -153,7 +154,7 @@ interface CardActiveProps {
 }
 
 export function UserInputPage() {
-  const [activeContainer, setActiveContainer] = useState<'my' | 'mate'>('my');
+  const [activeContainer, setActiveContainer] = useState<CardType>('my');
 
   const handleMyCardClick = () => {
     setActiveContainer('my');

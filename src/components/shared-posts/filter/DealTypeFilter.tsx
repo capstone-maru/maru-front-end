@@ -17,6 +17,9 @@ const styles = {
     font-weight: 400;
     line-height: normal;
 
+    width: 30dvw;
+    height: 30dvw;
+
     h3 {
       color: #000;
       font-family: 'Noto Sans KR';
