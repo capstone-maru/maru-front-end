@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -135,19 +135,41 @@ const CheckItem = styled.div<CheckItemProps>`
 
 const years = Array.from({ length: 100 }, (_, index) => 2024 - index);
 
-export function VitalSection() {
-  interface SelectedState {
-    gender: string | null;
-    smoking: string | null;
-    room: string | null;
-  }
+interface SelectedState {
+  smoking: string | undefined;
+  room: string | undefined;
+}
 
+export function VitalSection({
+  gender,
+  birthYear,
+  smoking,
+  room,
+  onFeatureChange,
+  isMySelf,
+}: {
+  gender: string | undefined;
+  birthYear: string | undefined;
+  smoking: string | undefined;
+  room: string | undefined;
+  onFeatureChange: (
+    optionName: keyof SelectedState,
+    item: string | number,
+  ) => void;
+  isMySelf: boolean;
+}) {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedState, setSelectedState] = useState<SelectedState>({
-    gender: null,
-    smoking: null,
-    room: null,
+    smoking: undefined,
+    room: undefined,
   });
+  useEffect(() => {
+    setSelectedState({
+      ...selectedState,
+      smoking: smoking,
+      room: room,
+    });
+  }, [smoking, room]);
 
   function handleOptionClick(
     optionName: keyof SelectedState,
@@ -157,6 +179,7 @@ export function VitalSection() {
       ...prevState,
       [optionName]: prevState[optionName] === item ? null : item,
     }));
+    onFeatureChange(optionName, item);
   }
 
   const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -173,17 +196,21 @@ export function VitalSection() {
           </styles.vitalListItemDescription>
           <styles.vitalCheckListContainer>
             <CheckItem
-              $isSelected={selectedState.gender === '남성'}
-              onClick={() => {
-                handleOptionClick('gender', '남성');
+              $isSelected={gender === 'MALE'}
+              style={{
+                border: gender === 'MALE' ? 'none' : '',
+                background: gender === 'MALE' ? 'var(--Gray-5, #828282)' : '',
+                color: gender === 'MALE' ? '#fff' : '',
               }}
             >
               남성
             </CheckItem>
             <CheckItem
-              $isSelected={selectedState.gender === '남성'}
-              onClick={() => {
-                handleOptionClick('gender', '남성');
+              $isSelected={gender === 'FEMALE'}
+              style={{
+                border: gender === 'FEMALE' ? 'none' : '',
+                background: gender === 'FEMALE' ? 'var(--Gray-5, #828282)' : '',
+                color: gender === 'FEMALE' ? '#fff' : '',
               }}
             >
               여성
@@ -195,7 +222,10 @@ export function VitalSection() {
             희망 지역
           </styles.vitalListItemDescription>
           <styles.searchBox>
-            <styles.mapInput placeholder="ex) 한국동,한국역,한국대학교" />
+            <styles.mapInput
+              placeholder="ex) 한국동,한국역,한국대학교"
+              readOnly={!isMySelf}
+            />
           </styles.searchBox>
         </styles.vitalList>
         <styles.vitalList>
@@ -206,7 +236,9 @@ export function VitalSection() {
             <CheckItem
               $isSelected={selectedState.smoking === '흡연'}
               onClick={() => {
-                handleOptionClick('smoking', '흡연');
+                if (isMySelf) {
+                  handleOptionClick('smoking', '흡연');
+                }
               }}
             >
               흡연
@@ -214,7 +246,9 @@ export function VitalSection() {
             <CheckItem
               $isSelected={selectedState.smoking === '비흡연'}
               onClick={() => {
-                handleOptionClick('smoking', '비흡연');
+                if (isMySelf) {
+                  handleOptionClick('smoking', '비흡연');
+                }
               }}
             >
               비흡연
@@ -222,7 +256,9 @@ export function VitalSection() {
             <CheckItem
               $isSelected={selectedState.smoking === '상관없어요'}
               onClick={() => {
-                handleOptionClick('smoking', '상관없어요');
+                if (isMySelf) {
+                  handleOptionClick('smoking', '상관없어요');
+                }
               }}
             >
               상관없어요
@@ -237,7 +273,9 @@ export function VitalSection() {
             <CheckItem
               $isSelected={selectedState.room === '같은 방'}
               onClick={() => {
-                handleOptionClick('room', '같은 방');
+                if (isMySelf) {
+                  handleOptionClick('room', '같은 방');
+                }
               }}
             >
               같은 방
@@ -245,7 +283,9 @@ export function VitalSection() {
             <CheckItem
               $isSelected={selectedState.room === '다른 방'}
               onClick={() => {
-                handleOptionClick('room', '다른 방');
+                if (isMySelf) {
+                  handleOptionClick('room', '다른 방');
+                }
               }}
             >
               다른 방
@@ -253,7 +293,9 @@ export function VitalSection() {
             <CheckItem
               $isSelected={selectedState.room === '상관없어요'}
               onClick={() => {
-                handleOptionClick('room', '상관없어요');
+                if (isMySelf) {
+                  handleOptionClick('room', '상관없어요');
+                }
               }}
             >
               상관없어요
@@ -265,8 +307,9 @@ export function VitalSection() {
             출생 연도
           </styles.vitalListItemDescription>
           <styles.birthYear
-            value={selectedYear ?? ''}
+            value={selectedYear ?? birthYear}
             onChange={handleYearChange}
+            disabled={birthYear !== undefined || !isMySelf}
           >
             <option value="">년도</option>
             {years.map(year => (

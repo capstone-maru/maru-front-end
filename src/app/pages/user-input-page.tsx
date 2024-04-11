@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import Location from '../../../public/option-img/location_on.svg';
@@ -9,6 +10,8 @@ import Person from '../../../public/option-img/person.svg';
 import Visibility from '../../../public/option-img/visibility.svg';
 
 import { VitalSection, OptionSection } from '@/components';
+import { useAuthValue, useUserData } from '@/features/auth';
+import { usePutUserCard } from '@/features/profile';
 
 const styles = {
   pageContainer: styled.div`
@@ -201,7 +204,124 @@ interface CardActiveProps {
   $active?: boolean;
 }
 
+interface UserProps {
+  memberId: string | undefined;
+  name: string | undefined;
+  gender: string | undefined;
+  birthYear: string | undefined;
+  myCardId: number | undefined;
+  mateCardId: number | undefined;
+}
+
+interface SelectedState {
+  smoking: string | undefined;
+  room: string | undefined;
+}
+type SelectedOptions = Record<string, boolean>;
+
+const useSelectedState = (): [
+  SelectedState,
+  SelectedOptions,
+  (optionName: keyof SelectedState, item: string | number) => void,
+  (option: string) => void,
+] => {
+  const [selectedState, setSelectedState] = useState<SelectedState>({
+    smoking: undefined,
+    room: undefined,
+  });
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+
+  const handleFeatureChange = (
+    optionName: keyof SelectedState,
+    item: string | number,
+  ) => {
+    setSelectedState(prevState => ({
+      ...prevState,
+      [optionName]: prevState[optionName] === item ? undefined : item,
+    }));
+  };
+
+  const handleOptionClick = (option: string) => {
+    setSelectedOptions(prevSelectedOptions => ({
+      ...prevSelectedOptions,
+      [option]: !prevSelectedOptions[option],
+    }));
+  };
+
+  return [
+    selectedState,
+    selectedOptions,
+    handleFeatureChange,
+    handleOptionClick,
+  ];
+};
+
 export function UserInputPage() {
+  const auth = useAuthValue();
+  const { data } = useUserData(auth?.accessToken !== undefined);
+  const [user, setUserData] = useState<UserProps | null>(null);
+
+  useEffect(() => {
+    if (data !== undefined) {
+      const { name, gender, birthYear, memberId, myCardId, mateCardId } = data;
+      setUserData({ name, gender, birthYear, memberId, myCardId, mateCardId });
+    }
+  }, [data]);
+
+  const [
+    selectedState,
+    selectedOptions,
+    handleFeatureChange,
+    handleOptionClick,
+  ] = useSelectedState();
+  const [
+    selectedMateState,
+    selectedMateOptions,
+    handleMateFeatureChange,
+    handleMateOptionClick,
+  ] = useSelectedState();
+
+  const myCardId = user?.myCardId ?? 0;
+  const mateCardId = user?.mateCardId ?? 0;
+
+  const { mutate: mutateMyCard } = usePutUserCard(myCardId);
+  const { mutate: mutateMateCard } = usePutUserCard(mateCardId);
+
+  const handleButtonClick = () => {
+    const myOptions = Object.keys(selectedOptions).filter(
+      key => selectedOptions[key],
+    );
+    const mateOptions = Object.keys(selectedMateOptions).filter(
+      key => selectedMateOptions[key],
+    );
+
+    const location = '성북 길음동';
+    const myFeatures = [
+      selectedState.smoking,
+      selectedState.room,
+      ...myOptions,
+    ];
+
+    const mateFeatures = [
+      selectedMateState.smoking,
+      selectedMateState.room,
+      ...mateOptions,
+    ];
+
+    try {
+      mutateMyCard({
+        location: location,
+        features: myFeatures,
+      });
+      mutateMateCard({
+        location: location,
+        features: mateFeatures,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const [activeContainer, setActiveContainer] = useState<'my' | 'mate'>('my');
 
   const handleMyCardClick = () => {
@@ -215,7 +335,7 @@ export function UserInputPage() {
   return (
     <styles.pageContainer>
       <styles.pageDescription>
-        김마루 님과 희망 메이트에 대해서 알려주세요
+        {user?.name} 님과 희망 메이트에 대해서 알려주세요
       </styles.pageDescription>
       <styles.cardContainer>
         <styles.cardNameSection>
@@ -292,27 +412,51 @@ export function UserInputPage() {
         </styles.cardNameSection>
         <styles.checkSection>
           <styles.checkContainer $active={activeContainer === 'my'}>
-            <VitalSection />
+            <VitalSection
+              gender={user?.gender}
+              birthYear={user?.birthYear}
+              smoking={undefined}
+              room={undefined}
+              onFeatureChange={handleFeatureChange}
+              isMySelf
+            />
             <styles.lineContainer>
               <styles.horizontalLine />
             </styles.lineContainer>
-            <OptionSection />
+            <OptionSection
+              optionFeatures={null}
+              onFeatureChange={handleOptionClick}
+              isMySelf
+            />
           </styles.checkContainer>
           <styles.checkContainer $active={activeContainer === 'mate'}>
-            <VitalSection />
+            <VitalSection
+              gender={user?.gender}
+              birthYear={undefined}
+              smoking={undefined}
+              room={undefined}
+              onFeatureChange={handleMateFeatureChange}
+              isMySelf
+            />
             <styles.lineContainer>
               <styles.horizontalLine />
             </styles.lineContainer>
-            <OptionSection />
+            <OptionSection
+              optionFeatures={null}
+              onFeatureChange={handleMateOptionClick}
+              isMySelf
+            />
           </styles.checkContainer>
         </styles.checkSection>
       </styles.cardContainer>
-      <styles.mateButtonContainer>
-        <styles.mateButtonDescription>
-          나의 메이트 확인하기
-        </styles.mateButtonDescription>
-        <styles.mateButtonIcon src="/chevron-right.svg" />
-      </styles.mateButtonContainer>
+      <Link href="/">
+        <styles.mateButtonContainer onClick={handleButtonClick}>
+          <styles.mateButtonDescription>
+            나의 메이트 확인하기
+          </styles.mateButtonDescription>
+          <styles.mateButtonIcon src="/chevron-right.svg" />
+        </styles.mateButtonContainer>
+      </Link>
     </styles.pageContainer>
   );
 }

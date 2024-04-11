@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
+import { useRecommendationMate } from '@/features/recommendation';
 
 const styles = {
   container: styled.div`
@@ -48,6 +49,7 @@ const styles = {
   `,
   mateRecommendation: styled.div`
     display: flex;
+    flex-grow: 1;
     flex-direction: row;
     gap: 2.625rem;
     overflow-x: auto;
@@ -66,7 +68,12 @@ export function MainPage() {
   const auth = useAuthValue();
   const { setAuthUserData } = useAuthActions();
 
-  const { data } = useUserData(auth?.accessToken !== undefined);
+  const { data: userData } = useUserData(auth?.accessToken !== undefined);
+
+  const { data: recommendationMates } = useRecommendationMate({
+    memberId: auth?.user?.memberId ?? 'undefined',
+    enabled: auth?.accessToken != null,
+  });
 
   const [, setMap] = useState<naver.maps.Map | null>(null);
 
@@ -96,13 +103,13 @@ export function MainPage() {
   }, []);
 
   useEffect(() => {
-    if (data !== undefined) {
-      setAuthUserData(data);
-      if (data.initialized) {
+    if (userData !== undefined) {
+      setAuthUserData(userData);
+      if (userData.initialized) {
         // router.replace('/profile');
       }
     }
-  }, [data, router, setAuthUserData]);
+  }, [userData, router, setAuthUserData]);
 
   return (
     <styles.container>
@@ -118,48 +125,14 @@ export function MainPage() {
             onClick={handleScrollLeft}
           />
           <styles.mateRecommendation ref={scrollRef}>
-            <Link href="/profile/memberId">
-              <UserCard
-                name="김마루"
-                address="성북 길음동"
-                birth={new Date(2000, 5, 27)}
-              />
-            </Link>
-            <Link href="/profile/memberId">
-              <UserCard
-                name="김마루"
-                address="성북 길음동"
-                birth={new Date(2000, 5, 27)}
-              />
-            </Link>
-            <Link href="/profile/memberId">
-              <UserCard
-                name="김마루"
-                address="성북 길음동"
-                birth={new Date(2000, 5, 27)}
-              />
-            </Link>
-            <Link href="/profile/memberId">
-              <UserCard
-                name="김마루"
-                address="성북 길음동"
-                birth={new Date(2000, 5, 27)}
-              />
-            </Link>
-            <Link href="/profile/memberId">
-              <UserCard
-                name="김마루"
-                address="성북 길음동"
-                birth={new Date(2000, 5, 27)}
-              />
-            </Link>
-            <Link href="/profile/memberId">
-              <UserCard
-                name="김마루"
-                address="성북 길음동"
-                birth={new Date(2000, 5, 27)}
-              />
-            </Link>
+            {recommendationMates?.map(({ name, similarity, userId }) => (
+              <Link key={userId} href={`/profile/${userId}`}>
+                <UserCard
+                  name={name}
+                  percentage={Math.floor(similarity * 100)}
+                />
+              </Link>
+            ))}
           </styles.mateRecommendation>
           <CircularButton
             direction="right"

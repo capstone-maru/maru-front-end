@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { CleanTest } from './card/CleanTest';
@@ -237,10 +237,27 @@ const PersonalOptions = [
   '전공',
 ];
 
-export function OptionSection() {
+export function OptionSection({
+  optionFeatures,
+  onFeatureChange,
+  isMySelf,
+}: {
+  optionFeatures: string[] | null;
+  onFeatureChange: (option: string) => void;
+  isMySelf: boolean;
+}) {
   type SelectedOptions = Record<string, boolean>;
-
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+
+  useEffect(() => {
+    if (optionFeatures !== null) {
+      const initialOptions: SelectedOptions = {};
+      optionFeatures.forEach(option => {
+        initialOptions[option] = true;
+      });
+      setSelectedOptions(initialOptions);
+    }
+  }, [optionFeatures]);
 
   const [toggleStates, setToggleStates] = useState({
     toggle1: false,
@@ -254,6 +271,7 @@ export function OptionSection() {
       ...prevSelectedOptions,
       [option]: !prevSelectedOptions[option],
     }));
+    onFeatureChange(option);
   };
 
   const toggleSwitch = (toggleName: keyof typeof toggleStates) => {
@@ -286,7 +304,9 @@ export function OptionSection() {
                 key={option}
                 $isSelected={selectedOptions[option]}
                 onClick={() => {
-                  handleOptionClick(option);
+                  if (isMySelf) {
+                    handleOptionClick(option);
+                  }
                 }}
               >
                 {option}
@@ -302,7 +322,9 @@ export function OptionSection() {
                 key={option}
                 $isSelected={selectedOptions[option]}
                 onClick={() => {
-                  handleOptionClick(option);
+                  if (isMySelf) {
+                    handleOptionClick(option);
+                  }
                 }}
               >
                 {option}
@@ -318,7 +340,9 @@ export function OptionSection() {
                 key={option}
                 $isSelected={selectedOptions[option]}
                 onClick={() => {
-                  handleOptionClick(option);
+                  if (isMySelf) {
+                    handleOptionClick(option);
+                  }
                 }}
               >
                 {option}
@@ -334,7 +358,9 @@ export function OptionSection() {
                 key={option}
                 $isSelected={selectedOptions[option]}
                 onClick={() => {
-                  handleOptionClick(option);
+                  if (isMySelf) {
+                    handleOptionClick(option);
+                  }
                 }}
               >
                 {option}
@@ -350,30 +376,11 @@ export function OptionSection() {
                 테스트 하기
               </styles.cleanTestDescription>
             </styles.cleanTestContainer>
-            <CheckItem
-              $isSelected={score >= 0 && score < 5.34}
-              onClick={() => {
-                handleOptionClick('상');
-              }}
-            >
-              상
-            </CheckItem>
-            <CheckItem
-              $isSelected={score > 5.34 && score < 10.67}
-              onClick={() => {
-                handleOptionClick('중');
-              }}
-            >
+            <CheckItem $isSelected={score >= 0 && score < 5.34}>상</CheckItem>
+            <CheckItem $isSelected={score > 5.34 && score < 10.67}>
               평범보통
             </CheckItem>
-            <CheckItem
-              $isSelected={score > 10.67}
-              onClick={() => {
-                handleOptionClick('하');
-              }}
-            >
-              천하태평
-            </CheckItem>
+            <CheckItem $isSelected={score > 10.67}>천하태평</CheckItem>
           </styles.optionListCheckItemContainer>
         </styles.optionListItem>
         {isTestVisible && <CleanTest onComplete={handleTestCompletion} />}
@@ -385,7 +392,9 @@ export function OptionSection() {
                 key={option}
                 $isSelected={selectedOptions[option]}
                 onClick={() => {
-                  handleOptionClick(option);
+                  if (isMySelf) {
+                    handleOptionClick(option);
+                  }
                 }}
               >
                 {option === '엠비티아이' ? <>MBTI</> : option}
@@ -399,7 +408,9 @@ export function OptionSection() {
                   <ToggleSwitch
                     isChecked={toggleStates.toggle1}
                     onToggle={() => {
-                      toggleSwitch('toggle1');
+                      if (isMySelf) {
+                        toggleSwitch('toggle1');
+                      }
                     }}
                   />
                   I
@@ -409,7 +420,9 @@ export function OptionSection() {
                   <ToggleSwitch
                     isChecked={toggleStates.toggle2}
                     onToggle={() => {
-                      toggleSwitch('toggle2');
+                      if (isMySelf) {
+                        toggleSwitch('toggle2');
+                      }
                     }}
                   />
                   S
@@ -419,7 +432,9 @@ export function OptionSection() {
                   <ToggleSwitch
                     isChecked={toggleStates.toggle3}
                     onToggle={() => {
-                      toggleSwitch('toggle3');
+                      if (isMySelf) {
+                        toggleSwitch('toggle3');
+                      }
                     }}
                   />
                   T
@@ -429,7 +444,9 @@ export function OptionSection() {
                   <ToggleSwitch
                     isChecked={toggleStates.toggle4}
                     onToggle={() => {
-                      toggleSwitch('toggle4');
+                      if (isMySelf) {
+                        toggleSwitch('toggle4');
+                      }
                     }}
                   />
                   J

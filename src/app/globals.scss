@@ -11,8 +11,8 @@
 html,
 body {
   height: 100dvh;
+  min-width: 90rem;
   max-width: 100dvw;
-  overflow-x: hidden;
 }
 
 nav {

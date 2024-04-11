@@ -1,5 +1,8 @@
 'use client';
 
+import { type NavigateOptions } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 
 import Location from '../../../public/option-img/location_on.svg';
@@ -9,6 +12,11 @@ import Visibility from '../../../public/option-img/visibility.svg';
 
 import { VitalSection, OptionSection } from '@/components';
 import { SelfIntroduction } from '@/components/card';
+import {
+  useProfileData,
+  usePutUserCard,
+  useUserCard,
+} from '@/features/profile';
 
 const styles = {
   pageContainer: styled.div`
@@ -126,20 +134,164 @@ const styles = {
   `,
 };
 
-interface SettingPageProps {
-  type: string;
-  name: string;
+interface SelectedState {
+  smoking: string | undefined;
+  room: string | undefined;
 }
 
-export function SettingPage({ type, name }: SettingPageProps) {
+interface UserProps {
+  name: string;
+  gender: string;
+  birthYear: string;
+}
+
+type SelectedOptions = Record<string, boolean>;
+
+export function SettingPage({ cardId }: { cardId: number }) {
+  const params = useSearchParams();
+  const memberIdParams = params.get('memberId');
+  const memberId = memberIdParams ?? '';
+  const isMySelfStr = params.get('isMySelf');
+  const isMySelf = isMySelfStr === 'true';
+
+  const user = useProfileData(memberId);
+  const [userData, setUserData] = useState<UserProps | null>(null);
+
+  useEffect(() => {
+    if (user.data !== undefined) {
+      const userProfileData = user.data.data.authResponse;
+      if (userProfileData !== undefined) {
+        const { name, birthYear, gender } = userProfileData;
+        setUserData({ name, gender, birthYear });
+      }
+    }
+  }, [user.data]);
+
+  const card = useUserCard(cardId);
+  const [features, setFeatures] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    if (isMySelf) {
+      if (card !== undefined) {
+        const featuresData = card.data?.data.myFeatures ?? null;
+        setFeatures(featuresData);
+      }
+    }
+  }, [card, isMySelf]);
+
+  const [selectedState, setSelectedState] = useState<SelectedState>({
+    smoking: undefined,
+    room: undefined,
+  });
+
+  useEffect(() => {
+    if (isMySelf) {
+      if (features !== null) {
+        setSelectedState({
+          ...selectedState,
+          smoking: features[0],
+          room: features[1],
+        });
+      }
+    }
+  }, [features, isMySelf]);
+
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+
+  useEffect(() => {
+    if (isMySelf) {
+      if (features !== null) {
+        const initialOptions: SelectedOptions = {};
+        features.slice(2).forEach(option => {
+          initialOptions[option] = true;
+        });
+        setSelectedOptions(initialOptions);
+      }
+    }
+  }, [features, isMySelf]);
+
+  const handleFeatureChange = (
+    optionName: keyof SelectedState,
+    item: string | number,
+  ) => {
+    if (isMySelf) {
+      setSelectedState(prevState => ({
+        ...prevState,
+        [optionName]: prevState[optionName] === item ? null : item,
+      }));
+    }
+  };
+  const handleOptionClick = (option: string) => {
+    if (isMySelf) {
+      setSelectedOptions(prevSelectedOptions => ({
+        ...prevSelectedOptions,
+        [option]: !prevSelectedOptions[option],
+      }));
+    }
+  };
+
+  const { mutate } = usePutUserCard(cardId);
+  const router = useRouter();
+
+  const saveData = () => {
+    const array = Object.keys(selectedOptions).filter(
+      key => selectedOptions[key],
+    );
+
+    const location = '성북 길음동';
+    const myFeatures = [selectedState.smoking, selectedState.room, ...array];
+
+    mutate({ location: location, features: myFeatures });
+  };
+
+  const handleBeforeUnload = () => {
+    saveData();
+  };
+
+  const isClickedFirst = useRef(false);
+
+  const handlePopState = () => {
+    saveData();
+    history.back();
+  };
+
+  useEffect(() => {
+    const originalPush = router.push.bind(router);
+    const newPush = (
+      href: string,
+      options?: NavigateOptions | undefined,
+    ): void => {
+      saveData();
+      originalPush(href, options);
+    };
+    router.push = newPush;
+    window.onbeforeunload = handleBeforeUnload;
+    return () => {
+      router.push = originalPush;
+      window.onbeforeunload = null;
+    };
+  }, [router, handleBeforeUnload]);
+
+  useEffect(() => {
+    if (!isClickedFirst.current) {
+      history.pushState(null, '', '');
+      isClickedFirst.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [handlePopState]);
+
   return (
     <styles.pageContainer>
-      <styles.cardName>
-        {type} 카드 &gt; {name}
-      </styles.cardName>
+      <styles.cardName>내 카드 &gt; {userData?.name}</styles.cardName>
       <styles.cardContainer>
         <styles.miniCard>
-          <styles.miniCardName>{type}카드</styles.miniCardName>
+          <styles.miniCardName>내카드</styles.miniCardName>
           <styles.miniCardKeywordsContainer>
             <styles.miniCardList>
               <styles.miniCardPerson />
@@ -162,11 +314,22 @@ export function SettingPage({ type, name }: SettingPageProps) {
           </styles.miniCardKeywordsContainer>
         </styles.miniCard>
         <styles.checkContainer>
-          <VitalSection />
+          <VitalSection
+            gender={userData?.gender}
+            birthYear={userData?.birthYear}
+            smoking={features?.[0]}
+            room={features?.[1]}
+            onFeatureChange={handleFeatureChange}
+            isMySelf={isMySelf}
+          />
           <styles.lineContainer>
             <styles.horizontalLine />
           </styles.lineContainer>
-          <OptionSection />
+          <OptionSection
+            optionFeatures={features}
+            onFeatureChange={handleOptionClick}
+            isMySelf={isMySelf}
+          />
           <SelfIntroduction />
         </styles.checkContainer>
       </styles.cardContainer>

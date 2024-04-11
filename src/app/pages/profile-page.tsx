@@ -1,8 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { atom, useRecoilState } from 'recoil';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+
+import { useAuthValue, useUserData } from '@/features/auth';
+import { useProfileData } from '@/features/profile';
 
 const styles = {
   pageContainer: styled.div`
@@ -15,15 +18,18 @@ const styles = {
     display: inline-flex;
     align-items: flex-start;
     flex-shrink: 0;
+    gap: 2.62rem;
     margin-top: 5.12rem;
   `,
-  userProfileWithoutSwitch: styled.div`
+  userProfileWithoutInfo: styled.div`
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
-    gap: 2.625rem;
+    gap: 1.75rem;
   `,
   userPicContainer: styled.div`
     display: flex;
+    flex-direction: column;
     width: 8.3125rem;
     height: 8.3125rem;
     justify-content: center;
@@ -42,12 +48,13 @@ const styles = {
   `,
   userInfoContainer: styled.div`
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.56rem;
   `,
   userDetailedContainer: styled.div`
     display: inline-flex;
+    width: 100%;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
@@ -75,8 +82,8 @@ const styles = {
     display: inline-flex;
     justify-content: center;
     align-items: flex-end;
-    margin: 1.25rem 0 0 2.63rem;
     gap: 0.375rem;
+    margin-left: 3.31rem;
   `,
   switchWrapper: styled.label`
     position: relative;
@@ -127,10 +134,8 @@ const styles = {
     height: 2rem;
     width: 5.3125rem;
     border-radius: 26px;
-    background: #5c6eb4;
-    margin: 1rem 1.4375rem 0 1.5625rem;
+    background: var(--Black, #35373a);
     cursor: pointer;
-
     display: inline-flex;
     padding: 0.25rem 0.5rem;
     justify-content: center;
@@ -189,24 +194,6 @@ const styles = {
     font-weight: 700;
     line-height: normal;
   `,
-  addButton: styled.button`
-    display: flex;
-    width: 6.1875rem;
-    padding: 0.5rem 1.5rem;
-    justify-content: center;
-    align-items: center;
-    gap: 0.25rem;
-    border-radius: 8px;
-    border: 1px solid var(--Gray-5, #828282);
-    background: var(--White, #fff);
-
-    color: var(--Gray-5, #828282);
-    font-family: Pretendard;
-    font-size: 1.125rem;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 1.5rem;
-  `,
   mateCardsContainer: styled.div`
     display: flex;
     gap: 1.69rem;
@@ -214,6 +201,10 @@ const styles = {
   `,
   mateCards: styled.div`
     display: flex;
+    width: 35.6rem;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    padding: 1.5rem;
     gap: 2.88rem;
   `,
   cardContainer: styled.div`
@@ -255,26 +246,6 @@ const styles = {
     position: absolute;
     right: 0;
     bottom: 1.5rem;
-  `,
-  nextButton: styled.button`
-    width: 3.125rem;
-    height: 3.12481rem;
-    flex-shrink: 0;
-    background-image: url('/next-button.svg');
-    background-repeat: no-repeat;
-    border: none;
-    background-color: #fff;
-    cursor: pointer;
-  `,
-  prevButton: styled.button`
-    width: 3.125rem;
-    height: 3.12481rem;
-    flex-shrink: 0;
-    background-image: url('/prev-button.svg');
-    background-repeat: no-repeat;
-    border: none;
-    background-color: #fff;
-    cursor: pointer;
   `,
 
   maruContainer: styled.div`
@@ -403,22 +374,45 @@ const styles = {
     border-radius: 16px;
     background: #f7f6f9;
   `,
+
+  introductionContainer: styled.div`
+    display: inline-flex;
+    min-width: 41.125rem;
+    height: 5.4375rem;
+    padding: 1.25rem 0.5rem 2.75rem 1.5rem;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #f7f6f9;
+
+    color: #000;
+
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  `,
 };
 
 interface UserProfileInfoProps {
-  src: string;
-  name: string;
-  age: string;
-  addr: string;
+  name: string | undefined;
+  email: string | undefined;
+  phoneNum: string | undefined;
+  selfIntroduction: string | undefined;
+  src: string | undefined;
+  isMySelf: boolean | undefined;
 }
 
-const isCheckedState = atom({
-  key: 'isCheckedState',
-  default: false,
-});
-
-function UserInfo({ src, name, age, addr }: UserProfileInfoProps) {
-  const [isChecked, setIsChecked] = useRecoilState(isCheckedState);
+function UserInfo({
+  name,
+  email,
+  phoneNum,
+  selfIntroduction,
+  src,
+  isMySelf,
+}: UserProfileInfoProps) {
+  const [isChecked, setIsChecked] = useState(false);
 
   const toggleSwitch = () => {
     setIsChecked(!isChecked);
@@ -426,19 +420,23 @@ function UserInfo({ src, name, age, addr }: UserProfileInfoProps) {
 
   return (
     <styles.userProfileContainer>
-      <styles.userProfileWithoutSwitch>
+      <styles.userProfileWithoutInfo>
         <styles.userPicContainer>
           <styles.userPic src={src} alt="User Profile Pic" />
         </styles.userPicContainer>
-        <styles.userInfoContainer>
-          <styles.userName>{name}</styles.userName>
-          <styles.userDetailedContainer>
-            <styles.userDetailedInfo>{age}</styles.userDetailedInfo>
-            <styles.userDetailedInfo>{addr}</styles.userDetailedInfo>
-          </styles.userDetailedContainer>
-        </styles.userInfoContainer>
-      </styles.userProfileWithoutSwitch>
-      <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
+        <Auth isMySelf={isMySelf} />
+      </styles.userProfileWithoutInfo>
+      <styles.userInfoContainer>
+        <styles.userName>{name}</styles.userName>
+        <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
+        <styles.userDetailedContainer>
+          <styles.userDetailedInfo>{email}</styles.userDetailedInfo>
+          <styles.userDetailedInfo>{phoneNum}</styles.userDetailedInfo>
+          <styles.introductionContainer>
+            {selfIntroduction}
+          </styles.introductionContainer>
+        </styles.userDetailedContainer>
+      </styles.userInfoContainer>
     </styles.userProfileContainer>
   );
 }
@@ -474,49 +472,51 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
   );
 }
 
-function Auth() {
+function Auth({ isMySelf }: { isMySelf: boolean | undefined }) {
   return (
     <styles.authContainer>
       <styles.authCheckImg src="/check_circle_24px copy.svg" />
-      <styles.authDescription>본인인증</styles.authDescription>
+      <styles.authDescription>학교인증</styles.authDescription>
     </styles.authContainer>
   );
 }
 
-function Card() {
+function Card({
+  name,
+  memberId,
+  myCardId,
+  mateCardId,
+  isMySelf,
+}: {
+  name: string | undefined;
+  memberId: string | undefined;
+  myCardId: number | undefined;
+  mateCardId: number | undefined;
+  isMySelf: boolean;
+}) {
   return (
     <styles.cardSection>
       <styles.cardWrapper>
         <styles.description32px>내 카드</styles.description32px>
-        <Link href="/setting/my">
+        <Link
+          href={`/profile/card/${myCardId}?memberId=${memberId}&isMySelf=${isMySelf}`}
+        >
           <styles.cardContainer>
-            <styles.cardName>김마루</styles.cardName>
+            <styles.cardName>{name}</styles.cardName>
             <styles.cardDefault>기본</styles.cardDefault>
           </styles.cardContainer>
         </Link>
       </styles.cardWrapper>
       <styles.cardWrapper>
-        <styles.cardDescriptionSection>
-          <styles.description32px>메이트 카드</styles.description32px>
-          <styles.addButton>+ 추가</styles.addButton>
-        </styles.cardDescriptionSection>
-        <styles.mateCardsContainer>
-          <styles.prevButton />
-          <styles.mateCards>
-            <Link href="/setting/mate">
-              <styles.cardContainer>
-                <styles.cardName>메이트</styles.cardName>
-                <styles.cardDefault>기본</styles.cardDefault>
-              </styles.cardContainer>
-            </Link>
-            <Link href="/setting/mate">
-              <styles.cardContainer>
-                <styles.cardName>메이트</styles.cardName>
-              </styles.cardContainer>
-            </Link>
-          </styles.mateCards>
-          <styles.nextButton />
-        </styles.mateCardsContainer>
+        <styles.description32px>메이트 카드</styles.description32px>
+        <Link
+          href={`/profile/card/${mateCardId}?memberId=${memberId}&isMySelf=${isMySelf}`}
+        >
+          <styles.cardContainer>
+            <styles.cardName>메이트</styles.cardName>
+            <styles.cardDefault>기본</styles.cardDefault>
+          </styles.cardContainer>
+        </Link>
       </styles.cardWrapper>
     </styles.cardSection>
   );
@@ -594,12 +594,75 @@ function Maru() {
   );
 }
 
-export function ProfilePage({ src, name, age, addr }: UserProfileInfoProps) {
+interface UserProps {
+  memberId: string;
+  email: string;
+  name: string;
+  birthYear: string;
+  gender: string;
+  phoneNumber: string;
+  initialized: boolean;
+  myCardId: number;
+  mateCardId: number;
+}
+
+export function ProfilePage({ memberId }: { memberId: string }) {
+  const auth = useAuthValue();
+  const { data } = useUserData(auth?.accessToken !== undefined);
+
+  const id = data?.memberId;
+
+  const user = useProfileData(memberId);
+  const [userData, setUserData] = useState<UserProps | null>(null);
+  const [isMySelf, setIsMySelf] = useState(false);
+
+  useEffect(() => {
+    if (user.data !== undefined) {
+      const userProfileData = user.data.data.authResponse;
+      const {
+        name,
+        email,
+        birthYear,
+        gender,
+        phoneNumber,
+        initialized,
+        myCardId,
+        mateCardId,
+      } = userProfileData;
+      setUserData({
+        memberId,
+        name,
+        email,
+        birthYear,
+        gender,
+        phoneNumber,
+        initialized,
+        myCardId,
+        mateCardId,
+      });
+      if (id === memberId) {
+        setIsMySelf(true);
+      }
+    }
+  }, [user.data, memberId]);
+
   return (
     <styles.pageContainer>
-      <UserInfo src={src} name={name} age={age} addr={addr} />
-      <Auth />
-      <Card />
+      <UserInfo
+        name={userData?.name ?? ''}
+        email={userData?.email ?? ''}
+        phoneNum={userData?.phoneNumber ?? ''}
+        selfIntroduction="집에서 요리해 먹는 것을 좋아하고 애니매이션을 즐겨봅니다."
+        src={user.data?.data.profileImage}
+        isMySelf={isMySelf}
+      />
+      <Card
+        name={userData?.name}
+        memberId={userData?.memberId}
+        myCardId={userData?.myCardId}
+        mateCardId={userData?.mateCardId}
+        isMySelf={isMySelf}
+      />
       <Maru />
     </styles.pageContainer>
   );
