@@ -17,7 +17,7 @@ const styles = {
 
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
+    translate: -50% -50%;
 
     font-family: 'Noto Sans KR';
     font-size: 1rem;

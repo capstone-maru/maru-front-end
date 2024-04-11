@@ -7,7 +7,10 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
 import { AddButton, CancelButton } from '@/components';
-import { LocationSearchBox } from '@/components/writing-post-page';
+import {
+  LocationSearchBox,
+  MateSearchBox,
+} from '@/components/writing-post-page';
 import { type NaverAddress } from '@/features/geocoding';
 import { getImageURL, putImage } from '@/features/image';
 import { useCreateSharedPost } from '@/features/shared';
@@ -360,6 +363,8 @@ export function WritingPostPage() {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedExtraOptions, setSelectedExtraOptions] =
     useState<SelectedExtraOptions>({});
+
+  const [showMateSearchBox, setShowMateSearchBox] = useState<boolean>(false);
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
@@ -602,7 +607,18 @@ export function WritingPostPage() {
             </styles.listItem>
             <styles.listItem>
               <styles.listItemDescription>메이트</styles.listItemDescription>
-              <AddButton onClick={() => {}} />
+              <AddButton
+                onClick={() => {
+                  setShowMateSearchBox(prev => !prev);
+                }}
+              />
+              {showMateSearchBox && (
+                <MateSearchBox
+                  setHidden={() => {
+                    setShowMateSearchBox(false);
+                  }}
+                />
+              )}
             </styles.listItem>
           </styles.listContainer>
         </styles.vitalContainer>
