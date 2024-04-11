@@ -363,6 +363,13 @@ export function WritingPostPage() {
   const [houseSize, setHouseSize] = useState<number>(0);
   const [roomSize, setRoomSize] = useState<number>(0);
   const [floor, setFloor] = useState<number>(0);
+  // const [location, setLocation] = useState<string>('');
+  const [station, setStation] = useState<string>('');
+  const [stationTime, setStationTime] = useState<number>(0);
+  const [busStopTime, setBusStopTime] = useState<number>(0);
+  const [univ, setUniv] = useState<string>('');
+  const [univTime, setUnivTime] = useState<number>(0);
+  const [convenienceStoreTime, setConvenienceStoreTime] = useState<number>(0);
 
   const { mutate } = useCreateSharedPost();
 
@@ -413,40 +420,13 @@ export function WritingPostPage() {
     return null;
   };
 
-  const handleExpectedMonthlyFeeChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+  const handleNumberInput = (
+    value: string,
+    setter: (value: number) => void,
   ) => {
-    const { value } = event.target;
-    const updateValue = convertToNumber(value);
-    if (updateValue != null) {
-      setExpectedMonthlyFee(updateValue);
-    }
-  };
-
-  const handleHouseSizeChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const { value } = event.target;
-    const updateValue = convertToNumber(value);
-    if (updateValue != null) {
-      setHouseSize(updateValue);
-    }
-  };
-
-  const handleRoomSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    const updateValue = convertToNumber(value);
-    if (updateValue != null) {
-      setRoomSize(updateValue);
-    }
-  };
-
-  const handleFloorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    const updateValue = convertToNumber(value);
-    if (updateValue != null) {
-      setFloor(updateValue);
-    }
+    const converted = convertToNumber(value);
+    if (converted == null) return;
+    setter(converted);
   };
 
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -646,7 +626,11 @@ export function WritingPostPage() {
               <styles.inputContainer>
                 <styles.userInput
                   value={expectedMonthlyFee}
-                  onChange={handleExpectedMonthlyFeeChange}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setExpectedMonthlyFee(value);
+                    });
+                  }}
                 />
                 <styles.inputPlaceholder>만원</styles.inputPlaceholder>
               </styles.inputContainer>
@@ -729,7 +713,11 @@ export function WritingPostPage() {
               <styles.inputContainer>
                 <styles.userInput
                   value={houseSize}
-                  onChange={handleHouseSizeChange}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setHouseSize(value);
+                    });
+                  }}
                 />
                 <styles.inputPlaceholder>평</styles.inputPlaceholder>
               </styles.inputContainer>
@@ -737,7 +725,11 @@ export function WritingPostPage() {
               <styles.inputContainer>
                 <styles.userInput
                   value={roomSize}
-                  onChange={handleRoomSizeChange}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setRoomSize(value);
+                    });
+                  }}
                 />
                 <styles.inputPlaceholder>평</styles.inputPlaceholder>
               </styles.inputContainer>
@@ -762,7 +754,14 @@ export function WritingPostPage() {
               ))}
               <styles.slash>/</styles.slash>
               <styles.inputContainer>
-                <styles.userInput value={floor} onChange={handleFloorChange} />
+                <styles.userInput
+                  value={floor}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setFloor(value);
+                    });
+                  }}
+                />
                 <styles.inputPlaceholder>층</styles.inputPlaceholder>
               </styles.inputContainer>
             </styles.listItem>
@@ -818,12 +817,24 @@ export function WritingPostPage() {
             <styles.listItem>
               <styles.listItemDescription>지하철역</styles.listItemDescription>
               <styles.inputContainer>
-                <styles.userInput />
+                <styles.userInput
+                  value={station}
+                  onChange={event => {
+                    setStation(event.target.value);
+                  }}
+                />
                 <styles.inputPlaceholder>역</styles.inputPlaceholder>
               </styles.inputContainer>
               <styles.slash>도보</styles.slash>
               <styles.inputContainer>
-                <styles.userInput />
+                <styles.userInput
+                  value={stationTime}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setStationTime(value);
+                    });
+                  }}
+                />
                 <styles.inputPlaceholder>분</styles.inputPlaceholder>
               </styles.inputContainer>
             </styles.listItem>
@@ -833,19 +844,38 @@ export function WritingPostPage() {
               </styles.listItemDescription>
               <styles.slash style={{ marginLeft: '6.8rem' }}>도보</styles.slash>
               <styles.inputContainer>
-                <styles.userInput />
+                <styles.userInput
+                  value={busStopTime}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setBusStopTime(value);
+                    });
+                  }}
+                />
                 <styles.inputPlaceholder>분</styles.inputPlaceholder>
               </styles.inputContainer>
             </styles.listItem>
             <styles.listItem>
               <styles.listItemDescription>학교</styles.listItemDescription>
               <styles.inputContainer>
-                <styles.userInput />
+                <styles.userInput
+                  value={univ}
+                  onChange={event => {
+                    setUniv(event.target.value);
+                  }}
+                />
                 <styles.inputPlaceholder>학교</styles.inputPlaceholder>
               </styles.inputContainer>
               <styles.slash>도보</styles.slash>
               <styles.inputContainer>
-                <styles.userInput />
+                <styles.userInput
+                  value={univTime}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setUnivTime(value);
+                    });
+                  }}
+                />
                 <styles.inputPlaceholder>분</styles.inputPlaceholder>
               </styles.inputContainer>
             </styles.listItem>
@@ -853,7 +883,14 @@ export function WritingPostPage() {
               <styles.listItemDescription>편의점</styles.listItemDescription>
               <styles.slash style={{ marginLeft: '6.8rem' }}>도보</styles.slash>
               <styles.inputContainer>
-                <styles.userInput />
+                <styles.userInput
+                  value={convenienceStoreTime}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setConvenienceStoreTime(value);
+                    });
+                  }}
+                />
                 <styles.inputPlaceholder>분</styles.inputPlaceholder>
               </styles.inputContainer>
             </styles.listItem>
