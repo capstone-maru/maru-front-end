@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+import { Slider } from './card/Slider';
+
 const styles = {
   vitalContainer: styled.div`
     display: flex;
@@ -143,13 +145,16 @@ interface SelectedState {
 export function VitalSection({
   gender,
   birthYear,
+  location,
   smoking,
   room,
   onFeatureChange,
   isMySelf,
+  type,
 }: {
   gender: string | undefined;
   birthYear: string | undefined;
+  location: string | undefined;
   smoking: string | undefined;
   room: string | undefined;
   onFeatureChange: (
@@ -157,6 +162,7 @@ export function VitalSection({
     item: string | number,
   ) => void;
   isMySelf: boolean;
+  type: string;
 }) {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedState, setSelectedState] = useState<SelectedState>({
@@ -186,6 +192,8 @@ export function VitalSection({
     const yearValue = parseInt(event.target.value, 10);
     setSelectedYear(Number.isNaN(yearValue) ? null : yearValue);
   };
+
+  const handleAgeChange = (value: number) => {};
   return (
     <styles.vitalContainer>
       <styles.vitalDescription>필수</styles.vitalDescription>
@@ -221,12 +229,25 @@ export function VitalSection({
           <styles.vitalListItemDescription>
             희망 지역
           </styles.vitalListItemDescription>
-          <styles.searchBox>
-            <styles.mapInput
-              placeholder="ex) 한국동,한국역,한국대학교"
-              readOnly={!isMySelf}
-            />
-          </styles.searchBox>
+          {type === 'myCard' ? (
+            <styles.searchBox>
+              <styles.mapInput
+                placeholder="ex) 한국동,한국역,한국대학교"
+                readOnly={!isMySelf}
+              />
+            </styles.searchBox>
+          ) : (
+            <CheckItem
+              $isSelected
+              style={{
+                border: gender === 'FEMALE' ? 'none' : '',
+                background: gender === 'FEMALE' ? 'var(--Gray-5, #828282)' : '',
+                color: gender === 'FEMALE' ? '#fff' : '',
+              }}
+            >
+              {location}
+            </CheckItem>
+          )}
         </styles.vitalList>
         <styles.vitalList>
           <styles.vitalListItemDescription>
@@ -306,18 +327,28 @@ export function VitalSection({
           <styles.vitalListItemDescription>
             출생 연도
           </styles.vitalListItemDescription>
-          <styles.birthYear
-            value={selectedYear ?? birthYear}
-            onChange={handleYearChange}
-            disabled={birthYear !== undefined || !isMySelf}
-          >
-            <option value="">년도</option>
-            {years.map(year => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </styles.birthYear>
+          {type === 'myCard' ? (
+            <styles.birthYear
+              value={selectedYear ?? birthYear}
+              onChange={handleYearChange}
+              disabled={birthYear !== undefined || !isMySelf}
+            >
+              <option value="">년도</option>
+              {years.map(year => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </styles.birthYear>
+          ) : (
+            <Slider
+              min={0}
+              max={10}
+              step={1}
+              initialValue={0}
+              onChange={handleAgeChange}
+            />
+          )}
         </styles.vitalList>
       </styles.vitalListContainer>
     </styles.vitalContainer>

@@ -153,6 +153,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
   const memberId = memberIdParams ?? '';
   const isMySelfStr = params.get('isMySelf');
   const isMySelf = isMySelfStr === 'true';
+  const type = params.get('type') ?? '';
 
   const user = useProfileData(memberId);
   const [userData, setUserData] = useState<UserProps | null>(null);
@@ -295,21 +296,32 @@ export function SettingPage({ cardId }: { cardId: number }) {
           <styles.miniCardKeywordsContainer>
             <styles.miniCardList>
               <styles.miniCardPerson />
-              <styles.miniCardText>여성 · 00년생 · 비흡연</styles.miniCardText>
+              <styles.miniCardText>
+                {userData?.gender === 'MALE' ? '남성' : '여성'} ·{' '}
+                {userData?.birthYear?.slice(2)}년생 · {selectedState.smoking}
+              </styles.miniCardText>
             </styles.miniCardList>
             <styles.miniCardList>
               <styles.miniCardLocation />
               <styles.miniCardText>
-                서울특별시 성북구 정릉동
+                {card.data?.data.location}
               </styles.miniCardText>
             </styles.miniCardList>
             <styles.miniCardList>
               <styles.miniCardMeeting />
-              <styles.miniCardText>메이트와 다른 방</styles.miniCardText>
+              <styles.miniCardText>
+                메이트와 {selectedState.room}
+              </styles.miniCardText>
             </styles.miniCardList>
             <styles.miniCardList>
               <styles.miniCardVisibility />
-              <styles.miniCardText>아침형</styles.miniCardText>
+              <styles.miniCardText>
+                {selectedOptions['아침형'] ? '아침형' : null}
+                {selectedOptions['아침형'] && selectedOptions['올빼미형']
+                  ? ' · '
+                  : null}
+                {selectedOptions['올빼미형'] ? '올빼미형' : null}
+              </styles.miniCardText>
             </styles.miniCardList>
           </styles.miniCardKeywordsContainer>
         </styles.miniCard>
@@ -317,10 +329,12 @@ export function SettingPage({ cardId }: { cardId: number }) {
           <VitalSection
             gender={userData?.gender}
             birthYear={userData?.birthYear}
+            location={card.data?.data.location}
             smoking={features?.[0]}
             room={features?.[1]}
             onFeatureChange={handleFeatureChange}
             isMySelf={isMySelf}
+            type={type}
           />
           <styles.lineContainer>
             <styles.horizontalLine />

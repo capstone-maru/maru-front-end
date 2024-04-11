@@ -331,7 +331,6 @@ export function UserInputPage() {
   const handleMateCardClick = () => {
     setActiveContainer('mate');
   };
-
   return (
     <styles.pageContainer>
       <styles.pageDescription>
@@ -350,7 +349,8 @@ export function UserInputPage() {
               <styles.miniCardList>
                 <styles.miniCardPerson $active={activeContainer === 'my'} />
                 <styles.miniCardText $active={activeContainer === 'my'}>
-                  여성 · 00년생 · 비흡연
+                  {user?.gender === 'MALE' ? '남성' : '여성'} ·{' '}
+                  {user?.birthYear?.slice(2)}년생 · {selectedState.smoking}
                 </styles.miniCardText>
               </styles.miniCardList>
               <styles.miniCardList>
@@ -362,13 +362,17 @@ export function UserInputPage() {
               <styles.miniCardList>
                 <styles.miniCardMeeting $active={activeContainer === 'my'} />
                 <styles.miniCardText $active={activeContainer === 'my'}>
-                  메이트와 다른 방
+                  메이트와 {selectedState.room}
                 </styles.miniCardText>
               </styles.miniCardList>
               <styles.miniCardList>
                 <styles.miniCardVisibility $active={activeContainer === 'my'} />
                 <styles.miniCardText $active={activeContainer === 'my'}>
-                  아침형
+                  {selectedOptions['아침형'] ? '아침형' : null}
+                  {selectedOptions['아침형'] && selectedOptions['올빼미형']
+                    ? ' · '
+                    : null}
+                  {selectedOptions['올빼미형'] ? '올빼미형' : null}
                 </styles.miniCardText>
               </styles.miniCardList>
             </styles.miniCardKeywordsContainer>
@@ -384,7 +388,8 @@ export function UserInputPage() {
               <styles.miniCardList>
                 <styles.miniCardPerson $active={activeContainer === 'mate'} />
                 <styles.miniCardText $active={activeContainer === 'mate'}>
-                  여성 · 00년생 · 비흡연
+                  {user?.gender === 'MALE' ? '남성' : '여성'} ·{' '}
+                  {user?.birthYear?.slice(2)}년생 · {selectedMateState.smoking}
                 </styles.miniCardText>
               </styles.miniCardList>
               <styles.miniCardList>
@@ -396,7 +401,7 @@ export function UserInputPage() {
               <styles.miniCardList>
                 <styles.miniCardMeeting $active={activeContainer === 'mate'} />
                 <styles.miniCardText $active={activeContainer === 'mate'}>
-                  메이트와 다른 방
+                  메이트와 {selectedMateState.room}
                 </styles.miniCardText>
               </styles.miniCardList>
               <styles.miniCardList>
@@ -404,7 +409,12 @@ export function UserInputPage() {
                   $active={activeContainer === 'mate'}
                 />
                 <styles.miniCardText $active={activeContainer === 'mate'}>
-                  아침형
+                  {selectedMateOptions['아침형'] ? '아침형' : null}
+                  {selectedMateOptions['아침형'] &&
+                  selectedMateOptions['올빼미형']
+                    ? ' · '
+                    : null}
+                  {selectedMateOptions['올빼미형'] ? '올빼미형' : null}
                 </styles.miniCardText>
               </styles.miniCardList>
             </styles.miniCardKeywordsContainer>
@@ -415,10 +425,12 @@ export function UserInputPage() {
             <VitalSection
               gender={user?.gender}
               birthYear={user?.birthYear}
+              location="성북 길음동"
               smoking={undefined}
               room={undefined}
               onFeatureChange={handleFeatureChange}
               isMySelf
+              type="myCard"
             />
             <styles.lineContainer>
               <styles.horizontalLine />
@@ -433,10 +445,12 @@ export function UserInputPage() {
             <VitalSection
               gender={user?.gender}
               birthYear={undefined}
+              location="성북 길음동"
               smoking={undefined}
               room={undefined}
               onFeatureChange={handleMateFeatureChange}
               isMySelf
+              type="mateCard"
             />
             <styles.lineContainer>
               <styles.horizontalLine />

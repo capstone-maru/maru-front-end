@@ -499,7 +499,7 @@ function Card({
       <styles.cardWrapper>
         <styles.description32px>내 카드</styles.description32px>
         <Link
-          href={`/profile/card/${myCardId}?memberId=${memberId}&isMySelf=${isMySelf}`}
+          href={`/profile/card/${myCardId}?memberId=${memberId}&isMySelf=${isMySelf}&type=myCard`}
         >
           <styles.cardContainer>
             <styles.cardName>{name}</styles.cardName>
@@ -510,7 +510,7 @@ function Card({
       <styles.cardWrapper>
         <styles.description32px>메이트 카드</styles.description32px>
         <Link
-          href={`/profile/card/${mateCardId}?memberId=${memberId}&isMySelf=${isMySelf}`}
+          href={`/profile/card/${mateCardId}?memberId=${memberId}&isMySelf=${isMySelf}&type=mateCard`}
         >
           <styles.cardContainer>
             <styles.cardName>메이트</styles.cardName>
