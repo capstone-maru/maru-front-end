@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 
@@ -112,6 +113,17 @@ const styles = {
     border: none;
     &:focus {
       outline: none;
+    }
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      margin: 0;
+      -webkit-appearance: none;
+    }
+
+    &[type='number'] {
+      appearance: textfield;
+      -moz-appearance: textfield;
     }
   `,
   slash: styled.p`
@@ -330,6 +342,8 @@ interface ImageFile {
 }
 
 export function WritingPostPage() {
+  const router = useRouter();
+
   const [images, setImages] = useState<ImageFile[]>([]);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedExtraOptions, setSelectedExtraOptions] =
@@ -340,8 +354,9 @@ export function WritingPostPage() {
     room2: null,
     room3: null,
   });
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
+  const [expectedMonthlyFee, setExpectedMonthlyFee] = useState<number>(0);
 
   const { mutate } = useCreateSharedPost();
 
@@ -380,6 +395,23 @@ export function WritingPostPage() {
 
   const handleRemoveImage = (removeImage: ImageFile) => {
     setImages(prev => prev.filter(image => image.url !== removeImage.url));
+  };
+
+  const handleExpectedMonthlyFeeChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const { value } = event.target;
+
+    const updatedValue = value.replace(/^0+/, '');
+
+    if (updatedValue.length === 0) {
+      setExpectedMonthlyFee(0);
+      return;
+    }
+
+    const numberUpdateValue = Number(updatedValue);
+    if (!Number.isNaN(numberUpdateValue))
+      setExpectedMonthlyFee(Number(updatedValue));
   };
 
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -451,7 +483,7 @@ export function WritingPostPage() {
             },
             {
               onSuccess: () => {
-                console.log('success');
+                router.back();
               },
               onError: error => {
                 console.log('failure', error);
@@ -562,43 +594,13 @@ export function WritingPostPage() {
             </styles.listItem>
             <styles.listItem>
               <styles.listItemDescription>
-                전체 보증금 / 메이트 보증금
+                희망 메이트 월 분담금
               </styles.listItemDescription>
               <styles.inputContainer>
-                <styles.userInput />
-                <styles.inputPlaceholder>만원</styles.inputPlaceholder>
-              </styles.inputContainer>
-              <styles.slash>/</styles.slash>
-              <styles.inputContainer>
-                <styles.userInput />
-                <styles.inputPlaceholder>만원</styles.inputPlaceholder>
-              </styles.inputContainer>
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>
-                전체 월세 / 메이트 월세
-              </styles.listItemDescription>
-              <styles.inputContainer>
-                <styles.userInput />
-                <styles.inputPlaceholder>만원</styles.inputPlaceholder>
-              </styles.inputContainer>
-              <styles.slash>/</styles.slash>
-              <styles.inputContainer>
-                <styles.userInput />
-                <styles.inputPlaceholder>만원</styles.inputPlaceholder>
-              </styles.inputContainer>
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>
-                전체 관리비 / 메이트 관리비
-              </styles.listItemDescription>
-              <styles.inputContainer>
-                <styles.userInput />
-                <styles.inputPlaceholder>만원</styles.inputPlaceholder>
-              </styles.inputContainer>
-              <styles.slash>/</styles.slash>
-              <styles.inputContainer>
-                <styles.userInput />
+                <styles.userInput
+                  value={expectedMonthlyFee}
+                  onChange={handleExpectedMonthlyFeeChange}
+                />
                 <styles.inputPlaceholder>만원</styles.inputPlaceholder>
               </styles.inputContainer>
             </styles.listItem>
@@ -700,8 +702,8 @@ export function WritingPostPage() {
           <styles.titleInputBox
             $empty={title.length === 0}
             value={title}
-            onChange={e => {
-              setTitle(e.target.value);
+            onChange={event => {
+              setTitle(event.target.value);
             }}
             placeholder="입력"
             type="text"
@@ -712,8 +714,8 @@ export function WritingPostPage() {
           <styles.detailedInputBox
             $empty={content.length === 0}
             value={content}
-            onChange={e => {
-              setContent(e.target.value);
+            onChange={event => {
+              setContent(event.target.value);
             }}
             placeholder="입력"
             type="text"
