@@ -4,5 +4,6 @@ export interface GetRecommendationMateDTO {
     userId: string;
     name: string;
     similarity: number;
+    cardType: 'my' | 'mate';
   }>;
 }
