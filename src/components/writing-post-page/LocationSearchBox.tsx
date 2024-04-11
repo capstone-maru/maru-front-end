@@ -80,7 +80,7 @@ export function LocationSearchBox({
 
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const handler = (event: MouseEvent) => {
+    const clickHandler = (event: MouseEvent) => {
       if (
         containerRef.current !== null &&
         !containerRef.current.contains(event.target as Node)
@@ -89,9 +89,15 @@ export function LocationSearchBox({
       }
     };
 
-    document.addEventListener('click', handler);
+    const keyHandler = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setHidden();
+    };
+
+    document.addEventListener('click', clickHandler);
+    document.addEventListener('keydown', keyHandler);
     return () => {
-      document.removeEventListener('click', handler);
+      document.removeEventListener('click', clickHandler);
+      document.removeEventListener('keydown', keyHandler);
     };
   }, []);
 
