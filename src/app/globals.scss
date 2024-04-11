@@ -16,17 +16,18 @@ body {
 }
 
 nav {
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 1;
-  position: sticky;
 }
 
 main {
   width: 100%;
-  height: calc(100% - 72px);
+  height: 100%;
   max-height: fit-content;
 
+  margin-top: 4.5rem;
   display: flex;
   justify-content: center;
 }
