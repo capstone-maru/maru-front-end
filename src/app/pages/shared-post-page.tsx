@@ -1,5 +1,6 @@
 'use client';
 
+import { QueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -14,7 +15,7 @@ import {
   MiniCircularProfileImage,
 } from '@/components/shared-post-page';
 import { useAuthValue } from '@/features/auth';
-import { useSharedPost } from '@/features/shared';
+import { useScrapSharedPost, useSharedPost } from '@/features/shared';
 import { getAge } from '@/shared';
 
 const styles = {
@@ -361,7 +362,16 @@ function Item({ label, data }: { label: string; data: string }) {
 }
 
 export function SharedPostPage({ postId }: { postId: number }) {
+  const auth = useAuthValue();
   const [map, setMap] = useState<naver.maps.Map | null>(null);
+  const [queryClient] = useState(() => new QueryClient());
+
+  const { data: sharedPost } = useSharedPost({
+    postId,
+    enabled: auth?.accessToken !== undefined,
+  });
+
+  const { mutate: scrapPost } = useScrapSharedPost();
 
   const handleClickTitle = () => {
     if (map === null) return;
@@ -381,13 +391,6 @@ export function SharedPostPage({ postId }: { postId: number }) {
     );
   }, []);
 
-  const auth = useAuthValue();
-
-  const { data: sharedPost } = useSharedPost({
-    postId,
-    enabled: auth?.accessToken !== undefined,
-  });
-
   return (
     <styles.container>
       <styles.houseInfo>
@@ -397,8 +400,22 @@ export function SharedPostPage({ postId }: { postId: number }) {
           <Bookmark
             hasBorder={false}
             color="#000"
-            marked={false}
-            onToggle={() => {}}
+            marked={sharedPost?.data?.isScrapped ?? false}
+            onToggle={() => {
+              if (sharedPost == null) return;
+
+              scrapPost(sharedPost.data.id, {
+                onSuccess: () => {
+                  queryClient
+                    .invalidateQueries({
+                      queryKey: [`/api/shared/posts/studio/${postId}`],
+                    })
+                    .catch((error: Error) => {
+                      console.error(error);
+                    });
+                },
+              });
+            }}
           />
         </styles.titleRow>
         <styles.briefInfoContainer>
