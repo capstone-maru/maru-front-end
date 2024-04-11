@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
 import { AddButton, CancelButton } from '@/components';
@@ -47,6 +48,10 @@ const styles = {
   `,
   listContainer: styled.ul`
     width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.125rem;
   `,
   listItem: styled.li`
     display: flex;
@@ -312,7 +317,9 @@ const styles = {
 
 const DealOptions = ['월세', '전세'];
 const RoomOptions = ['원룸', '빌라/투룸이상', '아파트', '오피스텔'];
-const StructureOptions = ['방 1', '방 1·거실 1', '방 2', '방 3', '복층형'];
+const LivingRoomOptions = ['유', '무'];
+const RoomCountOptions = ['1개', '2개', '3개 이상'];
+const RestRoomCountOptions = ['1개', '2개', '3개 이상'];
 const FloorOptions = ['지상', '반지하', '옥탑'];
 const AdditionalOptions = [
   '주차가능',
@@ -327,10 +334,11 @@ interface ButtonActiveProps {
 }
 
 interface SelectedOptions {
-  budget1: string | null;
-  room1: string | null;
-  room2: string | null;
-  room3: string | null;
+  budget?: string;
+  roomType?: string;
+  livingRoom?: string;
+  roomCount?: string;
+  restRoomCount?: string;
 }
 
 type SelectedExtraOptions = Record<string, boolean>;
@@ -348,12 +356,7 @@ export function WritingPostPage() {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedExtraOptions, setSelectedExtraOptions] =
     useState<SelectedExtraOptions>({});
-  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({
-    budget1: null,
-    room1: null,
-    room2: null,
-    room3: null,
-  });
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [expectedMonthlyFee, setExpectedMonthlyFee] = useState<number>(0);
@@ -483,10 +486,13 @@ export function WritingPostPage() {
             },
             {
               onSuccess: () => {
+                toast('글 작성을 완료했습니다.', { position: 'bottom-right' });
                 router.back();
               },
-              onError: error => {
-                console.log('failure', error);
+              onError: () => {
+                toast('글 작성 도중 오류가 발생했습니다.', {
+                  position: 'bottom-right',
+                });
               },
             },
           );
@@ -590,9 +596,9 @@ export function WritingPostPage() {
               {DealOptions.map(option => (
                 <styles.checkButtonContainer key={option}>
                   <styles.customRadioButton
-                    $isSelected={selectedOptions.budget1 === option}
+                    $isSelected={selectedOptions.budget === option}
                     onClick={() => {
-                      handleOptionClick('budget1', option);
+                      handleOptionClick('budget', option);
                     }}
                   />
                   <styles.checkButtonDescription>
@@ -623,9 +629,9 @@ export function WritingPostPage() {
               {RoomOptions.map(option => (
                 <styles.checkButtonContainer key={option}>
                   <styles.customRadioButton
-                    $isSelected={selectedOptions.room1 === option}
+                    $isSelected={selectedOptions.roomType === option}
                     onClick={() => {
-                      handleOptionClick('room1', option);
+                      handleOptionClick('roomType', option);
                     }}
                   />
                   <styles.checkButtonDescription>
@@ -635,13 +641,47 @@ export function WritingPostPage() {
               ))}
             </styles.listItem>
             <styles.listItem>
-              <styles.listItemDescription>구조</styles.listItemDescription>
-              {StructureOptions.map(option => (
+              <styles.listItemDescription>거실</styles.listItemDescription>
+              {LivingRoomOptions.map(option => (
                 <styles.checkButtonContainer key={option}>
                   <styles.customRadioButton
-                    $isSelected={selectedOptions.room2 === option}
+                    $isSelected={selectedOptions.livingRoom === option}
                     onClick={() => {
-                      handleOptionClick('room2', option);
+                      handleOptionClick('livingRoom', option);
+                    }}
+                  />
+                  <styles.checkButtonDescription>
+                    {option}
+                  </styles.checkButtonDescription>
+                </styles.checkButtonContainer>
+              ))}
+            </styles.listItem>
+            <styles.listItem>
+              <styles.listItemDescription>방 개수</styles.listItemDescription>
+              {RoomCountOptions.map(option => (
+                <styles.checkButtonContainer key={option}>
+                  <styles.customRadioButton
+                    $isSelected={selectedOptions.roomCount === option}
+                    onClick={() => {
+                      handleOptionClick('roomCount', option);
+                    }}
+                  />
+                  <styles.checkButtonDescription>
+                    {option}
+                  </styles.checkButtonDescription>
+                </styles.checkButtonContainer>
+              ))}
+            </styles.listItem>
+            <styles.listItem>
+              <styles.listItemDescription>
+                화장실 개수
+              </styles.listItemDescription>
+              {RestRoomCountOptions.map(option => (
+                <styles.checkButtonContainer key={option}>
+                  <styles.customRadioButton
+                    $isSelected={selectedOptions.restRoomCount === option}
+                    onClick={() => {
+                      handleOptionClick('restRoomCount', option);
                     }}
                   />
                   <styles.checkButtonDescription>
@@ -672,9 +712,9 @@ export function WritingPostPage() {
                   style={{ margin: option === '옥탑' ? '0' : '' }}
                 >
                   <styles.customRadioButton
-                    $isSelected={selectedOptions.room3 === option}
+                    $isSelected={selectedOptions.restRoomCount === option}
                     onClick={() => {
-                      handleOptionClick('room3', option);
+                      handleOptionClick('restRoomCount', option);
                     }}
                   />
                   <styles.checkButtonDescription>
