@@ -331,15 +331,14 @@ const styles = {
 
     margin-bottom: 2.69rem;
   `,
-  cardToggleButtonContainer: styled.div`
+  roomCard: styled.div`
     display: flex;
-    position: relative;
-    flex-direction: column;
-    gap: 1.06rem;
-
-    left: -2.25rem;
-
-    width: calc(100% + 2.25rem);
+    width: 100%;
+    height: 100%;
+    flex-shrink: 0;
+    border-radius: 16px;
+    background: #fff;
+    padding: 1rem;
   `,
 };
 
@@ -522,11 +521,10 @@ export function SharedPostPage({ postId }: { postId: number }) {
               />
             </div>
           </styles.hostButtonsContainer>
-          <styles.cardToggleButtonContainer>
-            <CardToggleButton label="마이카드" />
-            <CardToggleButton label="메이트카드" />
-          </styles.cardToggleButtonContainer>
         </styles.hostInfo>
+        <styles.roomCard>
+          <CardToggleButton label="메이트 카드" />
+        </styles.roomCard>
       </styles.roomParticipantsContainer>
     </styles.container>
   );
