@@ -8,7 +8,7 @@ import { SharedPostFilterItem } from './SharedPostFilterItem';
 
 import {
   SharedPostsFilterTypeValue,
-  type SharedPostsFilter,
+  useSharedPostsFilter,
   type SharedPostsType,
 } from '@/entities/shared-posts-filter';
 import { useAuthValue, useUserData } from '@/features/auth';
@@ -23,19 +23,13 @@ const styles = {
 export function SharedPostFilters({
   selected,
   className,
-  filter,
-  setFilter,
 }: {
   selected: SharedPostsType;
-  filter: SharedPostsFilter;
-  setFilter: (
-    optionOrUpdater:
-      | Partial<SharedPostsFilter>
-      | ((prev: SharedPostsFilter) => SharedPostsFilter),
-  ) => void;
 } & React.ComponentProps<'div'>) {
   const auth = useAuthValue();
   const { data: userData } = useUserData(auth?.accessToken != null);
+
+  const { filter, setFilter } = useSharedPostsFilter();
 
   const mateCardFilterTitle = useMemo(() => {
     if (filter.cardType == null) return SharedPostsFilterTypeValue.cardType;
@@ -56,13 +50,26 @@ export function SharedPostFilters({
       {selected !== 'homeless' && (
         <>
           <SharedPostFilterItem title={SharedPostsFilterTypeValue.dealInfo}>
-            <DealTypeFilter />
+            <DealTypeFilter
+              onSelectDealType={dealType => {
+                setFilter(prev => ({
+                  ...prev,
+                  dealInfo: { ...prev.dealInfo, dealType },
+                }));
+              }}
+              onChangeExpectedFee={(low, high) => {
+                setFilter(prev => ({
+                  ...prev,
+                  dealInfo: { ...prev.dealInfo, expectedFee: { low, high } },
+                }));
+              }}
+            />
           </SharedPostFilterItem>
           <SharedPostFilterItem title={SharedPostsFilterTypeValue.roomInfo}>
-            <DealTypeFilter />
+            <></>
           </SharedPostFilterItem>
           <SharedPostFilterItem title={SharedPostsFilterTypeValue.extraInfo}>
-            <DealTypeFilter />
+            <></>
           </SharedPostFilterItem>
         </>
       )}

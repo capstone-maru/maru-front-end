@@ -123,7 +123,7 @@ export function SharedPostsPage() {
     useState<GetSharedPostsDTO | null>(null);
   const { setAuthUserData } = useAuthActions();
 
-  const [filter, setFilter] = useSharedPostsFilter();
+  const { filter, reset } = useSharedPostsFilter();
 
   const { data: userData } = useUserData(auth?.accessToken !== undefined);
 
@@ -153,6 +153,13 @@ export function SharedPostsPage() {
   });
 
   useEffect(() => {
+    reset();
+    return () => {
+      reset();
+    };
+  }, []);
+
+  useEffect(() => {
     if (sharedPosts != null) {
       setTotalPageCount(sharedPosts.data.totalPages);
       setPrevSharedPosts(null);
@@ -171,11 +178,7 @@ export function SharedPostsPage() {
   return (
     <styles.container>
       <styles.SharedPostsMenu selected={selected} handleSelect={setSelected} />
-      <styles.SharedPostsFilter
-        filter={filter}
-        setFilter={setFilter}
-        selected={selected}
-      />
+      <styles.SharedPostsFilter selected={selected} />
       {selected === 'hasRoom' ? (
         <>
           <styles.createButtonRow>
