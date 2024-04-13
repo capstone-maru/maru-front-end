@@ -4,5 +4,9 @@ import { type SharedPostsFilter } from './shared-posts-filter.type';
 
 export const sharedPostsFilterState = atom<SharedPostsFilter>({
   key: 'sharedPostsFilterState',
-  default: {},
+  default: {
+    roomInfo: {
+      hasLivingRoom: false,
+    },
+  },
 });

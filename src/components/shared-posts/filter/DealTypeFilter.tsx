@@ -1,10 +1,9 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { RangeSlider } from '@/components';
-import { type DealType } from '@/entities/shared-posts-filter';
+import { useSharedPostsFilter } from '@/entities/shared-posts-filter';
 
 const styles = {
   container: styled.div`
@@ -23,7 +22,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 2rem;
+    gap: 1rem;
 
     h1 {
       color: #000;
@@ -75,26 +74,8 @@ const styles = {
   `,
 };
 
-export function DealTypeFilter({
-  onSelectDealType,
-  onChangeExpectedFee,
-}: {
-  onSelectDealType: (type: '전세' | '월세') => void;
-  onChangeExpectedFee: (low: number, high: number) => void;
-}) {
-  const [selectedDealType, setSelectedDealType] = useState<DealType | null>(
-    null,
-  );
-
-  const min = useMemo(() => 0, []);
-  const max = useMemo(() => 3500000, []);
-  const step = useMemo(() => 50000, []);
-  const handleChangeExpectedFee = useCallback(
-    (low: number, high: number) => {
-      onChangeExpectedFee(low, high);
-    },
-    [onChangeExpectedFee],
-  );
+export function DealTypeFilter() {
+  const { filter, setFilter } = useSharedPostsFilter();
 
   return (
     <styles.container>
@@ -103,20 +84,24 @@ export function DealTypeFilter({
         <div>
           <button
             type="button"
-            className={selectedDealType === '전세' ? 'selected' : ''}
+            className={filter?.dealInfo?.dealType === '전세' ? 'selected' : ''}
             onClick={() => {
-              setSelectedDealType('전세');
-              onSelectDealType('전세');
+              setFilter(prev => ({
+                ...prev,
+                dealInfo: { ...prev.dealInfo, dealType: '전세' },
+              }));
             }}
           >
             전세
           </button>
           <button
             type="button"
-            className={selectedDealType === '월세' ? 'selected' : ''}
+            className={filter?.dealInfo?.dealType === '월세' ? 'selected' : ''}
             onClick={() => {
-              setSelectedDealType('월세');
-              onSelectDealType('월세');
+              setFilter(prev => ({
+                ...prev,
+                dealInfo: { ...prev.dealInfo, dealType: '월세' },
+              }));
             }}
           >
             월세
@@ -126,11 +111,14 @@ export function DealTypeFilter({
       <styles.item>
         <h1>희망 월 분담금</h1>
         <RangeSlider
-          min={min}
-          max={max}
-          step={step}
+          min={0}
+          max={3500000}
+          step={50000}
           onChange={({ low, high }) => {
-            handleChangeExpectedFee(low, high);
+            setFilter(prev => ({
+              ...prev,
+              dealInfo: { ...prev.dealInfo, expectedFee: { low, high } },
+            }));
           }}
         />
       </styles.item>

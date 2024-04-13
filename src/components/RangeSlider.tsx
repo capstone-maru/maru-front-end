@@ -97,8 +97,8 @@ export function RangeSlider({ min, max, step, onChange }: Props) {
     }
 
     const containerWidth = containerRef.current.clientWidth;
-    const highPercentage = state.high / (min + max);
-    const lowPercentage = state.low / (min + max);
+    const highPercentage = state.high / (min + max - 1);
+    const lowPercentage = state.low / (min + max - 1);
 
     return {
       width: containerWidth * (highPercentage - lowPercentage),
@@ -108,8 +108,8 @@ export function RangeSlider({ min, max, step, onChange }: Props) {
 
   useEffect(() => {
     setState({
-      low: (min + max) * 0.25,
-      high: (min + max) * 0.75,
+      low: (min + max - 1) * 0.25,
+      high: (min + max - 1) * 0.75,
     });
   }, []);
 

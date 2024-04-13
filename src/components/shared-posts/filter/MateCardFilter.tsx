@@ -2,7 +2,7 @@
 
 import styled from 'styled-components';
 
-import { type CardType } from '@/entities/shared-posts-filter';
+import { useSharedPostsFilter } from '@/entities/shared-posts-filter';
 import { useAuthValue, useUserData } from '@/features/auth';
 
 const styles = {
@@ -10,7 +10,7 @@ const styles = {
     display: inline-flex;
     flex-direction: column;
     width: fit-content;
-    gap: 0.625rem;
+    gap: 1rem;
 
     color: #000;
     font-family: 'Noto Sans KR';
@@ -35,20 +35,18 @@ const styles = {
   `,
 };
 
-export function MateCardFilter({
-  onSelect,
-}: {
-  onSelect: (cardType: CardType) => void;
-}) {
+export function MateCardFilter() {
   const auth = useAuthValue();
   const { data: userData } = useUserData(auth?.accessToken != null);
+
+  const { setFilter } = useSharedPostsFilter();
 
   return (
     <styles.container>
       <button
         type="button"
         onClick={() => {
-          onSelect('mate');
+          setFilter(prev => ({ ...prev, cardType: 'mate' }));
         }}
       >
         {userData?.name}님이 원하는 방 찾기
@@ -56,7 +54,7 @@ export function MateCardFilter({
       <button
         type="button"
         onClick={() => {
-          onSelect('my');
+          setFilter(prev => ({ ...prev, cardType: 'my' }));
         }}
       >
         {userData?.name}님을 원하는 방 찾기

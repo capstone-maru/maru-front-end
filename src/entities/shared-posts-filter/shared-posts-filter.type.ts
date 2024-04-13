@@ -1,9 +1,19 @@
 export type CardType = 'my' | 'mate';
 export type DealType = '전세' | '월세';
+export type RoomType = '원룸' | '빌라/투룸이상' | '아파트' | '오피스텔';
+export type RoomCountType = '1개' | '2개' | '3개 이상';
+export type FloorType = '지상' | '반지하' | '옥탑';
 
 export interface SharedPostsFilter {
   cardType?: CardType;
-  roomInfo?: string;
+  roomInfo: {
+    roomType?: RoomType;
+    hasLivingRoom: boolean;
+    roomCount?: RoomCountType;
+    restRoomCount?: RoomCountType;
+    size?: { low: number; high: number };
+    floor?: FloorType;
+  };
   dealInfo?: {
     dealType?: DealType;
     expectedFee?: { low: number; high: number };

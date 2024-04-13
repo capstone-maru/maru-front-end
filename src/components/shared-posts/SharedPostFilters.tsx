@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
-import { DealTypeFilter, MateCardFilter } from './filter';
+import { DealTypeFilter, MateCardFilter, RoomTypeFilter } from './filter';
 import { SharedPostFilterItem } from './SharedPostFilterItem';
 
 import {
@@ -29,7 +29,7 @@ export function SharedPostFilters({
   const auth = useAuthValue();
   const { data: userData } = useUserData(auth?.accessToken != null);
 
-  const { filter, setFilter } = useSharedPostsFilter();
+  const { filter } = useSharedPostsFilter();
 
   const mateCardFilterTitle = useMemo(() => {
     if (filter.cardType == null) return SharedPostsFilterTypeValue.cardType;
@@ -41,32 +41,15 @@ export function SharedPostFilters({
   return (
     <styles.container className={className}>
       <SharedPostFilterItem title={mateCardFilterTitle}>
-        <MateCardFilter
-          onSelect={cardType => {
-            setFilter({ cardType });
-          }}
-        />
+        <MateCardFilter />
       </SharedPostFilterItem>
       {selected !== 'homeless' && (
         <>
           <SharedPostFilterItem title={SharedPostsFilterTypeValue.dealInfo}>
-            <DealTypeFilter
-              onSelectDealType={dealType => {
-                setFilter(prev => ({
-                  ...prev,
-                  dealInfo: { ...prev.dealInfo, dealType },
-                }));
-              }}
-              onChangeExpectedFee={(low, high) => {
-                setFilter(prev => ({
-                  ...prev,
-                  dealInfo: { ...prev.dealInfo, expectedFee: { low, high } },
-                }));
-              }}
-            />
+            <DealTypeFilter />
           </SharedPostFilterItem>
           <SharedPostFilterItem title={SharedPostsFilterTypeValue.roomInfo}>
-            <></>
+            <RoomTypeFilter />
           </SharedPostFilterItem>
           <SharedPostFilterItem title={SharedPostsFilterTypeValue.extraInfo}>
             <></>
