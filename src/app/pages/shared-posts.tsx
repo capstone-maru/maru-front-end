@@ -19,7 +19,7 @@ import {
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
 import { useRecommendationMate } from '@/features/recommendation';
 import { usePaging, useSharedPosts } from '@/features/shared';
-import { type GetSharedPostsDTO } from '@/features/shared/shared.dto';
+import { type GetSharedPostsDTO } from '@/features/shared/shared';
 
 const styles = {
   container: styled.div`
