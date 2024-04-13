@@ -3,7 +3,12 @@
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
-import { DealTypeFilter, MateCardFilter, RoomTypeFilter } from './filter';
+import {
+  DealTypeFilter,
+  ExtraInfoFilter,
+  MateCardFilter,
+  RoomTypeFilter,
+} from './filter';
 import { SharedPostFilterItem } from './SharedPostFilterItem';
 
 import {
@@ -52,7 +57,7 @@ export function SharedPostFilters({
             <RoomTypeFilter />
           </SharedPostFilterItem>
           <SharedPostFilterItem title={SharedPostsFilterTypeValue.extraInfo}>
-            <></>
+            <ExtraInfoFilter />
           </SharedPostFilterItem>
         </>
       )}

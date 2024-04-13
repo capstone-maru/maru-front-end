@@ -3,6 +3,14 @@ export type DealType = '전세' | '월세';
 export type RoomType = '원룸' | '빌라/투룸이상' | '아파트' | '오피스텔';
 export type RoomCountType = '1개' | '2개' | '3개 이상';
 export type FloorType = '지상' | '반지하' | '옥탑';
+export type ExtraInfoType =
+  | '주차 가능'
+  | '에어컨'
+  | '냉장고'
+  | '세탁기'
+  | '엘리베이터'
+  | '베란다/테라스'
+  | '복층형';
 
 export interface SharedPostsFilter {
   cardType?: CardType;
@@ -18,7 +26,7 @@ export interface SharedPostsFilter {
     dealType?: DealType;
     expectedFee?: { low: number; high: number };
   };
-  extraInfo?: string;
+  extraInfo: Partial<Record<ExtraInfoType, boolean>>;
 }
 
 export type SharedPostsFilterType = keyof SharedPostsFilter;
