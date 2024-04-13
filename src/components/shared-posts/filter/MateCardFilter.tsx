@@ -7,12 +7,10 @@ import { useAuthValue, useUserData } from '@/features/auth';
 
 const styles = {
   container: styled.div`
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
-    gap: 1.56rem;
-
-    width: 30rem;
-    height: fit-content;
+    width: fit-content;
+    gap: 0.625rem;
 
     color: #000;
     font-family: 'Noto Sans KR';
@@ -28,6 +26,7 @@ const styles = {
       padding: 1rem;
       transition: 200ms background-color ease-in-out;
       border-radius: 8px;
+      min-width: 15rem;
     }
 
     button:hover {
