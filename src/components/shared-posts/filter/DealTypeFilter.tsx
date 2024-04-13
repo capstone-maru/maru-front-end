@@ -73,7 +73,7 @@ export function DealTypeFilter() {
       </styles.item>
       <styles.item>
         <h1>희망 월 분담금</h1>
-        <RangeSlider min={0} max={100} onChange={() => {}} />
+        <RangeSlider min={0} max={3500000} step={50000} onChange={() => {}} />
       </styles.item>
     </styles.container>
   );

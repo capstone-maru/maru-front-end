@@ -79,10 +79,11 @@ const styles = {
 interface Props {
   min: number;
   max: number;
+  step: number;
   onChange: ({ low, high }: { low: number; high: number }) => void;
 }
 
-export function RangeSlider({ min, max, onChange }: Props) {
+export function RangeSlider({ min, max, step, onChange }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [low, setLow] = useState(min);
@@ -95,14 +96,14 @@ export function RangeSlider({ min, max, onChange }: Props) {
     }
 
     const containerWidth = containerRef.current.clientWidth;
-    const highPercentage = high / 100;
-    const lowPercentage = low / 100;
+    const highPercentage = high / (min + max);
+    const lowPercentage = low / (min + max);
 
     return {
       width: containerWidth * (highPercentage - lowPercentage),
       margin: containerWidth * lowPercentage,
     };
-  }, [containerRef, low, high]);
+  }, [containerRef, low, high, min, max]);
 
   useEffect(() => {
     setLow((min + max) * 0.25);
@@ -118,6 +119,9 @@ export function RangeSlider({ min, max, onChange }: Props) {
       <div />
       <div className="range" />
       <input
+        step={step}
+        min={min}
+        max={max}
         value={low}
         onChange={e => {
           const newLow = +e.currentTarget.value;
@@ -128,6 +132,9 @@ export function RangeSlider({ min, max, onChange }: Props) {
         type="range"
       />
       <input
+        step={step}
+        min={min}
+        max={max}
         value={high}
         onChange={e => {
           const newHigh = +e.currentTarget.value;
