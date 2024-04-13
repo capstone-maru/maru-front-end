@@ -1,9 +1,13 @@
 export type CardType = 'my' | 'mate';
+export type DealType = '전세' | '월세';
 
 export interface SharedPostsFilter {
   cardType?: CardType;
   roomInfo?: string;
-  dealInfo?: string;
+  dealInfo?: {
+    dealType?: DealType;
+    expectedFee?: { low: number; high: number };
+  };
   extraInfo?: string;
 }
 
