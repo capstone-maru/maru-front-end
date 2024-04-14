@@ -173,7 +173,6 @@ export function VitalSection({
   isMySelf: boolean;
   type: string;
 }) {
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedState, setSelectedState] = useState<SelectedState>({
     smoking: undefined,
     room: undefined,
@@ -196,11 +195,6 @@ export function VitalSection({
     }));
     onFeatureChange(optionName, item);
   }
-
-  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const yearValue = parseInt(event.target.value, 10);
-    setSelectedYear(Number.isNaN(yearValue) ? null : yearValue);
-  };
 
   const [mateMinAge, setMateMinAge] = useState(0);
   const [mateMaxAge, setMateMaxAge] = useState(11);
@@ -344,8 +338,7 @@ export function VitalSection({
           </styles.vitalListItemDescription>
           {type === 'myCard' ? (
             <styles.birthYear
-              value={selectedYear ?? birthYear}
-              onChange={handleYearChange}
+              value={birthYear}
               disabled={birthYear !== undefined || !isMySelf}
             >
               <option value="">년도</option>

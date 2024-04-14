@@ -137,7 +137,6 @@ const CheckItem = styled.div<CheckItemProps>`
         }};
 `;
 
-const LivingPatternOptions = ['아침형', '올빼미형'];
 const EatingOptions = ['실내취식 싫어요', '야식 안먹어요', '음주'];
 const HearingOptions = [
   '잠버릇 있어요',
@@ -156,7 +155,6 @@ const PersonalOptions = [
   '엠비티아이',
   '전공',
 ];
-const CleaningOptions = ['상', '평범보통', '천하태평'];
 
 export function OptionSection({
   optionFeatures,
@@ -234,19 +232,29 @@ export function OptionSection({
         <styles.optionListItem>
           <styles.optionListImg src="/option-img/visibility.svg" />
           <styles.optionListCheckItemContainer>
-            {LivingPatternOptions.map(option => (
-              <CheckItem
-                key={option}
-                $isSelected={selectedOptions[option]}
-                onClick={() => {
-                  if (isMySelf) {
-                    handleOptionClick(option);
-                  }
-                }}
-              >
-                {option}
-              </CheckItem>
-            ))}
+            <CheckItem
+              $isSelected={selectedOptions['아침형']}
+              onClick={() => {
+                if (isMySelf) {
+                  handleOptionClick('아침형');
+                  if (selectedOptions['올빼미형'])
+                    handleOptionClick('올빼미형');
+                }
+              }}
+            >
+              아침형
+            </CheckItem>
+            <CheckItem
+              $isSelected={selectedOptions['올빼미형']}
+              onClick={() => {
+                if (isMySelf) {
+                  handleOptionClick('올빼미형');
+                  if (selectedOptions['아침형']) handleOptionClick('아침형');
+                }
+              }}
+            >
+              올빼미형
+            </CheckItem>
           </styles.optionListCheckItemContainer>
         </styles.optionListItem>
         <styles.optionListItem>
@@ -324,19 +332,46 @@ export function OptionSection({
             </styles.optionListCheckItemContainer>
           ) : (
             <styles.optionListCheckItemContainer>
-              {CleaningOptions.map(option => (
-                <CheckItem
-                  key={option}
-                  $isSelected={selectedOptions[option]}
-                  onClick={() => {
-                    if (isMySelf) {
-                      handleOptionClick(option);
-                    }
-                  }}
-                >
-                  {option}
-                </CheckItem>
-              ))}
+              <CheckItem
+                $isSelected={selectedOptions['상']}
+                onClick={() => {
+                  if (isMySelf) {
+                    handleOptionClick('상');
+                    if (selectedOptions['평범보통'])
+                      handleOptionClick('평범보통');
+                    if (selectedOptions['천하태평'])
+                      handleOptionClick('천하태평');
+                  }
+                }}
+              >
+                상
+              </CheckItem>
+              <CheckItem
+                $isSelected={selectedOptions['평범보통']}
+                onClick={() => {
+                  if (isMySelf) {
+                    handleOptionClick('평범보통');
+                    if (selectedOptions['상']) handleOptionClick('상');
+                    if (selectedOptions['천하태평'])
+                      handleOptionClick('천하태평');
+                  }
+                }}
+              >
+                평범보통
+              </CheckItem>
+              <CheckItem
+                $isSelected={selectedOptions['천하태평']}
+                onClick={() => {
+                  if (isMySelf) {
+                    handleOptionClick('천하태평');
+                    if (selectedOptions['상']) handleOptionClick('상');
+                    if (selectedOptions['평범보통'])
+                      handleOptionClick('평범보통');
+                  }
+                }}
+              >
+                천하태평
+              </CheckItem>
             </styles.optionListCheckItemContainer>
           )}
         </styles.optionListItem>
