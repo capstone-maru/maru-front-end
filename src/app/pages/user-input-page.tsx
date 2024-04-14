@@ -10,6 +10,7 @@ import Person from '../../../public/option-img/person.svg';
 import Visibility from '../../../public/option-img/visibility.svg';
 
 import { VitalSection, OptionSection } from '@/components';
+import { SelfIntroduction } from '@/components/card';
 import { useAuthValue, useUserData } from '@/features/auth';
 import { usePutUserCard } from '@/features/profile';
 
@@ -439,7 +440,9 @@ export function UserInputPage() {
               optionFeatures={null}
               onFeatureChange={handleOptionClick}
               isMySelf
+              type="myCard"
             />
+            <SelfIntroduction />
           </styles.checkContainer>
           <styles.checkContainer $active={activeContainer === 'mate'}>
             <VitalSection
@@ -459,6 +462,7 @@ export function UserInputPage() {
               optionFeatures={null}
               onFeatureChange={handleMateOptionClick}
               isMySelf
+              type="mateCard"
             />
           </styles.checkContainer>
         </styles.checkSection>

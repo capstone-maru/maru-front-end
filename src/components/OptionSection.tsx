@@ -5,6 +5,8 @@ import styled from 'styled-components';
 
 import { CleanTest } from './card/CleanTest';
 import { MajorSelector } from './card/MajorSelector';
+import { MbtiToggle } from './card/MbtiToggle';
+import { Slider } from './card/Slider';
 
 const styles = {
   optionContainer: styled.div`
@@ -48,6 +50,7 @@ const styles = {
   personalContainer: styled.div`
     width: 22rem;
     display: flex;
+    position: relative;
     align-items: flex-start;
     align-content: flex-start;
     gap: 0.5rem;
@@ -76,7 +79,7 @@ const styles = {
   `,
   budgetContainer: styled.div`
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     gap: 1.75rem;
     width: 100%;
   `,
@@ -88,99 +91,16 @@ const styles = {
     background: #d9d9d9;
     margin-bottom: 0.63rem;
   `,
-  mbtiSection: styled.div`
-    display: inline-flex;
-    align-items: flex-end;
-    gap: 2rem;
-    margin: 0.5rem 0;
-  `,
-  mbtiToggleContainer: styled.div`
-    display: inline-flex;
-    align-items: flex-end;
-    gap: 1rem;
-
+  value: styled.span`
     color: #000;
 
     font-family: 'Noto Sans KR';
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
   `,
-
-  switchContainer: styled.div`
-    display: inline-flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 0.375rem;
-  `,
-  switchWrapper: styled.label`
-    position: relative;
-    display: inline-block;
-    width: 2.5rem;
-    height: 1.5rem;
-  `,
-  switchInput: styled.input`
-    opacity: 0;
-    width: 0;
-    height: 0;
-  `,
-  slider: styled.span`
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #bebebe;
-    -webkit-transition: 0.4s;
-    transition: 0.4s;
-    border-radius: 24px;
-  `,
-  sliderDot: styled.span`
-    position: absolute;
-    cursor: pointer;
-    top: 0.25rem;
-    left: 0.25rem;
-    bottom: 0.25rem;
-    background-color: white;
-    -webkit-transition: 0.4s;
-    transition: 0.4s;
-    border-radius: 50%;
-    width: 1rem;
-    height: 1rem;
-  `,
 };
-
-interface ToggleSwitchProps {
-  isChecked: boolean;
-  onToggle: () => void;
-}
-
-function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
-  return (
-    <styles.switchContainer>
-      <styles.switchWrapper>
-        <styles.switchInput
-          type="checkbox"
-          checked={isChecked}
-          onChange={onToggle}
-        />
-        <styles.slider
-          style={{
-            backgroundColor: isChecked ? '#E15637' : '#BEBEBE',
-          }}
-        >
-          <styles.sliderDot
-            style={{
-              transform: isChecked ? 'translateX(1rem)' : 'translateX(0)',
-            }}
-          />
-        </styles.slider>
-      </styles.switchWrapper>
-    </styles.switchContainer>
-  );
-}
 
 interface CheckItemProps {
   $isSelected: boolean;
@@ -236,15 +156,18 @@ const PersonalOptions = [
   '엠비티아이',
   '전공',
 ];
+const CleaningOptions = ['상', '평범보통', '천하태평'];
 
 export function OptionSection({
   optionFeatures,
   onFeatureChange,
   isMySelf,
+  type,
 }: {
   optionFeatures: string[] | null;
   onFeatureChange: (option: string) => void;
   isMySelf: boolean;
+  type: string;
 }) {
   type SelectedOptions = Record<string, boolean>;
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
@@ -259,13 +182,6 @@ export function OptionSection({
     }
   }, [optionFeatures]);
 
-  const [toggleStates, setToggleStates] = useState({
-    toggle1: false,
-    toggle2: false,
-    toggle3: false,
-    toggle4: false,
-  });
-
   const handleOptionClick = (option: string) => {
     setSelectedOptions(prevSelectedOptions => ({
       ...prevSelectedOptions,
@@ -274,22 +190,41 @@ export function OptionSection({
     onFeatureChange(option);
   };
 
-  const toggleSwitch = (toggleName: keyof typeof toggleStates) => {
-    setToggleStates(prevState => ({
-      ...prevState,
-      [toggleName]: !prevState[toggleName],
-    }));
-  };
-
   const [isTestVisible, setIsTestVisible] = useState(false);
   const [score, setScore] = useState(-1);
 
   const toggleTestVisibility = () => {
     setIsTestVisible(prev => !prev);
+    setIsMajorSelected(false);
+    setIsTestSelected(true);
+    setIsMbtiSelected(false);
   };
 
   const handleTestCompletion = (cleanScore: number) => {
     setScore(cleanScore);
+  };
+
+  const [budgetMin, setBudgetMin] = useState(0);
+  const [budgetMax, setBudgetMax] = useState(355);
+  const handleBudgetChange = (min: number, max: number) => {
+    setBudgetMin(min);
+    setBudgetMax(max);
+  };
+
+  const [isTestSelected, setIsTestSelected] = useState(false);
+  const [isMajorSelected, setIsMajorSelected] = useState(false);
+  const [isMbtiSelected, setIsMbtiSelected] = useState(false);
+
+  const handleMajorSelect = () => {
+    setIsMajorSelected(true);
+    setIsTestSelected(false);
+    setIsMbtiSelected(false);
+  };
+
+  const handleMbtiSelect = () => {
+    setIsMajorSelected(false);
+    setIsTestSelected(false);
+    setIsMbtiSelected(true);
   };
 
   return (
@@ -370,20 +305,44 @@ export function OptionSection({
         </styles.optionListItem>
         <styles.optionListItem>
           <styles.optionListImg src="/option-img/mop.svg" />
-          <styles.optionListCheckItemContainer>
-            <styles.cleanTestContainer>
-              <styles.cleanTestDescription onClick={toggleTestVisibility}>
-                테스트 하기
-              </styles.cleanTestDescription>
-            </styles.cleanTestContainer>
-            <CheckItem $isSelected={score >= 0 && score < 5.34}>상</CheckItem>
-            <CheckItem $isSelected={score > 5.34 && score < 10.67}>
-              평범보통
-            </CheckItem>
-            <CheckItem $isSelected={score > 10.67}>천하태평</CheckItem>
-          </styles.optionListCheckItemContainer>
+          {type === 'myCard' ? (
+            <styles.optionListCheckItemContainer>
+              <styles.cleanTestContainer>
+                <styles.cleanTestDescription
+                  onClick={() => {
+                    toggleTestVisibility();
+                  }}
+                >
+                  테스트 하기
+                </styles.cleanTestDescription>
+              </styles.cleanTestContainer>
+              <CheckItem $isSelected={score >= 0 && score < 5.34}>상</CheckItem>
+              <CheckItem $isSelected={score > 5.34 && score < 10.67}>
+                평범보통
+              </CheckItem>
+              <CheckItem $isSelected={score > 10.67}>천하태평</CheckItem>
+            </styles.optionListCheckItemContainer>
+          ) : (
+            <styles.optionListCheckItemContainer>
+              {CleaningOptions.map(option => (
+                <CheckItem
+                  key={option}
+                  $isSelected={selectedOptions[option]}
+                  onClick={() => {
+                    if (isMySelf) {
+                      handleOptionClick(option);
+                    }
+                  }}
+                >
+                  {option}
+                </CheckItem>
+              ))}
+            </styles.optionListCheckItemContainer>
+          )}
         </styles.optionListItem>
-        {isTestVisible && <CleanTest onComplete={handleTestCompletion} />}
+        {isTestVisible && isTestSelected && (
+          <CleanTest onComplete={handleTestCompletion} />
+        )}
         <styles.optionListItem>
           <styles.optionListImg src="/option-img/person.svg" />
           <styles.personalContainer>
@@ -395,63 +354,18 @@ export function OptionSection({
                   if (isMySelf) {
                     handleOptionClick(option);
                   }
+                  if (option === '엠비티아이') handleMbtiSelect();
+                  if (option === '전공') handleMajorSelect();
                 }}
               >
                 {option === '엠비티아이' ? <>MBTI</> : option}
               </CheckItem>
             ))}
-            {selectedOptions['전공'] ? <MajorSelector /> : null}
-            {selectedOptions['엠비티아이'] ? (
-              <styles.mbtiSection>
-                <styles.mbtiToggleContainer>
-                  E
-                  <ToggleSwitch
-                    isChecked={toggleStates.toggle1}
-                    onToggle={() => {
-                      if (isMySelf) {
-                        toggleSwitch('toggle1');
-                      }
-                    }}
-                  />
-                  I
-                </styles.mbtiToggleContainer>
-                <styles.mbtiToggleContainer>
-                  N
-                  <ToggleSwitch
-                    isChecked={toggleStates.toggle2}
-                    onToggle={() => {
-                      if (isMySelf) {
-                        toggleSwitch('toggle2');
-                      }
-                    }}
-                  />
-                  S
-                </styles.mbtiToggleContainer>
-                <styles.mbtiToggleContainer>
-                  F
-                  <ToggleSwitch
-                    isChecked={toggleStates.toggle3}
-                    onToggle={() => {
-                      if (isMySelf) {
-                        toggleSwitch('toggle3');
-                      }
-                    }}
-                  />
-                  T
-                </styles.mbtiToggleContainer>
-                <styles.mbtiToggleContainer>
-                  P
-                  <ToggleSwitch
-                    isChecked={toggleStates.toggle4}
-                    onToggle={() => {
-                      if (isMySelf) {
-                        toggleSwitch('toggle4');
-                      }
-                    }}
-                  />
-                  J
-                </styles.mbtiToggleContainer>
-              </styles.mbtiSection>
+            {selectedOptions['전공'] && isMajorSelected ? (
+              <MajorSelector />
+            ) : null}
+            {selectedOptions['엠비티아이'] && isMbtiSelected ? (
+              <MbtiToggle />
             ) : null}
           </styles.personalContainer>
         </styles.optionListItem>
@@ -460,7 +374,16 @@ export function OptionSection({
           <styles.optionListCheckItemContainer>
             <styles.budgetContainer>
               <CheckItem $isSelected={false}>금액</CheckItem>
-              <styles.budgetBar />
+              <Slider
+                min={0}
+                max={355}
+                step={5}
+                onChange={handleBudgetChange}
+              />
+              <styles.value>
+                {`${budgetMin === 0 ? '0원' : `${budgetMin}만원`}`} ~{' '}
+                {`${budgetMax === 355 ? '무제한' : `${budgetMax}만원`}`}
+              </styles.value>
             </styles.budgetContainer>
           </styles.optionListCheckItemContainer>
         </styles.optionListItem>

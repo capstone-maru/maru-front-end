@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
   container: styled.div`
-    display: flex;
-    width: 30rem;
+    display: inline-flex;
     align-items: center;
   `,
   sliderContainer: styled.div`
@@ -29,17 +28,19 @@ const styles = {
     background: var(--Main-1, #e15637);
     position: absolute;
     top: calc(50% - 2px);
+    left: ${props => props.$left};
+    right: ${props => props.$right};
   `,
   slider: styled.input`
-    width: 25rem;
+    position: absolute;
+    width: 100%;
     height: 0.3125rem;
     border-radius: 1.25rem;
     -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     background: transparent;
-
-    &:active {
-      cursor: grabbing;
-    }
+    top: calc(50% - 2px);
 
     &:focus {
       outline: none;
@@ -58,60 +59,67 @@ const styles = {
       z-index: 1;
     }
   `,
-  value: styled.span`
-    color: #000;
-
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    margin-left: 1rem;
-  `,
 };
 
 interface SliderProps {
   min: number;
   max: number;
   step: number;
-  initialValue: number;
-  onChange: (value: number) => void;
+  onChange: (min: number, max: number) => void;
 }
 
 interface FillProps {
   $fill: string;
+  $left: string;
+  $right: string;
 }
 
-export function Slider({
-  min,
-  max,
-  step,
-  initialValue,
-  onChange,
-}: SliderProps) {
-  const [value, setValue] = useState(0);
+export function Slider({ min, max, step, onChange }: SliderProps) {
+  const [minValue, setMinValue] = useState(min);
+  const [maxValue, setMaxValue] = useState(max);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseFloat(event.target.value);
-    setValue(newValue);
-    onChange(newValue);
+  const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newLow = Number(e.target.value);
+    if (newLow > maxValue) setMaxValue(newLow);
+    setMinValue(newLow);
   };
+
+  const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newHigh = Number(e.target.value);
+    if (newHigh < minValue) setMinValue(newHigh);
+    setMaxValue(newHigh);
+  };
+
+  useEffect(() => {
+    onChange(minValue, maxValue);
+  }, [onChange, minValue, maxValue]);
 
   return (
     <styles.container>
       <styles.sliderContainer>
         <styles.sliderTrack />
-        <styles.sliderFillTrack $fill={`${(value / (max - min)) * 100}%`} />
+        <styles.sliderFillTrack
+          $fill={`${((maxValue - minValue) / (max - min)) * 100}%`}
+          $left={`${(minValue / max) * 100}%`}
+          $right={`${100 - (maxValue / max) * 100}%`}
+        />
         <styles.slider
           type="range"
           min={min}
           max={max}
           step={step}
-          value={value}
-          onChange={handleChange}
+          value={minValue}
+          onChange={handleMinChange}
+        />
+        <styles.slider
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={maxValue}
+          onChange={handleMaxChange}
         />
       </styles.sliderContainer>
-      <styles.value>{value > 9 ? '무제한' : `±${value}세`}</styles.value>
     </styles.container>
   );
 }

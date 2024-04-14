@@ -7,13 +7,16 @@ const styles = {
   majorSelector: styled.select`
     -webkit-appearance: none;
     -moz-appearance: none;
+
     appearance: none;
     display: flex;
     width: 5.875rem;
     padding: 0.575rem 0;
     align-items: center;
-    border: 2px solid var(--Gray-4, #dfdfdf);
     background: var(--White, #fff);
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
+    border: none;
+    border-radius: 16px;
 
     color: var(--Gray-3, #888);
     font-family: 'Noto Sans KR';
@@ -22,6 +25,15 @@ const styles = {
     font-weight: 400;
     line-height: normal;
     text-align: center;
+
+    position: absolute;
+    bottom: 0;
+    left: 12rem;
+    z-index: 5;
+
+    &:focus {
+      outline: none;
+    }
   `,
 };
 

@@ -97,6 +97,15 @@ const styles = {
       outline: none;
     }
   `,
+  value: styled.span`
+    color: #000;
+
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  `,
 };
 
 interface CheckItemProps {
@@ -193,7 +202,13 @@ export function VitalSection({
     setSelectedYear(Number.isNaN(yearValue) ? null : yearValue);
   };
 
-  const handleAgeChange = (value: number) => {};
+  const [mateMinAge, setMateMinAge] = useState(0);
+  const [mateMaxAge, setMateMaxAge] = useState(11);
+  const handleAgeChange = (min: number, max: number) => {
+    setMateMinAge(min);
+    setMateMaxAge(max);
+  };
+
   return (
     <styles.vitalContainer>
       <styles.vitalDescription>필수</styles.vitalDescription>
@@ -341,13 +356,13 @@ export function VitalSection({
               ))}
             </styles.birthYear>
           ) : (
-            <Slider
-              min={0}
-              max={10}
-              step={1}
-              initialValue={0}
-              onChange={handleAgeChange}
-            />
+            <>
+              <Slider min={0} max={11} step={1} onChange={handleAgeChange} />
+              <styles.value>
+                {`${mateMinAge === 0 ? '동갑' : `±${mateMinAge}세`}`} ~{' '}
+                {`${mateMaxAge === 11 ? '무제한' : `±${mateMaxAge}세`}`}
+              </styles.value>
+            </>
           )}
         </styles.vitalList>
       </styles.vitalListContainer>

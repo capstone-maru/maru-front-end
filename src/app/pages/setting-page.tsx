@@ -343,8 +343,9 @@ export function SettingPage({ cardId }: { cardId: number }) {
             optionFeatures={features}
             onFeatureChange={handleOptionClick}
             isMySelf={isMySelf}
+            type={type}
           />
-          <SelfIntroduction />
+          {type === 'myCard' ? <SelfIntroduction /> : null}
         </styles.checkContainer>
       </styles.cardContainer>
     </styles.pageContainer>
