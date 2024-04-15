@@ -1,12 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
-import { AddButton, CancelButton } from '@/components';
 import {
   LocationSearchBox,
   MateSearchBox,
@@ -17,160 +15,131 @@ import { useCreateSharedPost } from '@/features/shared';
 
 const styles = {
   pageContainer: styled.div`
-    background: var(--background, #f7f6f9);
-
-    position: relative;
-    width: 100%;
-    min-height: 100%;
-    height: fit-content;
-
     display: flex;
-    justify-content: center;
-    align-items: stretch;
-    overflow: auto;
+    flex-direction: column;
+    padding: 2rem 10rem;
+    width: 100%;
+
+    max-height: fit-content;
+
+    background: var(--background, #f7f6f9);
   `,
   postContainer: styled.div`
-    width: 75rem;
-    height: 100%;
-    max-height: fit-content;
-    flex-shrink: 0;
     display: flex;
+    padding: 2rem;
     flex-direction: column;
-    background-color: #fff;
-    border-radius: 2rem;
-    margin: 3rem 7.5rem;
-    padding: 3.69rem 4.19rem 0 4.19rem;
-  `,
-  containerDescription: styled.p`
-    color: #000;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
+    align-self: stretch;
 
-    font-family: 'Noto Sans KR';
-    font-size: 1.25rem;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    margin-bottom: 2.13rem;
+    border-radius: 16px;
+    background: #fff;
   `,
-  listContainer: styled.ul`
-    width: 100%;
-
+  row: styled.div`
     display: flex;
-    flex-direction: column;
-    gap: 1.125rem;
-  `,
-  listItem: styled.li`
-    display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
-
-    transition: background-color 200ms ease-in-out;
-    &[class~='location-info-item'] {
-      cursor: pointer;
-      padding: 1.1rem;
-
-      &:hover {
-        background-color: #ededed;
-      }
-    }
+    align-self: stretch;
   `,
-  listItemDescription: styled.p`
-    width: 12.125rem;
-    margin-right: 13.94rem;
+  option: styled.h2`
     color: var(--Black, #35373a);
     font-family: 'Noto Sans KR';
     font-size: 1rem;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
+    align-self: stretch;
   `,
-  addImgButton: styled.div`
+  captionRow: styled.div`
     display: flex;
-    width: 7.4375rem;
-    padding: 0.5rem;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    border: 1px solid var(--Black, #35373a);
-
-    color: var(--Gray-5, #828282);
-    text-align: center;
+    align-items: flex-end;
+    gap: 1rem;
+    align-self: stretch;
+  `,
+  caption: styled.span`
+    color: rgba(53, 55, 58, 0.5);
     font-family: 'Noto Sans KR';
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-
-    margin-right: 6.19rem;
-    cursor: pointer;
   `,
-  inputContainer: styled.div`
+  optionRow: styled.div`
     display: flex;
-    width: 5.5rem;
-    padding: 0.5rem;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    border: 1px solid var(--Black, #35373a);
+    align-items: flex-start;
+    gap: 2rem;
+    align-self: stretch;
   `,
-  inputPlaceholder: styled.p`
-    color: var(--Gray-5, #828282);
-    text-align: right;
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-  `,
-  userInput: styled.input`
-    width: 2rem;
-    color: var(--Gray-5, #828282);
-    text-align: right;
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    border: none;
-    &:focus {
-      outline: none;
-    }
+  optionCategory: styled.h1`
+    align-self: stretch;
 
-    &::-webkit-inner-spin-button,
-    &::-webkit-outer-spin-button {
-      margin: 0;
-      -webkit-appearance: none;
-    }
-
-    &[type='number'] {
-      appearance: textfield;
-      -moz-appearance: textfield;
-    }
-  `,
-  slash: styled.p`
     color: #000;
-
-    text-align: right;
     font-family: 'Noto Sans KR';
-    font-size: 1rem;
+    font-size: 1.25rem;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 700;
     line-height: normal;
-    margin: 0 1.31rem;
   `,
-  checkButtonContainer: styled.div`
+  createButton: styled.button`
+    all: unset;
+
+    cursor: pointer;
+
+    display: flex;
+    width: 7.125rem;
+    height: fit-content;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 8px;
+    background: var(--Black, #35373a);
+
+    color: #fff;
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5rem;
+  `,
+  titleInput: styled.input`
+    all: unset;
+
+    display: flex;
+    padding: 1rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    align-self: stretch;
+    border-radius: 8px;
+    background: #ededed;
+  `,
+  contentInput: styled.input`
+    all: unset;
+
+    display: flex;
+    padding: 1rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    align-self: stretch;
+    border-radius: 8px;
+    background: #ededed;
+  `,
+  optionButtonContainer: styled.div`
     display: flex;
     align-items: flex-start;
     gap: 0.5rem;
-    margin-right: 1.62rem;
-  `,
-  checkButtonDescription: styled.p`
-    color: #000;
 
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
+    span {
+      color: #000;
+      font-family: 'Noto Sans KR';
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
   `,
   customRadioButton: styled.div<ButtonActiveProps>`
     display: inline-block;
@@ -202,59 +171,54 @@ const styles = {
             backgroundImage: `url('/button-icon/Check box outline blank.svg')`,
           }};
   `,
-  titleInputBox: styled.input<{ $empty: boolean }>`
-    width: 41.125rem;
-    padding: 0.5rem 1rem;
+  images: styled.div`
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    gap: 1rem;
 
-    border: none;
-    border-radius: 0.5rem;
-    background: var(--Gray-6, #efefef);
-
-    color: ${({ $empty }) => ($empty ? '#9a95a3' : '#000')};
-
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-
-    &:focus {
-      outline: none;
-    }
+    overflow-x: auto;
   `,
-  detailedInputBox: styled.input<{ $empty: boolean }>`
-    width: 41.125rem;
-    height: 5.4375rem;
-    padding: 0.5rem 1rem 3.5rem 1rem;
+  image: styled.img`
+    width: 14.4375rem;
+    height: 9.875rem;
+    background: #ededed;
 
-    border: none;
-    border-radius: 0.5rem;
-    background: var(--Gray-6, #efefef);
+    object-fit: cover;
+    object-position: center;
 
-    color: ${({ $empty }) => ($empty ? '#9a95a3' : '#000')};
-
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-
-    &:focus {
-      outline: none;
-    }
+    cursor: pointer;
   `,
-  searchButton: styled.button`
+  imageAddButton: styled.button`
     all: unset;
 
+    border: 0.5px solid #80808080;
+    cursor: pointer;
+
+    width: 14.4375rem;
+    height: 9.875rem;
+    background: #ededed;
+    background-image: url(https://s3-alpha-sig.figma.com/img/7307/09fa/b5d93c9ac77c2570ffbee89fe8a76c98?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Xr~6xrrHnQFb6NwdPlxTuJ2wd7kTnRZ-9kpTlGxYQL-bU7ZVcN8IMQ4k6yEAj~x3y2roX-poLo4XP4x6-adpxlciddzg0ZUuWg0B3VrMgMwbl~sTasgqAe~0SL9E4kkEx7OilanZoC5fJlVBglfb8kE1nZBaG5wEp3FCbLZhzZTnl~29Loisbo1pwteh~2ABpLSVttEztULov1lzws4qcrHY5QpGb8KM4PxBTBTfQDMa8an5QmG~uUlt-bYgVEFMuA2vsKHc-aY8HoiF7v03UDHSGNOVrX1Ajt7ARWqJtOiM~epvCYTkVJPmkNe6WcCgRm37xGKbH2LEzn9aEZJyFA__);
+    background-position: center;
+    background-repeat: no-repeat;
+  `,
+  inputContainer: styled.div`
     display: flex;
-    width: 5.5rem;
+    width: fit-content;
     padding: 0.5rem;
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
     border: 1px solid var(--Black, #35373a);
-    cursor: pointer;
-
+  `,
+  input: styled.input<{ $width: number }>`
+    all: unset;
+    width: ${({ $width }) => `${$width}rem`};
+    flex: 1 0 0;
+    color: var(--Gray-5, #828282);
+    text-align: right;
+  `,
+  inputPlaceholder: styled.span`
     color: var(--Gray-5, #828282);
     text-align: right;
     font-family: 'Noto Sans KR';
@@ -263,72 +227,68 @@ const styles = {
     font-weight: 400;
     line-height: normal;
   `,
-  vitalContainer: styled.div`
-    display: inline-flex;
-    flex-direction: column;
-  `,
-  budgetContainer: styled.div`
-    display: inline-flex;
-    flex-direction: column;
-    margin-top: 5.62rem;
-  `,
-  roomContainer: styled.div`
-    display: inline-flex;
-    flex-direction: column;
-    margin-top: 4.38rem;
-  `,
-  detailedContainer: styled.div`
-    display: inline-flex;
-    flex-direction: column;
-    margin-bottom: 5rem;
-  `,
-  locationContainer: styled.div`
-    display: inline-flex;
-    flex-direction: column;
-    margin-top: 6rem;
-  `,
-  row: styled.div`
+  mates: styled.div`
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-  `,
-  createButton: styled.button`
-    all: unset;
-
-    cursor: pointer;
-
-    display: flex;
-    width: 7.125rem;
-    height: fit-content;
-    padding: 0.5rem 1.5rem;
-    justify-content: center;
     align-items: center;
-
-    border-radius: 8px;
-    background: var(--Black, #35373a);
-
-    color: #fff;
-    font-family: Pretendard;
-    font-size: 1.125rem;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 1.5rem;
-  `,
-  images: styled.div`
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
+    align-self: stretch;
+    gap: 1rem;
 
     overflow-x: auto;
   `,
-  cancelButton: styled.button`
+  mate: styled.img`
+    width: 5.0625rem;
+    height: 5.125rem;
+    border-radius: 50%;
+    border: 1px solid #dcddea;
+    background: #fff;
+  `,
+  mateAddButton: styled.input`
     all: unset;
-    position: relative;
     cursor: pointer;
 
-    top: 0.69rem;
-    left: 85%;
+    width: 5.0625rem;
+    height: 5.125rem;
+
+    border-radius: 50%;
+    border: 1px solid #dcddea;
+    background: #fff;
+    background-image: url('/icon-plus.png');
+    background-position: center;
+    background-repeat: no-repeat;
+  `,
+  address: styled.span`
+    color: #e15637;
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  `,
+  addressFindButtonContainer: styled.button`
+    all: unset;
+    cursor: pointer;
+
+    display: flex;
+    padding: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+
+    border-radius: 0.5rem;
+    background: #ededed;
+
+    span {
+      color: #000;
+      font-family: 'Noto Sans KR';
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+  `,
+  addressFindButtonIcon: styled.img`
+    width: 2rem;
+    height: 2rem;
   `,
 };
 
@@ -356,6 +316,7 @@ interface SelectedOptions {
   livingRoom?: string;
   roomCount?: string;
   restRoomCount?: string;
+  floorType?: string;
 }
 
 type SelectedExtraOptions = Record<string, boolean>;
@@ -378,20 +339,13 @@ export function WritingPostPage() {
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
+  const [mateLimit, setMateLimit] = useState(0);
   const [expectedMonthlyFee, setExpectedMonthlyFee] = useState<number>(0);
   const [houseSize, setHouseSize] = useState<number>(0);
-  const [roomSize, setRoomSize] = useState<number>(0);
-  const [floor, setFloor] = useState<number>(0);
 
   const [address, setAddress] = useState<NaverAddress | null>(null);
-  const [showSearchBox, setShowSearchBox] = useState<boolean>(false);
-
-  const [locationInfoList, setLocationInfoList] = useState<
-    Array<[string, string]>
-  >([]);
-  const [locationExtraInfoKey, setLocationExtraInfoKey] = useState<string>('');
-  const [locationExtraInfoValue, setLocationExtraInfoValue] =
-    useState<string>('');
+  const [showLocationSearchBox, setShowLocationSearchBox] =
+    useState<boolean>(false);
 
   const { mutate } = useCreateSharedPost();
 
@@ -412,11 +366,23 @@ export function WritingPostPage() {
     }));
   };
 
-  const handleImageInputClick = () => {
+  const handleTitleInputChanged = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setTitle(event.target.value);
+  };
+
+  const handleContentInputChanged = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setContent(event.target.value);
+  };
+
+  const handleImageInputClicked = () => {
     imageInputRef.current?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = event.target;
     if (files != null) {
       const imagesArray = Array.from(files).map(file => ({
@@ -430,14 +396,6 @@ export function WritingPostPage() {
 
   const handleRemoveImage = (removeImage: ImageFile) => {
     setImages(prev => prev.filter(image => image.url !== removeImage.url));
-  };
-
-  const handleRemoveLocationInfoItem = (removeItem: [string, string]) => {
-    setLocationInfoList(prev =>
-      prev.filter(
-        item => item[0] !== removeItem[0] && item[1] !== removeItem[1],
-      ),
-    );
   };
 
   const convertToNumber = (value: string) => {
@@ -559,384 +517,225 @@ export function WritingPostPage() {
   return (
     <styles.pageContainer>
       <styles.postContainer>
-        <styles.detailedContainer>
-          <styles.row>
-            <styles.containerDescription>제목</styles.containerDescription>
-            <styles.createButton onClick={handleCreatePost}>
-              작성하기
-            </styles.createButton>
-          </styles.row>
-          <styles.titleInputBox
-            $empty={title.length === 0}
-            value={title}
+        <styles.row>
+          <styles.optionCategory>기본 정보</styles.optionCategory>
+          <styles.createButton onClick={handleCreatePost}>
+            작성하기
+          </styles.createButton>
+        </styles.row>
+        <styles.optionCategory>제목</styles.optionCategory>
+        <styles.titleInput
+          value={title}
+          onChange={handleTitleInputChanged}
+          placeholder="제목을 입력해주세요"
+        />
+        <styles.optionCategory>상세 정보</styles.optionCategory>
+        <styles.contentInput
+          value={content}
+          onChange={handleContentInputChanged}
+          placeholder="내용을 입력해주세요"
+        />
+        <styles.captionRow>
+          <styles.option>사진</styles.option>
+          <styles.caption>최소 2장 이상 업로드</styles.caption>
+        </styles.captionRow>
+        <styles.images>
+          {images.map(image => (
+            <styles.image
+              key={image.url}
+              src={image.url}
+              onClick={() => {
+                handleRemoveImage(image);
+              }}
+            />
+          ))}
+          <styles.imageAddButton onClick={handleImageInputClicked}>
+            <input
+              ref={imageInputRef}
+              type="file"
+              multiple
+              onChange={handleFileChanged}
+              style={{ display: 'none' }}
+            />
+          </styles.imageAddButton>
+        </styles.images>
+        <styles.option>인원</styles.option>
+        <styles.inputContainer>
+          <styles.input
+            value={mateLimit}
             onChange={event => {
-              setTitle(event.target.value);
+              handleNumberInput(event.target.value, value => {
+                setMateLimit(value);
+              });
             }}
-            placeholder="입력"
-            type="text"
+            $width={3}
           />
-        </styles.detailedContainer>
-        <styles.detailedContainer>
-          <styles.containerDescription>상세 정보</styles.containerDescription>
-          <styles.detailedInputBox
-            $empty={content.length === 0}
-            value={content}
-            onChange={event => {
-              setContent(event.target.value);
+          <styles.inputPlaceholder>명</styles.inputPlaceholder>
+        </styles.inputContainer>
+        <styles.option>메이트</styles.option>
+        <styles.mates>
+          <styles.mateAddButton
+            onClick={() => {
+              setShowMateSearchBox(true);
             }}
-            placeholder="입력"
-            type="text"
           />
-        </styles.detailedContainer>
-        <styles.vitalContainer>
-          <styles.containerDescription>기본 정보</styles.containerDescription>
-          <styles.listContainer>
-            <styles.listItem>
-              <styles.listItemDescription>사진</styles.listItemDescription>
-              <styles.addImgButton onClick={handleImageInputClick}>
-                + 사진 추가
-                <input
-                  ref={imageInputRef}
-                  type="file"
-                  multiple
-                  onChange={handleFileChange}
-                  style={{ display: 'none' }}
-                />
-              </styles.addImgButton>
-              <styles.listItemDescription>
-                최소 2장 이상 업로드
-              </styles.listItemDescription>
-            </styles.listItem>
-            {images.length > 0 && (
-              <styles.listItem>
-                <styles.listItemDescription />
-                <styles.images>
-                  {images.map((image, index) => (
-                    <div
-                      key={image.url}
-                      style={{
-                        position: 'relative',
-                        width: '14.4375rem',
-                        height: '9.875rem',
-                        border: '1px solid #19191920',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <Image
-                        src={image.url}
-                        alt={`Uploaded ${index}`}
-                        layout="fill"
-                        objectFit="cover"
-                      />
-                      <styles.cancelButton>
-                        <CancelButton
-                          onClick={() => {
-                            handleRemoveImage(image);
-                          }}
-                          fill="black"
-                        />
-                      </styles.cancelButton>
-                    </div>
-                  ))}
-                </styles.images>
-              </styles.listItem>
-            )}
-            <styles.listItem>
-              <styles.listItemDescription>인원</styles.listItemDescription>
-              <styles.inputContainer>
-                <styles.userInput />
-                <styles.inputPlaceholder>명</styles.inputPlaceholder>
-              </styles.inputContainer>
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>메이트</styles.listItemDescription>
-              <AddButton
+          {showMateSearchBox && (
+            <MateSearchBox
+              setHidden={() => {
+                setShowMateSearchBox(false);
+              }}
+            />
+          )}
+        </styles.mates>
+        <styles.optionCategory>거래 정보</styles.optionCategory>
+        <styles.option>거래 방식</styles.option>
+        <styles.optionRow>
+          {DealOptions.map(option => (
+            <styles.optionButtonContainer key={option}>
+              <styles.customRadioButton
+                $isSelected={selectedOptions.budget === option}
                 onClick={() => {
-                  setShowMateSearchBox(prev => !prev);
+                  handleOptionClick('budget', option);
                 }}
               />
-              {showMateSearchBox && (
-                <MateSearchBox
-                  setHidden={() => {
-                    setShowMateSearchBox(false);
-                  }}
-                />
-              )}
-            </styles.listItem>
-          </styles.listContainer>
-        </styles.vitalContainer>
-        <styles.budgetContainer>
-          <styles.containerDescription>거래 정보</styles.containerDescription>
-          <styles.listContainer>
-            <styles.listItem>
-              <styles.listItemDescription>거래방식</styles.listItemDescription>
-              {DealOptions.map(option => (
-                <styles.checkButtonContainer key={option}>
-                  <styles.customRadioButton
-                    $isSelected={selectedOptions.budget === option}
-                    onClick={() => {
-                      handleOptionClick('budget', option);
-                    }}
-                  />
-                  <styles.checkButtonDescription>
-                    {option}
-                  </styles.checkButtonDescription>
-                </styles.checkButtonContainer>
-              ))}
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>
-                희망 메이트 월 분담금
-              </styles.listItemDescription>
-              <styles.inputContainer>
-                <styles.userInput
-                  value={expectedMonthlyFee}
-                  onChange={event => {
-                    handleNumberInput(event.target.value, value => {
-                      setExpectedMonthlyFee(value);
-                    });
-                  }}
-                />
-                <styles.inputPlaceholder>만원</styles.inputPlaceholder>
-              </styles.inputContainer>
-            </styles.listItem>
-          </styles.listContainer>
-        </styles.budgetContainer>
-        <styles.roomContainer>
-          <styles.containerDescription>방 정보</styles.containerDescription>
-          <styles.listContainer>
-            <styles.listItem>
-              <styles.listItemDescription>방 종류</styles.listItemDescription>
-              {RoomOptions.map(option => (
-                <styles.checkButtonContainer key={option}>
-                  <styles.customRadioButton
-                    $isSelected={selectedOptions.roomType === option}
-                    onClick={() => {
-                      handleOptionClick('roomType', option);
-                    }}
-                  />
-                  <styles.checkButtonDescription>
-                    {option}
-                  </styles.checkButtonDescription>
-                </styles.checkButtonContainer>
-              ))}
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>거실</styles.listItemDescription>
-              {LivingRoomOptions.map(option => (
-                <styles.checkButtonContainer key={option}>
-                  <styles.customRadioButton
-                    $isSelected={selectedOptions.livingRoom === option}
-                    onClick={() => {
-                      handleOptionClick('livingRoom', option);
-                    }}
-                  />
-                  <styles.checkButtonDescription>
-                    {option}
-                  </styles.checkButtonDescription>
-                </styles.checkButtonContainer>
-              ))}
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>방 개수</styles.listItemDescription>
-              {RoomCountOptions.map(option => (
-                <styles.checkButtonContainer key={option}>
-                  <styles.customRadioButton
-                    $isSelected={selectedOptions.roomCount === option}
-                    onClick={() => {
-                      handleOptionClick('roomCount', option);
-                    }}
-                  />
-                  <styles.checkButtonDescription>
-                    {option}
-                  </styles.checkButtonDescription>
-                </styles.checkButtonContainer>
-              ))}
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>
-                화장실 개수
-              </styles.listItemDescription>
-              {RestRoomCountOptions.map(option => (
-                <styles.checkButtonContainer key={option}>
-                  <styles.customRadioButton
-                    $isSelected={selectedOptions.restRoomCount === option}
-                    onClick={() => {
-                      handleOptionClick('restRoomCount', option);
-                    }}
-                  />
-                  <styles.checkButtonDescription>
-                    {option}
-                  </styles.checkButtonDescription>
-                </styles.checkButtonContainer>
-              ))}
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>
-                전체 면적 / 방 면적
-              </styles.listItemDescription>
-              <styles.inputContainer>
-                <styles.userInput
-                  value={houseSize}
-                  onChange={event => {
-                    handleNumberInput(event.target.value, value => {
-                      setHouseSize(value);
-                    });
-                  }}
-                />
-                <styles.inputPlaceholder>평</styles.inputPlaceholder>
-              </styles.inputContainer>
-              <styles.slash>/</styles.slash>
-              <styles.inputContainer>
-                <styles.userInput
-                  value={roomSize}
-                  onChange={event => {
-                    handleNumberInput(event.target.value, value => {
-                      setRoomSize(value);
-                    });
-                  }}
-                />
-                <styles.inputPlaceholder>평</styles.inputPlaceholder>
-              </styles.inputContainer>
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>층수</styles.listItemDescription>
-              {FloorOptions.map(option => (
-                <styles.checkButtonContainer
-                  key={option}
-                  style={{ margin: option === '옥탑' ? '0' : '' }}
-                >
-                  <styles.customRadioButton
-                    $isSelected={selectedOptions.restRoomCount === option}
-                    onClick={() => {
-                      handleOptionClick('restRoomCount', option);
-                    }}
-                  />
-                  <styles.checkButtonDescription>
-                    {option}
-                  </styles.checkButtonDescription>
-                </styles.checkButtonContainer>
-              ))}
-              <styles.slash>/</styles.slash>
-              <styles.inputContainer>
-                <styles.userInput
-                  value={floor}
-                  onChange={event => {
-                    handleNumberInput(event.target.value, value => {
-                      setFloor(value);
-                    });
-                  }}
-                />
-                <styles.inputPlaceholder>층</styles.inputPlaceholder>
-              </styles.inputContainer>
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>추가 옵션</styles.listItemDescription>
-              {AdditionalOptions.map(option => (
-                <styles.checkButtonContainer key={option}>
-                  <styles.customCheckBox
-                    $isSelected={selectedExtraOptions[option]}
-                    onClick={() => {
-                      handleExtraOptionClick(option);
-                    }}
-                  />
-                  <styles.checkButtonDescription>
-                    {option}
-                  </styles.checkButtonDescription>
-                </styles.checkButtonContainer>
-              ))}
-            </styles.listItem>
-          </styles.listContainer>
-        </styles.roomContainer>
-        <styles.locationContainer>
-          <styles.containerDescription>위치 정보</styles.containerDescription>
-          <styles.listContainer>
-            <styles.listItem>
-              <styles.listItemDescription>상세 주소</styles.listItemDescription>
-              {showSearchBox && (
-                <LocationSearchBox
-                  setHidden={() => {
-                    setShowSearchBox(false);
-                  }}
-                  onSelect={selectedAddress => {
-                    setShowSearchBox(false);
-                    setAddress(selectedAddress);
-                  }}
-                />
-              )}
-              <styles.searchButton
+              <span>{option}</span>
+            </styles.optionButtonContainer>
+          ))}
+        </styles.optionRow>
+        <styles.option>희망 메이트 월 분담금</styles.option>
+        <styles.inputContainer>
+          <styles.input
+            value={expectedMonthlyFee}
+            onChange={event => {
+              handleNumberInput(event.target.value, value => {
+                setExpectedMonthlyFee(value);
+              });
+            }}
+            $width={3}
+          />
+          <styles.inputPlaceholder>만원</styles.inputPlaceholder>
+        </styles.inputContainer>
+        <styles.optionCategory>방 정보</styles.optionCategory>
+        <styles.option>층</styles.option>
+        <styles.optionRow>
+          {FloorOptions.map(option => (
+            <styles.optionButtonContainer key={option}>
+              <styles.customRadioButton
+                $isSelected={selectedOptions.floorType === option}
                 onClick={() => {
-                  setShowSearchBox(prev => !prev);
+                  handleOptionClick('floorType', option);
                 }}
-              >
-                검색
-              </styles.searchButton>
-            </styles.listItem>
-            {address != null && (
-              <styles.listItem>
-                <styles.listItemDescription>
-                  {address.roadAddress}
-                </styles.listItemDescription>
-              </styles.listItem>
-            )}
-            <styles.listItem>
-              <styles.listItemDescription>
-                추가 정보 기입
-              </styles.listItemDescription>
-            </styles.listItem>
-            <styles.listItem>
-              <styles.listItemDescription>
-                장소 / 시간
-              </styles.listItemDescription>
-              <styles.inputContainer>
-                <styles.userInput
-                  value={locationExtraInfoKey}
-                  onChange={event => {
-                    setLocationExtraInfoKey(event.target.value);
-                  }}
-                />
-              </styles.inputContainer>
-              <styles.slash>/</styles.slash>
-              <styles.inputContainer>
-                <styles.userInput
-                  value={locationExtraInfoValue}
-                  onChange={event => {
-                    setLocationExtraInfoValue(event.target.value);
-                  }}
-                />
-              </styles.inputContainer>
-              <div style={{ marginLeft: '1rem' }}>
-                <AddButton
-                  onClick={() => {
-                    if (
-                      locationExtraInfoKey.length !== 0 ||
-                      locationExtraInfoValue.length !== 0
-                    ) {
-                      setLocationInfoList([
-                        ...locationInfoList,
-                        [locationExtraInfoKey, locationExtraInfoValue],
-                      ]);
-                      setLocationExtraInfoKey(() => '');
-                      setLocationExtraInfoValue(() => '');
-                    }
-                  }}
-                />
-              </div>
-            </styles.listItem>
-            {locationInfoList.map(([key, value], index) => (
-              <styles.listItem
-                className="location-info-item"
-                key={`${key}-${index}`}
+              />
+              <span>{option}</span>
+            </styles.optionButtonContainer>
+          ))}
+        </styles.optionRow>
+        <styles.option>추가 옵션</styles.option>
+        <styles.optionRow>
+          {AdditionalOptions.map(option => (
+            <styles.optionButtonContainer key={option}>
+              <styles.customCheckBox
+                $isSelected={selectedExtraOptions[option]}
                 onClick={() => {
-                  handleRemoveLocationInfoItem([key, value]);
+                  handleExtraOptionClick(option);
                 }}
-              >
-                <styles.listItemDescription>{key}</styles.listItemDescription>
-                <styles.listItemDescription>{value}</styles.listItemDescription>
-              </styles.listItem>
-            ))}
-          </styles.listContainer>
-        </styles.locationContainer>
+              />
+              <span>{option}</span>
+            </styles.optionButtonContainer>
+          ))}
+        </styles.optionRow>
+        <styles.option>방 종류</styles.option>
+        <styles.optionRow>
+          {RoomOptions.map(option => (
+            <styles.optionButtonContainer key={option}>
+              <styles.customRadioButton
+                $isSelected={selectedOptions.roomType === option}
+                onClick={() => {
+                  handleOptionClick('roomType', option);
+                }}
+              />
+              <span>{option}</span>
+            </styles.optionButtonContainer>
+          ))}
+        </styles.optionRow>
+        <styles.option>거실</styles.option>
+        <styles.optionRow>
+          {LivingRoomOptions.map(option => (
+            <styles.optionButtonContainer key={option}>
+              <styles.customRadioButton
+                $isSelected={selectedOptions.livingRoom === option}
+                onClick={() => {
+                  handleOptionClick('livingRoom', option);
+                }}
+              />
+              <span>{option}</span>
+            </styles.optionButtonContainer>
+          ))}
+        </styles.optionRow>
+        <styles.option>방 개수</styles.option>
+        <styles.optionRow>
+          {RoomCountOptions.map(option => (
+            <styles.optionButtonContainer key={option}>
+              <styles.customRadioButton
+                $isSelected={selectedOptions.roomCount === option}
+                onClick={() => {
+                  handleOptionClick('roomCount', option);
+                }}
+              />
+              <span>{option}</span>
+            </styles.optionButtonContainer>
+          ))}
+        </styles.optionRow>
+        <styles.option>화장실 개수</styles.option>
+        <styles.optionRow>
+          {RestRoomCountOptions.map(option => (
+            <styles.optionButtonContainer key={option}>
+              <styles.customRadioButton
+                $isSelected={selectedOptions.restRoomCount === option}
+                onClick={() => {
+                  handleOptionClick('restRoomCount', option);
+                }}
+              />
+              <span>{option}</span>
+            </styles.optionButtonContainer>
+          ))}
+        </styles.optionRow>
+        <styles.option>전체 면적</styles.option>
+        <styles.inputContainer>
+          <styles.input
+            value={houseSize}
+            onChange={event => {
+              handleNumberInput(event.target.value, value => {
+                setHouseSize(value);
+              });
+            }}
+            $width={2}
+          />
+          <styles.inputPlaceholder>평</styles.inputPlaceholder>
+        </styles.inputContainer>
+        <styles.optionCategory>위치 정보</styles.optionCategory>
+        <styles.captionRow>
+          <styles.option>상세 주소</styles.option>
+          <styles.address>{address?.roadAddress}</styles.address>
+        </styles.captionRow>
+        <styles.addressFindButtonContainer
+          onClick={() => {
+            setShowLocationSearchBox(true);
+          }}
+        >
+          <styles.addressFindButtonIcon src="/icon-search32.svg" />
+          <span>위치 찾기</span>
+        </styles.addressFindButtonContainer>
+        {showLocationSearchBox && (
+          <LocationSearchBox
+            onSelect={selectedAddress => {
+              setAddress(selectedAddress);
+            }}
+            setHidden={() => {
+              setShowLocationSearchBox(false);
+            }}
+          />
+        )}
       </styles.postContainer>
     </styles.pageContainer>
   );

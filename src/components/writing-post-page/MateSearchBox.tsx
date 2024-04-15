@@ -30,7 +30,7 @@ const styles = {
   title: styled.h1`
     font-size: 1.25rem;
   `,
-  caption: styled.caption`
+  caption: styled.span`
     font-size: 0.85rem;
     color: #808080;
   `,
