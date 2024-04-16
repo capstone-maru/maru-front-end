@@ -652,8 +652,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
   }, [user.data, memberId]);
 
   const birthYearString: string = userData?.birthYear ?? '';
-  const birthYearDate: Date = new Date(birthYearString);
-
+  const birthYearDate: number = Number(birthYearString);
   return (
     <styles.pageContainer>
       <UserInfo
