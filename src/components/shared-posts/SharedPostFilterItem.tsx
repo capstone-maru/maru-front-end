@@ -38,7 +38,7 @@ const styles = {
   content: styled.div<{ $hidden: boolean }>`
     visibility: ${({ $hidden }) => ($hidden ? 'hidden' : 'visible')};
 
-    border-radius: 1.25rem;
+    border-radius: 20px;
     background: #fff;
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
 

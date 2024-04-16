@@ -12,7 +12,7 @@ const styles = {
     align-items: flex-start;
 
     gap: 2rem;
-    border-radius: 1.25rem;
+    border-radius: 20px;
     background: #fff;
 
     width: 20rem;
@@ -48,7 +48,7 @@ const styles = {
         align-items: center;
         gap: 0.5rem;
 
-        border-radius: 0.5rem;
+        border-radius: 8px;
         border: 1px solid #000;
 
         color: #000;

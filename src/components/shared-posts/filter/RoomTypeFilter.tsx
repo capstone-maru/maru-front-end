@@ -34,7 +34,7 @@ const styles = {
       align-items: center;
       gap: 0.5rem;
 
-      border-radius: 0.5rem;
+      border-radius: 8px;
       border: 1px solid #000;
 
       transition:

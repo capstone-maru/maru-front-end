@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { Bookmark } from '@/components';
+import { Bookmark, CircularProfileImage } from '@/components';
 import { ImageGrid } from '@/components/shared-post-page';
 import { useAuthValue } from '@/features/auth';
 import { useScrapSharedPost, useSharedPost } from '@/features/shared';
+import { getAge } from '@/shared';
 
 const styles = {
   container: styled.div`
@@ -231,6 +232,139 @@ const styles = {
       align-self: stretch;
     }
   `,
+  mates: styled.div`
+    display: flex;
+    width: 23rem;
+    padding: 1rem;
+    align-items: flex-start;
+
+    border-radius: 16px;
+    background: #fff;
+  `,
+  mate: styled.img<{ $selected?: boolean; $zIndex?: number }>`
+    cursor: pointer;
+
+    display: flex;
+    width: 5.25rem;
+    height: 5.25rem;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+
+    border-radius: 50%;
+    border: 1px solid
+      ${({ $selected }) =>
+        $selected != null && $selected ? '#e15637' : '#DCDDEA'};
+    background: #c4c4c4;
+
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
+
+    z-index: ${({ $zIndex }) => $zIndex};
+
+    &:not(:first-child) {
+      margin-left: -1rem;
+    }
+  `,
+  selectedMateContainer: styled.div`
+    display: flex;
+    padding: 2rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+    align-self: stretch;
+
+    border-radius: 16px;
+    background: #fff;
+  `,
+  profile: styled.div`
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    align-self: stretch;
+  `,
+  profileInfo: styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    align-self: stretch;
+
+    .name {
+      color: #000;
+      font-family: 'Noto Sans KR';
+      font-size: 1.5rem;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+    }
+
+    div {
+      color: #000;
+      font-family: 'Noto Sans KR';
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+    }
+  `,
+  buttons: styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    align-self: stretch;
+
+    div {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      align-self: stretch;
+    }
+  `,
+  chattingButton: styled.button`
+    all: unset;
+    cursor: pointer;
+
+    display: flex;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    align-self: stretch;
+
+    border-radius: 8px;
+    background: var(--Black, #35373a);
+
+    color: #fff;
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5rem;
+  `,
+  showProfileButton: styled.button`
+    all: unset;
+    cursor: pointer;
+
+    display: flex;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    flex: 1 0 0;
+
+    border-radius: 8px;
+    border: 1px solid var(--Gray-3, #888);
+    background: var(--White, #fff);
+
+    color: var(--Gray-3, #888);
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5rem;
+  `,
 };
 
 const dummyImages = [
@@ -340,7 +474,57 @@ export function SharedPostPage({ postId }: { postId: number }) {
             <div id="map" />
           </styles.locationInfoContainer>
         </styles.postContainer>
-        <styles.mateContainer />
+        <styles.mateContainer>
+          <styles.mates>
+            <styles.mate
+              $selected
+              $zIndex={3}
+              src="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ou47yOoRJ57c0QqtWD~w0S6BP1UYWpmpCOCgsq9YTqfbNq~TmwfAI2T24-fYxpKSiBDv8y1Tkup68OTc5v2ZHIG~~CLwn6NCBF7QqTu7sQB0oPCvdRFdBm~y4wI8VEIErYhPsCuV2k7L0GVlJss4KkeM1tt1RX0kwfINvh03yzFf8wtjd0xsUJjMaKjNxU3muS2Cj8BZymckjgNGrTvafiGbAfHt0Bw2fTkH8tctfNNXpnZgqrEeDldEuENV~g-fSsLSFbMceZGN5ILEd9gd6fnY2YYeB7qtb9xozvczwTbz6kYIzzHJc7veYTsvxjqx~qTiKF2Yrn45cn5pXvOv1w__"
+            />
+            <styles.mate
+              $zIndex={2}
+              src="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ou47yOoRJ57c0QqtWD~w0S6BP1UYWpmpCOCgsq9YTqfbNq~TmwfAI2T24-fYxpKSiBDv8y1Tkup68OTc5v2ZHIG~~CLwn6NCBF7QqTu7sQB0oPCvdRFdBm~y4wI8VEIErYhPsCuV2k7L0GVlJss4KkeM1tt1RX0kwfINvh03yzFf8wtjd0xsUJjMaKjNxU3muS2Cj8BZymckjgNGrTvafiGbAfHt0Bw2fTkH8tctfNNXpnZgqrEeDldEuENV~g-fSsLSFbMceZGN5ILEd9gd6fnY2YYeB7qtb9xozvczwTbz6kYIzzHJc7veYTsvxjqx~qTiKF2Yrn45cn5pXvOv1w__"
+            />
+            <styles.mate
+              $zIndex={1}
+              src="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ou47yOoRJ57c0QqtWD~w0S6BP1UYWpmpCOCgsq9YTqfbNq~TmwfAI2T24-fYxpKSiBDv8y1Tkup68OTc5v2ZHIG~~CLwn6NCBF7QqTu7sQB0oPCvdRFdBm~y4wI8VEIErYhPsCuV2k7L0GVlJss4KkeM1tt1RX0kwfINvh03yzFf8wtjd0xsUJjMaKjNxU3muS2Cj8BZymckjgNGrTvafiGbAfHt0Bw2fTkH8tctfNNXpnZgqrEeDldEuENV~g-fSsLSFbMceZGN5ILEd9gd6fnY2YYeB7qtb9xozvczwTbz6kYIzzHJc7veYTsvxjqx~qTiKF2Yrn45cn5pXvOv1w__"
+            />
+          </styles.mates>
+          <styles.selectedMateContainer>
+            <styles.profile>
+              <CircularProfileImage
+                diameter={110}
+                percentage={50}
+                url="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ou47yOoRJ57c0QqtWD~w0S6BP1UYWpmpCOCgsq9YTqfbNq~TmwfAI2T24-fYxpKSiBDv8y1Tkup68OTc5v2ZHIG~~CLwn6NCBF7QqTu7sQB0oPCvdRFdBm~y4wI8VEIErYhPsCuV2k7L0GVlJss4KkeM1tt1RX0kwfINvh03yzFf8wtjd0xsUJjMaKjNxU3muS2Cj8BZymckjgNGrTvafiGbAfHt0Bw2fTkH8tctfNNXpnZgqrEeDldEuENV~g-fSsLSFbMceZGN5ILEd9gd6fnY2YYeB7qtb9xozvczwTbz6kYIzzHJc7veYTsvxjqx~qTiKF2Yrn45cn5pXvOv1w__"
+              />
+              <styles.profileInfo>
+                <p className="name">
+                  {sharedPost?.data.publisherAccount.nickname}
+                </p>
+                <div>
+                  <p>
+                    {sharedPost?.data.publisherAccount.birthYear != null
+                      ? getAge(+sharedPost.data.publisherAccount.birthYear)
+                      : new Date().getFullYear()}
+                  </p>
+                  <p>서웉특별시 성북구</p>
+                </div>
+              </styles.profileInfo>
+            </styles.profile>
+            <styles.buttons>
+              <styles.chattingButton>채팅하기</styles.chattingButton>
+              <div>
+                <styles.showProfileButton>프로필 보기</styles.showProfileButton>
+                <Bookmark
+                  hasBorder
+                  color="#888"
+                  marked={false}
+                  onToggle={() => {}}
+                />
+              </div>
+            </styles.buttons>
+          </styles.selectedMateContainer>
+        </styles.mateContainer>
       </styles.contentContainer>
     </styles.container>
   );
