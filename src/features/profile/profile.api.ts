@@ -10,12 +10,12 @@ import {
 
 export const getUserProfileData = async (memberId: string) =>
   await axios
-    .get<GetUserProfileDTO>(`/api/profile/${memberId}`)
+    .get<GetUserProfileDTO>(`/maru-api/profile/${memberId}`)
     .then(res => res.data);
 
 export const getUserCard = async (cardId: number) =>
   await axios
-    .get<GetUserCardDTO>(`/api/profile/card/${cardId}`)
+    .get<GetUserCardDTO>(`/maru-api/profile/card/${cardId}`)
     .then(res => res.data);
 
 export const putUserCard = async (
@@ -24,9 +24,9 @@ export const putUserCard = async (
   features: Array<string | undefined>,
 ) =>
   await axios
-    .put<PutUserCardDTO>(`/api/profile/${cardId}`, {
-      location: location,
-      features: features,
+    .put<PutUserCardDTO>(`/maru-api/profile/${cardId}`, {
+      location,
+      features,
     })
     .then(res => {
       console.log(res.data);
@@ -35,11 +35,11 @@ export const putUserCard = async (
 
 export const getFollowingListData = async () =>
   await axios
-    .get<GetFollowingListDTO>(`/api/profile/follow`)
+    .get<GetFollowingListDTO>(`/maru-api/profile/follow`)
     .then(res => res.data);
 
 export const postFollowData = async (memberId: string) => {
   await axios
-    .post<PostFollowDTO>(`/api/profile/${memberId}/follow`, {})
+    .post<PostFollowDTO>(`/maru-api/profile/${memberId}/follow`, {})
     .then(res => res.data);
 };

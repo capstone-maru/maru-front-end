@@ -8,13 +8,8 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
+        source: '/maru-api/:path*',
         destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
-      },
-      {
-        source: '/naveropenapi/:path*',
-        destination:
-          'https://naveropenapi.apigw.ntruss.com/map-geocode/v2/:path*',
       },
     ];
   },
