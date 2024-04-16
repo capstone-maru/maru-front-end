@@ -136,18 +136,7 @@ export const useDeleteSharedPost = ({
     onError,
   });
 
-export const useScrapSharedPost = ({
-  postId,
-  onSuccess,
-  onError,
-}: {
-  postId: number;
-  onSuccess: (data: SuccessBaseDTO) => void;
-  onError: (error: Error) => void;
-}) =>
-  useMutation({
-    mutationFn: async () =>
-      await scrapPost(postId).then(response => response.data),
-    onSuccess,
-    onError,
+export const useScrapSharedPost = () =>
+  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, number>({
+    mutationFn: scrapPost,
   });
