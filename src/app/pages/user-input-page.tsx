@@ -300,20 +300,21 @@ export function UserInputPage() {
   const { mutate: mutateMateCard } = usePutUserCard(mateCardId);
 
   const [locationInput, setLocation] = useState<string | undefined>('');
-  const [mbti, setMbti] = useState('');
-  const [major, setMajor] = useState('');
-  const [budget, setBudget] = useState('');
-  const [mateMbti, setMateMbti] = useState('');
-  const [mateMajor, setMateMajor] = useState('');
-  const [mateBudget, setMateBudget] = useState('');
+  const [mbti, setMbti] = useState<string | undefined>('');
+  const [major, setMajor] = useState<string | undefined>('');
+  const [budget, setBudget] = useState<string | undefined>('');
+  const [mateMbti, setMateMbti] = useState<string | undefined>('');
+  const [mateMajor, setMateMajor] = useState<string | undefined>('');
+  const [mateBudget, setMateBudget] = useState<string | undefined>('');
   const [mateAge, setMateAge] = useState<string | undefined>('');
+  const [cleanScore, setCleanScore] = useState<string | undefined>('');
 
   const handleButtonClick = () => {
     const myOptions = Object.keys(selectedOptions).filter(
-      key => key !== '전공' && key !== '엠비티아이' && selectedOptions[key],
+      key => selectedOptions[key],
     );
     const mateOptions = Object.keys(selectedMateOptions).filter(
-      key => key !== '전공' && key !== '엠비티아이' && selectedMateOptions[key],
+      key => selectedMateOptions[key],
     );
 
     const location = locationInput ?? '';
@@ -321,8 +322,9 @@ export function UserInputPage() {
       selectedState.smoking,
       selectedState.room,
       ...myOptions,
-      mbti,
-      major,
+      ...(cleanScore !== null && cleanScore !== undefined ? [cleanScore] : []),
+      ...(mbti !== null && mbti !== undefined ? [mbti] : []),
+      ...(major !== null && major !== undefined ? [major] : []),
       budget,
     ];
 
@@ -331,8 +333,8 @@ export function UserInputPage() {
       selectedMateState.room,
       mateAge,
       ...mateOptions,
-      mateMbti,
-      mateMajor,
+      ...(mateMbti !== null && mateMbti !== undefined ? [mateMbti] : []),
+      ...(mateMajor !== null && mateMajor !== undefined ? [mateMajor] : []),
       mateBudget,
     ];
 
@@ -457,6 +459,7 @@ export function UserInputPage() {
             location={undefined}
             smoking={undefined}
             room={undefined}
+            mateAge={undefined}
             onFeatureChange={handleFeatureChange}
             onLocationChange={setLocation}
             onMateAgeChange={() => {}}
@@ -470,6 +473,7 @@ export function UserInputPage() {
             onMbtiChange={setMbti}
             onMajorChange={setMajor}
             onBudgetChange={setBudget}
+            onCleanTestChange={setCleanScore}
             isMySelf
             type="myCard"
           />
@@ -481,6 +485,7 @@ export function UserInputPage() {
             location={locationInput ?? undefined}
             smoking={undefined}
             room={undefined}
+            mateAge={undefined}
             onFeatureChange={handleMateFeatureChange}
             onLocationChange={setLocation}
             onMateAgeChange={setMateAge}
@@ -494,6 +499,7 @@ export function UserInputPage() {
             onMbtiChange={setMateMbti}
             onMajorChange={setMateMajor}
             onBudgetChange={setMateBudget}
+            onCleanTestChange={() => {}}
             isMySelf
             type="mateCard"
           />

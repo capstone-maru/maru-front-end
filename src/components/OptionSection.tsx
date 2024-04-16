@@ -165,14 +165,16 @@ export function OptionSection({
   onMbtiChange,
   onMajorChange,
   onBudgetChange,
+  onCleanTestChange,
   isMySelf,
   type,
 }: {
   optionFeatures: string[] | null;
   onFeatureChange: (option: string) => void;
-  onMbtiChange: React.Dispatch<React.SetStateAction<string>>;
-  onMajorChange: React.Dispatch<React.SetStateAction<string>>;
-  onBudgetChange: React.Dispatch<React.SetStateAction<string>>;
+  onMbtiChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onMajorChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onBudgetChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onCleanTestChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   isMySelf: boolean;
   type: string;
 }) {
@@ -207,8 +209,15 @@ export function OptionSection({
     setIsMbtiSelected(false);
   };
 
+  useEffect(() => {
+    if (score < 5.34 && score > 0) onCleanTestChange('상');
+    if (score > 5.34 && score < 10.67) onCleanTestChange('평범보통');
+    if (score > 10.67) onCleanTestChange('천하태평');
+  }, [score]);
+
   const [budgetMin, setBudgetMin] = useState(0);
   const [budgetMax, setBudgetMax] = useState(355);
+
   const handleBudgetChange = (min: number, max: number) => {
     setBudgetMin(min);
     setBudgetMax(max);
@@ -218,19 +227,19 @@ export function OptionSection({
   const [isMajorSelected, setIsMajorSelected] = useState(false);
   const [isMbtiSelected, setIsMbtiSelected] = useState(false);
 
-  const [mbti, setMbti] = useState('');
-  const [major, setMajor] = useState('');
+  const [selectedMbti, setMbti] = useState('');
+  const [selectedMajor, setMajor] = useState('');
 
   useEffect(() => {
-    onMbtiChange(mbti);
-  }, [mbti]);
+    onMbtiChange(selectedMbti);
+  }, [selectedMbti]);
 
   useEffect(() => {
-    onMajorChange(major);
-  }, [major]);
+    onMajorChange(selectedMajor);
+  }, [selectedMajor]);
 
   useEffect(() => {
-    const budgetString = `${budgetMin},${budgetMax}만원`;
+    const budgetString = `${budgetMin},${budgetMax}`;
     onBudgetChange(budgetString);
   }, [budgetMin, budgetMax]);
 
@@ -441,6 +450,8 @@ export function OptionSection({
                   min={0}
                   max={355}
                   step={5}
+                  initialMin={budgetMin}
+                  initialMax={budgetMax}
                   onChange={handleBudgetChange}
                 />
               </styles.budgetContainer>

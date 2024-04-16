@@ -198,17 +198,34 @@ export function SettingPage({ cardId }: { cardId: number }) {
 
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
 
+  const majorArray = ['공학', '교육', '인문', '사회', '자연', '예체능', '의약'];
+  const cleanScoreArray = ['상', '평범보통', '천하태평'];
+
   useEffect(() => {
     if (isMySelf) {
       if (features !== null) {
         const initialOptions: SelectedOptions = {};
         features.slice(2).forEach(option => {
-          initialOptions[option] = true;
+          if (option.includes(',')) setBudget(option);
+          else if (option.includes('~')) setMateAge(option);
+          else if (option.includes('E') || option.includes('I'))
+            setMbti(option);
+          else if (majorArray.includes(option)) setMajor(option);
+          else if (cleanScoreArray.includes(option))
+            initialOptions[option] = true;
         });
         setSelectedOptions(initialOptions);
       }
     }
   }, [features, isMySelf]);
+
+  const [locationInput, setLocation] = useState(card.data?.data.location);
+
+  const [mbti, setMbti] = useState<string | undefined>('');
+  const [major, setMajor] = useState<string | undefined>('');
+  const [budget, setBudget] = useState<string | undefined>('');
+  const [mateAge, setMateAge] = useState<string | undefined>('');
+  const [cleanScore, setCleanScore] = useState<string | undefined>('');
 
   const handleFeatureChange = (
     optionName: keyof SelectedState,
@@ -230,18 +247,12 @@ export function SettingPage({ cardId }: { cardId: number }) {
     }
   };
 
-  const [locationInput, setLocation] = useState(card.data?.data.location);
-  const [mbti, setMbti] = useState('');
-  const [major, setMajor] = useState('');
-  const [budget, setBudget] = useState('');
-  const [mateAge, setMateAge] = useState<string | undefined>('');
-
   const { mutate } = usePutUserCard(cardId);
   const router = useRouter();
 
   const saveData = () => {
     const array = Object.keys(selectedOptions).filter(
-      key => key !== '전공' && key !== '엠비티아이' && selectedOptions[key],
+      key => selectedOptions[key],
     );
 
     const location = locationInput ?? '';
@@ -250,8 +261,9 @@ export function SettingPage({ cardId }: { cardId: number }) {
       selectedState.room,
       mateAge,
       ...array,
-      mbti,
-      major,
+      ...(cleanScore !== null && cleanScore !== undefined ? [cleanScore] : []),
+      ...(mbti !== null && mbti !== undefined ? [mbti] : []),
+      ...(major !== null && major !== undefined ? [major] : []),
       budget,
     ];
 
@@ -330,9 +342,6 @@ export function SettingPage({ cardId }: { cardId: number }) {
               <styles.miniCardVisibility />
               <styles.miniCardText>
                 {selectedOptions['아침형'] ? '아침형' : null}
-                {selectedOptions['아침형'] && selectedOptions['올빼미형']
-                  ? ' · '
-                  : null}
                 {selectedOptions['올빼미형'] ? '올빼미형' : null}
               </styles.miniCardText>
             </styles.miniCardList>
@@ -345,6 +354,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
             location={card.data?.data.location}
             smoking={features?.[0]}
             room={features?.[1]}
+            mateAge={mateAge}
             onFeatureChange={handleFeatureChange}
             onLocationChange={setLocation}
             onMateAgeChange={setMateAge}
@@ -358,6 +368,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
             onMbtiChange={setMbti}
             onMajorChange={setMajor}
             onBudgetChange={setBudget}
+            onCleanTestChange={setCleanScore}
             isMySelf={isMySelf}
             type={type}
           />

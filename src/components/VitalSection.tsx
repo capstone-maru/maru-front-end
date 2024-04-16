@@ -160,6 +160,7 @@ export function VitalSection({
   location,
   smoking,
   room,
+  mateAge,
   onFeatureChange,
   onLocationChange,
   onMateAgeChange,
@@ -171,6 +172,7 @@ export function VitalSection({
   location: string | undefined;
   smoking: string | undefined;
   room: string | undefined;
+  mateAge: string | undefined;
   onFeatureChange: (
     optionName: keyof SelectedState,
     item: string | number,
@@ -212,15 +214,27 @@ export function VitalSection({
     onLocationChange(locationInput);
   }, [locationInput]);
 
-  const [mateMinAge, setMateMinAge] = useState(0);
-  const [mateMaxAge, setMateMaxAge] = useState(11);
+  const [initialMateMinAge, setInitialMin] = useState(0);
+  const [initialMateMaxAge, setInitialMax] = useState(11);
+
+  useEffect(() => {
+    if (mateAge !== undefined) {
+      const [min, max] = mateAge.split('~');
+      setInitialMin(Number(min));
+      setInitialMax(Number(max));
+    }
+  }, [mateAge]);
+
+  const [mateMinAge, setMateMinAge] = useState(initialMateMinAge);
+  const [mateMaxAge, setMateMaxAge] = useState(initialMateMaxAge);
+
   const handleAgeChange = (min: number, max: number) => {
     setMateMinAge(min);
     setMateMaxAge(max);
   };
 
   useEffect(() => {
-    const ageString = `±${mateMinAge}~${mateMaxAge}세`;
+    const ageString = `${mateMinAge}~${mateMaxAge}`;
     onMateAgeChange(ageString);
   }, [mateMinAge, mateMaxAge]);
 
@@ -373,7 +387,14 @@ export function VitalSection({
             </styles.birthYear>
           ) : (
             <>
-              <Slider min={0} max={11} step={1} onChange={handleAgeChange} />
+              <Slider
+                min={0}
+                max={11}
+                step={1}
+                initialMin={mateMinAge}
+                initialMax={mateMaxAge}
+                onChange={handleAgeChange}
+              />
               <styles.value>
                 {`${mateMinAge === 0 ? '동갑' : `±${mateMinAge}세`}`} ~{' '}
                 {`${mateMaxAge === 11 ? '무제한' : `±${mateMaxAge}세`}`}

@@ -66,6 +66,8 @@ interface SliderProps {
   min: number;
   max: number;
   step: number;
+  initialMin: number;
+  initialMax: number;
   onChange: (min: number, max: number) => void;
 }
 
@@ -75,9 +77,24 @@ interface FillProps {
   $right: string;
 }
 
-export function Slider({ min, max, step, onChange }: SliderProps) {
-  const [minValue, setMinValue] = useState(min);
-  const [maxValue, setMaxValue] = useState(max);
+export function Slider({
+  min,
+  max,
+  step,
+  initialMin,
+  initialMax,
+  onChange,
+}: SliderProps) {
+  const [initialMinValue, setInitialMin] = useState(initialMin);
+  const [initialMaxValue, setInitialMax] = useState(initialMax);
+
+  useEffect(() => {
+    setInitialMin(initialMin);
+    setInitialMax(initialMax);
+  }, []);
+
+  const [minValue, setMinValue] = useState(initialMinValue);
+  const [maxValue, setMaxValue] = useState(initialMaxValue);
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLow = Number(e.target.value);
