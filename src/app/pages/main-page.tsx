@@ -150,13 +150,11 @@ export function MainPage() {
   return (
     <styles.container>
       <styles.map id="map">
-        {map == null ? (
+        {map == null && (
           <>
             <p>지도를 불러오는 중입니다.</p>
-            <p className="caption">(위치 권한이 필요합니다.)</p>
+            <p className="caption">(위치 권한이 필요합니다)</p>
           </>
-        ) : (
-          <></>
         )}
       </styles.map>
       <styles.mateRecommendationContainer>

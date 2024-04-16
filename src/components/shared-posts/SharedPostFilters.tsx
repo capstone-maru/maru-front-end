@@ -48,7 +48,7 @@ export function SharedPostFilters({
       <SharedPostFilterItem title={mateCardFilterTitle}>
         <MateCardFilter />
       </SharedPostFilterItem>
-      {selected !== 'homeless' && (
+      {selected === 'hasRoom' && (
         <>
           <SharedPostFilterItem title={SharedPostsFilterTypeValue.dealInfo}>
             <DealTypeFilter />

@@ -34,18 +34,14 @@ const styles = {
   SharedPostsMenu: styled(SharedPostsMenu)`
     margin-bottom: 2rem;
   `,
-  SharedPostsFilter: styled(SharedPostFilters)`
-    margin-bottom: 2.81rem;
-  `,
   createButtonRow: styled.div`
     display: flex;
-    justify-content: end;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 4.12rem;
   `,
   createButton: styled.button`
     all: unset;
-
     cursor: pointer;
 
     display: flex;
@@ -53,6 +49,7 @@ const styles = {
     padding: 0.5rem 1.5rem;
     justify-content: center;
     align-items: center;
+    gap: 0.25rem;
 
     border-radius: 8px;
     background: var(--Black, #35373a);
@@ -178,14 +175,16 @@ export function SharedPostsPage() {
   return (
     <styles.container>
       <styles.SharedPostsMenu selected={selected} handleSelect={setSelected} />
-      <styles.SharedPostsFilter selected={selected} />
+      <styles.createButtonRow>
+        <SharedPostFilters selected={selected} />
+        {selected === 'hasRoom' && (
+          <Link href="/shared/writing">
+            <styles.createButton>작성하기</styles.createButton>
+          </Link>
+        )}
+      </styles.createButtonRow>
       {selected === 'hasRoom' ? (
         <>
-          <styles.createButtonRow>
-            <Link href="/shared/writing">
-              <styles.createButton>작성하기</styles.createButton>
-            </Link>
-          </styles.createButtonRow>
           <styles.posts>
             {prevSharedPosts != null
               ? prevSharedPosts.data.content.map(post => (
