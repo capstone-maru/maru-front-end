@@ -5,6 +5,8 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { VitalSection, OptionSection } from '@/components';
+import { useAuthValue, useUserData } from '@/features/auth';
+import { usePutUserCard } from '@/features/profile';
 
 const styles = {
   pageContainer: styled.div`
