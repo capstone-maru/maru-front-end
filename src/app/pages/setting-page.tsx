@@ -11,7 +11,6 @@ import Person from '../../../public/option-img/person.svg';
 import Visibility from '../../../public/option-img/visibility.svg';
 
 import { VitalSection, OptionSection } from '@/components';
-import { SelfIntroduction } from '@/components/card';
 import {
   useProfileData,
   usePutUserCard,
@@ -21,14 +20,18 @@ import {
 const styles = {
   pageContainer: styled.div`
     display: flex;
+    width: 90rem;
+    height: 90rem;
+    padding: 2rem 10rem;
     flex-direction: column;
-    height: 85rem;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
   `,
 
   cardName: styled.p`
-    margin: 4.5625rem 0;
-    color: #000;
-
+    align-self: stretch;
+    color: var(--Black, #35373a);
     font-family: 'Noto Sans KR';
     font-size: 2rem;
     font-style: normal;
@@ -38,18 +41,21 @@ const styles = {
 
   cardContainer: styled.div`
     display: flex;
-    gap: 0.88rem;
+    align-items: flex-start;
+    gap: 1rem;
   `,
   miniCard: styled.div`
-    width: 23.0625rem;
-    height: 17.5rem;
-    flex-shrink: 0;
-    border-radius: 30px;
-    background: #f7f6f9;
-    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
-    padding: 1.62rem 1.44rem;
     display: flex;
+    width: 22.5rem;
+    padding: 2rem;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    border-radius: 1.875rem;
+    background: #f7f6f9;
+
+    /* button */
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
   `,
   miniCardName: styled.p`
     color: var(--Black, #35373a);
@@ -58,7 +64,6 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    margin-bottom: 1.69rem;
   `,
   miniCardKeywordsContainer: styled.ul`
     display: flex;
@@ -112,25 +117,19 @@ const styles = {
     color: var(--Main-1, #e15637);
   `,
   checkContainer: styled.div`
-    width: 51.0625rem;
-    height: 95.8125rem;
-    flex-shrink: 0;
-    border-radius: 30px;
+    display: flex;
+    width: 50rem;
+    padding: 2rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+    border-radius: 1.875rem;
     background: var(--background, #f7f6f9);
-    padding: 3.56rem 0 0 1.56rem;
-    margin-bottom: 7.5rem;
   `,
-
-  lineContainer: styled.div`
-    margin: 2.69rem 0;
-    padding: 0 4.37rem 0 1.38rem;
-  `,
-  horizontalLine: styled.hr`
-    width: 100%;
-    height: 0rem;
-    flex-shrink: 0;
-    stroke-width: 1px;
-    stroke: #d3d0d7;
+  horizontalLine: styled.div`
+    width: 43.75rem;
+    height: 0.0625rem;
+    background: var(--Gray-9, #d3d0d7);
   `,
 };
 
@@ -231,16 +230,30 @@ export function SettingPage({ cardId }: { cardId: number }) {
     }
   };
 
+  const [locationInput, setLocation] = useState(card.data?.data.location);
+  const [mbti, setMbti] = useState('');
+  const [major, setMajor] = useState('');
+  const [budget, setBudget] = useState('');
+  const [mateAge, setMateAge] = useState<string | undefined>('');
+
   const { mutate } = usePutUserCard(cardId);
   const router = useRouter();
 
   const saveData = () => {
     const array = Object.keys(selectedOptions).filter(
-      key => selectedOptions[key],
+      key => key !== '전공' && key !== '엠비티아이' && selectedOptions[key],
     );
 
-    const location = '성북 길음동';
-    const myFeatures = [selectedState.smoking, selectedState.room, ...array];
+    const location = locationInput ?? '';
+    const myFeatures = [
+      selectedState.smoking,
+      selectedState.room,
+      mateAge,
+      ...array,
+      mbti,
+      major,
+      budget,
+    ];
 
     mutate({ location: location, features: myFeatures });
   };
@@ -333,19 +346,21 @@ export function SettingPage({ cardId }: { cardId: number }) {
             smoking={features?.[0]}
             room={features?.[1]}
             onFeatureChange={handleFeatureChange}
+            onLocationChange={setLocation}
+            onMateAgeChange={setMateAge}
             isMySelf={isMySelf}
             type={type}
           />
-          <styles.lineContainer>
-            <styles.horizontalLine />
-          </styles.lineContainer>
+          <styles.horizontalLine />
           <OptionSection
             optionFeatures={features}
             onFeatureChange={handleOptionClick}
+            onMbtiChange={setMbti}
+            onMajorChange={setMajor}
+            onBudgetChange={setBudget}
             isMySelf={isMySelf}
             type={type}
           />
-          {type === 'myCard' ? <SelfIntroduction /> : null}
         </styles.checkContainer>
       </styles.cardContainer>
     </styles.pageContainer>

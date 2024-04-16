@@ -57,6 +57,7 @@ const styles = {
       cursor: pointer;
       position: relative;
       z-index: 1;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
     }
   `,
 };

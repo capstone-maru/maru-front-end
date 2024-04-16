@@ -10,22 +10,28 @@ import { useProfileData } from '@/features/profile';
 const styles = {
   pageContainer: styled.div`
     display: flex;
+    height: 98rem;
+    padding: 0rem 10rem 10rem 10rem;
     flex-direction: column;
-    padding: 0 1.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    align-self: stretch;
   `,
 
   userProfileContainer: styled.div`
     display: inline-flex;
-    align-items: flex-start;
+    width: 100%;
+    align-items: center;
     flex-shrink: 0;
-    gap: 2.62rem;
+    gap: 3rem;
     margin-top: 5.12rem;
   `,
   userProfileWithoutInfo: styled.div`
     display: inline-flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.75rem;
+    gap: 1rem;
   `,
   userPicContainer: styled.div`
     display: flex;
@@ -83,7 +89,7 @@ const styles = {
     justify-content: center;
     align-items: flex-end;
     gap: 0.375rem;
-    margin-left: 3.31rem;
+    margin-left: 2rem;
   `,
   switchWrapper: styled.label`
     position: relative;
@@ -158,25 +164,16 @@ const styles = {
 
   cardSection: styled.div`
     display: inline-flex;
-    gap: 11.5rem;
-    margin: 4.75rem 0 0 0;
+    width: 100%;
+    gap: 8rem;
   `,
   cardWrapper: styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    gap: 2.25rem;
+    gap: 1rem;
     flex-shrink: 0;
-  `,
-  cardDescriptionSection: styled.div`
-    margin: 0 1.125rem 0 4.9375rem;
-    width: 36.9375rem;
-    height: 2.875rem;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 20rem;
   `,
   description32px: styled.p`
     color: #000;
@@ -193,11 +190,6 @@ const styles = {
     font-style: normal;
     font-weight: 700;
     line-height: normal;
-  `,
-  mateCardsContainer: styled.div`
-    display: flex;
-    gap: 1.69rem;
-    align-items: center;
   `,
   mateCards: styled.div`
     display: flex;
@@ -228,41 +220,20 @@ const styles = {
     font-weight: 700;
     line-height: normal;
   `,
-  cardDefault: styled.div`
-    color: #fff;
-    text-align: center;
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 2.5625rem;
-
-    width: 6.0625rem;
-    height: 2.5625rem;
-    flex-shrink: 0;
-    border-radius: 20px 0 0 20px;
-    background: var(--Main-1, #e15637);
-
-    position: absolute;
-    right: 0;
-    bottom: 1.5rem;
-  `,
 
   maruContainer: styled.div`
-    margin-top: 9.5625rem;
     display: flex;
     flex-direction: column;
+    gap: 3rem;
   `,
 
   weekContainer: styled.div`
     display: flex;
-    width: 70.25rem;
     height: 15.625rem;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: flex-start;
     gap: 1.5rem;
-    flex-shrink: 0;
-    margin: 3.1875rem 0 4.0625rem 1.6875rem;
+    align-self: stretch;
   `,
   dayContainer: styled.div`
     width: 8.75rem;
@@ -323,28 +294,30 @@ const styles = {
 
   rulesContainer: styled.div`
     display: flex;
-    width: 64.5rem;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
-    gap: 1.375rem;
-    margin: 0 3rem 3.0625rem 4.4375rem;
+    align-items: center;
+    gap: 3rem;
+    flex: 1 0 0;
+    align-self: stretch;
   `,
   rulesDescriptionContainer: styled.div`
     display: flex;
-    height: 2.6875rem;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 51.6875rem;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
   `,
   editButton: styled.button`
     display: flex;
-    padding: 0.63rem 1.13rem;
+    padding: 0.625rem 5.9375rem;
     justify-content: center;
     align-items: center;
-    border-radius: 16px;
+    gap: 0.5rem;
+    border-radius: 1rem;
     border: 1px solid var(--Main-1, #e15637);
     background: var(--White, #fff);
+    cursor: pointer;
+
     color: var(--Main-1, #e15637);
     font-family: 'Noto Sans KR';
     font-size: 1rem;
@@ -358,60 +331,16 @@ const styles = {
     border-radius: 16px;
     background: #f7f6f9;
   `,
-
-  accountContainer: styled.div`
-    display: flex;
-    width: 63.9375rem;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 1.375rem;
-    margin: 0 3rem 9.375rem 4.4375rem;
-  `,
-  accountContent: styled.div`
-    width: 64.5rem;
-    height: 12.4375rem;
-    border-radius: 16px;
-    background: #f7f6f9;
-  `,
-
-  introductionContainer: styled.div`
-    display: inline-flex;
-    min-width: 41.125rem;
-    height: 5.4375rem;
-    padding: 1.25rem 0.5rem 2.75rem 1.5rem;
-    align-items: center;
-    flex-shrink: 0;
-    border-radius: 8px;
-    background: #f7f6f9;
-
-    color: #000;
-
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-  `,
 };
 
 interface UserProfileInfoProps {
   name: string | undefined;
   email: string | undefined;
   phoneNum: string | undefined;
-  selfIntroduction: string | undefined;
   src: string | undefined;
-  isMySelf: boolean | undefined;
 }
 
-function UserInfo({
-  name,
-  email,
-  phoneNum,
-  selfIntroduction,
-  src,
-  isMySelf,
-}: UserProfileInfoProps) {
+function UserInfo({ name, email, phoneNum, src }: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(false);
 
   const toggleSwitch = () => {
@@ -424,17 +353,14 @@ function UserInfo({
         <styles.userPicContainer>
           <styles.userPic src={src} alt="User Profile Pic" />
         </styles.userPicContainer>
-        <Auth isMySelf={isMySelf} />
+        <Auth />
       </styles.userProfileWithoutInfo>
       <styles.userInfoContainer>
         <styles.userName>{name}</styles.userName>
         <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
         <styles.userDetailedContainer>
-          <styles.userDetailedInfo>{email}</styles.userDetailedInfo>
           <styles.userDetailedInfo>{phoneNum}</styles.userDetailedInfo>
-          <styles.introductionContainer>
-            {selfIntroduction}
-          </styles.introductionContainer>
+          <styles.userDetailedInfo>{email}</styles.userDetailedInfo>
         </styles.userDetailedContainer>
       </styles.userInfoContainer>
     </styles.userProfileContainer>
@@ -472,7 +398,7 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
   );
 }
 
-function Auth({ isMySelf }: { isMySelf: boolean | undefined }) {
+function Auth() {
   return (
     <styles.authContainer>
       <styles.authCheckImg src="/check_circle_24px copy.svg" />
@@ -503,7 +429,6 @@ function Card({
         >
           <styles.cardContainer>
             <styles.cardName>{name}</styles.cardName>
-            <styles.cardDefault>기본</styles.cardDefault>
           </styles.cardContainer>
         </Link>
       </styles.cardWrapper>
@@ -514,7 +439,6 @@ function Card({
         >
           <styles.cardContainer>
             <styles.cardName>메이트</styles.cardName>
-            <styles.cardDefault>기본</styles.cardDefault>
           </styles.cardContainer>
         </Link>
       </styles.cardWrapper>
@@ -551,34 +475,36 @@ function Sun() {
 
 function Maru() {
   return (
-    <styles.maruContainer>
-      <styles.description32px>마이 마루</styles.description32px>
-      <styles.weekContainer>
-        <styles.dayContainer>
-          <styles.day>월</styles.day>
-          <Mon />
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>화</styles.day>
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>수</styles.day>
-          <Wed />
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>목</styles.day>
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>금</styles.day>
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>토</styles.day>
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>일</styles.day>
-          <Sun />
-        </styles.dayContainer>
-      </styles.weekContainer>
+    <>
+      <styles.maruContainer>
+        <styles.description32px>마이 마루</styles.description32px>
+        <styles.weekContainer>
+          <styles.dayContainer>
+            <styles.day>월</styles.day>
+            <Mon />
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>화</styles.day>
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>수</styles.day>
+            <Wed />
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>목</styles.day>
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>금</styles.day>
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>토</styles.day>
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>일</styles.day>
+            <Sun />
+          </styles.dayContainer>
+        </styles.weekContainer>
+      </styles.maruContainer>
       <styles.rulesContainer>
         <styles.rulesDescriptionContainer>
           <styles.description24px>생활 규칙</styles.description24px>
@@ -586,11 +512,7 @@ function Maru() {
         </styles.rulesDescriptionContainer>
         <styles.rulesContent />
       </styles.rulesContainer>
-      <styles.accountContainer>
-        <styles.description24px>공용 계좌</styles.description24px>
-        <styles.accountContent />
-      </styles.accountContainer>
-    </styles.maruContainer>
+    </>
   );
 }
 
@@ -652,9 +574,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         name={userData?.name ?? ''}
         email={userData?.email ?? ''}
         phoneNum={userData?.phoneNumber ?? ''}
-        selfIntroduction="집에서 요리해 먹는 것을 좋아하고 애니매이션을 즐겨봅니다."
         src={user.data?.data.profileImage}
-        isMySelf={isMySelf}
       />
       <Card
         name={userData?.name}

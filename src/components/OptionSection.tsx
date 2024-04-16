@@ -9,10 +9,22 @@ import { MbtiToggle } from './card/MbtiToggle';
 import { Slider } from './card/Slider';
 
 const styles = {
-  optionContainer: styled.div`
+  container: styled.div`
+    width: 46rem;
+    height: 43.875rem;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    gap: 1rem;
+  `,
+  optionContainer: styled.div`
+    display: flex;
+    width: 46rem;
+    height: 41.4375rem;
+    padding-bottom: 6rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-shrink: 0;
   `,
   optionDescription: styled.p`
     color: #9a95a3;
@@ -26,12 +38,11 @@ const styles = {
   optionList: styled.ul`
     position: relative;
     width: 100%;
-    margin-top: 2.25rem;
   `,
   optionListItem: styled.li`
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 4rem;
     margin-bottom: 1.25rem;
   `,
   optionListImg: styled.img`
@@ -80,16 +91,8 @@ const styles = {
   budgetContainer: styled.div`
     display: flex;
     align-items: center;
-    gap: 1.75rem;
+    gap: 4rem;
     width: 100%;
-  `,
-  budgetBar: styled.div`
-    width: 25rem;
-    height: 0.3125rem;
-    flex-shrink: 0;
-    border-radius: 20px;
-    background: #d9d9d9;
-    margin-bottom: 0.63rem;
   `,
   value: styled.span`
     color: #000;
@@ -159,11 +162,17 @@ const PersonalOptions = [
 export function OptionSection({
   optionFeatures,
   onFeatureChange,
+  onMbtiChange,
+  onMajorChange,
+  onBudgetChange,
   isMySelf,
   type,
 }: {
   optionFeatures: string[] | null;
   onFeatureChange: (option: string) => void;
+  onMbtiChange: React.Dispatch<React.SetStateAction<string>>;
+  onMajorChange: React.Dispatch<React.SetStateAction<string>>;
+  onBudgetChange: React.Dispatch<React.SetStateAction<string>>;
   isMySelf: boolean;
   type: string;
 }) {
@@ -198,10 +207,6 @@ export function OptionSection({
     setIsMbtiSelected(false);
   };
 
-  const handleTestCompletion = (cleanScore: number) => {
-    setScore(cleanScore);
-  };
-
   const [budgetMin, setBudgetMin] = useState(0);
   const [budgetMax, setBudgetMax] = useState(355);
   const handleBudgetChange = (min: number, max: number) => {
@@ -212,6 +217,22 @@ export function OptionSection({
   const [isTestSelected, setIsTestSelected] = useState(false);
   const [isMajorSelected, setIsMajorSelected] = useState(false);
   const [isMbtiSelected, setIsMbtiSelected] = useState(false);
+
+  const [mbti, setMbti] = useState('');
+  const [major, setMajor] = useState('');
+
+  useEffect(() => {
+    onMbtiChange(mbti);
+  }, [mbti]);
+
+  useEffect(() => {
+    onMajorChange(major);
+  }, [major]);
+
+  useEffect(() => {
+    const budgetString = `${budgetMin},${budgetMax}만원`;
+    onBudgetChange(budgetString);
+  }, [budgetMin, budgetMax]);
 
   const handleMajorSelect = () => {
     setIsMajorSelected(true);
@@ -226,203 +247,211 @@ export function OptionSection({
   };
 
   return (
-    <styles.optionContainer>
+    <styles.container>
       <styles.optionDescription>선택</styles.optionDescription>
-      <styles.optionList>
-        <styles.optionListItem>
-          <styles.optionListImg src="/option-img/visibility.svg" />
-          <styles.optionListCheckItemContainer>
-            <CheckItem
-              $isSelected={selectedOptions['아침형']}
-              onClick={() => {
-                if (isMySelf) {
-                  handleOptionClick('아침형');
-                  if (selectedOptions['올빼미형'])
-                    handleOptionClick('올빼미형');
-                }
-              }}
-            >
-              아침형
-            </CheckItem>
-            <CheckItem
-              $isSelected={selectedOptions['올빼미형']}
-              onClick={() => {
-                if (isMySelf) {
-                  handleOptionClick('올빼미형');
-                  if (selectedOptions['아침형']) handleOptionClick('아침형');
-                }
-              }}
-            >
-              올빼미형
-            </CheckItem>
-          </styles.optionListCheckItemContainer>
-        </styles.optionListItem>
-        <styles.optionListItem>
-          <styles.optionListImg src="/option-img/restaurant.svg" />
-          <styles.optionListCheckItemContainer>
-            {EatingOptions.map(option => (
-              <CheckItem
-                key={option}
-                $isSelected={selectedOptions[option]}
-                onClick={() => {
-                  if (isMySelf) {
-                    handleOptionClick(option);
-                  }
-                }}
-              >
-                {option}
-              </CheckItem>
-            ))}
-          </styles.optionListCheckItemContainer>
-        </styles.optionListItem>
-        <styles.optionListItem>
-          <styles.optionListImg src="/option-img/hearing.svg" />
-          <styles.optionListCheckItemContainer>
-            {HearingOptions.map(option => (
-              <CheckItem
-                key={option}
-                $isSelected={selectedOptions[option]}
-                onClick={() => {
-                  if (isMySelf) {
-                    handleOptionClick(option);
-                  }
-                }}
-              >
-                {option}
-              </CheckItem>
-            ))}
-          </styles.optionListCheckItemContainer>
-        </styles.optionListItem>
-        <styles.optionListItem>
-          <styles.optionListImg src="/option-img/device_thermostat.svg" />
-          <styles.optionListCheckItemContainer>
-            {WeatherOptions.map(option => (
-              <CheckItem
-                key={option}
-                $isSelected={selectedOptions[option]}
-                onClick={() => {
-                  if (isMySelf) {
-                    handleOptionClick(option);
-                  }
-                }}
-              >
-                {option}
-              </CheckItem>
-            ))}
-          </styles.optionListCheckItemContainer>
-        </styles.optionListItem>
-        <styles.optionListItem>
-          <styles.optionListImg src="/option-img/mop.svg" />
-          {type === 'myCard' ? (
+      <styles.optionContainer>
+        <styles.optionList>
+          <styles.optionListItem>
+            <styles.optionListImg src="/option-img/visibility.svg" />
             <styles.optionListCheckItemContainer>
-              <styles.cleanTestContainer>
-                <styles.cleanTestDescription
+              <CheckItem
+                $isSelected={selectedOptions['아침형']}
+                onClick={() => {
+                  if (isMySelf) {
+                    handleOptionClick('아침형');
+                    if (selectedOptions['올빼미형'])
+                      handleOptionClick('올빼미형');
+                  }
+                }}
+              >
+                아침형
+              </CheckItem>
+              <CheckItem
+                $isSelected={selectedOptions['올빼미형']}
+                onClick={() => {
+                  if (isMySelf) {
+                    handleOptionClick('올빼미형');
+                    if (selectedOptions['아침형']) handleOptionClick('아침형');
+                  }
+                }}
+              >
+                올빼미형
+              </CheckItem>
+            </styles.optionListCheckItemContainer>
+          </styles.optionListItem>
+          <styles.optionListItem>
+            <styles.optionListImg src="/option-img/restaurant.svg" />
+            <styles.optionListCheckItemContainer>
+              {EatingOptions.map(option => (
+                <CheckItem
+                  key={option}
+                  $isSelected={selectedOptions[option]}
                   onClick={() => {
-                    toggleTestVisibility();
+                    if (isMySelf) {
+                      handleOptionClick(option);
+                    }
                   }}
                 >
-                  테스트 하기
-                </styles.cleanTestDescription>
-              </styles.cleanTestContainer>
-              <CheckItem $isSelected={score >= 0 && score < 5.34}>상</CheckItem>
-              <CheckItem $isSelected={score > 5.34 && score < 10.67}>
-                평범보통
-              </CheckItem>
-              <CheckItem $isSelected={score > 10.67}>천하태평</CheckItem>
+                  {option}
+                </CheckItem>
+              ))}
             </styles.optionListCheckItemContainer>
-          ) : (
+          </styles.optionListItem>
+          <styles.optionListItem>
+            <styles.optionListImg src="/option-img/hearing.svg" />
             <styles.optionListCheckItemContainer>
-              <CheckItem
-                $isSelected={selectedOptions['상']}
-                onClick={() => {
-                  if (isMySelf) {
-                    handleOptionClick('상');
-                    if (selectedOptions['평범보통'])
-                      handleOptionClick('평범보통');
-                    if (selectedOptions['천하태평'])
-                      handleOptionClick('천하태평');
-                  }
-                }}
-              >
-                상
-              </CheckItem>
-              <CheckItem
-                $isSelected={selectedOptions['평범보통']}
-                onClick={() => {
-                  if (isMySelf) {
-                    handleOptionClick('평범보통');
-                    if (selectedOptions['상']) handleOptionClick('상');
-                    if (selectedOptions['천하태평'])
-                      handleOptionClick('천하태평');
-                  }
-                }}
-              >
-                평범보통
-              </CheckItem>
-              <CheckItem
-                $isSelected={selectedOptions['천하태평']}
-                onClick={() => {
-                  if (isMySelf) {
-                    handleOptionClick('천하태평');
-                    if (selectedOptions['상']) handleOptionClick('상');
-                    if (selectedOptions['평범보통'])
-                      handleOptionClick('평범보통');
-                  }
-                }}
-              >
-                천하태평
-              </CheckItem>
+              {HearingOptions.map(option => (
+                <CheckItem
+                  key={option}
+                  $isSelected={selectedOptions[option]}
+                  onClick={() => {
+                    if (isMySelf) {
+                      handleOptionClick(option);
+                    }
+                  }}
+                >
+                  {option}
+                </CheckItem>
+              ))}
             </styles.optionListCheckItemContainer>
+          </styles.optionListItem>
+          <styles.optionListItem>
+            <styles.optionListImg src="/option-img/device_thermostat.svg" />
+            <styles.optionListCheckItemContainer>
+              {WeatherOptions.map(option => (
+                <CheckItem
+                  key={option}
+                  $isSelected={selectedOptions[option]}
+                  onClick={() => {
+                    if (isMySelf) {
+                      handleOptionClick(option);
+                    }
+                  }}
+                >
+                  {option}
+                </CheckItem>
+              ))}
+            </styles.optionListCheckItemContainer>
+          </styles.optionListItem>
+          <styles.optionListItem>
+            <styles.optionListImg src="/option-img/mop.svg" />
+            {type === 'myCard' ? (
+              <styles.optionListCheckItemContainer>
+                <styles.cleanTestContainer>
+                  <styles.cleanTestDescription
+                    onClick={() => {
+                      toggleTestVisibility();
+                    }}
+                  >
+                    {isTestVisible ? '결과 확인하기' : '테스트 하기'}
+                  </styles.cleanTestDescription>
+                </styles.cleanTestContainer>
+                <CheckItem $isSelected={score >= 0 && score < 5.34}>
+                  상
+                </CheckItem>
+                <CheckItem $isSelected={score > 5.34 && score < 10.67}>
+                  평범보통
+                </CheckItem>
+                <CheckItem $isSelected={score > 10.67}>천하태평</CheckItem>
+              </styles.optionListCheckItemContainer>
+            ) : (
+              <styles.optionListCheckItemContainer>
+                <CheckItem
+                  $isSelected={selectedOptions['상']}
+                  onClick={() => {
+                    if (isMySelf) {
+                      handleOptionClick('상');
+                      if (selectedOptions['평범보통'])
+                        handleOptionClick('평범보통');
+                      if (selectedOptions['천하태평'])
+                        handleOptionClick('천하태평');
+                    }
+                  }}
+                >
+                  상
+                </CheckItem>
+                <CheckItem
+                  $isSelected={selectedOptions['평범보통']}
+                  onClick={() => {
+                    if (isMySelf) {
+                      handleOptionClick('평범보통');
+                      if (selectedOptions['상']) handleOptionClick('상');
+                      if (selectedOptions['천하태평'])
+                        handleOptionClick('천하태평');
+                    }
+                  }}
+                >
+                  평범보통
+                </CheckItem>
+                <CheckItem
+                  $isSelected={selectedOptions['천하태평']}
+                  onClick={() => {
+                    if (isMySelf) {
+                      handleOptionClick('천하태평');
+                      if (selectedOptions['상']) handleOptionClick('상');
+                      if (selectedOptions['평범보통'])
+                        handleOptionClick('평범보통');
+                    }
+                  }}
+                >
+                  천하태평
+                </CheckItem>
+              </styles.optionListCheckItemContainer>
+            )}
+          </styles.optionListItem>
+          {isTestVisible && isTestSelected && (
+            <CleanTest onComplete={setScore} />
           )}
-        </styles.optionListItem>
-        {isTestVisible && isTestSelected && (
-          <CleanTest onComplete={handleTestCompletion} />
-        )}
-        <styles.optionListItem>
-          <styles.optionListImg src="/option-img/person.svg" />
-          <styles.personalContainer>
-            {PersonalOptions.map(option => (
-              <CheckItem
-                key={option}
-                $isSelected={selectedOptions[option]}
-                onClick={() => {
-                  if (isMySelf) {
-                    handleOptionClick(option);
-                  }
-                  if (option === '엠비티아이') handleMbtiSelect();
-                  if (option === '전공') handleMajorSelect();
-                }}
-              >
-                {option === '엠비티아이' ? <>MBTI</> : option}
-              </CheckItem>
-            ))}
-            {selectedOptions['전공'] && isMajorSelected ? (
-              <MajorSelector />
-            ) : null}
-            {selectedOptions['엠비티아이'] && isMbtiSelected ? (
-              <MbtiToggle />
-            ) : null}
-          </styles.personalContainer>
-        </styles.optionListItem>
-        <styles.optionListItem>
-          <styles.optionListImg src="/option-img/home_work.svg" />
-          <styles.optionListCheckItemContainer>
-            <styles.budgetContainer>
-              <CheckItem $isSelected={false}>금액</CheckItem>
-              <Slider
-                min={0}
-                max={355}
-                step={5}
-                onChange={handleBudgetChange}
-              />
+          <styles.optionListItem>
+            <styles.optionListImg src="/option-img/person.svg" />
+            <styles.personalContainer>
+              {PersonalOptions.map(option => (
+                <CheckItem
+                  key={option}
+                  $isSelected={selectedOptions[option]}
+                  onClick={() => {
+                    if (isMySelf) {
+                      handleOptionClick(option);
+                    }
+                    if (option === '엠비티아이') {
+                      handleMbtiSelect();
+                    }
+                    if (option === '전공') {
+                      handleMajorSelect();
+                    }
+                  }}
+                >
+                  {option === '엠비티아이' ? <>MBTI</> : option}
+                </CheckItem>
+              ))}
+              {selectedOptions['전공'] && isMajorSelected ? (
+                <MajorSelector onChange={setMajor} />
+              ) : null}
+              {selectedOptions['엠비티아이'] && isMbtiSelected ? (
+                <MbtiToggle onChange={setMbti} />
+              ) : null}
+            </styles.personalContainer>
+          </styles.optionListItem>
+          <styles.optionListItem>
+            <styles.optionListImg src="/option-img/home_work.svg" />
+            <styles.optionListCheckItemContainer>
+              <styles.budgetContainer>
+                <CheckItem $isSelected={false}>금액</CheckItem>
+                <Slider
+                  min={0}
+                  max={355}
+                  step={5}
+                  onChange={handleBudgetChange}
+                />
+              </styles.budgetContainer>
               <styles.value>
                 {`${budgetMin === 0 ? '0원' : `${budgetMin}만원`}`} ~{' '}
                 {`${budgetMax === 355 ? '무제한' : `${budgetMax}만원`}`}
               </styles.value>
-            </styles.budgetContainer>
-          </styles.optionListCheckItemContainer>
-        </styles.optionListItem>
-      </styles.optionList>
-    </styles.optionContainer>
+            </styles.optionListCheckItemContainer>
+          </styles.optionListItem>
+        </styles.optionList>
+      </styles.optionContainer>
+    </styles.container>
   );
 }

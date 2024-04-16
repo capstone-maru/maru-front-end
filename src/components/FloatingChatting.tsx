@@ -25,10 +25,9 @@ const styles = {
       transform: scale(1.1);
     }
   `,
-  buttonIcon: styled.div`
-    width: 2.60419rem;
-    height: 2.60419rem;
-    background: url('chatting.svg') no-repeat center;
+  buttonIcon: styled.img`
+    width: 2rem;
+    height: 2rem;
   `,
   container: styled.div`
     position: fixed;
@@ -84,7 +83,7 @@ export function FloatingChatting() {
   return (
     <>
       <styles.chattingButton onClick={toggleChat}>
-        <styles.buttonIcon />
+        <styles.buttonIcon src="/chatting.svg" />
       </styles.chattingButton>
       {isChatOpen && (
         <styles.container>

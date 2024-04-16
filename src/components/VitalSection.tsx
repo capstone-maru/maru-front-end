@@ -9,9 +9,12 @@ const styles = {
   vitalContainer: styled.div`
     display: flex;
     flex-direction: column;
-    width: 100%;
+    align-items: flex-start;
+    gap: 1rem;
+    align-self: stretch;
   `,
   vitalDescription: styled.p`
+    width: 2.6875rem;
     color: var(--Main-1, #e15637);
     font-family: 'Noto Sans KR';
     font-size: 1rem;
@@ -22,21 +25,21 @@ const styles = {
   vitalListContainer: styled.ul`
     display: flex;
     flex-direction: column;
-    margin-top: 2.62rem;
-    gap: 1.5rem;
+    align-items: flex-start;
+    gap: 1rem;
+    align-self: stretch;
   `,
   vitalList: styled.li`
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 2.5rem;
-    flex-shrink: 0;
+    gap: 2rem;
+    align-self: stretch;
   `,
   vitalListItemDescription: styled.p`
-    width: 5.125rem;
-    color: #000;
-
+    width: 5rem;
+    color: var(--Main-2, #767d86);
     font-family: 'Noto Sans KR';
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
@@ -158,6 +161,8 @@ export function VitalSection({
   smoking,
   room,
   onFeatureChange,
+  onLocationChange,
+  onMateAgeChange,
   isMySelf,
   type,
 }: {
@@ -170,6 +175,8 @@ export function VitalSection({
     optionName: keyof SelectedState,
     item: string | number,
   ) => void;
+  onLocationChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onMateAgeChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   isMySelf: boolean;
   type: string;
 }) {
@@ -196,12 +203,26 @@ export function VitalSection({
     onFeatureChange(optionName, item);
   }
 
+  const [locationInput, setLocation] = useState(location);
+  const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLocation(event.target.value);
+  };
+
+  useEffect(() => {
+    onLocationChange(locationInput);
+  }, [locationInput]);
+
   const [mateMinAge, setMateMinAge] = useState(0);
   const [mateMaxAge, setMateMaxAge] = useState(11);
   const handleAgeChange = (min: number, max: number) => {
     setMateMinAge(min);
     setMateMaxAge(max);
   };
+
+  useEffect(() => {
+    const ageString = `±${mateMinAge}~${mateMaxAge}세`;
+    onMateAgeChange(ageString);
+  }, [mateMinAge, mateMaxAge]);
 
   return (
     <styles.vitalContainer>
@@ -243,6 +264,8 @@ export function VitalSection({
               <styles.mapInput
                 placeholder="ex) 한국동,한국역,한국대학교"
                 readOnly={!isMySelf}
+                value={locationInput ?? ''}
+                onChange={handleLocationChange}
               />
             </styles.searchBox>
           ) : (

@@ -6,14 +6,15 @@ import styled from 'styled-components';
 const styles = {
   testSection: styled.ul`
     position: absolute;
+    z-index: 2;
+    right: 0;
     display: inline-flex;
+    padding: 2rem;
     flex-direction: column;
-    height: 31.25rem;
-    padding: 2.6875rem 3.4375rem;
-    border-radius: 20px;
+    align-items: flex-start;
+    gap: 1rem;
+    border-radius: 1.25rem;
     background: #fff;
-    gap: 2rem;
-    z-index: 5;
 
     /* button */
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
@@ -21,10 +22,11 @@ const styles = {
   testListContainer: styled.li`
     display: flex;
     align-items: center;
-    gap: 4.31rem;
+    gap: 2rem;
+    align-self: stretch;
   `,
   testDescription: styled.p`
-    width: 6.9rem;
+    width: 7rem;
     color: #000;
 
     font-family: 'Noto Sans KR';
@@ -85,7 +87,7 @@ const currentState = ['깔끔', '정리 필요', '대청소 필요', '카오스'
 export function CleanTest({
   onComplete,
 }: {
-  onComplete: (score: number) => void;
+  onComplete: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [selectedOptions, setSelectedOptions] = useState({
     room: 0,

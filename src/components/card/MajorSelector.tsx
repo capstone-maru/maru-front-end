@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -39,11 +39,18 @@ const styles = {
 
 const majorOptions = ['공학', '교육', '인문', '사회', '자연', '예체능', '의약'];
 
-export function MajorSelector() {
+export function MajorSelector({
+  onChange,
+}: {
+  onChange: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const [selectedMajor, setSelectedMajor] = useState('');
   const handleMajorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedMajor(event.target.value);
   };
+  useEffect(() => {
+    onChange(selectedMajor);
+  }, [selectedMajor]);
   return (
     <styles.majorSelector
       value={selectedMajor ?? ''}
