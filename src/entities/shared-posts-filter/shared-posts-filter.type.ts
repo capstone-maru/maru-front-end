@@ -39,4 +39,4 @@ export const SharedPostsFilterTypeValue: Record<SharedPostsFilterType, string> =
     extraInfo: '추가 정보',
   };
 
-export type SharedPostsType = 'hasRoom' | 'homeless';
+export type SharedPostsType = 'hasRoom' | 'homeless' | 'dormitory';
