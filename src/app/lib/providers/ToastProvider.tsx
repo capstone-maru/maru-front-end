@@ -5,22 +5,22 @@ import styled, { keyframes } from 'styled-components';
 import { useToast } from '@/features/toast';
 
 const toastAppeared = keyframes`
-  0% {
+  from {
     opacity: 0;
     transform: translateX(-2rem);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateX(0);
   }
 `;
 
 const toastDisappeared = keyframes`
-  0% {
+  from {
     opacity: 1;
     transform: translateX(0);
   }
-  100% {
+  to {
     opacity: 0;
     transform: translateX(-2rem);
   }
