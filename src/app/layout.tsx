@@ -8,6 +8,7 @@ import {
   RecoilRootProvider,
   StyledComponentsRegistry,
   TanstackQueryProvider,
+  ToastProvider,
 } from '@/app/lib/providers';
 import { FloatingChatting, NavigationBar } from '@/components';
 
@@ -40,6 +41,7 @@ export default function RootLayout({
                 <NavigationBar />
                 <main>{children}</main>
                 <FloatingChatting />
+                <ToastProvider />
               </AuthProvider>
             </StyledComponentsRegistry>
           </RecoilRootProvider>

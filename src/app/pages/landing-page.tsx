@@ -2,6 +2,8 @@
 
 import styled from 'styled-components';
 
+import { useToast } from '@/features/toast';
+
 const styles = {
   container: styled.div`
     width: 100%;
@@ -166,8 +168,31 @@ const images = [
 ];
 
 export function LandingPage() {
+  const { createToast } = useToast();
+
+  const handleCreateToastMessage = () => {
+    createToast({
+      message: '조금 긴 텍스트를 넣어볼게요. Test1',
+      option: { duration: 3000 },
+    });
+    setTimeout(() => {
+      createToast({
+        message: '비교적 짧은 텍스트입니다.',
+        option: { duration: 1000 },
+      });
+    }, 200);
+  };
+
   return (
     <styles.container>
+      <button
+        type="button"
+        onClick={() => {
+          handleCreateToastMessage();
+        }}
+      >
+        test
+      </button>
       <styles.section1>
         <styles.img
           alt="Brazuca Date Night"
