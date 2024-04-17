@@ -494,9 +494,7 @@ export function WritingPostPage() {
           console.error(error);
         }
       }
-    })().catch((error: Error) => {
-      console.error(error);
-    });
+    })();
   };
 
   useEffect(
