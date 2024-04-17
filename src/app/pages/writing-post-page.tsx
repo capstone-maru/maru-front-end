@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
 import {
@@ -486,14 +485,9 @@ export function WritingPostPage() {
             },
             {
               onSuccess: () => {
-                toast('글 작성을 완료했습니다.', { position: 'bottom-right' });
                 router.back();
               },
-              onError: () => {
-                toast('글 작성 도중 오류가 발생했습니다.', {
-                  position: 'bottom-right',
-                });
-              },
+              onError: () => {},
             },
           );
         } catch (error) {

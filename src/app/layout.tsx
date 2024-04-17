@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import React from 'react';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import './globals.scss';
 
 import {
@@ -10,6 +8,7 @@ import {
   RecoilRootProvider,
   StyledComponentsRegistry,
   TanstackQueryProvider,
+  ToastProvider,
 } from '@/app/lib/providers';
 import { FloatingChatting, NavigationBar } from '@/components';
 
@@ -42,7 +41,7 @@ export default function RootLayout({
                 <NavigationBar />
                 <main>{children}</main>
                 <FloatingChatting />
-                <ToastContainer />
+                <ToastProvider />
               </AuthProvider>
             </StyledComponentsRegistry>
           </RecoilRootProvider>
