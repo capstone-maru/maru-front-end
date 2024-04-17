@@ -1,8 +1,11 @@
 'use client';
 
+import { Client } from '@stomp/stompjs';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+
+import { useAuthValue } from '@/features/auth';
 
 const styles = {
   chattingButton: styled.div`
@@ -29,8 +32,8 @@ const styles = {
     bottom: 5rem;
     right: 6.5rem;
     display: flex;
-    width: 25%;
-    height: 70%;
+    width: 25rem;
+    height: 35rem;
     flex-direction: column;
     align-items: flex-start;
     flex-shrink: 0;
@@ -57,6 +60,33 @@ export function FloatingChatting() {
   const toggleChat = () => {
     setIsChatOpen(prevState => !prevState);
   };
+
+  // const [stompClient, setStompClient] = useState<Stomp.Client | null>(null);
+
+  const auth = useAuthValue();
+
+  useEffect(() => {
+    const stomp = new Client({
+      brokerURL: `ws://ec2-13-124-240-68.ap-northeast-2.compute.amazonaws.com:8080/ws`,
+      connectHeaders: {
+        Authorization: `Bearer ${auth?.accessToken}`,
+      },
+      debug: (str: string) => {
+        console.log(str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    });
+    // setStompClient(stomp);
+
+    stomp.onConnect = () => {
+      console.log('WebSocket 연결이 열렸습니다.');
+    };
+
+    stomp.activate();
+  }, []);
+
   return (
     <>
       <styles.chattingButton onClick={toggleChat}>
