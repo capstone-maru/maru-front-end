@@ -55,6 +55,7 @@ export interface SharedPost {
   id: number;
   title: string;
   content: string;
+  roomMateFeatures: string[];
   roomImages: Set<{
     fileName: string;
     isThumbnail: boolean;
