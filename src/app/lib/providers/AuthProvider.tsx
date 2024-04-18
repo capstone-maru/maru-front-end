@@ -1,5 +1,6 @@
 'use client';
 
+import { isAxiosError } from 'axios';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -8,7 +9,7 @@ import {
   useAuthActions,
   useAuthValue,
 } from '@/features/auth';
-import { load } from '@/shared/storage';
+import { load, remove } from '@/shared/storage';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const auth = useAuthValue();
@@ -33,9 +34,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               expiresIn: data.expiresIn,
             });
           })
-          .catch(err => {
-            console.error(err);
-            router.replace('/');
+          .catch((err: Error) => {
+            if (isAxiosError(err) && err.status === 500) {
+              remove({ type: 'local', key: 'refreshToken' });
+              router.replace('/');
+            }
           });
       } else {
         router.replace('/');
