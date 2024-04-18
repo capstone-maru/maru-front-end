@@ -1,3 +1,5 @@
+'use client';
+
 import axios, { type AxiosRequestConfig, isAxiosError } from 'axios';
 
 import { postTokenRefresh } from '@/features/auth';
