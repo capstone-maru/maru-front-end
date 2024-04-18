@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 import { useToast } from '@/features/toast';
@@ -7,22 +8,18 @@ import { useToast } from '@/features/toast';
 const toastAppeared = keyframes`
   from {
     opacity: 0;
-    transform: translateX(-2rem);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
   }
 `;
 
 const toastDisappeared = keyframes`
   from {
     opacity: 1;
-    transform: translateX(0);
   }
   to {
     opacity: 0;
-    transform: translateX(-2rem);
   }
 `;
 
@@ -65,16 +62,58 @@ const styles = {
 
 export function ToastProvider() {
   const { toast } = useToast();
+  const rectMap = useRef<Map<string, DOMRect>>(new Map()).current;
+
+  useEffect(() => {
+    toast.forEach(({ id }) => {
+      const element = document.getElementById(id);
+      if (element != null)
+        rectMap.set(element.id, element.getBoundingClientRect());
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    toast.forEach(({ id }) => {
+      if (rectMap.get(id) == null) {
+        const element = document.getElementById(id);
+        if (element == null) return;
+        rectMap.set(element.id, element.getBoundingClientRect());
+      }
+
+      const cacheRect = rectMap.get(id);
+      const element = document.getElementById(id);
+      if (element == null || cacheRect == null) return;
+
+      const rect = element.getBoundingClientRect();
+
+      const animation = element.animate(
+        [
+          {
+            transform: `translateY(${cacheRect.top - rect.top}px)`,
+          },
+          {
+            transform: `translateY(0px)`,
+          },
+        ],
+        { duration: 200, easing: 'ease-in-out' },
+      );
+
+      animation.addEventListener('finish', event => {
+        rectMap.set(id, rect);
+      });
+    });
+  }, [toast]);
 
   return (
     <styles.providerContainer>
-      {toast.map(toastObject => (
+      {toast.map(toastMessage => (
         <styles.toastContainer
-          key={toastObject.id}
-          $isVisible={toastObject.isVisible}
+          id={toastMessage.id}
+          key={toastMessage.id}
+          $isVisible={toastMessage.isVisible}
         >
           <styles.toastMessageContainer>
-            {toastObject.message}
+            {toastMessage.message}
           </styles.toastMessageContainer>
         </styles.toastContainer>
       ))}
