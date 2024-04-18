@@ -171,6 +171,56 @@ const styles = {
             backgroundImage: `url('/button-icon/Check box outline blank.svg')`,
           }};
   `,
+  titleInputBox: styled.input<{ $empty: boolean }>`
+    width: 41.125rem;
+    padding: 0.5rem 1rem;
+
+    border: none;
+    border-radius: 8px;
+    background: var(--Gray-6, #efefef);
+
+    color: ${({ $empty }) => ($empty ? '#9a95a3' : '#000')};
+
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+    &:focus {
+      outline: none;
+    }
+  `,
+  detailedInputBox: styled.input<{ $empty: boolean }>`
+    width: 41.125rem;
+    height: 5.4375rem;
+    padding: 0.5rem 1rem 3.5rem 1rem;
+
+    border: none;
+    border-radius: 8px;
+    background: var(--Gray-6, #efefef);
+
+    color: ${({ $empty }) => ($empty ? '#9a95a3' : '#000')};
+
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+    &:focus {
+      outline: none;
+    }
+  `,
+  searchButton: styled.div`
+    display: flex;
+    width: fit-content;
+    padding: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--Black, #35373a);
+  `,
   images: styled.div`
     display: flex;
     align-items: center;

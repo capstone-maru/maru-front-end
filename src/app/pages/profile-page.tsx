@@ -6,7 +6,6 @@ import styled from 'styled-components';
 
 import { useAuthValue, useUserData } from '@/features/auth';
 import { useProfileData } from '@/features/profile';
-import { getAge } from '@/shared';
 
 const styles = {
   pageContainer: styled.div`
@@ -19,15 +18,18 @@ const styles = {
     display: inline-flex;
     align-items: flex-start;
     flex-shrink: 0;
+    gap: 2.62rem;
     margin-top: 5.12rem;
   `,
-  userProfileWithoutSwitch: styled.div`
+  userProfileWithoutInfo: styled.div`
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
-    gap: 2.625rem;
+    gap: 1.75rem;
   `,
   userPicContainer: styled.div`
     display: flex;
+    flex-direction: column;
     width: 8.3125rem;
     height: 8.3125rem;
     justify-content: center;
@@ -46,12 +48,13 @@ const styles = {
   `,
   userInfoContainer: styled.div`
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.56rem;
   `,
   userDetailedContainer: styled.div`
     display: inline-flex;
+    width: 100%;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
@@ -79,8 +82,8 @@ const styles = {
     display: inline-flex;
     justify-content: center;
     align-items: flex-end;
-    margin: 1.25rem 0 0 2.63rem;
     gap: 0.375rem;
+    margin-left: 3.31rem;
   `,
   switchWrapper: styled.label`
     position: relative;
@@ -131,10 +134,8 @@ const styles = {
     height: 2rem;
     width: 5.3125rem;
     border-radius: 26px;
-    background: #5c6eb4;
-    margin: 1rem 1.4375rem 0 1.5625rem;
+    background: var(--Black, #35373a);
     cursor: pointer;
-
     display: inline-flex;
     padding: 0.25rem 0.5rem;
     justify-content: center;
@@ -193,25 +194,6 @@ const styles = {
     font-weight: 700;
     line-height: normal;
   `,
-  addButton: styled.button`
-    display: flex;
-    width: 6.1875rem;
-    padding: 0.5rem 1.5rem;
-    justify-content: center;
-    align-items: center;
-    gap: 0.25rem;
-    border-radius: 8px;
-    border: 1px solid var(--Gray-5, #828282);
-    background: var(--White, #fff);
-    cursor: pointer;
-
-    color: var(--Gray-5, #828282);
-    font-family: Pretendard;
-    font-size: 1.125rem;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 1.5rem;
-  `,
   mateCardsContainer: styled.div`
     display: flex;
     gap: 1.69rem;
@@ -231,7 +213,7 @@ const styles = {
     align-items: center;
     width: 15rem;
     height: 15rem;
-    flex: 0 0 auto;
+    flex-shrink: 0;
     border-radius: 20px;
     border: 1pxs olid var(--background, #f7f6f9);
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
@@ -264,26 +246,6 @@ const styles = {
     position: absolute;
     right: 0;
     bottom: 1.5rem;
-  `,
-  nextButton: styled.button`
-    width: 3.125rem;
-    height: 3.12481rem;
-    flex-shrink: 0;
-    background-image: url('/next-button.svg');
-    background-repeat: no-repeat;
-    border: none;
-    background-color: #fff;
-    cursor: pointer;
-  `,
-  prevButton: styled.button`
-    width: 3.125rem;
-    height: 3.12481rem;
-    flex-shrink: 0;
-    background-image: url('/prev-button.svg');
-    background-repeat: no-repeat;
-    border: none;
-    background-color: #fff;
-    cursor: pointer;
   `,
 
   maruContainer: styled.div`
@@ -412,15 +374,44 @@ const styles = {
     border-radius: 16px;
     background: #f7f6f9;
   `,
+
+  introductionContainer: styled.div`
+    display: inline-flex;
+    min-width: 41.125rem;
+    height: 5.4375rem;
+    padding: 1.25rem 0.5rem 2.75rem 1.5rem;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #f7f6f9;
+
+    color: #000;
+
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  `,
 };
 
 interface UserProfileInfoProps {
   name: string | undefined;
-  age: string;
+  email: string | undefined;
+  phoneNum: string | undefined;
+  selfIntroduction: string | undefined;
   src: string | undefined;
+  isMySelf: boolean | undefined;
 }
 
-function UserInfo({ name, age, src }: UserProfileInfoProps) {
+function UserInfo({
+  name,
+  email,
+  phoneNum,
+  selfIntroduction,
+  src,
+  isMySelf,
+}: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(false);
 
   const toggleSwitch = () => {
@@ -429,19 +420,23 @@ function UserInfo({ name, age, src }: UserProfileInfoProps) {
 
   return (
     <styles.userProfileContainer>
-      <styles.userProfileWithoutSwitch>
+      <styles.userProfileWithoutInfo>
         <styles.userPicContainer>
           <styles.userPic src={src} alt="User Profile Pic" />
         </styles.userPicContainer>
-        <styles.userInfoContainer>
-          <styles.userName>{name}</styles.userName>
-          <styles.userDetailedContainer>
-            <styles.userDetailedInfo>{age}</styles.userDetailedInfo>
-            <styles.userDetailedInfo>성북 길음동</styles.userDetailedInfo>
-          </styles.userDetailedContainer>
-        </styles.userInfoContainer>
-      </styles.userProfileWithoutSwitch>
-      <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
+        <Auth isMySelf={isMySelf} />
+      </styles.userProfileWithoutInfo>
+      <styles.userInfoContainer>
+        <styles.userName>{name}</styles.userName>
+        <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
+        <styles.userDetailedContainer>
+          <styles.userDetailedInfo>{email}</styles.userDetailedInfo>
+          <styles.userDetailedInfo>{phoneNum}</styles.userDetailedInfo>
+          <styles.introductionContainer>
+            {selfIntroduction}
+          </styles.introductionContainer>
+        </styles.userDetailedContainer>
+      </styles.userInfoContainer>
     </styles.userProfileContainer>
   );
 }
@@ -477,11 +472,11 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
   );
 }
 
-function Auth({ isMySelf }: { isMySelf: boolean }) {
+function Auth({ isMySelf }: { isMySelf: boolean | undefined }) {
   return (
     <styles.authContainer>
       <styles.authCheckImg src="/check_circle_24px copy.svg" />
-      <styles.authDescription>본인인증</styles.authDescription>
+      <styles.authDescription>학교인증</styles.authDescription>
     </styles.authContainer>
   );
 }
@@ -504,7 +499,7 @@ function Card({
       <styles.cardWrapper>
         <styles.description32px>내 카드</styles.description32px>
         <Link
-          href={`/profile/card/${myCardId}?memberId=${memberId}&isMySelf=${isMySelf}`}
+          href={`/profile/card/${myCardId}?memberId=${memberId}&isMySelf=${isMySelf}&type=myCard`}
         >
           <styles.cardContainer>
             <styles.cardName>{name}</styles.cardName>
@@ -515,7 +510,7 @@ function Card({
       <styles.cardWrapper>
         <styles.description32px>메이트 카드</styles.description32px>
         <Link
-          href={`/profile/card/${mateCardId}?memberId=${memberId}&isMySelf=${isMySelf}`}
+          href={`/profile/card/${mateCardId}?memberId=${memberId}&isMySelf=${isMySelf}&type=mateCard`}
         >
           <styles.cardContainer>
             <styles.cardName>메이트</styles.cardName>
@@ -651,20 +646,16 @@ export function ProfilePage({ memberId }: { memberId: string }) {
     }
   }, [user.data, memberId]);
 
-  const birthYearString: string = userData?.birthYear ?? '';
-  const birthYearDate: number = Number(birthYearString);
   return (
     <styles.pageContainer>
       <UserInfo
         name={userData?.name ?? ''}
-        age={
-          String(getAge(birthYearDate)) !== ''
-            ? String(getAge(birthYearDate))
-            : ''
-        }
+        email={userData?.email ?? ''}
+        phoneNum={userData?.phoneNumber ?? ''}
+        selfIntroduction="집에서 요리해 먹는 것을 좋아하고 애니매이션을 즐겨봅니다."
         src={user.data?.data.profileImage}
+        isMySelf={isMySelf}
       />
-      <Auth isMySelf={isMySelf} />
       <Card
         name={userData?.name}
         memberId={userData?.memberId}

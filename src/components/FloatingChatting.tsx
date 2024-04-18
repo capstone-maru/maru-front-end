@@ -1,11 +1,12 @@
 'use client';
 
-import { Client } from '@stomp/stompjs';
-import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { useAuthValue } from '@/features/auth';
+import { ChattingList } from './chat/ChattingList';
+import { ChattingRoom } from './chat/ChattingRoom';
+
+import { useAuthValue, useUserData } from '@/features/auth';
 
 const styles = {
   chattingButton: styled.div`
@@ -27,9 +28,13 @@ const styles = {
       transform: scale(1.1);
     }
   `,
-  chattingContainer: styled.div`
+  buttonIcon: styled.img`
+    width: 2rem;
+    height: 2rem;
+  `,
+  container: styled.div`
     position: fixed;
-    bottom: 5rem;
+    bottom: 6rem;
     right: 6.5rem;
     display: flex;
     width: 25rem;
@@ -41,16 +46,34 @@ const styles = {
     background: #fff;
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
     z-index: 100;
-    overflow: 'auto';
     -webkit-transition: 0.4s;
     transition: 0.4s;
+    overflow: hidden;
   `,
   chattingHeader: styled.div`
+    display: inline-flex;
+    align-items: center;
+    padding-left: 1rem;
+    gap: 0.3rem;
     width: 100%;
     height: 3.25rem;
     flex-shrink: 0;
     border-radius: 20px 20px 0 0;
     background: var(--background, #f7f6f9);
+  `,
+  title: styled.span`
+    font-family: 'Baloo 2';
+    font-size: 1.575rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  `,
+  chattingSection: styled.div`
+    width: 100%;
+    height: calc(100% - 3.25rem);
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
   `,
 };
 
@@ -61,42 +84,38 @@ export function FloatingChatting() {
     setIsChatOpen(prevState => !prevState);
   };
 
-  // const [stompClient, setStompClient] = useState<Stomp.Client | null>(null);
-
   const auth = useAuthValue();
+  const { data } = useUserData(auth?.accessToken !== undefined);
+  const [name, setName] = useState<string>('');
 
   useEffect(() => {
-    const stomp = new Client({
-      brokerURL: `ws://ec2-13-124-240-68.ap-northeast-2.compute.amazonaws.com:8080/ws`,
-      connectHeaders: {
-        Authorization: `Bearer ${auth?.accessToken}`,
-      },
-      debug: (str: string) => {
-        console.log(str);
-      },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
-    // setStompClient(stomp);
-
-    stomp.onConnect = () => {
-      console.log('WebSocket 연결이 열렸습니다.');
-    };
-
-    stomp.activate();
-  }, []);
+    if (data !== undefined) setName(data.name);
+  }, [data]);
 
   return (
     <>
       <styles.chattingButton onClick={toggleChat}>
-        <Image src="/chatting.svg" width={25} height={25} alt="chatting-icon" />
+        <styles.buttonIcon src="/chatting.svg" />
       </styles.chattingButton>
       {isChatOpen && (
-        <styles.chattingContainer>
-          <styles.chattingHeader />
-        </styles.chattingContainer>
+        <styles.container>
+          <styles.chattingHeader>
+            <styles.title style={{ color: 'var(--Main-1, #E15637)' }}>
+              maru{' '}
+            </styles.title>
+            <styles.title style={{ color: 'var(--Gray, #8C95A8)' }}>
+              chat
+            </styles.title>
+          </styles.chattingHeader>
+          <styles.chattingSection>
+            <ChattingList />
+            <ChattingList />
+            <ChattingList />
+            <ChattingList />
+          </styles.chattingSection>
+        </styles.container>
       )}
+      <ChattingRoom userName={name} roomId={1} />
     </>
   );
 }

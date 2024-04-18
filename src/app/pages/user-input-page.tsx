@@ -4,7 +4,13 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+import Location from '../../../public/option-img/location_on.svg';
+import Meeting from '../../../public/option-img/meeting_room.svg';
+import Person from '../../../public/option-img/person.svg';
+import Visibility from '../../../public/option-img/visibility.svg';
+
 import { VitalSection, OptionSection } from '@/components';
+import { SelfIntroduction } from '@/components/card';
 import { useAuthValue, useUserData } from '@/features/auth';
 import { usePutUserCard } from '@/features/profile';
 
@@ -70,28 +76,72 @@ const styles = {
     line-height: normal;
     margin-bottom: 1.69rem;
   `,
-  miniCardKeywordsContainer: styled.div`
-    width: 17.5625rem;
-    height: 5.6875rem;
-    position: relative;
+  miniCardKeywordsContainer: styled.ul`
+    display: flex;
+    width: 18.375rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   `,
-  miniCardKeyword: styled.div<CardActiveProps>`
-    display: inline-flex;
-    padding: 0.5rem 1.5rem;
-    justify-content: center;
+  miniCardList: styled.li`
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
-    border-radius: 26px;
-    border: 2px solid var(--Main-1, #e15637);
-    background: #fff;
-
-    color: var(--Main-1, #e15637);
+    gap: 2rem;
+    align-self: stretch;
+  `,
+  miniCardPerson: styled(Person)<CardActiveProps>`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: ${props =>
+        props.$active !== undefined && props.$active !== null && props.$active
+          ? 'var(--Main-1, #e15637)'
+          : 'var(--Main-2, #767D86)'};
+    }
+  `,
+  miniCardLocation: styled(Location)<CardActiveProps>`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: ${props =>
+        props.$active !== undefined && props.$active !== null && props.$active
+          ? 'var(--Main-1, #e15637)'
+          : 'var(--Main-2, #767D86)'};
+    }
+  `,
+  miniCardMeeting: styled(Meeting)<CardActiveProps>`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: ${props =>
+        props.$active !== undefined && props.$active !== null && props.$active
+          ? 'var(--Main-1, #e15637)'
+          : 'var(--Main-2, #767D86)'};
+    }
+  `,
+  miniCardVisibility: styled(Visibility)<CardActiveProps>`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: ${props =>
+        props.$active !== undefined && props.$active !== null && props.$active
+          ? 'var(--Main-1, #e15637)'
+          : 'var(--Main-2, #767D86)'};
+    }
+  `,
+  miniCardText: styled.p<CardActiveProps>`
+    flex: 1 0 0;
+    height: 1.5rem;
     font-family: 'Noto Sans KR';
     font-size: 1rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    position: absolute;
+
+    color: ${props =>
+      props.$active !== undefined && props.$active !== null && props.$active
+        ? 'var(--Main-1, #e15637)'
+        : 'var(--Main-2, #767D86)'};
   `,
   checkSection: styled.div`
     width: calc(100% - 23.0625rem);
@@ -282,15 +332,6 @@ export function UserInputPage() {
   const handleMateCardClick = () => {
     setActiveContainer('mate');
   };
-
-  let genderText = null;
-
-  if (user?.gender === 'MALE') {
-    genderText = '남성';
-  } else if (user?.gender === 'FEMALE') {
-    genderText = '여성';
-  }
-
   return (
     <styles.pageContainer>
       <styles.pageDescription>
@@ -306,20 +347,35 @@ export function UserInputPage() {
               내카드
             </styles.miniCardName>
             <styles.miniCardKeywordsContainer>
-              <styles.miniCardKeyword
-                style={{
-                  border: 'none',
-                  background: 'var(--Gray-5, #828282)',
-                  color: '#fff',
-                }}
-              >
-                {genderText}
-              </styles.miniCardKeyword>
-              {selectedState.smoking != null ? (
-                <styles.miniCardKeyword style={{ right: '0' }}>
-                  {selectedState.smoking}
-                </styles.miniCardKeyword>
-              ) : null}
+              <styles.miniCardList>
+                <styles.miniCardPerson $active={activeContainer === 'my'} />
+                <styles.miniCardText $active={activeContainer === 'my'}>
+                  {user?.gender === 'MALE' ? '남성' : '여성'} ·{' '}
+                  {user?.birthYear?.slice(2)}년생 · {selectedState.smoking}
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardLocation $active={activeContainer === 'my'} />
+                <styles.miniCardText $active={activeContainer === 'my'}>
+                  서울특별시 성북구 정릉동
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardMeeting $active={activeContainer === 'my'} />
+                <styles.miniCardText $active={activeContainer === 'my'}>
+                  메이트와 {selectedState.room}
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardVisibility $active={activeContainer === 'my'} />
+                <styles.miniCardText $active={activeContainer === 'my'}>
+                  {selectedOptions['아침형'] ? '아침형' : null}
+                  {selectedOptions['아침형'] && selectedOptions['올빼미형']
+                    ? ' · '
+                    : null}
+                  {selectedOptions['올빼미형'] ? '올빼미형' : null}
+                </styles.miniCardText>
+              </styles.miniCardList>
             </styles.miniCardKeywordsContainer>
           </styles.miniCard>
           <styles.miniCard
@@ -330,20 +386,38 @@ export function UserInputPage() {
               메이트카드
             </styles.miniCardName>
             <styles.miniCardKeywordsContainer>
-              <styles.miniCardKeyword
-                style={{
-                  border: 'none',
-                  background: 'var(--Gray-5, #828282)',
-                  color: '#fff',
-                }}
-              >
-                {genderText}
-              </styles.miniCardKeyword>
-              {selectedMateState.smoking != null ? (
-                <styles.miniCardKeyword style={{ right: '0' }}>
-                  {selectedMateState.smoking}
-                </styles.miniCardKeyword>
-              ) : null}
+              <styles.miniCardList>
+                <styles.miniCardPerson $active={activeContainer === 'mate'} />
+                <styles.miniCardText $active={activeContainer === 'mate'}>
+                  {user?.gender === 'MALE' ? '남성' : '여성'} ·{' '}
+                  {user?.birthYear?.slice(2)}년생 · {selectedMateState.smoking}
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardLocation $active={activeContainer === 'mate'} />
+                <styles.miniCardText $active={activeContainer === 'mate'}>
+                  서울특별시 성북구 정릉동
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardMeeting $active={activeContainer === 'mate'} />
+                <styles.miniCardText $active={activeContainer === 'mate'}>
+                  메이트와 {selectedMateState.room}
+                </styles.miniCardText>
+              </styles.miniCardList>
+              <styles.miniCardList>
+                <styles.miniCardVisibility
+                  $active={activeContainer === 'mate'}
+                />
+                <styles.miniCardText $active={activeContainer === 'mate'}>
+                  {selectedMateOptions['아침형'] ? '아침형' : null}
+                  {selectedMateOptions['아침형'] &&
+                  selectedMateOptions['올빼미형']
+                    ? ' · '
+                    : null}
+                  {selectedMateOptions['올빼미형'] ? '올빼미형' : null}
+                </styles.miniCardText>
+              </styles.miniCardList>
             </styles.miniCardKeywordsContainer>
           </styles.miniCard>
         </styles.cardNameSection>
@@ -352,10 +426,12 @@ export function UserInputPage() {
             <VitalSection
               gender={user?.gender}
               birthYear={user?.birthYear}
+              location="성북 길음동"
               smoking={undefined}
               room={undefined}
               onFeatureChange={handleFeatureChange}
               isMySelf
+              type="myCard"
             />
             <styles.lineContainer>
               <styles.horizontalLine />
@@ -364,16 +440,20 @@ export function UserInputPage() {
               optionFeatures={null}
               onFeatureChange={handleOptionClick}
               isMySelf
+              type="myCard"
             />
+            <SelfIntroduction />
           </styles.checkContainer>
           <styles.checkContainer $active={activeContainer === 'mate'}>
             <VitalSection
               gender={user?.gender}
               birthYear={undefined}
+              location="성북 길음동"
               smoking={undefined}
               room={undefined}
               onFeatureChange={handleMateFeatureChange}
               isMySelf
+              type="mateCard"
             />
             <styles.lineContainer>
               <styles.horizontalLine />
@@ -382,6 +462,7 @@ export function UserInputPage() {
               optionFeatures={null}
               onFeatureChange={handleMateOptionClick}
               isMySelf
+              type="mateCard"
             />
           </styles.checkContainer>
         </styles.checkSection>

@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+import { Slider } from './card/Slider';
+
 const styles = {
   vitalContainer: styled.div`
     display: flex;
@@ -95,6 +97,15 @@ const styles = {
       outline: none;
     }
   `,
+  value: styled.span`
+    color: #000;
+
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  `,
 };
 
 interface CheckItemProps {
@@ -143,13 +154,16 @@ interface SelectedState {
 export function VitalSection({
   gender,
   birthYear,
+  location,
   smoking,
   room,
   onFeatureChange,
   isMySelf,
+  type,
 }: {
   gender: string | undefined;
   birthYear: string | undefined;
+  location: string | undefined;
   smoking: string | undefined;
   room: string | undefined;
   onFeatureChange: (
@@ -157,8 +171,8 @@ export function VitalSection({
     item: string | number,
   ) => void;
   isMySelf: boolean;
+  type: string;
 }) {
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedState, setSelectedState] = useState<SelectedState>({
     smoking: undefined,
     room: undefined,
@@ -182,10 +196,13 @@ export function VitalSection({
     onFeatureChange(optionName, item);
   }
 
-  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const yearValue = parseInt(event.target.value, 10);
-    setSelectedYear(Number.isNaN(yearValue) ? null : yearValue);
+  const [mateMinAge, setMateMinAge] = useState(0);
+  const [mateMaxAge, setMateMaxAge] = useState(11);
+  const handleAgeChange = (min: number, max: number) => {
+    setMateMinAge(min);
+    setMateMaxAge(max);
   };
+
   return (
     <styles.vitalContainer>
       <styles.vitalDescription>필수</styles.vitalDescription>
@@ -221,12 +238,25 @@ export function VitalSection({
           <styles.vitalListItemDescription>
             희망 지역
           </styles.vitalListItemDescription>
-          <styles.searchBox>
-            <styles.mapInput
-              placeholder="ex) 한국동,한국역,한국대학교"
-              readOnly={!isMySelf}
-            />
-          </styles.searchBox>
+          {type === 'myCard' ? (
+            <styles.searchBox>
+              <styles.mapInput
+                placeholder="ex) 한국동,한국역,한국대학교"
+                readOnly={!isMySelf}
+              />
+            </styles.searchBox>
+          ) : (
+            <CheckItem
+              $isSelected
+              style={{
+                border: gender === 'FEMALE' ? 'none' : '',
+                background: gender === 'FEMALE' ? 'var(--Gray-5, #828282)' : '',
+                color: gender === 'FEMALE' ? '#fff' : '',
+              }}
+            >
+              {location}
+            </CheckItem>
+          )}
         </styles.vitalList>
         <styles.vitalList>
           <styles.vitalListItemDescription>
@@ -306,18 +336,27 @@ export function VitalSection({
           <styles.vitalListItemDescription>
             출생 연도
           </styles.vitalListItemDescription>
-          <styles.birthYear
-            value={selectedYear ?? birthYear}
-            onChange={handleYearChange}
-            disabled={birthYear !== undefined || !isMySelf}
-          >
-            <option value="">년도</option>
-            {years.map(year => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </styles.birthYear>
+          {type === 'myCard' ? (
+            <styles.birthYear
+              value={birthYear}
+              disabled={birthYear !== undefined || !isMySelf}
+            >
+              <option value="">년도</option>
+              {years.map(year => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </styles.birthYear>
+          ) : (
+            <>
+              <Slider min={0} max={11} step={1} onChange={handleAgeChange} />
+              <styles.value>
+                {`${mateMinAge === 0 ? '동갑' : `±${mateMinAge}세`}`} ~{' '}
+                {`${mateMaxAge === 11 ? '무제한' : `±${mateMaxAge}세`}`}
+              </styles.value>
+            </>
+          )}
         </styles.vitalList>
       </styles.vitalListContainer>
     </styles.vitalContainer>

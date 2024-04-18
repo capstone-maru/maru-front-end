@@ -5,7 +5,13 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 
+import Location from '../../../public/option-img/location_on.svg';
+import Meeting from '../../../public/option-img/meeting_room.svg';
+import Person from '../../../public/option-img/person.svg';
+import Visibility from '../../../public/option-img/visibility.svg';
+
 import { VitalSection, OptionSection } from '@/components';
+import { SelfIntroduction } from '@/components/card';
 import {
   useProfileData,
   usePutUserCard,
@@ -54,28 +60,56 @@ const styles = {
     line-height: normal;
     margin-bottom: 1.69rem;
   `,
-  miniCardKeywordsContainer: styled.div`
-    width: 17.5625rem;
-    height: 5.6875rem;
-    position: relative;
+  miniCardKeywordsContainer: styled.ul`
+    display: flex;
+    width: 18.375rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   `,
-  miniCardKeyword: styled.div`
-    display: inline-flex;
-    padding: 0.5rem 1.5rem;
-    justify-content: center;
+  miniCardList: styled.li`
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
-    border-radius: 26px;
-    border: 2px solid var(--Main-1, #e15637);
-    background: #fff;
-
-    color: var(--Main-1, #e15637);
+    gap: 2rem;
+    align-self: stretch;
+  `,
+  miniCardPerson: styled(Person)`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: var(--Main-1, #e15637);
+    }
+  `,
+  miniCardLocation: styled(Location)`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: var(--Main-1, #e15637);
+    }
+  `,
+  miniCardMeeting: styled(Meeting)`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: var(--Main-1, #e15637);
+    }
+  `,
+  miniCardVisibility: styled(Visibility)`
+    width: 1.5rem;
+    height: 1.5rem;
+    path {
+      fill: var(--Main-1, #e15637);
+    }
+  `,
+  miniCardText: styled.p`
+    flex: 1 0 0;
+    height: 1.5rem;
     font-family: 'Noto Sans KR';
     font-size: 1rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    position: absolute;
+    color: var(--Main-1, #e15637);
   `,
   checkContainer: styled.div`
     width: 51.0625rem;
@@ -113,18 +147,13 @@ interface UserProps {
 
 type SelectedOptions = Record<string, boolean>;
 
-const miniCardKeywordStyle = {
-  border: 'none',
-  background: 'var(--Gray-5, #828282)',
-  color: '#fff',
-};
-
 export function SettingPage({ cardId }: { cardId: number }) {
   const params = useSearchParams();
   const memberIdParams = params.get('memberId');
   const memberId = memberIdParams ?? '';
   const isMySelfStr = params.get('isMySelf');
   const isMySelf = isMySelfStr === 'true';
+  const type = params.get('type') ?? '';
 
   const user = useProfileData(memberId);
   const [userData, setUserData] = useState<UserProps | null>(null);
@@ -265,24 +294,47 @@ export function SettingPage({ cardId }: { cardId: number }) {
         <styles.miniCard>
           <styles.miniCardName>내카드</styles.miniCardName>
           <styles.miniCardKeywordsContainer>
-            <styles.miniCardKeyword style={miniCardKeywordStyle}>
-              {userData?.gender === 'MALE' ? '남성' : '여성'}
-            </styles.miniCardKeyword>
-            {features?.[0] !== null && features !== null ? (
-              <styles.miniCardKeyword style={{ right: '0' }}>
-                {features[0]}
-              </styles.miniCardKeyword>
-            ) : null}
+            <styles.miniCardList>
+              <styles.miniCardPerson />
+              <styles.miniCardText>
+                {userData?.gender === 'MALE' ? '남성' : '여성'} ·{' '}
+                {userData?.birthYear?.slice(2)}년생 · {selectedState.smoking}
+              </styles.miniCardText>
+            </styles.miniCardList>
+            <styles.miniCardList>
+              <styles.miniCardLocation />
+              <styles.miniCardText>
+                {card.data?.data.location}
+              </styles.miniCardText>
+            </styles.miniCardList>
+            <styles.miniCardList>
+              <styles.miniCardMeeting />
+              <styles.miniCardText>
+                메이트와 {selectedState.room}
+              </styles.miniCardText>
+            </styles.miniCardList>
+            <styles.miniCardList>
+              <styles.miniCardVisibility />
+              <styles.miniCardText>
+                {selectedOptions['아침형'] ? '아침형' : null}
+                {selectedOptions['아침형'] && selectedOptions['올빼미형']
+                  ? ' · '
+                  : null}
+                {selectedOptions['올빼미형'] ? '올빼미형' : null}
+              </styles.miniCardText>
+            </styles.miniCardList>
           </styles.miniCardKeywordsContainer>
         </styles.miniCard>
         <styles.checkContainer>
           <VitalSection
             gender={userData?.gender}
             birthYear={userData?.birthYear}
-            smoking={selectedState.smoking}
-            room={selectedState.room}
+            location={card.data?.data.location}
+            smoking={features?.[0]}
+            room={features?.[1]}
             onFeatureChange={handleFeatureChange}
             isMySelf={isMySelf}
+            type={type}
           />
           <styles.lineContainer>
             <styles.horizontalLine />
@@ -291,7 +343,9 @@ export function SettingPage({ cardId }: { cardId: number }) {
             optionFeatures={features}
             onFeatureChange={handleOptionClick}
             isMySelf={isMySelf}
+            type={type}
           />
+          {type === 'myCard' ? <SelfIntroduction /> : null}
         </styles.checkContainer>
       </styles.cardContainer>
     </styles.pageContainer>
