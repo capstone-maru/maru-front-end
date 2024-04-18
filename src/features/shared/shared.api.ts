@@ -56,28 +56,8 @@ export const getSharedPosts = async ({
   return await axios.get<GetSharedPostsDTO>(getURI());
 };
 
-export const createSharedPost = async ({
-  imageFilesData,
-  postData,
-  transactionData,
-  roomDetailData,
-  locationData,
-}: CreateSharedPostProps) => {
-  const formData = new FormData();
-  formData.append('imageFilesData', JSON.stringify(imageFilesData));
-  formData.append('postData', JSON.stringify(postData));
-  formData.append('transactionData', JSON.stringify(transactionData));
-  formData.append('roomDetailData', JSON.stringify(roomDetailData));
-  formData.append('locationData', JSON.stringify(locationData));
-
-  return await axios.post<SuccessBaseDTO>(
-    `/maru-api/shared/posts/studio`,
-    formData,
-    {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    },
-  );
-};
+export const createSharedPost = async (postData: CreateSharedPostProps) =>
+  await axios.post<SuccessBaseDTO>(`/maru-api/shared/posts/studio`, postData);
 
 export const getSharedPost = async (postId: number) =>
   await axios.get<GetSharedPostDTO>(`/maru-api/shared/posts/studio/${postId}`);

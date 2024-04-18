@@ -11,6 +11,7 @@ import {
 import { type NaverAddress } from '@/features/geocoding';
 import { getImageURL, putImage } from '@/features/image';
 import { useCreateSharedPost } from '@/features/shared';
+import { useToast } from '@/features/toast';
 
 const styles = {
   pageContainer: styled.div`
@@ -348,6 +349,8 @@ export function WritingPostPage() {
 
   const { mutate } = useCreateSharedPost();
 
+  const { createToast } = useToast();
+
   const handleExtraOptionClick = (option: string) => {
     setSelectedExtraOptions(prevSelectedOptions => ({
       ...prevSelectedOptions,
@@ -482,12 +485,29 @@ export function WritingPostPage() {
                 schoolTime: 20,
                 convenienceStoreTime: 2,
               },
+              roomMateCardData: {
+                location: '솔샘로 44',
+                features: ['특징1', '특징2', '특징3'],
+              },
             },
             {
               onSuccess: () => {
+                createToast({
+                  message: '게시글이 정상적으로 업로드되었습니다.',
+                  option: {
+                    duration: 3000,
+                  },
+                });
                 router.back();
               },
-              onError: () => {},
+              onError: () => {
+                createToast({
+                  message: '게시글 업로드에 실패했습니다.',
+                  option: {
+                    duration: 3000,
+                  },
+                });
+              },
             },
           );
         } catch (error) {

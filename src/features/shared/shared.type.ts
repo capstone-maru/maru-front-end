@@ -44,4 +44,8 @@ export interface CreateSharedPostProps {
     schoolTime: number;
     convenienceStoreTime: number;
   };
+  roomMateCardData: {
+    location: string;
+    features: string[];
+  };
 }
