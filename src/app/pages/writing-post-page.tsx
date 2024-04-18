@@ -8,9 +8,12 @@ import {
   LocationSearchBox,
   MateSearchBox,
 } from '@/components/writing-post-page';
-import { type NaverAddress } from '@/features/geocoding';
 import { getImageURL, putImage } from '@/features/image';
-import { useCreateSharedPost } from '@/features/shared';
+import {
+  type ImageFile,
+  useCreateSharedPost,
+  useCreateSharedPostProps,
+} from '@/features/shared';
 import { useToast } from '@/features/toast';
 
 const styles = {
@@ -310,63 +313,36 @@ interface ButtonActiveProps {
   $isSelected: boolean;
 }
 
-interface SelectedOptions {
-  budget?: string;
-  roomType?: string;
-  livingRoom?: string;
-  roomCount?: string;
-  restRoomCount?: string;
-  floorType?: string;
-}
-
-type SelectedExtraOptions = Record<string, boolean>;
-
-interface ImageFile {
-  url: string;
-  file: File;
-  extension: string;
-}
-
 export function WritingPostPage() {
   const router = useRouter();
 
-  const [images, setImages] = useState<ImageFile[]>([]);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedExtraOptions, setSelectedExtraOptions] =
-    useState<SelectedExtraOptions>({});
-
   const [showMateSearchBox, setShowMateSearchBox] = useState<boolean>(false);
-  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
-  const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
-  const [mateLimit, setMateLimit] = useState(0);
-  const [expectedMonthlyFee, setExpectedMonthlyFee] = useState<number>(0);
-  const [houseSize, setHouseSize] = useState<number>(0);
-
-  const [address, setAddress] = useState<NaverAddress | null>(null);
   const [showLocationSearchBox, setShowLocationSearchBox] =
     useState<boolean>(false);
 
+  const {
+    title,
+    setTitle,
+    content,
+    setContent,
+    images,
+    setImages,
+    mateLimit,
+    setMateLimit,
+    houseSize,
+    setHouseSize,
+    address,
+    setAddress,
+    expectedMonthlyFee,
+    setExpectedMonthlyFee,
+    handleOptionClick,
+    handleExtraOptionClick,
+    isOptionSelected,
+    isExtraOptionSelected,
+  } = useCreateSharedPostProps();
   const { mutate } = useCreateSharedPost();
-
   const { createToast } = useToast();
-
-  const handleExtraOptionClick = (option: string) => {
-    setSelectedExtraOptions(prevSelectedOptions => ({
-      ...prevSelectedOptions,
-      [option]: !prevSelectedOptions[option],
-    }));
-  };
-
-  const handleOptionClick = (
-    optionName: keyof SelectedOptions,
-    item: string,
-  ) => {
-    setSelectedOptions(prevState => ({
-      ...prevState,
-      [optionName]: prevState[optionName] === item ? null : item,
-    }));
-  };
 
   const handleTitleInputChanged = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -605,7 +581,7 @@ export function WritingPostPage() {
           {DealOptions.map(option => (
             <styles.optionButtonContainer key={option}>
               <styles.customRadioButton
-                $isSelected={selectedOptions.budget === option}
+                $isSelected={isOptionSelected('budget', option)}
                 onClick={() => {
                   handleOptionClick('budget', option);
                 }}
@@ -633,7 +609,7 @@ export function WritingPostPage() {
           {FloorOptions.map(option => (
             <styles.optionButtonContainer key={option}>
               <styles.customRadioButton
-                $isSelected={selectedOptions.floorType === option}
+                $isSelected={isOptionSelected('floorType', option)}
                 onClick={() => {
                   handleOptionClick('floorType', option);
                 }}
@@ -647,7 +623,7 @@ export function WritingPostPage() {
           {AdditionalOptions.map(option => (
             <styles.optionButtonContainer key={option}>
               <styles.customCheckBox
-                $isSelected={selectedExtraOptions[option]}
+                $isSelected={isExtraOptionSelected(option)}
                 onClick={() => {
                   handleExtraOptionClick(option);
                 }}
@@ -661,7 +637,7 @@ export function WritingPostPage() {
           {RoomOptions.map(option => (
             <styles.optionButtonContainer key={option}>
               <styles.customRadioButton
-                $isSelected={selectedOptions.roomType === option}
+                $isSelected={isOptionSelected('roomType', option)}
                 onClick={() => {
                   handleOptionClick('roomType', option);
                 }}
@@ -675,7 +651,7 @@ export function WritingPostPage() {
           {LivingRoomOptions.map(option => (
             <styles.optionButtonContainer key={option}>
               <styles.customRadioButton
-                $isSelected={selectedOptions.livingRoom === option}
+                $isSelected={isOptionSelected('livingRoom', option)}
                 onClick={() => {
                   handleOptionClick('livingRoom', option);
                 }}
@@ -689,7 +665,7 @@ export function WritingPostPage() {
           {RoomCountOptions.map(option => (
             <styles.optionButtonContainer key={option}>
               <styles.customRadioButton
-                $isSelected={selectedOptions.roomCount === option}
+                $isSelected={isOptionSelected('roomCount', option)}
                 onClick={() => {
                   handleOptionClick('roomCount', option);
                 }}
@@ -703,7 +679,7 @@ export function WritingPostPage() {
           {RestRoomCountOptions.map(option => (
             <styles.optionButtonContainer key={option}>
               <styles.customRadioButton
-                $isSelected={selectedOptions.restRoomCount === option}
+                $isSelected={isOptionSelected('restRoomCount', option)}
                 onClick={() => {
                   handleOptionClick('restRoomCount', option);
                 }}

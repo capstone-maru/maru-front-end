@@ -10,10 +10,14 @@ import {
   scrapPost,
 } from './shared.api';
 import {
+  type ImageFile,
   type CreateSharedPostProps,
   type GetSharedPostsProps,
+  type SelectedExtraOptions,
+  type SelectedOptions,
 } from './shared.type';
 
+import { type NaverAddress } from '@/features/geocoding';
 import { type FailureDTO, type SuccessBaseDTO } from '@/shared/types';
 
 export const usePaging = ({
@@ -79,6 +83,98 @@ export const usePaging = ({
       handleSetPage,
       handleNextPage,
       handlePrevPage,
+    ],
+  );
+};
+
+export const useCreateSharedPostProps = () => {
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
+  const [images, setImages] = useState<ImageFile[]>([]);
+  const [address, setAddress] = useState<NaverAddress | null>(null);
+
+  const [mateLimit, setMateLimit] = useState(0);
+  const [expectedMonthlyFee, setExpectedMonthlyFee] = useState<number>(0);
+
+  const [houseSize, setHouseSize] = useState<number>(0);
+  const [selectedExtraOptions, setSelectedExtraOptions] =
+    useState<SelectedExtraOptions>({});
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+
+  const handleExtraOptionClick = useCallback((option: string) => {
+    setSelectedExtraOptions(prevSelectedOptions => ({
+      ...prevSelectedOptions,
+      [option]: !prevSelectedOptions[option],
+    }));
+  }, []);
+
+  const handleOptionClick = useCallback(
+    (optionName: keyof SelectedOptions, item: string) => {
+      setSelectedOptions(prevState => ({
+        ...prevState,
+        [optionName]: prevState[optionName] === item ? null : item,
+      }));
+    },
+    [],
+  );
+
+  const isOptionSelected = useCallback(
+    (optionName: keyof SelectedOptions, item: string) =>
+      selectedOptions[optionName] === item,
+    [selectedOptions],
+  );
+
+  const isExtraOptionSelected = useCallback(
+    (item: string) => selectedExtraOptions[item],
+    [selectedExtraOptions],
+  );
+
+  return useMemo(
+    () => ({
+      title,
+      setTitle,
+      content,
+      setContent,
+      images,
+      setImages,
+      address,
+      setAddress,
+      mateLimit,
+      setMateLimit,
+      expectedMonthlyFee,
+      setExpectedMonthlyFee,
+      houseSize,
+      setHouseSize,
+      selectedExtraOptions,
+      setSelectedExtraOptions,
+      selectedOptions,
+      setSelectedOptions,
+      handleOptionClick,
+      handleExtraOptionClick,
+      isOptionSelected,
+      isExtraOptionSelected,
+    }),
+    [
+      title,
+      setTitle,
+      content,
+      setContent,
+      images,
+      setImages,
+      address,
+      setAddress,
+      mateLimit,
+      setMateLimit,
+      expectedMonthlyFee,
+      setExpectedMonthlyFee,
+      houseSize,
+      setHouseSize,
+      selectedExtraOptions,
+      setSelectedExtraOptions,
+      selectedOptions,
+      setSelectedOptions,
+      handleOptionClick,
+      handleExtraOptionClick,
     ],
   );
 };

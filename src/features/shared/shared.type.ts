@@ -11,6 +11,23 @@ export interface GetSharedPostsProps {
   page: number;
 }
 
+export interface SelectedOptions {
+  budget?: string;
+  roomType?: string;
+  livingRoom?: string;
+  roomCount?: string;
+  restRoomCount?: string;
+  floorType?: string;
+}
+
+export type SelectedExtraOptions = Record<string, boolean>;
+
+export interface ImageFile {
+  url: string;
+  file: File;
+  extension: string;
+}
+
 export interface CreateSharedPostProps {
   imageFilesData: Array<{
     fileName: string;
