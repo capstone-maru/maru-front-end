@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             });
           })
           .catch((err: Error) => {
-            if (isAxiosError(err) && err.status === 500) {
+            if (isAxiosError(err) && err.code === 'ETIMEOUT') {
               remove({ type: 'local', key: 'refreshToken' });
               router.replace('/');
             }
