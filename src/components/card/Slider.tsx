@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -77,6 +77,15 @@ interface FillProps {
   $right: string;
 }
 
+interface SliderProps {
+  min: number;
+  max: number;
+  step: number;
+  initialMin: number;
+  initialMax: number;
+  onChange: (minValue: number, maxValue: number) => void;
+}
+
 export function Slider({
   min,
   max,
@@ -85,26 +94,37 @@ export function Slider({
   initialMax,
   onChange,
 }: SliderProps) {
-  const [initialMinValue, setInitialMin] = useState(initialMin);
-  const [initialMaxValue, setInitialMax] = useState(initialMax);
+  const inputMinRef = useRef<HTMLInputElement>(null);
+  const inputMaxRef = useRef<HTMLInputElement>(null);
+  const [minValue, setMinValue] = useState(initialMin);
+  const [maxValue, setMaxValue] = useState(initialMax);
 
   useEffect(() => {
-    setInitialMin(initialMin);
-    setInitialMax(initialMax);
-  }, []);
-
-  const [minValue, setMinValue] = useState(initialMinValue);
-  const [maxValue, setMaxValue] = useState(initialMaxValue);
+    setMinValue(initialMin);
+    setMaxValue(initialMax);
+  }, [initialMin, initialMax]);
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLow = Number(e.target.value);
-    if (newLow > maxValue) setMaxValue(newLow);
+    const currentMax = inputMaxRef.current
+      ? Number(inputMaxRef.current.value)
+      : initialMin;
+    if (newLow > currentMax) {
+      setMaxValue(newLow);
+      inputMaxRef.current && (inputMaxRef.current.value = newLow.toString());
+    }
     setMinValue(newLow);
   };
 
   const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHigh = Number(e.target.value);
-    if (newHigh < minValue) setMinValue(newHigh);
+    const currentMin = inputMinRef.current
+      ? Number(inputMinRef.current.value)
+      : initialMax;
+    if (newHigh < currentMin) {
+      setMinValue(newHigh);
+      inputMinRef.current && (inputMinRef.current.value = newHigh.toString());
+    }
     setMaxValue(newHigh);
   };
 
@@ -123,18 +143,22 @@ export function Slider({
         />
         <styles.slider
           type="range"
+          ref={inputMinRef}
           min={min}
           max={max}
           step={step}
           value={minValue}
+          defaultValue={initialMin}
           onChange={handleMinChange}
         />
         <styles.slider
           type="range"
+          ref={inputMaxRef}
           min={min}
           max={max}
           step={step}
           value={maxValue}
+          defaultValue={initialMax}
           onChange={handleMaxChange}
         />
       </styles.sliderContainer>

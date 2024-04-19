@@ -311,18 +311,18 @@ export function UserInputPage() {
 
   const handleButtonClick = () => {
     const myOptions = Object.keys(selectedOptions).filter(
-      key => selectedOptions[key],
+      key => selectedOptions[key] && key !== '전공' && key !== '엠비티아이',
     );
     const mateOptions = Object.keys(selectedMateOptions).filter(
-      key => selectedMateOptions[key],
+      key => selectedMateOptions[key] && key !== '전공' && key !== '엠비티아이',
     );
 
     const location = locationInput ?? '';
     const myFeatures = [
       selectedState.smoking,
       selectedState.room,
+      mateAge,
       ...myOptions,
-      ...(cleanScore !== null && cleanScore !== undefined ? [cleanScore] : []),
       ...(mbti !== null && mbti !== undefined ? [mbti] : []),
       ...(major !== null && major !== undefined ? [major] : []),
       budget,
@@ -457,9 +457,7 @@ export function UserInputPage() {
             gender={user?.gender}
             birthYear={user?.birthYear}
             location={undefined}
-            smoking={undefined}
-            room={undefined}
-            mateAge={undefined}
+            vitalFeatures={null}
             onFeatureChange={handleFeatureChange}
             onLocationChange={setLocation}
             onMateAgeChange={() => {}}
@@ -468,12 +466,14 @@ export function UserInputPage() {
           />
           <styles.horizontalLine />
           <OptionSection
+            mbti={undefined}
+            major={undefined}
+            budget={undefined}
             optionFeatures={null}
             onFeatureChange={handleOptionClick}
             onMbtiChange={setMbti}
             onMajorChange={setMajor}
             onBudgetChange={setBudget}
-            onCleanTestChange={setCleanScore}
             isMySelf
             type="myCard"
           />
@@ -482,10 +482,8 @@ export function UserInputPage() {
           <VitalSection
             gender={user?.gender}
             birthYear={undefined}
-            location={locationInput ?? undefined}
-            smoking={undefined}
-            room={undefined}
-            mateAge={undefined}
+            location={locationInput}
+            vitalFeatures={null}
             onFeatureChange={handleMateFeatureChange}
             onLocationChange={setLocation}
             onMateAgeChange={setMateAge}
@@ -494,12 +492,14 @@ export function UserInputPage() {
           />
           <styles.horizontalLine />
           <OptionSection
+            mbti={undefined}
+            major={undefined}
+            budget={undefined}
             optionFeatures={null}
             onFeatureChange={handleMateOptionClick}
             onMbtiChange={setMateMbti}
             onMajorChange={setMateMajor}
             onBudgetChange={setMateBudget}
-            onCleanTestChange={() => {}}
             isMySelf
             type="mateCard"
           />

@@ -116,8 +116,10 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
 }
 
 export function MbtiToggle({
+  mbti,
   onChange,
 }: {
+  mbti: string | undefined;
   onChange: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const [toggleStates, setToggleStates] = useState({
@@ -128,6 +130,56 @@ export function MbtiToggle({
   });
 
   const [result, setResult] = useState('');
+  useEffect(() => {
+    if (mbti !== undefined) setResult(mbti);
+  }, [mbti]);
+
+  useEffect(() => {
+    if (mbti !== undefined && mbti.charAt(0) === 'I') {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle1: true,
+      }));
+    } else {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle1: false,
+      }));
+    }
+    if (mbti !== undefined && mbti.charAt(1) === 'S') {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle2: true,
+      }));
+    } else {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle2: false,
+      }));
+    }
+    if (mbti !== undefined && mbti.charAt(2) === 'T') {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle3: true,
+      }));
+    } else {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle3: false,
+      }));
+    }
+    if (mbti !== undefined && mbti.charAt(3) === 'J') {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle4: true,
+      }));
+    } else {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle4: false,
+      }));
+    }
+  }, [mbti]);
 
   const toggleSwitch = (toggleName: keyof typeof toggleStates) => {
     setToggleStates(prevState => ({

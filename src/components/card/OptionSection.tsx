@@ -3,10 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { CleanTest } from './card/CleanTest';
-import { MajorSelector } from './card/MajorSelector';
-import { MbtiToggle } from './card/MbtiToggle';
-import { Slider } from './card/Slider';
+import { CleanTest } from './CleanTest';
+import { MajorSelector } from './MajorSelector';
+import { MbtiToggle } from './MbtiToggle';
+import { Slider } from './Slider';
 
 const styles = {
   container: styled.div`
@@ -155,37 +155,48 @@ const PersonalOptions = [
   '밖에서 활동',
   '친구초대 허용',
   '취미 같이 즐겨요',
-  '엠비티아이',
-  '전공',
 ];
 
 export function OptionSection({
+  mbti,
+  major,
+  budget,
   optionFeatures,
   onFeatureChange,
   onMbtiChange,
   onMajorChange,
   onBudgetChange,
-  onCleanTestChange,
   isMySelf,
   type,
 }: {
+  mbti: string | undefined;
+  major: string | undefined;
+  budget: string | undefined;
   optionFeatures: string[] | null;
   onFeatureChange: (option: string) => void;
   onMbtiChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   onMajorChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   onBudgetChange: React.Dispatch<React.SetStateAction<string | undefined>>;
-  onCleanTestChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   isMySelf: boolean;
   type: string;
 }) {
   type SelectedOptions = Record<string, boolean>;
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
 
+  const majorArray = ['공학', '교육', '인문', '사회', '자연', '예체능', '의약'];
+
   useEffect(() => {
     if (optionFeatures !== null) {
       const initialOptions: SelectedOptions = {};
-      optionFeatures.forEach(option => {
-        initialOptions[option] = true;
+      optionFeatures.slice(2).forEach(option => {
+        if (
+          option.includes(',') ||
+          option.includes('±') ||
+          option.includes('E') ||
+          option.includes('I') ||
+          majorArray.includes(option)
+        ) {
+        } else initialOptions[option] = true;
       });
       setSelectedOptions(initialOptions);
     }
@@ -205,18 +216,44 @@ export function OptionSection({
   const toggleTestVisibility = () => {
     setIsTestVisible(prev => !prev);
     setIsMajorSelected(false);
-    setIsTestSelected(true);
+    setIsTestSelected(!isTestSelected);
     setIsMbtiSelected(false);
   };
 
   useEffect(() => {
-    if (score < 5.34 && score > 0) onCleanTestChange('상');
-    if (score > 5.34 && score < 10.67) onCleanTestChange('평범보통');
-    if (score > 10.67) onCleanTestChange('천하태평');
+    if (score < 5.34 && score > 0) {
+      if (!selectedOptions['상']) handleOptionClick('상');
+      if (selectedOptions['평범보통']) handleOptionClick('평범보통');
+      if (selectedOptions['천하태평']) handleOptionClick('천하태평');
+    }
+    if (score > 5.34 && score < 10.67) {
+      if (!selectedOptions['평범보통']) handleOptionClick('평범보통');
+      if (selectedOptions['상']) handleOptionClick('상');
+      if (selectedOptions['천하태평']) handleOptionClick('천하태평');
+    }
+    if (score > 10.67) {
+      if (!selectedOptions['천하태평']) handleOptionClick('천하태평');
+      if (selectedOptions['평범보통']) handleOptionClick('평범보통');
+      if (selectedOptions['상']) handleOptionClick('상');
+    }
   }, [score]);
+
+  const [initialMin, setInitialMin] = useState(0);
+  const [initialMax, setInitialMax] = useState(355);
+  useEffect(() => {
+    if (budget !== undefined) {
+      const [min, max] = budget.split(',').map(Number);
+      setInitialMin(min);
+      setInitialMax(max);
+    }
+  }, [budget]);
 
   const [budgetMin, setBudgetMin] = useState(0);
   const [budgetMax, setBudgetMax] = useState(355);
+  useEffect(() => {
+    setBudgetMin(initialMin);
+    setBudgetMax(initialMax);
+  }, [initialMin, initialMax]);
 
   const handleBudgetChange = (min: number, max: number) => {
     setBudgetMin(min);
@@ -228,7 +265,18 @@ export function OptionSection({
   const [isMbtiSelected, setIsMbtiSelected] = useState(false);
 
   const [selectedMbti, setMbti] = useState('');
+  useEffect(() => {
+    if (mbti !== undefined) {
+      setMbti(mbti);
+    }
+  }, [mbti]);
+
   const [selectedMajor, setMajor] = useState('');
+  useEffect(() => {
+    if (major !== undefined) {
+      setMajor(major);
+    }
+  }, [major]);
 
   useEffect(() => {
     onMbtiChange(selectedMbti);
@@ -244,7 +292,7 @@ export function OptionSection({
   }, [budgetMin, budgetMax]);
 
   const handleMajorSelect = () => {
-    setIsMajorSelected(true);
+    setIsMajorSelected(!isMajorSelected);
     setIsTestSelected(false);
     setIsMbtiSelected(false);
   };
@@ -252,7 +300,7 @@ export function OptionSection({
   const handleMbtiSelect = () => {
     setIsMajorSelected(false);
     setIsTestSelected(false);
-    setIsMbtiSelected(true);
+    setIsMbtiSelected(!isMbtiSelected);
   };
 
   return (
@@ -355,13 +403,13 @@ export function OptionSection({
                     {isTestVisible ? '결과 확인하기' : '테스트 하기'}
                   </styles.cleanTestDescription>
                 </styles.cleanTestContainer>
-                <CheckItem $isSelected={score >= 0 && score < 5.34}>
-                  상
-                </CheckItem>
-                <CheckItem $isSelected={score > 5.34 && score < 10.67}>
+                <CheckItem $isSelected={selectedOptions['상']}>상</CheckItem>
+                <CheckItem $isSelected={selectedOptions['평범보통']}>
                   평범보통
                 </CheckItem>
-                <CheckItem $isSelected={score > 10.67}>천하태평</CheckItem>
+                <CheckItem $isSelected={selectedOptions['천하태평']}>
+                  천하태평
+                </CheckItem>
               </styles.optionListCheckItemContainer>
             ) : (
               <styles.optionListCheckItemContainer>
@@ -422,22 +470,36 @@ export function OptionSection({
                     if (isMySelf) {
                       handleOptionClick(option);
                     }
-                    if (option === '엠비티아이') {
-                      handleMbtiSelect();
-                    }
-                    if (option === '전공') {
-                      handleMajorSelect();
-                    }
                   }}
                 >
-                  {option === '엠비티아이' ? <>MBTI</> : option}
+                  {option}
                 </CheckItem>
               ))}
-              {selectedOptions['전공'] && isMajorSelected ? (
-                <MajorSelector onChange={setMajor} />
+              <CheckItem
+                $isSelected={selectedOptions['엠비티아이']}
+                onClick={() => {
+                  if (isMySelf) {
+                    handleMbtiSelect();
+                  }
+                }}
+              >
+                MBTI
+              </CheckItem>
+              <CheckItem
+                $isSelected={selectedOptions['전공']}
+                onClick={() => {
+                  if (isMySelf) {
+                    handleMajorSelect();
+                  }
+                }}
+              >
+                전공
+              </CheckItem>
+              {isMajorSelected ? (
+                <MajorSelector major={major} onChange={setMajor} />
               ) : null}
-              {selectedOptions['엠비티아이'] && isMbtiSelected ? (
-                <MbtiToggle onChange={setMbti} />
+              {isMbtiSelected ? (
+                <MbtiToggle mbti={mbti} onChange={setMbti} />
               ) : null}
             </styles.personalContainer>
           </styles.optionListItem>
@@ -450,14 +512,14 @@ export function OptionSection({
                   min={0}
                   max={355}
                   step={5}
-                  initialMin={budgetMin}
-                  initialMax={budgetMax}
+                  initialMin={initialMin}
+                  initialMax={initialMax}
                   onChange={handleBudgetChange}
                 />
               </styles.budgetContainer>
               <styles.value>
-                {`${budgetMin === 0 ? '0원' : `${budgetMin}만원`}`} ~{' '}
-                {`${budgetMax === 355 ? '무제한' : `${budgetMax}만원`}`}
+                {`${budgetMin === 0 ? '0원' : `${budgetMin ?? ''}만원`}`} ~{' '}
+                {`${budgetMax === 355 ? '무제한' : `${budgetMax ?? ''}만원`}`}
               </styles.value>
             </styles.optionListCheckItemContainer>
           </styles.optionListItem>

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { Slider } from './card/Slider';
+import { Slider } from './Slider';
 
 const styles = {
   vitalContainer: styled.div`
@@ -109,10 +109,65 @@ const styles = {
     font-weight: 500;
     line-height: normal;
   `,
+
+  sliderContainer: styled.div`
+    width: 25rem;
+    height: 1.875rem;
+    position: relative;
+  `,
+  sliderTrack: styled.div`
+    width: 100%;
+    height: 0.3125rem;
+    border-radius: 20px;
+    background: #d9d9d9;
+    position: absolute;
+    top: calc(50% - 2px);
+  `,
+  sliderFillTrack: styled.div<FillProps>`
+    width: ${props => props.$fill};
+    height: 0.3125rem;
+    border-radius: 2px;
+    background: var(--Main-1, #e15637);
+    position: absolute;
+    top: calc(50% - 2px);
+  `,
+  slider: styled.input`
+    position: absolute;
+    width: 100%;
+    height: 0.3125rem;
+    border-radius: 1.25rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    top: calc(50% - 2px);
+
+    &:focus {
+      outline: none;
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      pointer-events: all;
+      width: 1.875rem;
+      height: 1.875rem;
+      background-color: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px #c6c6c6;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    }
+  `,
 };
 
 interface CheckItemProps {
   $isSelected: boolean;
+}
+
+interface FillProps {
+  $fill: string;
 }
 
 const CheckItem = styled.div<CheckItemProps>`
@@ -158,9 +213,7 @@ export function VitalSection({
   gender,
   birthYear,
   location,
-  smoking,
-  room,
-  mateAge,
+  vitalFeatures,
   onFeatureChange,
   onLocationChange,
   onMateAgeChange,
@@ -170,9 +223,7 @@ export function VitalSection({
   gender: string | undefined;
   birthYear: string | undefined;
   location: string | undefined;
-  smoking: string | undefined;
-  room: string | undefined;
-  mateAge: string | undefined;
+  vitalFeatures: string[] | null;
   onFeatureChange: (
     optionName: keyof SelectedState,
     item: string | number,
@@ -189,10 +240,10 @@ export function VitalSection({
   useEffect(() => {
     setSelectedState({
       ...selectedState,
-      smoking: smoking,
-      room: room,
+      smoking: vitalFeatures?.[0],
+      room: vitalFeatures?.[1],
     });
-  }, [smoking, room]);
+  }, [vitalFeatures]);
 
   function handleOptionClick(
     optionName: keyof SelectedState,
@@ -205,38 +256,43 @@ export function VitalSection({
     onFeatureChange(optionName, item);
   }
 
-  const [locationInput, setLocation] = useState(location);
+  const [initialLocation, setInitialLocation] = useState('');
+  useEffect(() => {
+    if (location !== undefined && type === 'myCard') {
+      setInitialLocation(location);
+    }
+  }, [location]);
+
+  const [locationInput, setLocation] = useState('');
+  useEffect(() => {
+    setLocation(initialLocation);
+  }, [initialLocation]);
+
   const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLocation(event.target.value);
   };
-
   useEffect(() => {
     onLocationChange(locationInput);
   }, [locationInput]);
 
-  const [initialMateMinAge, setInitialMin] = useState(0);
-  const [initialMateMaxAge, setInitialMax] = useState(11);
-
+  const [initialAge, setInitialAge] = useState(0);
   useEffect(() => {
-    if (mateAge !== undefined) {
-      const [min, max] = mateAge.split('~');
-      setInitialMin(Number(min));
-      setInitialMax(Number(max));
-    }
-  }, [mateAge]);
+    if (vitalFeatures !== null)
+      setInitialAge(Number(vitalFeatures?.[2].slice(1)));
+  }, [vitalFeatures?.[2]]);
 
-  const [mateMinAge, setMateMinAge] = useState(initialMateMinAge);
-  const [mateMaxAge, setMateMaxAge] = useState(initialMateMaxAge);
+  const [ageValue, setAgeValue] = useState<number>(0);
+  useEffect(() => {
+    if (initialAge !== undefined) setAgeValue(initialAge);
+  }, [initialAge]);
 
-  const handleAgeChange = (min: number, max: number) => {
-    setMateMinAge(min);
-    setMateMaxAge(max);
+  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAgeValue(Number(e.target.value));
   };
-
   useEffect(() => {
-    const ageString = `${mateMinAge}~${mateMaxAge}`;
+    const ageString = `±${ageValue}`;
     onMateAgeChange(ageString);
-  }, [mateMinAge, mateMaxAge]);
+  }, [ageValue]);
 
   return (
     <styles.vitalContainer>
@@ -286,9 +342,9 @@ export function VitalSection({
             <CheckItem
               $isSelected
               style={{
-                border: gender === 'FEMALE' ? 'none' : '',
-                background: gender === 'FEMALE' ? 'var(--Gray-5, #828282)' : '',
-                color: gender === 'FEMALE' ? '#fff' : '',
+                border: 'none',
+                background: 'var(--Gray-5, #828282)',
+                color: '#fff',
               }}
             >
               {location}
@@ -387,17 +443,20 @@ export function VitalSection({
             </styles.birthYear>
           ) : (
             <>
-              <Slider
-                min={0}
-                max={11}
-                step={1}
-                initialMin={mateMinAge}
-                initialMax={mateMaxAge}
-                onChange={handleAgeChange}
-              />
+              <styles.sliderContainer>
+                <styles.sliderTrack />
+                <styles.sliderFillTrack $fill={`${(ageValue / 11) * 100}%`} />
+                <styles.slider
+                  type="range"
+                  min={0}
+                  max={11}
+                  step={1}
+                  value={ageValue}
+                  onChange={handleAgeChange}
+                />
+              </styles.sliderContainer>
               <styles.value>
-                {`${mateMinAge === 0 ? '동갑' : `±${mateMinAge}세`}`} ~{' '}
-                {`${mateMaxAge === 11 ? '무제한' : `±${mateMaxAge}세`}`}
+                {`${ageValue === 11 ? '동갑 ~ 무제한' : `동갑 ~ ±${ageValue}세`}`}
               </styles.value>
             </>
           )}

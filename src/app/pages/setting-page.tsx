@@ -197,35 +197,50 @@ export function SettingPage({ cardId }: { cardId: number }) {
   }, [features, isMySelf]);
 
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+  const [initialMbti, setInitialMbti] = useState('');
+  const [initialMajor, setInitialMajor] = useState('');
+  const [initialBudget, setInitialBudget] = useState('');
 
   const majorArray = ['공학', '교육', '인문', '사회', '자연', '예체능', '의약'];
-  const cleanScoreArray = ['상', '평범보통', '천하태평'];
 
   useEffect(() => {
     if (isMySelf) {
       if (features !== null) {
         const initialOptions: SelectedOptions = {};
         features.slice(2).forEach(option => {
-          if (option.includes(',')) setBudget(option);
-          else if (option.includes('~')) setMateAge(option);
-          else if (option.includes('E') || option.includes('I'))
-            setMbti(option);
-          else if (majorArray.includes(option)) setMajor(option);
-          else if (cleanScoreArray.includes(option))
-            initialOptions[option] = true;
+          if (
+            option.includes(',') ||
+            option.includes('±') ||
+            option.includes('E') ||
+            option.includes('I') ||
+            majorArray.includes(option)
+          ) {
+          } else initialOptions[option] = true;
+
+          if (option.includes('E') || option.includes('I'))
+            setInitialMbti(option);
+          if (majorArray.includes(option)) setInitialMajor(option);
+          if (option.includes(',')) setInitialBudget(option);
         });
         setSelectedOptions(initialOptions);
       }
     }
   }, [features, isMySelf]);
 
-  const [locationInput, setLocation] = useState(card.data?.data.location);
+  const [locationInput, setLocation] = useState<string | undefined>(
+    card.data?.data.location,
+  );
+
+  useEffect(() => {
+    if (card.data?.data.location) {
+      setLocation(card.data.data.location);
+    }
+  }, [card.data?.data.location]);
 
   const [mbti, setMbti] = useState<string | undefined>('');
   const [major, setMajor] = useState<string | undefined>('');
   const [budget, setBudget] = useState<string | undefined>('');
   const [mateAge, setMateAge] = useState<string | undefined>('');
-  const [cleanScore, setCleanScore] = useState<string | undefined>('');
 
   const handleFeatureChange = (
     optionName: keyof SelectedState,
@@ -252,16 +267,15 @@ export function SettingPage({ cardId }: { cardId: number }) {
 
   const saveData = () => {
     const array = Object.keys(selectedOptions).filter(
-      key => selectedOptions[key],
+      key => selectedOptions[key] && key !== '전공' && key !== '엠비티아이',
     );
 
     const location = locationInput ?? '';
     const myFeatures = [
       selectedState.smoking,
       selectedState.room,
-      mateAge,
+      mateAge !== '' ? mateAge : undefined,
       ...array,
-      ...(cleanScore !== null && cleanScore !== undefined ? [cleanScore] : []),
       ...(mbti !== null && mbti !== undefined ? [mbti] : []),
       ...(major !== null && major !== undefined ? [major] : []),
       budget,
@@ -328,9 +342,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
             </styles.miniCardList>
             <styles.miniCardList>
               <styles.miniCardLocation />
-              <styles.miniCardText>
-                {card.data?.data.location}
-              </styles.miniCardText>
+              <styles.miniCardText>{locationInput}</styles.miniCardText>
             </styles.miniCardList>
             <styles.miniCardList>
               <styles.miniCardMeeting />
@@ -352,9 +364,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
             gender={userData?.gender}
             birthYear={userData?.birthYear}
             location={card.data?.data.location}
-            smoking={features?.[0]}
-            room={features?.[1]}
-            mateAge={mateAge}
+            vitalFeatures={features}
             onFeatureChange={handleFeatureChange}
             onLocationChange={setLocation}
             onMateAgeChange={setMateAge}
@@ -363,12 +373,14 @@ export function SettingPage({ cardId }: { cardId: number }) {
           />
           <styles.horizontalLine />
           <OptionSection
+            mbti={initialMbti}
+            major={initialMajor}
+            budget={initialBudget}
             optionFeatures={features}
             onFeatureChange={handleOptionClick}
             onMbtiChange={setMbti}
             onMajorChange={setMajor}
             onBudgetChange={setBudget}
-            onCleanTestChange={setCleanScore}
             isMySelf={isMySelf}
             type={type}
           />
