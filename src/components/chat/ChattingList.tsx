@@ -14,6 +14,7 @@ const styles = {
     border-bottom: 1px solid var(--Gray-4, #dfdfdf);
     background: #fff;
     cursor: pointer;
+    overflow-y: auto;
   `,
   infoSection: styled.div`
     display: flex;

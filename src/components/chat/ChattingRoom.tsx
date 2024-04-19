@@ -7,6 +7,8 @@ import styled from 'styled-components';
 import { ReceiverMessage } from './ReceiverMessage';
 import { SenderMessage } from './SenderMessage';
 
+import { useAuthValue } from '@/features/auth';
+
 const styles = {
   container: styled.div`
     position: fixed;
@@ -142,11 +144,16 @@ export function ChattingRoom({
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const user = userName;
 
+  const auth = useAuthValue();
+
   useEffect(() => {
     const initializeChat = async () => {
       try {
         const stomp = new Client({
           brokerURL: `ws://ec2-13-125-228-9.ap-northeast-2.compute.amazonaws.com:8080/ws`,
+          connectHeaders: {
+            Authorization: `Bearer ${auth?.accessToken}`,
+          },
           debug: (str: string) => {
             console.log(str);
           },
@@ -173,14 +180,16 @@ export function ChattingRoom({
       }
     };
 
-    void initializeChat();
+    if (auth?.accessToken != null) {
+      void initializeChat();
+    }
 
     return () => {
       if (stompClient !== null && stompClient.connected) {
         void stompClient.deactivate();
       }
     };
-  }, []);
+  }, [auth?.accessToken]);
 
   const sendMessage = () => {
     if (stompClient !== null && stompClient.connected) {
@@ -189,7 +198,7 @@ export function ChattingRoom({
       stompClient.publish({
         destination,
         body: JSON.stringify({
-          roomId: 1,
+          roomId: roomId,
           sender: user,
           message: inputMessage,
         }),
