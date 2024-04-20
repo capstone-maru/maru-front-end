@@ -307,7 +307,6 @@ export function UserInputPage() {
   const [mateMajor, setMateMajor] = useState<string | undefined>('');
   const [mateBudget, setMateBudget] = useState<string | undefined>('');
   const [mateAge, setMateAge] = useState<string | undefined>('');
-  const [cleanScore, setCleanScore] = useState<string | undefined>('');
 
   const handleButtonClick = () => {
     const myOptions = Object.keys(selectedOptions).filter(
@@ -361,6 +360,19 @@ export function UserInputPage() {
   const handleMateCardClick = () => {
     setActiveContainer('mate');
   };
+
+  let ageString;
+  switch (mateAge) {
+    case '±0':
+      ageString = '동갑';
+      break;
+    case '±11':
+      ageString = '상관없어요';
+      break;
+    default:
+      ageString = `${mateAge}년생`;
+  }
+
   return (
     <styles.pageContainer>
       <styles.pageDescription>
@@ -418,8 +430,7 @@ export function UserInputPage() {
                 <styles.miniCardList>
                   <styles.miniCardPerson $active={activeContainer === 'mate'} />
                   <styles.miniCardText $active={activeContainer === 'mate'}>
-                    {user?.gender === 'MALE' ? '남성' : '여성'} ·{' '}
-                    {user?.birthYear?.slice(2)}년생 ·{' '}
+                    {user?.gender === 'MALE' ? '남성' : '여성'} · {ageString} ·{' '}
                     {selectedMateState.smoking}
                   </styles.miniCardText>
                 </styles.miniCardList>

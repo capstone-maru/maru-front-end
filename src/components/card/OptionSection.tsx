@@ -91,11 +91,21 @@ const styles = {
   budgetContainer: styled.div`
     display: flex;
     align-items: center;
-    gap: 4rem;
+    gap: 0.5rem;
     width: 100%;
   `,
-  value: styled.span`
-    color: #000;
+  value: styled.div`
+    display: flex;
+    width: 6.8rem;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 10px;
+    border: 2px solid #dfdfdf;
+    background: #fff;
+
+    color: #888;
 
     font-family: 'Noto Sans KR';
     font-size: 1rem;
@@ -190,13 +200,14 @@ export function OptionSection({
       const initialOptions: SelectedOptions = {};
       optionFeatures.slice(2).forEach(option => {
         if (
-          option.includes(',') ||
-          option.includes('±') ||
-          option.includes('E') ||
-          option.includes('I') ||
-          majorArray.includes(option)
+          !option.includes(',') &&
+          !option.includes('±') &&
+          !option.includes('E') &&
+          !option.includes('I') &&
+          !majorArray.includes(option)
         ) {
-        } else initialOptions[option] = true;
+          initialOptions[option] = true;
+        }
       });
       setSelectedOptions(initialOptions);
     }
@@ -504,10 +515,31 @@ export function OptionSection({
             </styles.personalContainer>
           </styles.optionListItem>
           <styles.optionListItem>
-            <styles.optionListImg src="/option-img/home_work.svg" />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.2rem',
+              }}
+            >
+              <styles.optionListImg src="/option-img/home_work.svg" />
+              <span
+                style={{
+                  color: '#888',
+                  fontFamily: 'Noto Sans KR',
+                  fontSize: '1rem',
+                  fontStyle: 'normal',
+                  fontWeight: '500',
+                  lineHeight: 'normal',
+                }}
+              >
+                금액
+              </span>
+            </div>
             <styles.optionListCheckItemContainer>
               <styles.budgetContainer>
-                <CheckItem $isSelected={false}>금액</CheckItem>
+                <styles.value>{`${budgetMin === 0 ? '0원' : `${budgetMin ?? ''}만원`}`}</styles.value>
                 <Slider
                   min={0}
                   max={355}
@@ -516,11 +548,10 @@ export function OptionSection({
                   initialMax={initialMax}
                   onChange={handleBudgetChange}
                 />
+                <styles.value>
+                  {`${budgetMax === 355 ? '무제한' : `${budgetMax ?? ''}만원`}`}
+                </styles.value>
               </styles.budgetContainer>
-              <styles.value>
-                {`${budgetMin === 0 ? '0원' : `${budgetMin ?? ''}만원`}`} ~{' '}
-                {`${budgetMax === 355 ? '무제한' : `${budgetMax ?? ''}만원`}`}
-              </styles.value>
             </styles.optionListCheckItemContainer>
           </styles.optionListItem>
         </styles.optionList>

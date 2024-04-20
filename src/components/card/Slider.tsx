@@ -9,7 +9,7 @@ const styles = {
     align-items: center;
   `,
   sliderContainer: styled.div`
-    width: 25rem;
+    width: 22rem;
     height: 1.875rem;
     position: relative;
   `,
@@ -106,24 +106,28 @@ export function Slider({
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLow = Number(e.target.value);
-    const currentMax = inputMaxRef.current
-      ? Number(inputMaxRef.current.value)
-      : initialMin;
+    const currentMax =
+      inputMaxRef.current !== null
+        ? Number(inputMaxRef.current.value)
+        : initialMin;
     if (newLow > currentMax) {
       setMaxValue(newLow);
-      inputMaxRef.current && (inputMaxRef.current.value = newLow.toString());
+      inputMaxRef.current !== null &&
+        (inputMaxRef.current.value = newLow.toString());
     }
     setMinValue(newLow);
   };
 
   const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHigh = Number(e.target.value);
-    const currentMin = inputMinRef.current
-      ? Number(inputMinRef.current.value)
-      : initialMax;
+    const currentMin =
+      inputMinRef.current !== null
+        ? Number(inputMinRef.current.value)
+        : initialMax;
     if (newHigh < currentMin) {
       setMinValue(newHigh);
-      inputMinRef.current && (inputMinRef.current.value = newHigh.toString());
+      inputMinRef.current !== null &&
+        (inputMinRef.current.value = newHigh.toString());
     }
     setMaxValue(newHigh);
   };
@@ -147,8 +151,7 @@ export function Slider({
           min={min}
           max={max}
           step={step}
-          value={minValue}
-          defaultValue={initialMin}
+          value={minValue ?? min}
           onChange={handleMinChange}
         />
         <styles.slider
@@ -157,8 +160,7 @@ export function Slider({
           min={min}
           max={max}
           step={step}
-          value={maxValue}
-          defaultValue={initialMax}
+          value={maxValue ?? max}
           onChange={handleMaxChange}
         />
       </styles.sliderContainer>

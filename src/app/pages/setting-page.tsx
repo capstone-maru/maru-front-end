@@ -10,7 +10,7 @@ import Meeting from '../../../public/option-img/meeting_room.svg';
 import Person from '../../../public/option-img/person.svg';
 import Visibility from '../../../public/option-img/visibility.svg';
 
-import { VitalSection, OptionSection } from '@/components';
+import { UserInputSection } from '@/components';
 import {
   useProfileData,
   usePutUserCard,
@@ -209,13 +209,14 @@ export function SettingPage({ cardId }: { cardId: number }) {
         const initialOptions: SelectedOptions = {};
         features.slice(2).forEach(option => {
           if (
-            option.includes(',') ||
-            option.includes('±') ||
-            option.includes('E') ||
-            option.includes('I') ||
-            majorArray.includes(option)
+            !option.includes(',') &&
+            !option.includes('±') &&
+            !option.includes('E') &&
+            !option.includes('I') &&
+            !majorArray.includes(option)
           ) {
-          } else initialOptions[option] = true;
+            initialOptions[option] = true;
+          }
 
           if (option.includes('E') || option.includes('I'))
             setInitialMbti(option);
@@ -232,7 +233,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
   );
 
   useEffect(() => {
-    if (card.data?.data.location) {
+    if (card.data?.data.location !== undefined) {
       setLocation(card.data.data.location);
     }
   }, [card.data?.data.location]);
@@ -326,18 +327,38 @@ export function SettingPage({ cardId }: { cardId: number }) {
     };
   }, [handlePopState]);
 
+  let ageString;
+  if (type === 'myCard') {
+    ageString = `${userData?.birthYear.slice(2)}년생`;
+  } else {
+    switch (mateAge) {
+      case '±0':
+        ageString = '동갑';
+        break;
+      case '±11':
+        ageString = '상관없어요';
+        break;
+      default:
+        ageString = `${mateAge}년생`;
+    }
+  }
+
   return (
     <styles.pageContainer>
-      <styles.cardName>내 카드 &gt; {userData?.name}</styles.cardName>
+      <styles.cardName>
+        {type === 'myCard' ? `내 카드 > ${userData?.name}` : '메이트 카드'}
+      </styles.cardName>
       <styles.cardContainer>
         <styles.miniCard>
-          <styles.miniCardName>내카드</styles.miniCardName>
+          <styles.miniCardName>
+            {type === 'myCard' ? '내카드' : '메이트카드'}
+          </styles.miniCardName>
           <styles.miniCardKeywordsContainer>
             <styles.miniCardList>
               <styles.miniCardPerson />
               <styles.miniCardText>
-                {userData?.gender === 'MALE' ? '남성' : '여성'} ·{' '}
-                {userData?.birthYear?.slice(2)}년생 · {selectedState.smoking}
+                {userData?.gender === 'MALE' ? '남성' : '여성'} · {ageString} ·{' '}
+                {selectedState.smoking}
               </styles.miniCardText>
             </styles.miniCardList>
             <styles.miniCardList>
@@ -359,32 +380,24 @@ export function SettingPage({ cardId }: { cardId: number }) {
             </styles.miniCardList>
           </styles.miniCardKeywordsContainer>
         </styles.miniCard>
-        <styles.checkContainer>
-          <VitalSection
-            gender={userData?.gender}
-            birthYear={userData?.birthYear}
-            location={card.data?.data.location}
-            vitalFeatures={features}
-            onFeatureChange={handleFeatureChange}
-            onLocationChange={setLocation}
-            onMateAgeChange={setMateAge}
-            isMySelf={isMySelf}
-            type={type}
-          />
-          <styles.horizontalLine />
-          <OptionSection
-            mbti={initialMbti}
-            major={initialMajor}
-            budget={initialBudget}
-            optionFeatures={features}
-            onFeatureChange={handleOptionClick}
-            onMbtiChange={setMbti}
-            onMajorChange={setMajor}
-            onBudgetChange={setBudget}
-            isMySelf={isMySelf}
-            type={type}
-          />
-        </styles.checkContainer>
+        <UserInputSection
+          gender={userData?.gender}
+          birthYear={userData?.birthYear}
+          location={card.data?.data.location}
+          features={features}
+          isMySelf={isMySelf}
+          type={type}
+          mbti={initialMbti}
+          major={initialMajor}
+          budget={initialBudget}
+          onVitalChange={handleFeatureChange}
+          onOptionChange={handleOptionClick}
+          onLocationChange={setLocation}
+          onMateAgeChange={setMateAge}
+          onMbtiChange={setMbti}
+          onMajorChange={setMajor}
+          onBudgetChange={setBudget}
+        />
       </styles.cardContainer>
     </styles.pageContainer>
   );

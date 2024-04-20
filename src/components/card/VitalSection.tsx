@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { Slider } from './Slider';
-
 const styles = {
   vitalContainer: styled.div`
     display: flex;
@@ -101,7 +99,16 @@ const styles = {
     }
   `,
   value: styled.span`
-    color: #000;
+    display: flex;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 10px;
+    border: 2px solid #dfdfdf;
+    background: #fff;
+
+    color: #888;
 
     font-family: 'Noto Sans KR';
     font-size: 1rem;
@@ -111,7 +118,7 @@ const styles = {
   `,
 
   sliderContainer: styled.div`
-    width: 25rem;
+    width: 22rem;
     height: 1.875rem;
     position: relative;
   `,
@@ -294,6 +301,18 @@ export function VitalSection({
     onMateAgeChange(ageString);
   }, [ageValue]);
 
+  let ageValueString;
+  switch (ageValue) {
+    case 0:
+      ageValueString = '동갑';
+      break;
+    case 11:
+      ageValueString = '상관없어요';
+      break;
+    default:
+      ageValueString = `±${ageValue}년생`;
+  }
+
   return (
     <styles.vitalContainer>
       <styles.vitalDescription>필수</styles.vitalDescription>
@@ -442,7 +461,13 @@ export function VitalSection({
               ))}
             </styles.birthYear>
           ) : (
-            <>
+            <div
+              style={{
+                display: 'flex',
+                gap: '1rem',
+                alignItems: 'center',
+              }}
+            >
               <styles.sliderContainer>
                 <styles.sliderTrack />
                 <styles.sliderFillTrack $fill={`${(ageValue / 11) * 100}%`} />
@@ -455,10 +480,8 @@ export function VitalSection({
                   onChange={handleAgeChange}
                 />
               </styles.sliderContainer>
-              <styles.value>
-                {`${ageValue === 11 ? '동갑 ~ 무제한' : `동갑 ~ ±${ageValue}세`}`}
-              </styles.value>
-            </>
+              <styles.value>{ageValueString}</styles.value>
+            </div>
           )}
         </styles.vitalList>
       </styles.vitalListContainer>

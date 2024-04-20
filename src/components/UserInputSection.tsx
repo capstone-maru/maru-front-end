@@ -32,35 +32,34 @@ interface UserInputProps {
   gender: string | undefined;
   birthYear: string | undefined;
   location: string | undefined;
-  features: string[] | null;
-  isMySelf: boolean; // 본인 여부
-  type: string; // 카드 타입
   mbti: string | undefined;
   major: string | undefined;
   budget: string | undefined;
+  features: string[] | null;
+  isMySelf: boolean;
+  type: string;
   onVitalChange: (
-    // 흡연 여부, 방 공유 여부
     optionName: keyof SelectedState,
     item: string | number,
   ) => void;
-  onOptionChange: (option: string) => void; // 선택 사항 선택 여부
-  onLocationChange: React.Dispatch<React.SetStateAction<string | undefined>>; // 희망 지역
-  onMateAgeChange: React.Dispatch<React.SetStateAction<string | undefined>>; // 메이트 나이 '±age'
-  onMbtiChange: React.Dispatch<React.SetStateAction<string | undefined>>; // mbti
-  onMajorChange: React.Dispatch<React.SetStateAction<string | undefined>>; // major
-  onBudgetChange: React.Dispatch<React.SetStateAction<string | undefined>>; // 금액 'min,max'
+  onOptionChange: (option: string) => void;
+  onLocationChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onMateAgeChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onMbtiChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onMajorChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onBudgetChange: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 export function UserInputSection({
   gender,
   birthYear,
   location,
-  features,
-  isMySelf,
-  type,
   mbti,
   major,
   budget,
+  features,
+  isMySelf,
+  type,
   onVitalChange,
   onOptionChange,
   onLocationChange,

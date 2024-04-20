@@ -62,9 +62,9 @@ export function MajorSelector({
       onChange={handleMajorChange}
     >
       <option value="">선택</option>
-      {majorOptions.map(major => (
-        <option key={major} value={major}>
-          {major}
+      {majorOptions.map(option => (
+        <option key={option} value={option}>
+          {option}
         </option>
       ))}
     </styles.majorSelector>
