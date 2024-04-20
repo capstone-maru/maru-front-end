@@ -12,11 +12,14 @@ import {
   SharedPostFilters,
   SharedPostsMenu,
 } from '@/components/shared-posts';
-import { type SharedPostsType } from '@/entities/shared-posts-filter';
+import {
+  useSharedPostsFilter,
+  type SharedPostsType,
+} from '@/entities/shared-posts-filter';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
 import { useRecommendationMate } from '@/features/recommendation';
 import { usePaging, useSharedPosts } from '@/features/shared';
-import { type GetSharedPostsDTO } from '@/features/shared/shared.dto';
+import { type GetSharedPostsDTO } from '@/features/shared/';
 
 const styles = {
   container: styled.div`
@@ -31,18 +34,14 @@ const styles = {
   SharedPostsMenu: styled(SharedPostsMenu)`
     margin-bottom: 2rem;
   `,
-  SharedPostsFilter: styled(SharedPostFilters)`
-    margin-bottom: 2.81rem;
-  `,
   createButtonRow: styled.div`
     display: flex;
-    justify-content: end;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 4.12rem;
   `,
   createButton: styled.button`
     all: unset;
-
     cursor: pointer;
 
     display: flex;
@@ -50,6 +49,7 @@ const styles = {
     padding: 0.5rem 1.5rem;
     justify-content: center;
     align-items: center;
+    gap: 0.25rem;
 
     border-radius: 8px;
     background: var(--Black, #35373a);
@@ -120,6 +120,8 @@ export function SharedPostsPage() {
     useState<GetSharedPostsDTO | null>(null);
   const { setAuthUserData } = useAuthActions();
 
+  const { filter, reset } = useSharedPostsFilter();
+
   const { data: userData } = useUserData(auth?.accessToken !== undefined);
 
   const {
@@ -143,8 +145,16 @@ export function SharedPostsPage() {
 
   const { data: recommendationMates } = useRecommendationMate({
     memberId: auth?.user?.memberId ?? 'undefined',
+    cardType: filter.cardType ?? 'mate',
     enabled: auth?.accessToken != null && selected === 'homeless',
   });
+
+  useEffect(() => {
+    reset();
+    return () => {
+      reset();
+    };
+  }, []);
 
   useEffect(() => {
     if (sharedPosts != null) {
@@ -165,14 +175,16 @@ export function SharedPostsPage() {
   return (
     <styles.container>
       <styles.SharedPostsMenu selected={selected} handleSelect={setSelected} />
-      <styles.SharedPostsFilter selected={selected} />
+      <styles.createButtonRow>
+        <SharedPostFilters selected={selected} />
+        {selected === 'hasRoom' && (
+          <Link href="/shared/writing">
+            <styles.createButton>작성하기</styles.createButton>
+          </Link>
+        )}
+      </styles.createButtonRow>
       {selected === 'hasRoom' ? (
         <>
-          <styles.createButtonRow>
-            <Link href="/shared/writing">
-              <styles.createButton>작성하기</styles.createButton>
-            </Link>
-          </styles.createButtonRow>
           <styles.posts>
             {prevSharedPosts != null
               ? prevSharedPosts.data.content.map(post => (
@@ -215,7 +227,6 @@ export function SharedPostsPage() {
                       handleSetPage(index + 1 + currentSlice * sliceSize);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    // eslint-disable-next-line react/no-array-index-key
                     key={`${currentSlice}-${index}`}
                     className={
                       page === index + 1 + currentSlice * sliceSize

@@ -4,7 +4,7 @@ import { type GetImageURLDTO } from './image.dto';
 
 export const getImageURL = async (fileExtension: string) =>
   await axios.get<GetImageURLDTO>(
-    `/api/image/upload?extension=${fileExtension}`,
+    `/maru-api/image/upload?extension=${fileExtension}`,
   );
 
 export const putImage = async (url: string, image: File) =>

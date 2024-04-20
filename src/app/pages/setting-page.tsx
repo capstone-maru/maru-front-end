@@ -346,7 +346,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
   return (
     <styles.pageContainer>
       <styles.cardName>
-        {type === 'myCard' ? `내 카드 > ${userData?.name}` : '메이트 카드'}
+        {type === 'myCard' ? `마이 카드` : '메이트 카드'}
       </styles.cardName>
       <styles.cardContainer>
         <styles.miniCard>

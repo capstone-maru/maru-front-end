@@ -73,7 +73,7 @@ const styles = {
     gap: 1rem;
 
     img {
-      border-radius: 100px;
+      border-radius: 50%;
       border: 1px solid #dcddea;
       background: #c4c4c4;
 

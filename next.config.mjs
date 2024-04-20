@@ -7,7 +7,7 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
+        source: '/maru-api/:path*',
         destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
       },
     ];

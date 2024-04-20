@@ -423,7 +423,7 @@ function Card({
   return (
     <styles.cardSection>
       <styles.cardWrapper>
-        <styles.description32px>내 카드</styles.description32px>
+        <styles.description32px>마이 카드</styles.description32px>
         <Link
           href={`/profile/card/${myCardId}?memberId=${memberId}&isMySelf=${isMySelf}&type=myCard`}
         >

@@ -339,11 +339,11 @@ export function UserInputPage() {
 
     try {
       mutateMyCard({
-        location: location,
+        location,
         features: myFeatures,
       });
       mutateMateCard({
-        location: location,
+        location,
         features: mateFeatures,
       });
     } catch (error) {
