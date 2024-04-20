@@ -48,6 +48,7 @@ export interface SharedPost {
   title: string;
   content: string;
   roomMateFeatures: string[];
+  participants: Array<{ memberId: string; profileImage: string }>;
   roomImages: Set<{
     fileName: string;
     isThumbnail: boolean;
@@ -74,24 +75,27 @@ export interface SharedPost {
       oldAddress: string;
       roadAddress: string;
       detailAddress?: string;
-      stationName: string;
-      stationTime: number;
-      busStopTime: number;
-      schoolName: string;
-      schoolTime: number;
-      convenienceStortTime: number;
     };
     roomType: RoomType;
+    floorType: string;
     size: number;
     numberOfRoom: number;
+    numberOfBathRoom: number;
+    hasLivingRoom: boolean;
+    recruitmentCapacity: number;
     rentalType: RentalType;
-    price: number;
-    managementFee: number;
     expectedPayment: number;
-    monthlyFee: number;
+    extraOption: {
+      canPark: boolean;
+      hasAirConditioner: boolean;
+      hasRefrigerator: boolean;
+      hasWasher: boolean;
+      hasTerrace: boolean;
+    };
   };
   isScrapped: boolean;
   scrapCount: number;
+  viewCount: number;
   createdAt: Date;
   createdBy: string;
   modifiedAt: Date;
