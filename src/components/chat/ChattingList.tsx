@@ -86,9 +86,9 @@ const styles = {
   `,
 };
 
-export function ChattingList() {
+export function ChattingList({ onClick }: { onClick: () => void }) {
   return (
-    <styles.chattingRoom>
+    <styles.chattingRoom onClick={onClick}>
       <styles.infoSection>
         <styles.userProfile />
         <styles.activeCircle />

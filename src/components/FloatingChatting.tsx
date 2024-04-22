@@ -52,9 +52,10 @@ const styles = {
   `,
   chattingHeader: styled.div`
     display: inline-flex;
+    justify-content: space-between;
     align-items: center;
-    padding-left: 1rem;
-    gap: 0.3rem;
+    padding: 0 1rem;
+    gap: 1rem;
     width: 100%;
     height: 3.25rem;
     flex-shrink: 0;
@@ -75,10 +76,36 @@ const styles = {
     flex-direction: column;
     overflow-y: hidden;
   `,
+  searchButton: styled.img`
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+  `,
+  searchInput: styled.input`
+    flex: 1;
+    font-size: 1.25rem;
+    padding: 0.8rem;
+    height: 2rem;
+    width: 8rem;
+    background-color: transparent;
+    border: #bdbdbd solid 1px;
+    border-radius: 1.2rem;
+    color: var(--Text-grayDark, #2c2c2e);
+    font-family: 'Noto Sans KR';
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.125rem;
+
+    &:focus {
+      outline: none;
+    }
+  `,
 };
 
 export function FloatingChatting() {
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+  const [isChatRoomOpen, setIsChatRoomOpen] = useState<boolean>(false);
 
   const toggleChat = () => {
     setIsChatOpen(prevState => !prevState);
@@ -92,6 +119,10 @@ export function FloatingChatting() {
     if (data !== undefined) setName(data.name);
   }, [data]);
 
+  const handleChatRoomClick = () => {
+    setIsChatRoomOpen(prev => !prev);
+  };
+
   return (
     <>
       <styles.chattingButton onClick={toggleChat}>
@@ -100,22 +131,35 @@ export function FloatingChatting() {
       {isChatOpen && (
         <styles.container>
           <styles.chattingHeader>
-            <styles.title style={{ color: 'var(--Main-1, #E15637)' }}>
-              maru{' '}
-            </styles.title>
-            <styles.title style={{ color: 'var(--Gray, #8C95A8)' }}>
-              chat
-            </styles.title>
+            <div>
+              <styles.title style={{ color: 'var(--Main-1, #E15637)' }}>
+                maru{' '}
+              </styles.title>
+              <styles.title style={{ color: 'var(--Gray, #8C95A8)' }}>
+                chat
+              </styles.title>
+            </div>
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <styles.searchInput />
+              <styles.searchButton src="/icon-search.svg" />
+            </div>
           </styles.chattingHeader>
           <styles.chattingSection>
-            <ChattingList />
-            <ChattingList />
-            <ChattingList />
-            <ChattingList />
+            <ChattingList onClick={handleChatRoomClick} />
+            <ChattingList onClick={handleChatRoomClick} />
+            <ChattingList onClick={handleChatRoomClick} />
           </styles.chattingSection>
         </styles.container>
       )}
-      <ChattingRoom userName={name} roomId={1} />
+      {isChatRoomOpen && (
+        <ChattingRoom
+          userName={name}
+          roomId={1}
+          onRoomClick={setIsChatRoomOpen}
+        />
+      )}
     </>
   );
 }

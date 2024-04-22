@@ -4,6 +4,7 @@ import { Client } from '@stomp/stompjs';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+import { ChatMenu } from './ChatMenu';
 import { ReceiverMessage } from './ReceiverMessage';
 import { SenderMessage } from './SenderMessage';
 
@@ -12,8 +13,8 @@ import { useAuthValue } from '@/features/auth';
 const styles = {
   container: styled.div`
     position: fixed;
-    bottom: 5rem;
-    left: 6.5rem;
+    bottom: 6rem;
+    right: 6.5rem;
     display: flex;
     width: 25rem;
     height: 35rem;
@@ -36,22 +37,6 @@ const styles = {
     align-items: center;
     padding: 0 0.8rem;
     box-shadow: 0px -1px 0px 0px #e5e5ea inset;
-  `,
-  users: styled.div`
-    display: inline-flex;
-    width: 2rem;
-    align-items: center;
-    flex-shrink: 0;
-    position: relative;
-  `,
-  user: styled.div`
-    position: absolute;
-    width: 1.5rem;
-    height: 1.5rem;
-    flex-shrink: 0;
-    border-radius: 150px;
-    border: 1.5px solid #fff;
-    background: url('__avatar_url.png') lightgray 50% / cover no-repeat;
   `,
   roomInfo: styled.div`
     display: flex;
@@ -79,6 +64,7 @@ const styles = {
     height: 1rem;
     flex-shrink: 0;
     background: url('kebab-horizontal.svg') no-repeat;
+    cursor: pointer;
   `,
   messageContainer: styled.div`
     display: flex;
@@ -89,7 +75,6 @@ const styles = {
     height: calc(100% - 7.5rem);
     box-shadow: 0px -1px 0px 0px #e5e5ea inset;
     position: relative;
-    overflow-y: auto;
   `,
   senderFrame: styled.div`
     display: flex;
@@ -124,6 +109,11 @@ const styles = {
       outline: none;
     }
   `,
+  backButton: styled.img`
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+  `,
 };
 
 interface Content {
@@ -135,14 +125,18 @@ interface Content {
 export function ChattingRoom({
   userName,
   roomId,
+  onRoomClick,
 }: {
   userName: string | undefined;
   roomId: number;
+  onRoomClick: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [messages, setMessages] = useState<Content[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const user = userName;
+  const [isMenuClick, setIsMenuClick] = useState<boolean>(false);
+  const [isBackClick, setIsBackClick] = useState<boolean>(false);
 
   const auth = useAuthValue();
 
@@ -208,6 +202,15 @@ export function ChattingRoom({
     setInputMessage('');
   };
 
+  const handleMenuClick = () => {
+    setIsMenuClick(prev => !prev);
+  };
+
+  const handleBackClick = () => {
+    setIsBackClick(prev => !prev);
+    onRoomClick(isBackClick);
+  };
+
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.keyCode === 13) {
       sendMessage();
@@ -217,17 +220,16 @@ export function ChattingRoom({
   return (
     <styles.container>
       <styles.header>
-        <styles.users>
-          <styles.user />
-          <styles.user style={{ left: '1.2rem', zIndex: '1' }} />
-          <styles.user style={{ left: '2.4rem', zIndex: '2' }} />
-          <styles.user style={{ left: '3.6rem', zIndex: '3' }} />
-        </styles.users>
+        <styles.backButton
+          onClick={handleBackClick}
+          src="/backward-arrow.png"
+        />
         <styles.roomInfo>
           <styles.roomName>정릉 기숙사 405호</styles.roomName>
           <styles.latestTime>45분전</styles.latestTime>
         </styles.roomInfo>
-        <styles.menu />
+        <styles.menu onClick={handleMenuClick} />
+        {isMenuClick && <ChatMenu onMenuClicked={setIsMenuClick} />}
       </styles.header>
       <styles.messageContainer>
         {messages.map((message, index) => (
