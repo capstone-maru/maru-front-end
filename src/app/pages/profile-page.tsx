@@ -6,28 +6,36 @@ import styled from 'styled-components';
 
 import { useAuthValue, useUserData } from '@/features/auth';
 import { useProfileData } from '@/features/profile';
-import { getAge } from '@/shared';
 
 const styles = {
   pageContainer: styled.div`
     display: flex;
+    height: 98rem;
+    padding: 0rem 10rem 10rem 10rem;
     flex-direction: column;
-    padding: 0 1.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    align-self: stretch;
   `,
 
   userProfileContainer: styled.div`
     display: inline-flex;
-    align-items: flex-start;
+    width: 100%;
+    align-items: center;
     flex-shrink: 0;
+    gap: 3rem;
     margin-top: 5.12rem;
   `,
-  userProfileWithoutSwitch: styled.div`
+  userProfileWithoutInfo: styled.div`
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
-    gap: 2.625rem;
+    gap: 1rem;
   `,
   userPicContainer: styled.div`
     display: flex;
+    flex-direction: column;
     width: 8.3125rem;
     height: 8.3125rem;
     justify-content: center;
@@ -46,12 +54,13 @@ const styles = {
   `,
   userInfoContainer: styled.div`
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.56rem;
   `,
   userDetailedContainer: styled.div`
     display: inline-flex;
+    width: 100%;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
@@ -79,8 +88,8 @@ const styles = {
     display: inline-flex;
     justify-content: center;
     align-items: flex-end;
-    margin: 1.25rem 0 0 2.63rem;
     gap: 0.375rem;
+    margin-left: 2rem;
   `,
   switchWrapper: styled.label`
     position: relative;
@@ -131,10 +140,8 @@ const styles = {
     height: 2rem;
     width: 5.3125rem;
     border-radius: 26px;
-    background: #5c6eb4;
-    margin: 1rem 1.4375rem 0 1.5625rem;
+    background: var(--Black, #35373a);
     cursor: pointer;
-
     display: inline-flex;
     padding: 0.25rem 0.5rem;
     justify-content: center;
@@ -157,25 +164,16 @@ const styles = {
 
   cardSection: styled.div`
     display: inline-flex;
-    gap: 11.5rem;
-    margin: 4.75rem 0 0 0;
+    width: 100%;
+    gap: 8rem;
   `,
   cardWrapper: styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    gap: 2.25rem;
+    gap: 1rem;
     flex-shrink: 0;
-  `,
-  cardDescriptionSection: styled.div`
-    margin: 0 1.125rem 0 4.9375rem;
-    width: 36.9375rem;
-    height: 2.875rem;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 20rem;
   `,
   description32px: styled.p`
     color: #000;
@@ -193,30 +191,6 @@ const styles = {
     font-weight: 700;
     line-height: normal;
   `,
-  addButton: styled.button`
-    display: flex;
-    width: 6.1875rem;
-    padding: 0.5rem 1.5rem;
-    justify-content: center;
-    align-items: center;
-    gap: 0.25rem;
-    border-radius: 8px;
-    border: 1px solid var(--Gray-5, #828282);
-    background: var(--White, #fff);
-    cursor: pointer;
-
-    color: var(--Gray-5, #828282);
-    font-family: Pretendard;
-    font-size: 1.125rem;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 1.5rem;
-  `,
-  mateCardsContainer: styled.div`
-    display: flex;
-    gap: 1.69rem;
-    align-items: center;
-  `,
   mateCards: styled.div`
     display: flex;
     width: 35.6rem;
@@ -231,7 +205,7 @@ const styles = {
     align-items: center;
     width: 15rem;
     height: 15rem;
-    flex: 0 0 auto;
+    flex-shrink: 0;
     border-radius: 20px;
     border: 1pxs olid var(--background, #f7f6f9);
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
@@ -246,61 +220,20 @@ const styles = {
     font-weight: 700;
     line-height: normal;
   `,
-  cardDefault: styled.div`
-    color: #fff;
-    text-align: center;
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 2.5625rem;
-
-    width: 6.0625rem;
-    height: 2.5625rem;
-    flex-shrink: 0;
-    border-radius: 20px 0 0 20px;
-    background: var(--Main-1, #e15637);
-
-    position: absolute;
-    right: 0;
-    bottom: 1.5rem;
-  `,
-  nextButton: styled.button`
-    width: 3.125rem;
-    height: 3.12481rem;
-    flex-shrink: 0;
-    background-image: url('/next-button.svg');
-    background-repeat: no-repeat;
-    border: none;
-    background-color: #fff;
-    cursor: pointer;
-  `,
-  prevButton: styled.button`
-    width: 3.125rem;
-    height: 3.12481rem;
-    flex-shrink: 0;
-    background-image: url('/prev-button.svg');
-    background-repeat: no-repeat;
-    border: none;
-    background-color: #fff;
-    cursor: pointer;
-  `,
 
   maruContainer: styled.div`
-    margin-top: 9.5625rem;
     display: flex;
     flex-direction: column;
+    gap: 3rem;
   `,
 
   weekContainer: styled.div`
     display: flex;
-    width: 70.25rem;
     height: 15.625rem;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: flex-start;
     gap: 1.5rem;
-    flex-shrink: 0;
-    margin: 3.1875rem 0 4.0625rem 1.6875rem;
+    align-self: stretch;
   `,
   dayContainer: styled.div`
     width: 8.75rem;
@@ -361,28 +294,30 @@ const styles = {
 
   rulesContainer: styled.div`
     display: flex;
-    width: 64.5rem;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
-    gap: 1.375rem;
-    margin: 0 3rem 3.0625rem 4.4375rem;
+    align-items: center;
+    gap: 3rem;
+    flex: 1 0 0;
+    align-self: stretch;
   `,
   rulesDescriptionContainer: styled.div`
     display: flex;
-    height: 2.6875rem;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 51.6875rem;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
   `,
   editButton: styled.button`
     display: flex;
-    padding: 0.63rem 1.13rem;
+    padding: 0.625rem 5.9375rem;
     justify-content: center;
     align-items: center;
-    border-radius: 16px;
+    gap: 0.5rem;
+    border-radius: 1rem;
     border: 1px solid var(--Main-1, #e15637);
     background: var(--White, #fff);
+    cursor: pointer;
+
     color: var(--Main-1, #e15637);
     font-family: 'Noto Sans KR';
     font-size: 1rem;
@@ -396,31 +331,16 @@ const styles = {
     border-radius: 16px;
     background: #f7f6f9;
   `,
-
-  accountContainer: styled.div`
-    display: flex;
-    width: 63.9375rem;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 1.375rem;
-    margin: 0 3rem 9.375rem 4.4375rem;
-  `,
-  accountContent: styled.div`
-    width: 64.5rem;
-    height: 12.4375rem;
-    border-radius: 16px;
-    background: #f7f6f9;
-  `,
 };
 
 interface UserProfileInfoProps {
   name: string | undefined;
-  age: string;
+  email: string | undefined;
+  phoneNum: string | undefined;
   src: string | undefined;
 }
 
-function UserInfo({ name, age, src }: UserProfileInfoProps) {
+function UserInfo({ name, email, phoneNum, src }: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(false);
 
   const toggleSwitch = () => {
@@ -429,19 +349,20 @@ function UserInfo({ name, age, src }: UserProfileInfoProps) {
 
   return (
     <styles.userProfileContainer>
-      <styles.userProfileWithoutSwitch>
+      <styles.userProfileWithoutInfo>
         <styles.userPicContainer>
           <styles.userPic src={src} alt="User Profile Pic" />
         </styles.userPicContainer>
-        <styles.userInfoContainer>
-          <styles.userName>{name}</styles.userName>
-          <styles.userDetailedContainer>
-            <styles.userDetailedInfo>{age}</styles.userDetailedInfo>
-            <styles.userDetailedInfo>성북 길음동</styles.userDetailedInfo>
-          </styles.userDetailedContainer>
-        </styles.userInfoContainer>
-      </styles.userProfileWithoutSwitch>
-      <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
+        <Auth />
+      </styles.userProfileWithoutInfo>
+      <styles.userInfoContainer>
+        <styles.userName>{name}</styles.userName>
+        <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
+        <styles.userDetailedContainer>
+          <styles.userDetailedInfo>{phoneNum}</styles.userDetailedInfo>
+          <styles.userDetailedInfo>{email}</styles.userDetailedInfo>
+        </styles.userDetailedContainer>
+      </styles.userInfoContainer>
     </styles.userProfileContainer>
   );
 }
@@ -477,11 +398,11 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
   );
 }
 
-function Auth({ isMySelf }: { isMySelf: boolean }) {
+function Auth() {
   return (
     <styles.authContainer>
       <styles.authCheckImg src="/check_circle_24px copy.svg" />
-      <styles.authDescription>본인인증</styles.authDescription>
+      <styles.authDescription>학교인증</styles.authDescription>
     </styles.authContainer>
   );
 }
@@ -502,24 +423,22 @@ function Card({
   return (
     <styles.cardSection>
       <styles.cardWrapper>
-        <styles.description32px>내 카드</styles.description32px>
+        <styles.description32px>마이 카드</styles.description32px>
         <Link
-          href={`/profile/card/${myCardId}?memberId=${memberId}&isMySelf=${isMySelf}`}
+          href={`/profile/card/${myCardId}?memberId=${memberId}&isMySelf=${isMySelf}&type=myCard`}
         >
           <styles.cardContainer>
             <styles.cardName>{name}</styles.cardName>
-            <styles.cardDefault>기본</styles.cardDefault>
           </styles.cardContainer>
         </Link>
       </styles.cardWrapper>
       <styles.cardWrapper>
         <styles.description32px>메이트 카드</styles.description32px>
         <Link
-          href={`/profile/card/${mateCardId}?memberId=${memberId}&isMySelf=${isMySelf}`}
+          href={`/profile/card/${mateCardId}?memberId=${memberId}&isMySelf=${isMySelf}&type=mateCard`}
         >
           <styles.cardContainer>
             <styles.cardName>메이트</styles.cardName>
-            <styles.cardDefault>기본</styles.cardDefault>
           </styles.cardContainer>
         </Link>
       </styles.cardWrapper>
@@ -556,34 +475,36 @@ function Sun() {
 
 function Maru() {
   return (
-    <styles.maruContainer>
-      <styles.description32px>마이 마루</styles.description32px>
-      <styles.weekContainer>
-        <styles.dayContainer>
-          <styles.day>월</styles.day>
-          <Mon />
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>화</styles.day>
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>수</styles.day>
-          <Wed />
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>목</styles.day>
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>금</styles.day>
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>토</styles.day>
-        </styles.dayContainer>
-        <styles.dayContainer>
-          <styles.day>일</styles.day>
-          <Sun />
-        </styles.dayContainer>
-      </styles.weekContainer>
+    <>
+      <styles.maruContainer>
+        <styles.description32px>마이 마루</styles.description32px>
+        <styles.weekContainer>
+          <styles.dayContainer>
+            <styles.day>월</styles.day>
+            <Mon />
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>화</styles.day>
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>수</styles.day>
+            <Wed />
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>목</styles.day>
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>금</styles.day>
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>토</styles.day>
+          </styles.dayContainer>
+          <styles.dayContainer>
+            <styles.day>일</styles.day>
+            <Sun />
+          </styles.dayContainer>
+        </styles.weekContainer>
+      </styles.maruContainer>
       <styles.rulesContainer>
         <styles.rulesDescriptionContainer>
           <styles.description24px>생활 규칙</styles.description24px>
@@ -591,11 +512,7 @@ function Maru() {
         </styles.rulesDescriptionContainer>
         <styles.rulesContent />
       </styles.rulesContainer>
-      <styles.accountContainer>
-        <styles.description24px>공용 계좌</styles.description24px>
-        <styles.accountContent />
-      </styles.accountContainer>
-    </styles.maruContainer>
+    </>
   );
 }
 
@@ -651,20 +568,14 @@ export function ProfilePage({ memberId }: { memberId: string }) {
     }
   }, [user.data, memberId]);
 
-  const birthYearString: string = userData?.birthYear ?? '';
-  const birthYearDate: number = Number(birthYearString);
   return (
     <styles.pageContainer>
       <UserInfo
         name={userData?.name ?? ''}
-        age={
-          String(getAge(birthYearDate)) !== ''
-            ? String(getAge(birthYearDate))
-            : ''
-        }
+        email={userData?.email ?? ''}
+        phoneNum={userData?.phoneNumber ?? ''}
         src={user.data?.data.profileImage}
       />
-      <Auth isMySelf={isMySelf} />
       <Card
         name={userData?.name}
         memberId={userData?.memberId}
