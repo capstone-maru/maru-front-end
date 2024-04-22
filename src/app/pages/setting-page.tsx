@@ -1,9 +1,5 @@
 'use client';
 
-import Location from '@public/option-img/location_on.svg';
-import Meeting from '@public/option-img/meeting_room.svg';
-import Person from '@public/option-img/person.svg';
-import Visibility from '@public/option-img/visibility.svg';
 import { type NavigateOptions } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
@@ -15,6 +11,10 @@ import {
   usePutUserCard,
   useUserCard,
 } from '@/features/profile';
+import Location from '@/public/option-img/location_on.svg';
+import Meeting from '@/public/option-img/meeting_room.svg';
+import Person from '@/public/option-img/person.svg';
+import Visibility from '@/public/option-img/visibility.svg';
 
 const styles = {
   pageContainer: styled.div`
