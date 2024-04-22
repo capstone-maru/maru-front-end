@@ -1,14 +1,13 @@
 'use client';
 
+import Location from '@public/option-img/location_on.svg';
+import Meeting from '@public/option-img/meeting_room.svg';
+import Person from '@public/option-img/person.svg';
+import Visibility from '@public/option-img/visibility.svg';
 import { type NavigateOptions } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
-
-import Location from '../../../public/option-img/location_on.svg';
-import Meeting from '../../../public/option-img/meeting_room.svg';
-import Person from '../../../public/option-img/person.svg';
-import Visibility from '../../../public/option-img/visibility.svg';
 
 import { UserInputSection } from '@/components';
 import {
@@ -282,7 +281,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
       budget,
     ];
 
-    mutate({ location: location, features: myFeatures });
+    mutate({ location, features: myFeatures });
   };
 
   const handleBeforeUnload = () => {

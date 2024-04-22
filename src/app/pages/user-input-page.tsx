@@ -4,14 +4,13 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import Location from '../../../public/option-img/location_on.svg';
-import Meeting from '../../../public/option-img/meeting_room.svg';
-import Person from '../../../public/option-img/person.svg';
-import Visibility from '../../../public/option-img/visibility.svg';
-
 import { VitalSection, OptionSection } from '@/components';
 import { useAuthValue, useUserData } from '@/features/auth';
 import { usePutUserCard } from '@/features/profile';
+import Location from '@/public/option-img/location_on.svg';
+import Meeting from '@/public/option-img/meeting_room.svg';
+import Person from '@/public/option-img/person.svg';
+import Visibility from '@/public/option-img/visibility.svg';
 
 const styles = {
   pageContainer: styled.div`
