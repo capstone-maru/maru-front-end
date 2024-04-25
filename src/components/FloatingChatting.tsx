@@ -109,6 +109,7 @@ export function FloatingChatting() {
 
   const toggleChat = () => {
     setIsChatOpen(prevState => !prevState);
+    if (isChatRoomOpen) setIsChatRoomOpen(false);
   };
 
   const auth = useAuthValue();
