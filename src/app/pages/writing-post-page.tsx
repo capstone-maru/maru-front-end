@@ -39,6 +39,73 @@ const styles = {
     border-radius: 16px;
     background: #fff;
   `,
+  essentialInfoContainer: styled.div`
+    display: flex;
+    flex: 1 0 0;
+    width: 100%;
+    flex-direction: column;
+    gap: 1rem;
+  `,
+  essentialRow: styled.div`
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    gap: 1rem;
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      flex: 1 0 0;
+    }
+  `,
+  mateCardContainer: styled.div`
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 1rem;
+
+    button {
+      all: unset;
+      cursor: pointer;
+
+      display: flex;
+      width: fit-content;
+      padding: 0.5rem 1rem;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+
+      border-radius: 0.5rem;
+      background: #ededed;
+
+      color: #000;
+      font-family: 'Noto Sans KR';
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    button[class~='edit'] {
+      display: flex;
+      width: fit-content;
+      padding: 0.5rem 1rem;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+
+      border-radius: 0.5rem;
+      background: #e15637;
+
+      color: #eee;
+      font-family: 'Noto Sans KR';
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+    }
+  `,
   row: styled.div`
     display: flex;
     justify-content: space-between;
@@ -56,7 +123,33 @@ const styles = {
   `,
   captionRow: styled.div`
     display: flex;
+    flex-direction: row;
     align-items: flex-end;
+    gap: 1rem;
+    align-self: stretch;
+
+    .caption {
+      color: var(--Black, #35373a);
+      font-family: 'Noto Sans KR';
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+  `,
+  dealInfoContainer: styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1rem;
+    align-self: stretch;
+  `,
+  roomInfoContainer: styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     gap: 1rem;
     align-self: stretch;
   `,
@@ -118,10 +211,11 @@ const styles = {
     border-radius: 8px;
     background: #ededed;
   `,
-  contentInput: styled.input`
+  contentInput: styled.textarea`
     all: unset;
 
     display: flex;
+    height: 100%;
     padding: 1rem;
     flex-direction: column;
     justify-content: center;
@@ -351,7 +445,7 @@ export function WritingPostPage() {
   };
 
   const handleContentInputChanged = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setContent(event.target.value);
   };
@@ -505,225 +599,249 @@ export function WritingPostPage() {
   return (
     <styles.pageContainer>
       <styles.postContainer>
-        <styles.row>
-          <styles.optionCategory>기본 정보</styles.optionCategory>
-          <styles.createButton onClick={handleCreatePost}>
-            작성하기
-          </styles.createButton>
-        </styles.row>
-        <styles.optionCategory>제목</styles.optionCategory>
-        <styles.titleInput
-          value={title}
-          onChange={handleTitleInputChanged}
-          placeholder="제목을 입력해주세요"
-        />
-        <styles.optionCategory>상세 정보</styles.optionCategory>
-        <styles.contentInput
-          value={content}
-          onChange={handleContentInputChanged}
-          placeholder="내용을 입력해주세요"
-        />
-        <styles.captionRow>
-          <styles.option>사진</styles.option>
-          <styles.caption>최소 2장 이상 업로드</styles.caption>
-        </styles.captionRow>
-        <styles.images>
-          {images.map(image => (
-            <styles.image
-              key={image.url}
-              src={image.url}
+        <styles.essentialInfoContainer>
+          <styles.row>
+            <styles.optionCategory>기본 정보</styles.optionCategory>
+            <styles.createButton onClick={handleCreatePost}>
+              작성하기
+            </styles.createButton>
+          </styles.row>
+          <styles.optionCategory>제목</styles.optionCategory>
+          <styles.titleInput
+            value={title}
+            onChange={handleTitleInputChanged}
+            placeholder="제목을 입력해주세요"
+          />
+          <styles.optionCategory>위치 정보</styles.optionCategory>
+          <styles.captionRow>
+            <styles.addressFindButtonContainer
               onClick={() => {
-                handleRemoveImage(image);
+                setShowLocationSearchBox(true);
               }}
-            />
-          ))}
-          <styles.imageAddButton onClick={handleImageInputClicked}>
-            <input
-              ref={imageInputRef}
-              type="file"
-              multiple
-              onChange={handleFileChanged}
-              style={{ display: 'none' }}
-            />
-          </styles.imageAddButton>
-        </styles.images>
-        <styles.option>인원</styles.option>
-        <styles.inputContainer>
-          <styles.input
-            value={mateLimit}
-            onChange={event => {
-              handleNumberInput(event.target.value, value => {
-                setMateLimit(value);
-              });
-            }}
-            $width={3}
-          />
-          <styles.inputPlaceholder>명</styles.inputPlaceholder>
-        </styles.inputContainer>
-        <styles.option>메이트</styles.option>
-        <styles.mates>
-          <styles.mateAddButton
-            onClick={() => {
-              setShowMateSearchBox(true);
-            }}
-          />
-          {showMateSearchBox && (
-            <MateSearchBox
+            >
+              <styles.addressFindButtonIcon src="/icon-search32.svg" />
+              <span className="caption">위치 찾기</span>
+            </styles.addressFindButtonContainer>
+            <span style={{ alignSelf: 'center' }}>상세 주소:</span>
+            <styles.address style={{ alignSelf: 'center' }}>
+              {address?.roadAddress ?? '주소를 입력해주세요.'}
+            </styles.address>
+          </styles.captionRow>
+          {showLocationSearchBox && (
+            <LocationSearchBox
+              onSelect={selectedAddress => {
+                setAddress(selectedAddress);
+              }}
               setHidden={() => {
-                setShowMateSearchBox(false);
+                setShowLocationSearchBox(false);
               }}
             />
           )}
-        </styles.mates>
-        <styles.optionCategory>거래 정보</styles.optionCategory>
-        <styles.option>거래 방식</styles.option>
-        <styles.optionRow>
-          {DealOptions.map(option => (
-            <styles.optionButtonContainer key={option}>
-              <styles.customRadioButton
-                $isSelected={isOptionSelected('budget', option)}
-                onClick={() => {
-                  handleOptionClick('budget', option);
-                }}
+          <styles.essentialRow>
+            <div className="column">
+              <styles.option>상세 정보</styles.option>
+              <styles.contentInput
+                value={content}
+                onChange={handleContentInputChanged}
+                placeholder="내용을 입력해주세요"
               />
-              <span>{option}</span>
-            </styles.optionButtonContainer>
-          ))}
-        </styles.optionRow>
-        <styles.option>희망 메이트 월 분담금</styles.option>
-        <styles.inputContainer>
-          <styles.input
-            value={expectedMonthlyFee}
-            onChange={event => {
-              handleNumberInput(event.target.value, value => {
-                setExpectedMonthlyFee(value);
-              });
-            }}
-            $width={3}
-          />
-          <styles.inputPlaceholder>만원</styles.inputPlaceholder>
-        </styles.inputContainer>
-        <styles.optionCategory>방 정보</styles.optionCategory>
-        <styles.option>층</styles.option>
-        <styles.optionRow>
-          {FloorOptions.map(option => (
-            <styles.optionButtonContainer key={option}>
-              <styles.customRadioButton
-                $isSelected={isOptionSelected('floorType', option)}
-                onClick={() => {
-                  handleOptionClick('floorType', option);
-                }}
-              />
-              <span>{option}</span>
-            </styles.optionButtonContainer>
-          ))}
-        </styles.optionRow>
-        <styles.option>추가 옵션</styles.option>
-        <styles.optionRow>
-          {AdditionalOptions.map(option => (
-            <styles.optionButtonContainer key={option}>
-              <styles.customCheckBox
-                $isSelected={isExtraOptionSelected(option)}
-                onClick={() => {
-                  handleExtraOptionClick(option);
-                }}
-              />
-              <span>{option}</span>
-            </styles.optionButtonContainer>
-          ))}
-        </styles.optionRow>
-        <styles.option>방 종류</styles.option>
-        <styles.optionRow>
-          {RoomOptions.map(option => (
-            <styles.optionButtonContainer key={option}>
-              <styles.customRadioButton
-                $isSelected={isOptionSelected('roomType', option)}
-                onClick={() => {
-                  handleOptionClick('roomType', option);
-                }}
-              />
-              <span>{option}</span>
-            </styles.optionButtonContainer>
-          ))}
-        </styles.optionRow>
-        <styles.option>거실</styles.option>
-        <styles.optionRow>
-          {LivingRoomOptions.map(option => (
-            <styles.optionButtonContainer key={option}>
-              <styles.customRadioButton
-                $isSelected={isOptionSelected('livingRoom', option)}
-                onClick={() => {
-                  handleOptionClick('livingRoom', option);
-                }}
-              />
-              <span>{option}</span>
-            </styles.optionButtonContainer>
-          ))}
-        </styles.optionRow>
-        <styles.option>방 개수</styles.option>
-        <styles.optionRow>
-          {RoomCountOptions.map(option => (
-            <styles.optionButtonContainer key={option}>
-              <styles.customRadioButton
-                $isSelected={isOptionSelected('roomCount', option)}
-                onClick={() => {
-                  handleOptionClick('roomCount', option);
-                }}
-              />
-              <span>{option}</span>
-            </styles.optionButtonContainer>
-          ))}
-        </styles.optionRow>
-        <styles.option>화장실 개수</styles.option>
-        <styles.optionRow>
-          {RestRoomCountOptions.map(option => (
-            <styles.optionButtonContainer key={option}>
-              <styles.customRadioButton
-                $isSelected={isOptionSelected('restRoomCount', option)}
-                onClick={() => {
-                  handleOptionClick('restRoomCount', option);
-                }}
-              />
-              <span>{option}</span>
-            </styles.optionButtonContainer>
-          ))}
-        </styles.optionRow>
-        <styles.option>전체 면적</styles.option>
-        <styles.inputContainer>
-          <styles.input
-            value={houseSize}
-            onChange={event => {
-              handleNumberInput(event.target.value, value => {
-                setHouseSize(value);
-              });
-            }}
-            $width={2}
-          />
-          <styles.inputPlaceholder>평</styles.inputPlaceholder>
-        </styles.inputContainer>
-        <styles.optionCategory>위치 정보</styles.optionCategory>
-        <styles.captionRow>
-          <styles.option>상세 주소</styles.option>
-          <styles.address>{address?.roadAddress}</styles.address>
-        </styles.captionRow>
-        <styles.addressFindButtonContainer
-          onClick={() => {
-            setShowLocationSearchBox(true);
-          }}
-        >
-          <styles.addressFindButtonIcon src="/icon-search32.svg" />
-          <span>위치 찾기</span>
-        </styles.addressFindButtonContainer>
-        {showLocationSearchBox && (
-          <LocationSearchBox
-            onSelect={selectedAddress => {
-              setAddress(selectedAddress);
-            }}
-            setHidden={() => {
-              setShowLocationSearchBox(false);
-            }}
-          />
-        )}
+            </div>
+            <div className="column">
+              <styles.captionRow>
+                <styles.option>사진</styles.option>
+                <styles.caption>최소 2장 이상 업로드</styles.caption>
+              </styles.captionRow>
+              <styles.images>
+                {images.map(image => (
+                  <styles.image
+                    key={image.url}
+                    src={image.url}
+                    onClick={() => {
+                      handleRemoveImage(image);
+                    }}
+                  />
+                ))}
+                <styles.imageAddButton onClick={handleImageInputClicked}>
+                  <input
+                    ref={imageInputRef}
+                    type="file"
+                    multiple
+                    onChange={handleFileChanged}
+                    style={{ display: 'none' }}
+                  />
+                </styles.imageAddButton>
+              </styles.images>
+            </div>
+          </styles.essentialRow>
+          <styles.essentialRow>
+            <div className="column">
+              <styles.option>모집 할 인원</styles.option>
+              <styles.inputContainer>
+                <styles.input
+                  value={mateLimit}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setMateLimit(value);
+                    });
+                  }}
+                  $width={3}
+                />
+                <styles.inputPlaceholder>명</styles.inputPlaceholder>
+              </styles.inputContainer>
+            </div>
+            <div className="column">
+              <styles.option>메이트</styles.option>
+              <styles.mates>
+                <styles.mateAddButton
+                  onClick={() => {
+                    setShowMateSearchBox(true);
+                  }}
+                />
+                {showMateSearchBox && (
+                  <MateSearchBox
+                    setHidden={() => {
+                      setShowMateSearchBox(false);
+                    }}
+                  />
+                )}
+              </styles.mates>
+            </div>
+          </styles.essentialRow>
+          <styles.mateCardContainer>
+            <styles.option>메이트 카드</styles.option>
+            <button type="button">메이트 카드 작성하기</button>
+          </styles.mateCardContainer>
+        </styles.essentialInfoContainer>
+        <styles.dealInfoContainer>
+          <styles.optionCategory>거래 정보</styles.optionCategory>
+          <styles.option>거래 방식</styles.option>
+          <styles.optionRow>
+            {DealOptions.map(option => (
+              <styles.optionButtonContainer key={option}>
+                <styles.customRadioButton
+                  $isSelected={isOptionSelected('budget', option)}
+                  onClick={() => {
+                    handleOptionClick('budget', option);
+                  }}
+                />
+                <span>{option}</span>
+              </styles.optionButtonContainer>
+            ))}
+          </styles.optionRow>
+          <styles.option>희망 메이트 월 분담금</styles.option>
+          <styles.inputContainer>
+            <styles.input
+              value={expectedMonthlyFee}
+              onChange={event => {
+                handleNumberInput(event.target.value, value => {
+                  setExpectedMonthlyFee(value);
+                });
+              }}
+              $width={3}
+            />
+            <styles.inputPlaceholder>만원</styles.inputPlaceholder>
+          </styles.inputContainer>
+        </styles.dealInfoContainer>
+        <styles.roomInfoContainer>
+          <styles.optionCategory>방 정보</styles.optionCategory>
+          <styles.option>층</styles.option>
+          <styles.optionRow>
+            {FloorOptions.map(option => (
+              <styles.optionButtonContainer key={option}>
+                <styles.customRadioButton
+                  $isSelected={isOptionSelected('floorType', option)}
+                  onClick={() => {
+                    handleOptionClick('floorType', option);
+                  }}
+                />
+                <span>{option}</span>
+              </styles.optionButtonContainer>
+            ))}
+          </styles.optionRow>
+          <styles.option>추가 옵션</styles.option>
+          <styles.optionRow>
+            {AdditionalOptions.map(option => (
+              <styles.optionButtonContainer key={option}>
+                <styles.customCheckBox
+                  $isSelected={isExtraOptionSelected(option)}
+                  onClick={() => {
+                    handleExtraOptionClick(option);
+                  }}
+                />
+                <span>{option}</span>
+              </styles.optionButtonContainer>
+            ))}
+          </styles.optionRow>
+          <styles.option>방 종류</styles.option>
+          <styles.optionRow>
+            {RoomOptions.map(option => (
+              <styles.optionButtonContainer key={option}>
+                <styles.customRadioButton
+                  $isSelected={isOptionSelected('roomType', option)}
+                  onClick={() => {
+                    handleOptionClick('roomType', option);
+                  }}
+                />
+                <span>{option}</span>
+              </styles.optionButtonContainer>
+            ))}
+          </styles.optionRow>
+          <styles.option>거실</styles.option>
+          <styles.optionRow>
+            {LivingRoomOptions.map(option => (
+              <styles.optionButtonContainer key={option}>
+                <styles.customRadioButton
+                  $isSelected={isOptionSelected('livingRoom', option)}
+                  onClick={() => {
+                    handleOptionClick('livingRoom', option);
+                  }}
+                />
+                <span>{option}</span>
+              </styles.optionButtonContainer>
+            ))}
+          </styles.optionRow>
+          <styles.option>방 개수</styles.option>
+          <styles.optionRow>
+            {RoomCountOptions.map(option => (
+              <styles.optionButtonContainer key={option}>
+                <styles.customRadioButton
+                  $isSelected={isOptionSelected('roomCount', option)}
+                  onClick={() => {
+                    handleOptionClick('roomCount', option);
+                  }}
+                />
+                <span>{option}</span>
+              </styles.optionButtonContainer>
+            ))}
+          </styles.optionRow>
+          <styles.option>화장실 개수</styles.option>
+          <styles.optionRow>
+            {RestRoomCountOptions.map(option => (
+              <styles.optionButtonContainer key={option}>
+                <styles.customRadioButton
+                  $isSelected={isOptionSelected('restRoomCount', option)}
+                  onClick={() => {
+                    handleOptionClick('restRoomCount', option);
+                  }}
+                />
+                <span>{option}</span>
+              </styles.optionButtonContainer>
+            ))}
+          </styles.optionRow>
+          <styles.option>전체 면적</styles.option>
+          <styles.inputContainer>
+            <styles.input
+              value={houseSize}
+              onChange={event => {
+                handleNumberInput(event.target.value, value => {
+                  setHouseSize(value);
+                });
+              }}
+              $width={2}
+            />
+            <styles.inputPlaceholder>평</styles.inputPlaceholder>
+          </styles.inputContainer>
+        </styles.roomInfoContainer>
       </styles.postContainer>
     </styles.pageContainer>
   );
