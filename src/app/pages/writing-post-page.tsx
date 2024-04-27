@@ -620,9 +620,11 @@ export function WritingPostPage() {
               }}
             >
               <styles.addressFindButtonIcon src="/icon-search32.svg" />
-              <span className="caption">위치 찾기</span>
+              <span>위치 찾기</span>
             </styles.addressFindButtonContainer>
-            <span style={{ alignSelf: 'center' }}>상세 주소:</span>
+            <span className="caption" style={{ alignSelf: 'center' }}>
+              상세 주소:
+            </span>
             <styles.address style={{ alignSelf: 'center' }}>
               {address?.roadAddress ?? '주소를 입력해주세요.'}
             </styles.address>
