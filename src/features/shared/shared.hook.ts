@@ -175,6 +175,8 @@ export const useCreateSharedPostProps = () => {
       setSelectedOptions,
       handleOptionClick,
       handleExtraOptionClick,
+      isOptionSelected,
+      isExtraOptionSelected,
     ],
   );
 };
