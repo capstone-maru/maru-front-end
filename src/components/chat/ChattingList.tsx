@@ -86,18 +86,28 @@ const styles = {
   `,
 };
 
-export function ChattingList({ onClick }: { onClick: () => void }) {
+export function ChattingList({
+  name,
+  unreadCount,
+  lastMessage,
+  onClick,
+}: {
+  name: string;
+  unreadCount: number;
+  lastMessage: string;
+  onClick: () => void;
+}) {
   return (
     <styles.chattingRoom onClick={onClick}>
       <styles.infoSection>
         <styles.userProfile />
         <styles.activeCircle />
         <styles.textSection>
-          <styles.roomName>room1</styles.roomName>
-          <styles.message>hi</styles.message>
+          <styles.roomName>{name}</styles.roomName>
+          <styles.message>{lastMessage}</styles.message>
         </styles.textSection>
       </styles.infoSection>
-      <styles.newMessageCount>2</styles.newMessageCount>
+      <styles.newMessageCount>{unreadCount}</styles.newMessageCount>
     </styles.chattingRoom>
   );
 }

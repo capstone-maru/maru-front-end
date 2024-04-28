@@ -1,12 +1,18 @@
 import axios from 'axios';
 
-import { type GetChatRoomUserDTO, type PostChatRoomDTO } from './chat.dto';
+import {
+  type PostChatRoomEnterDTO,
+  type GetChatRoomDTO,
+  type GetChatRoomUserDTO,
+  type PostChatRoomDTO,
+} from './chat.dto';
 
-export const getChatRoomList = async () =>
-  await axios.get(`/maru-api/chatRoom`).then(res => {
-    console.log(res.data);
-    return res.data;
-  });
+export const getChatRoomList = async (token: string | undefined) =>
+  await axios
+    .get<GetChatRoomDTO>(`/maru-api/chatRoom`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then(res => res.data);
 
 export const postChatRoom = async (roomName: string, members: string[]) => {
   await axios
@@ -19,7 +25,7 @@ export const postChatRoom = async (roomName: string, members: string[]) => {
 
 export const postInviteUser = async (roomId: number, members: string[]) => {
   await axios
-    .post(`/chatRoom/${roomId}/invite`, {
+    .post(`/maru-api/chatRoom/${roomId}/invite`, {
       members: members,
     })
     .then(res => res.data);
@@ -30,19 +36,23 @@ export const postEnterChatRoom = async (
   page: number,
   size: number,
 ) => {
-  await axios
-    .post(`/chatRoom/chat`, {
+  const res = await axios.post<PostChatRoomEnterDTO>(
+    `/maru-api/chatRoom/chat`,
+    {
       roomId: roomId,
       page: page,
       size: size,
-    })
-    .then(res => res.data);
+    },
+  );
+
+  return res.data;
+};
+
+export const getEnterChatRoom = async () => {
+  await axios.get<PostChatRoomEnterDTO>(`/maru-api/chatRoom/chat`);
 };
 
 export const getChatRoomUser = async (roomId: number) =>
   await axios
     .get<GetChatRoomUserDTO>(`/maru-api/chatRoom/${roomId}`)
-    .then(res => {
-      console.log(res.data);
-      return res.data;
-    });
+    .then(res => res.data);

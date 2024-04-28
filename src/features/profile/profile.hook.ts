@@ -36,9 +36,9 @@ export const useFollowingListData = () =>
     queryFn: getFollowingListData,
   });
 
-export const useFollowData = () =>
+export const useFollowData = (memberId: string) =>
   useMutation({
-    mutationFn: async (memberId: string) => {
+    mutationFn: async () => {
       await postFollowData(memberId);
     },
   });

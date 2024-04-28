@@ -123,18 +123,29 @@ interface Content {
 }
 
 export function ChattingRoom({
-  userName,
+  chatRoomData,
+  userId,
   roomId,
   onRoomClick,
 }: {
-  userName: string | undefined;
+  chatRoomData:
+    | [
+        {
+          messageId: string;
+          sender: string;
+          message: string;
+          createdAt: string;
+        },
+      ]
+    | undefined;
+  userId: string | undefined;
   roomId: number;
   onRoomClick: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [messages, setMessages] = useState<Content[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [stompClient, setStompClient] = useState<Client | null>(null);
-  const user = userName;
+  const user = userId;
   const [isMenuClick, setIsMenuClick] = useState<boolean>(false);
   const [isBackClick, setIsBackClick] = useState<boolean>(false);
 
@@ -144,7 +155,7 @@ export function ChattingRoom({
     const initializeChat = async () => {
       try {
         const stomp = new Client({
-          brokerURL: `ws://ec2-13-125-228-9.ap-northeast-2.compute.amazonaws.com:8080/ws`,
+          brokerURL: `ws://ec2-3-35-138-168.ap-northeast-2.compute.amazonaws.com:8080/ws`,
           connectHeaders: {
             Authorization: `Bearer ${auth?.accessToken}`,
           },
@@ -160,7 +171,7 @@ export function ChattingRoom({
 
         stomp.onConnect = () => {
           console.log('WebSocket 연결이 열렸습니다.');
-          stomp.subscribe(`/room/1`, frame => {
+          stomp.subscribe(`/room/${roomId}`, frame => {
             try {
               const parsedMessage = JSON.parse(frame.body);
               setMessages(prevMessages => [...prevMessages, parsedMessage]);
@@ -187,7 +198,7 @@ export function ChattingRoom({
 
   const sendMessage = () => {
     if (stompClient !== null && stompClient.connected) {
-      const destination = `/room/1`;
+      const destination = `/send/${roomId}`;
 
       stompClient.publish({
         destination,
@@ -229,12 +240,27 @@ export function ChattingRoom({
           <styles.latestTime>45분전</styles.latestTime>
         </styles.roomInfo>
         <styles.menu onClick={handleMenuClick} />
-        {isMenuClick && <ChatMenu onMenuClicked={setIsMenuClick} />}
+        {isMenuClick && (
+          <ChatMenu roomId={roomId} onMenuClicked={setIsMenuClick} />
+        )}
       </styles.header>
       <styles.messageContainer>
+        {chatRoomData?.map((message, index) => (
+          <div key={index}>
+            {message.sender === userId ? (
+              <styles.senderFrame>
+                <SenderMessage message={message.message} />
+              </styles.senderFrame>
+            ) : (
+              <styles.receiverFrame>
+                <ReceiverMessage message={message.message} />
+              </styles.receiverFrame>
+            )}
+          </div>
+        ))}
         {messages.map((message, index) => (
           <div key={index}>
-            {message.sender === userName ? (
+            {message.sender === userId ? (
               <styles.senderFrame>
                 <SenderMessage message={message.message} />
               </styles.senderFrame>

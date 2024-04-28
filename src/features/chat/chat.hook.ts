@@ -8,10 +8,11 @@ import {
   postInviteUser,
 } from './chat.api';
 
-export const useChatRoomList = () =>
+export const useChatRoomList = (token: string | undefined) =>
   useQuery({
-    queryKey: [`/api/chatRoom`],
-    queryFn: getChatRoomList,
+    queryKey: [`/api/chatRoom`, token],
+    queryFn: async () => await getChatRoomList(token),
+    enabled: token !== undefined,
   });
 
 export const useCreateChatRoom = (roomName: string, members: string[]) =>
@@ -30,9 +31,8 @@ export const useInviteUsers = (roomId: number, members: string[]) =>
 
 export const useEnterChatRoom = (roomId: number, page: number, size: number) =>
   useMutation({
-    mutationFn: async () => {
-      await postEnterChatRoom(roomId, page, size);
-    },
+    mutationFn: async () => await postEnterChatRoom(roomId, page, size),
+    onSuccess: data => data.data,
   });
 
 export const useChatRoomUser = (roomId: number) =>

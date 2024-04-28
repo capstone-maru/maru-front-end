@@ -7,6 +7,11 @@ import { ChattingList } from './chat/ChattingList';
 import { ChattingRoom } from './chat/ChattingRoom';
 
 import { useAuthValue, useUserData } from '@/features/auth';
+import {
+  useChatRoomList,
+  useCreateChatRoom,
+  useEnterChatRoom,
+} from '@/features/chat';
 
 const styles = {
   chattingButton: styled.div`
@@ -74,7 +79,7 @@ const styles = {
     height: calc(100% - 3.25rem);
     display: flex;
     flex-direction: column;
-    overflow-y: hidden;
+    overflow-y: auto;
   `,
   searchButton: styled.img`
     width: 1.2rem;
@@ -103,9 +108,30 @@ const styles = {
   `,
 };
 
+interface ChatRoom {
+  roomId: number;
+  roomName: string;
+  unreadCount: number;
+  lastMessage: string;
+  lastMessageTime: string;
+}
+
 export function FloatingChatting() {
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [isChatRoomOpen, setIsChatRoomOpen] = useState<boolean>(false);
+  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+  const [selectedRoomId, setSelectedRoomId] = useState<number>(0);
+  const [roomData, setRoomData] = useState<
+    | [
+        {
+          messageId: string;
+          sender: string;
+          message: string;
+          createdAt: string;
+        },
+      ]
+    | undefined
+  >();
 
   const toggleChat = () => {
     setIsChatOpen(prevState => !prevState);
@@ -114,15 +140,37 @@ export function FloatingChatting() {
 
   const auth = useAuthValue();
   const { data } = useUserData(auth?.accessToken !== undefined);
-  const [name, setName] = useState<string>('');
+  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
-    if (data !== undefined) setName(data.name);
+    if (data !== undefined) setUserId(data.memberId);
   }, [data]);
 
+  const page = 0;
+  const size = 2;
+  const { mutate: enterChatting, data: chatRoomData } = useEnterChatRoom(
+    selectedRoomId,
+    page,
+    size,
+  );
+
   const handleChatRoomClick = () => {
+    enterChatting();
+    setRoomData(chatRoomData?.data);
     setIsChatRoomOpen(prev => !prev);
   };
+
+  const chatRoomList = useChatRoomList(auth?.accessToken);
+  useEffect(() => {
+    if (chatRoomList.data !== undefined) {
+      const chatRoomListData: ChatRoom[] = chatRoomList.data.data;
+      setChatRooms(chatRoomListData);
+    }
+  }, [chatRoomList.data]);
+
+  const roomName = 'test2';
+  const members = ['naver_htT4VdDRPKqGqKpnncpa71HCA4CVg5LdRC1cWZhCnF8'];
+  const { mutate: chattingMutate } = useCreateChatRoom(roomName, members);
 
   return (
     <>
@@ -147,17 +195,35 @@ export function FloatingChatting() {
               <styles.searchButton src="/icon-search.svg" />
             </div>
           </styles.chattingHeader>
+          <button
+            type="button"
+            onClick={() => {
+              chattingMutate();
+            }}
+          >
+            채팅방 생성
+          </button>
           <styles.chattingSection>
-            <ChattingList onClick={handleChatRoomClick} />
-            <ChattingList onClick={handleChatRoomClick} />
-            <ChattingList onClick={handleChatRoomClick} />
+            {chatRooms.map((room, index) => (
+              <ChattingList
+                key={index}
+                name={room.roomName}
+                unreadCount={room.unreadCount}
+                lastMessage={room.lastMessage}
+                onClick={() => {
+                  handleChatRoomClick();
+                  setSelectedRoomId(room.roomId);
+                }}
+              />
+            ))}
           </styles.chattingSection>
         </styles.container>
       )}
       {isChatRoomOpen && (
         <ChattingRoom
-          userName={name}
-          roomId={1}
+          chatRoomData={roomData}
+          userId={userId}
+          roomId={selectedRoomId}
           onRoomClick={setIsChatRoomOpen}
         />
       )}

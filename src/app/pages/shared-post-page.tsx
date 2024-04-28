@@ -5,7 +5,9 @@ import styled from 'styled-components';
 
 import { Bookmark, CircularProfileImage } from '@/components';
 import { ImageGrid } from '@/components/shared-post-page';
-import { useAuthValue } from '@/features/auth';
+import { useAuthValue, useUserData } from '@/features/auth';
+import { useCreateChatRoom } from '@/features/chat';
+import { useFollowData } from '@/features/profile';
 import { useScrapSharedPost, useSharedPost } from '@/features/shared';
 import { getAge } from '@/shared';
 
@@ -385,6 +387,15 @@ export function SharedPostPage({ postId }: { postId: number }) {
     enabled: auth?.accessToken !== undefined,
   });
 
+  const { data: userData } = useUserData(auth?.accessToken !== undefined);
+  const [userId, setUserId] = useState<string>('');
+
+  useEffect(() => {
+    if (userData !== undefined) {
+      setUserId(userData.memberId);
+    }
+  }, [userData]);
+
   const { mutate: scrapPost } = useScrapSharedPost();
 
   useEffect(() => {
@@ -397,6 +408,19 @@ export function SharedPostPage({ postId }: { postId: number }) {
       }),
     );
   }, []);
+
+  const [roomName, setRoomName] = useState<string>('');
+
+  useEffect(() => {
+    if (sharedPost !== undefined) {
+      setRoomName(sharedPost.data.publisherAccount.nickname);
+    }
+  }, [sharedPost]);
+
+  const members = [userId];
+  const { mutate: chattingMutate } = useCreateChatRoom(roomName, members);
+
+  const { mutate: followingMutate } = useFollowData(userId);
 
   return (
     <styles.container>
@@ -512,14 +536,22 @@ export function SharedPostPage({ postId }: { postId: number }) {
               </styles.profileInfo>
             </styles.profile>
             <styles.buttons>
-              <styles.chattingButton>채팅하기</styles.chattingButton>
+              <styles.chattingButton
+                onClick={() => {
+                  chattingMutate();
+                }}
+              >
+                채팅하기
+              </styles.chattingButton>
               <div>
                 <styles.showProfileButton>프로필 보기</styles.showProfileButton>
                 <Bookmark
                   hasBorder
                   color="#888"
                   marked={false}
-                  onToggle={() => {}}
+                  onToggle={() => {
+                    followingMutate();
+                  }}
                 />
               </div>
             </styles.buttons>
