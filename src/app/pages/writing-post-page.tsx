@@ -4,15 +4,17 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { UserInputSection } from '@/components';
 import {
   LocationSearchBox,
   MateSearchBox,
 } from '@/components/writing-post-page';
 import { getImageURL, putImage } from '@/features/image';
 import {
-  type ImageFile,
   useCreateSharedPost,
   useCreateSharedPostProps,
+  useUserInputSection,
+  type ImageFile,
 } from '@/features/shared';
 import { useToast } from '@/features/toast';
 
@@ -387,6 +389,12 @@ const styles = {
     width: 2rem;
     height: 2rem;
   `,
+  UserInputSection: styled(UserInputSection)`
+    position: fixed;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, -50%);
+  `,
 };
 
 const DealOptions = ['월세', '전세'];
@@ -412,6 +420,7 @@ export function WritingPostPage() {
 
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [showMateSearchBox, setShowMateSearchBox] = useState<boolean>(false);
+  const [showMateCardForm, setShowMateCardForm] = useState<boolean>(false);
   const [showLocationSearchBox, setShowLocationSearchBox] =
     useState<boolean>(false);
 
@@ -435,6 +444,21 @@ export function WritingPostPage() {
     isOptionSelected,
     isExtraOptionSelected,
   } = useCreateSharedPostProps();
+
+  const {
+    gender,
+    birthYear,
+    mbti,
+    major,
+    budget,
+    isMySelf,
+    type,
+    setBirthYear,
+    setMbti,
+    setMajor,
+    setBudget,
+  } = useUserInputSection();
+
   const { mutate } = useCreateSharedPost();
   const { createToast } = useToast();
 
@@ -633,6 +657,7 @@ export function WritingPostPage() {
             <LocationSearchBox
               onSelect={selectedAddress => {
                 setAddress(selectedAddress);
+                setShowLocationSearchBox(false);
               }}
               setHidden={() => {
                 setShowLocationSearchBox(false);
@@ -711,7 +736,41 @@ export function WritingPostPage() {
           </styles.essentialRow>
           <styles.mateCardContainer>
             <styles.option>메이트 카드</styles.option>
-            <button type="button">메이트 카드 작성하기</button>
+            <button
+              type="button"
+              onClick={() => {
+                if (address != null) {
+                  setShowMateCardForm(prev => !prev);
+                } else {
+                  createToast({
+                    message: '주소를 먼저 입력해주세요',
+                    option: { duration: 3000 },
+                  });
+                }
+              }}
+            >
+              메이트 카드 작성하기
+            </button>
+            {showMateCardForm && (
+              <UserInputSection
+                gender={gender}
+                birthYear={birthYear}
+                location={address?.roadAddress ?? '주소를 입력해주세요.'}
+                mbti={mbti}
+                major={major}
+                budget={budget}
+                features={null}
+                isMySelf={isMySelf}
+                type={type}
+                onVitalChange={(optionName, item) => {}}
+                onOptionChange={option => {}}
+                onLocationChange={() => {}}
+                onMateAgeChange={setBirthYear}
+                onMbtiChange={setMbti}
+                onMajorChange={setMajor}
+                onBudgetChange={setBudget}
+              />
+            )}
           </styles.mateCardContainer>
         </styles.essentialInfoContainer>
         <styles.dealInfoContainer>

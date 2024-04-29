@@ -48,6 +48,7 @@ interface UserInputProps {
   onMbtiChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   onMajorChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   onBudgetChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  className?: string;
 }
 
 export function UserInputSection({
@@ -67,9 +68,10 @@ export function UserInputSection({
   onMbtiChange,
   onMajorChange,
   onBudgetChange,
+  className,
 }: UserInputProps) {
   return (
-    <styles.checkContainer>
+    <styles.checkContainer className={className}>
       <VitalSection
         gender={gender}
         birthYear={birthYear}

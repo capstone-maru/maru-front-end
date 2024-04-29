@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { type AxiosResponse } from 'axios';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   createSharedPost,
@@ -17,6 +17,7 @@ import {
   type SelectedOptions,
 } from './shared.type';
 
+import { useAuthValue } from '@/features/auth';
 import { type NaverAddress } from '@/features/geocoding';
 import { type FailureDTO, type SuccessBaseDTO } from '@/shared/types';
 
@@ -177,6 +178,69 @@ export const useCreateSharedPostProps = () => {
       handleExtraOptionClick,
       isOptionSelected,
       isExtraOptionSelected,
+    ],
+  );
+};
+
+export const useUserInputSection = () => {
+  const [gender, setGender] = useState<string | undefined>(undefined);
+  const [birthYear, setBirthYear] = useState<string | undefined>(undefined);
+  const [location, setLocation] = useState<string | undefined>(undefined);
+  const [mbti, setMbti] = useState<string | undefined>(undefined);
+  const [major, setMajor] = useState<string | undefined>(undefined);
+  const [budget, setBudget] = useState<string | undefined>(undefined);
+  const [features, setFeatures] = useState<string[] | null>([]);
+  const [isMySelf, setIsMySelf] = useState<boolean>(true);
+  const [type, setType] = useState<'myCard' | 'mateCard'>('mateCard');
+
+  const auth = useAuthValue();
+
+  useEffect(() => {
+    if (auth?.user != null) {
+      setGender(auth.user.gender);
+    }
+  }, [auth?.user]);
+
+  return useMemo(
+    () => ({
+      gender,
+      setGender,
+      birthYear,
+      setBirthYear,
+      location,
+      setLocation,
+      mbti,
+      setMbti,
+      major,
+      setMajor,
+      budget,
+      setBudget,
+      features,
+      setFeatures,
+      isMySelf,
+      setIsMySelf,
+      type,
+      setType,
+    }),
+    [
+      gender,
+      setGender,
+      birthYear,
+      setBirthYear,
+      location,
+      setLocation,
+      mbti,
+      setMbti,
+      major,
+      setMajor,
+      budget,
+      setBudget,
+      features,
+      setFeatures,
+      isMySelf,
+      setIsMySelf,
+      type,
+      setType,
     ],
   );
 };
