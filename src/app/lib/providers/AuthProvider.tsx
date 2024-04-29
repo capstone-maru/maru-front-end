@@ -30,12 +30,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .then(({ data }) => {
             login({
               accessToken: data.accessToken,
-              refreshToken,
+              refreshToken: data.refreshToken,
               expiresIn: data.expiresIn,
             });
           })
           .catch((err: Error) => {
-            if (isAxiosError(err) && err.code === 'ETIMEOUT') {
+            if (isAxiosError(err)) {
               remove({ type: 'local', key: 'refreshToken' });
               router.replace('/');
             }

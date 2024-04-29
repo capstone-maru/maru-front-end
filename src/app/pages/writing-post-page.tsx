@@ -389,12 +389,6 @@ const styles = {
     width: 2rem;
     height: 2rem;
   `,
-  UserInputSection: styled(UserInputSection)`
-    position: fixed;
-    left: 50%;
-    right: 50%;
-    transform: translate(-50%, -50%);
-  `,
 };
 
 const DealOptions = ['월세', '전세'];
