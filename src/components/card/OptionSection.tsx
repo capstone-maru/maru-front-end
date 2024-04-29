@@ -198,10 +198,12 @@ export function OptionSection({
   useEffect(() => {
     if (optionFeatures !== null) {
       const initialOptions: SelectedOptions = {};
-      optionFeatures.slice(2).forEach(option => {
+      const optionsString = optionFeatures[3].split(':')[1];
+      const budgetIdx = optionsString.indexOf('[');
+
+      const options = optionsString.slice(0, budgetIdx).split(',');
+      options.forEach(option => {
         if (
-          !option.includes(',') &&
-          !option.includes('±') &&
           !option.includes('E') &&
           !option.includes('I') &&
           !majorArray.includes(option)
@@ -251,6 +253,7 @@ export function OptionSection({
 
   const [initialMin, setInitialMin] = useState(0);
   const [initialMax, setInitialMax] = useState(355);
+
   useEffect(() => {
     if (budget !== undefined) {
       const [min, max] = budget.split(',').map(Number);
@@ -298,7 +301,7 @@ export function OptionSection({
   }, [selectedMajor]);
 
   useEffect(() => {
-    const budgetString = `${budgetMin},${budgetMax}`;
+    const budgetString = `[${budgetMin},${budgetMax}]`;
     onBudgetChange(budgetString);
   }, [budgetMin, budgetMax]);
 

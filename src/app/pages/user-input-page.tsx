@@ -227,6 +227,7 @@ interface UserProps {
 interface SelectedState {
   smoking: string | undefined;
   room: string | undefined;
+  mateAge: string | undefined;
 }
 type SelectedOptions = Record<string, boolean>;
 
@@ -239,6 +240,7 @@ const useSelectedState = (): [
   const [selectedState, setSelectedState] = useState<SelectedState>({
     smoking: undefined,
     room: undefined,
+    mateAge: undefined,
   });
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
 
@@ -315,25 +317,32 @@ export function UserInputPage() {
       key => selectedMateOptions[key] && key !== '전공' && key !== '엠비티아이',
     );
 
+    const myOptionsString = [
+      ...myOptions,
+      ...(mbti != null ? [mbti] : []),
+      ...(major != null ? [major] : []),
+      ...(budget != null ? [budget] : []),
+    ].filter(Boolean);
+    const mateOptionsString = [
+      ...mateOptions,
+      ...(mateMbti != null ? [mateMbti] : []),
+      ...(mateMajor != null ? [mateMajor] : []),
+      ...(mateBudget != null ? [mateBudget] : []),
+    ].filter(Boolean);
+
     const location = locationInput ?? '';
     const myFeatures = [
-      selectedState.smoking,
-      selectedState.room,
-      mateAge,
-      ...myOptions,
-      ...(mbti !== null && mbti !== undefined ? [mbti] : []),
-      ...(major !== null && major !== undefined ? [major] : []),
-      budget,
+      `smoking:${selectedState.smoking}`,
+      `room:${selectedState.room}`,
+      `mateAge:${mateAge !== '' ? mateAge : undefined}`,
+      `options:${myOptionsString.join(',')}`,
     ];
 
     const mateFeatures = [
-      selectedMateState.smoking,
-      selectedMateState.room,
-      mateAge,
-      ...mateOptions,
-      ...(mateMbti !== null && mateMbti !== undefined ? [mateMbti] : []),
-      ...(mateMajor !== null && mateMajor !== undefined ? [mateMajor] : []),
-      mateBudget,
+      `smoking:${selectedMateState.smoking}`,
+      `room:${selectedMateState.room}`,
+      `mateAge:${mateAge !== '' ? mateAge : undefined}`,
+      `options:${mateOptionsString.join(',')}`,
     ];
 
     try {
