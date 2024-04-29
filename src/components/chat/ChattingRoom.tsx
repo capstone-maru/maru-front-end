@@ -126,6 +126,8 @@ export function ChattingRoom({
   chatRoomData,
   userId,
   roomId,
+  roomName,
+  lastTime,
   onRoomClick,
 }: {
   chatRoomData:
@@ -140,16 +142,19 @@ export function ChattingRoom({
     | undefined;
   userId: string | undefined;
   roomId: number;
+  roomName: string;
+  lastTime: string;
   onRoomClick: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [messages, setMessages] = useState<Content[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [stompClient, setStompClient] = useState<Client | null>(null);
-  const user = userId;
   const [isMenuClick, setIsMenuClick] = useState<boolean>(false);
   const [isBackClick, setIsBackClick] = useState<boolean>(false);
 
   const auth = useAuthValue();
+  const user = userId;
+  const reversedChatRoomData = chatRoomData?.reverse();
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -236,8 +241,8 @@ export function ChattingRoom({
           src="/backward-arrow.png"
         />
         <styles.roomInfo>
-          <styles.roomName>정릉 기숙사 405호</styles.roomName>
-          <styles.latestTime>45분전</styles.latestTime>
+          <styles.roomName>{roomName}</styles.roomName>
+          <styles.latestTime>{lastTime}</styles.latestTime>
         </styles.roomInfo>
         <styles.menu onClick={handleMenuClick} />
         {isMenuClick && (
@@ -245,7 +250,7 @@ export function ChattingRoom({
         )}
       </styles.header>
       <styles.messageContainer>
-        {chatRoomData?.map((message, index) => (
+        {reversedChatRoomData?.map((message, index) => (
           <div key={index}>
             {message.sender === userId ? (
               <styles.senderFrame>

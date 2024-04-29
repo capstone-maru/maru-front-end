@@ -121,6 +121,8 @@ export function FloatingChatting() {
   const [isChatRoomOpen, setIsChatRoomOpen] = useState<boolean>(false);
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [selectedRoomId, setSelectedRoomId] = useState<number>(0);
+  const [selectedRoomName, setSelectedRoomName] = useState<string>('');
+  const [selectedRoomLastTime, setSelectedRoomLastTime] = useState<string>('');
   const [roomData, setRoomData] = useState<
     | [
         {
@@ -156,9 +158,12 @@ export function FloatingChatting() {
 
   const handleChatRoomClick = () => {
     enterChatting();
-    setRoomData(chatRoomData?.data);
     setIsChatRoomOpen(prev => !prev);
   };
+
+  useEffect(() => {
+    setRoomData(chatRoomData?.data);
+  }, [chatRoomData]);
 
   const chatRoomList = useChatRoomList(auth?.accessToken);
   useEffect(() => {
@@ -213,6 +218,8 @@ export function FloatingChatting() {
                 onClick={() => {
                   handleChatRoomClick();
                   setSelectedRoomId(room.roomId);
+                  setSelectedRoomName(room.roomName);
+                  setSelectedRoomLastTime(room.lastMessageTime);
                 }}
               />
             ))}
@@ -224,6 +231,8 @@ export function FloatingChatting() {
           chatRoomData={roomData}
           userId={userId}
           roomId={selectedRoomId}
+          roomName={selectedRoomName}
+          lastTime={selectedRoomLastTime}
           onRoomClick={setIsChatRoomOpen}
         />
       )}

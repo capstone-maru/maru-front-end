@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -71,12 +72,26 @@ const styles = {
 
     position: relative;
   `,
+  inviteButton: styled.button`
+    border: none;
+    background-color: #fff;
+    color: var(--Text-grayDark, #2c2c2e);
+    font-family: 'Noto Sans KR';
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.125rem; /* 128.571% */
+    text-align: start;
+    cursor: pointer;
+  `,
   userListContainer: styled.ul`
     display: flex;
     flex: 1;
     flex-direction: column;
     padding: 0 0.8rem;
     width: 100%;
+    max-height: 12rem;
+    overflow-y: auto;
     gap: 1rem;
   `,
   userList: styled.li`
@@ -204,26 +219,24 @@ export function ChatMenu({
           하우스 메이트
           <styles.userListContainer>
             {userList.map((user, index) => (
-              <styles.userList key={index}>
-                <styles.userImg src={user.profileImageUrl} />
-                {user.nickname}
-              </styles.userList>
+              <Link href={`/profile/${user.memberId}`} key={index}>
+                <styles.userList key={index}>
+                  <styles.userImg src={user.profileImageUrl} />
+                  {user.nickname}
+                </styles.userList>
+              </Link>
             ))}
           </styles.userListContainer>
         </styles.menuList>
         <styles.menuList>
-          <button
-            type="button"
+          <styles.inviteButton
             onClick={() => {
               // inviteUser();
               setIsInviteClick(prev => !prev);
             }}
-            style={{
-              border: 'none',
-            }}
           >
             메이트 초대하기
-          </button>
+          </styles.inviteButton>
           {isInviteClick && (
             <styles.dropDownContainer>
               <styles.followingListContainer>
