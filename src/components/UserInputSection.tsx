@@ -24,24 +24,22 @@ const styles = {
 };
 
 interface SelectedState {
-  smoking: string | undefined;
-  room: string | undefined;
+  smoking?: string;
+  room?: string;
+  mateAge?: string;
 }
 
 interface UserInputProps {
-  gender: string | undefined;
-  birthYear: string | undefined;
-  location: string | undefined;
-  mbti: string | undefined;
-  major: string | undefined;
-  budget: string | undefined;
-  features: string[] | null;
+  gender?: string;
+  birthYear?: string;
+  location?: string;
+  mbti?: string;
+  major?: string;
+  budget?: string;
+  features?: string[];
   isMySelf: boolean;
   type: 'myCard' | 'mateCard';
-  onVitalChange: (
-    optionName: keyof SelectedState,
-    item: string | number,
-  ) => void;
+  onVitalChange: (optionName: keyof SelectedState, item: string) => void;
   onOptionChange: (option: string) => void;
   onLocationChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   onMateAgeChange: React.Dispatch<React.SetStateAction<string | undefined>>;

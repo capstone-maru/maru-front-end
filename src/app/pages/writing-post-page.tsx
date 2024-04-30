@@ -445,12 +445,12 @@ export function WritingPostPage() {
     mbti,
     major,
     budget,
-    isMySelf,
-    type,
     setBirthYear,
     setMbti,
     setMajor,
     setBudget,
+    handleEssentialFeatureChange,
+    handleOptionalFeatureChange,
   } = useUserInputSection();
 
   const { mutate } = useCreateSharedPost();
@@ -753,11 +753,19 @@ export function WritingPostPage() {
                 mbti={mbti}
                 major={major}
                 budget={budget}
-                features={null}
-                isMySelf={isMySelf}
-                type={type}
-                onVitalChange={(optionName, item) => {}}
-                onOptionChange={option => {}}
+                features={undefined}
+                isMySelf
+                type="mateCard"
+                onVitalChange={(optionName, option) => {
+                  if (
+                    optionName === 'room' ||
+                    optionName === 'smoking' ||
+                    optionName === 'mateAge'
+                  ) {
+                    handleEssentialFeatureChange(optionName, option);
+                  }
+                }}
+                onOptionChange={handleOptionalFeatureChange}
                 onLocationChange={() => {}}
                 onMateAgeChange={setBirthYear}
                 onMbtiChange={setMbti}

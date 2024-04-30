@@ -189,12 +189,57 @@ export const useUserInputSection = () => {
   const [mbti, setMbti] = useState<string | undefined>(undefined);
   const [major, setMajor] = useState<string | undefined>(undefined);
   const [budget, setBudget] = useState<string | undefined>(undefined);
-  const [features, setFeatures] = useState<string[] | null>([]);
-  const [isMySelf, setIsMySelf] = useState<boolean>(true);
-  const [type, setType] = useState<'myCard' | 'mateCard'>('mateCard');
+
+  const [features, setFeatures] = useState<{
+    smoking?: string;
+    room?: string;
+    mateAge?: string;
+    options: Set<string>;
+  }>({ options: new Set() });
+
+  const handleEssentialFeatureChange = useCallback(
+    (key: 'smoking' | 'room' | 'mateAge', value: string) => {
+      setFeatures(prev => {
+        if (prev[key] === value) {
+          const newFeatures = { ...prev };
+          newFeatures[key] = undefined;
+          return newFeatures;
+        }
+        return { ...prev, [key]: value };
+      });
+    },
+    [],
+  );
+
+  const handleOptionalFeatureChange = useCallback((option: string) => {
+    setFeatures(prev => {
+      const { options } = prev;
+      const newOptions = new Set(options);
+
+      if (options.has(option)) newOptions.delete(option);
+      else newOptions.add(option);
+
+      return { ...prev, options: newOptions };
+    });
+  }, []);
+
+  const derivedFeatures = useMemo(() => {
+    const options: string[] = [];
+    features.options.forEach(option => options.push(option));
+
+    return JSON.stringify({
+      smoking: features?.smoking,
+      room: features?.room,
+      mateAge: features?.mateAge,
+      options,
+    });
+  }, [features]);
+
+  useEffect(() => {
+    console.log(derivedFeatures);
+  }, [derivedFeatures]);
 
   const auth = useAuthValue();
-
   useEffect(() => {
     if (auth?.user != null) {
       setGender(auth.user.gender);
@@ -215,12 +260,9 @@ export const useUserInputSection = () => {
       setMajor,
       budget,
       setBudget,
-      features,
-      setFeatures,
-      isMySelf,
-      setIsMySelf,
-      type,
-      setType,
+      derivedFeatures,
+      handleEssentialFeatureChange,
+      handleOptionalFeatureChange,
     }),
     [
       gender,
@@ -235,12 +277,9 @@ export const useUserInputSection = () => {
       setMajor,
       budget,
       setBudget,
-      features,
-      setFeatures,
-      isMySelf,
-      setIsMySelf,
-      type,
-      setType,
+      derivedFeatures,
+      handleEssentialFeatureChange,
+      handleOptionalFeatureChange,
     ],
   );
 };

@@ -179,10 +179,10 @@ export function OptionSection({
   isMySelf,
   type,
 }: {
-  mbti: string | undefined;
-  major: string | undefined;
-  budget: string | undefined;
-  optionFeatures: string[] | null;
+  mbti?: string;
+  major?: string;
+  budget?: string;
+  optionFeatures?: string[];
   onFeatureChange: (option: string) => void;
   onMbtiChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   onMajorChange: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -196,7 +196,7 @@ export function OptionSection({
   const majorArray = ['공학', '교육', '인문', '사회', '자연', '예체능', '의약'];
 
   useEffect(() => {
-    if (optionFeatures !== null) {
+    if (optionFeatures != null) {
       const initialOptions: SelectedOptions = {};
       const optionsString = optionFeatures[3].split(':')[1];
       const budgetIdx = optionsString.indexOf('[');
