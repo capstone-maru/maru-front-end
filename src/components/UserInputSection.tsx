@@ -37,7 +37,7 @@ interface UserInputProps {
   budget: string | undefined;
   features: string[] | null;
   isMySelf: boolean;
-  type: string;
+  type: 'myCard' | 'mateCard';
   onVitalChange: (
     optionName: keyof SelectedState,
     item: string | number,

@@ -247,8 +247,8 @@ export function VitalSection({
   useEffect(() => {
     setSelectedState({
       ...selectedState,
-      smoking: vitalFeatures?.[0],
-      room: vitalFeatures?.[1],
+      smoking: vitalFeatures?.[0].split(':')[1],
+      room: vitalFeatures?.[1].split(':')[1],
     });
   }, [vitalFeatures]);
 
@@ -285,7 +285,7 @@ export function VitalSection({
   const [initialAge, setInitialAge] = useState(0);
   useEffect(() => {
     if (vitalFeatures !== null)
-      setInitialAge(Number(vitalFeatures?.[2].slice(1)));
+      setInitialAge(Number(vitalFeatures?.[2].split(':')[1].slice(1)));
   }, [vitalFeatures?.[2]]);
 
   const [ageValue, setAgeValue] = useState<number>(0);

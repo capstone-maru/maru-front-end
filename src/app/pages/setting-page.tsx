@@ -188,8 +188,8 @@ export function SettingPage({ cardId }: { cardId: number }) {
       if (features !== null) {
         setSelectedState({
           ...selectedState,
-          smoking: features[0],
-          room: features[1],
+          smoking: features[0].split(':')[1],
+          room: features[1].split(':')[1],
         });
       }
     }
@@ -206,10 +206,14 @@ export function SettingPage({ cardId }: { cardId: number }) {
     if (isMySelf) {
       if (features !== null) {
         const initialOptions: SelectedOptions = {};
-        features.slice(2).forEach(option => {
+        const optionsString = features[3].split(':')[1];
+        const budgetIdx = optionsString.indexOf('[');
+        const budget = optionsString.slice(budgetIdx);
+        setInitialBudget(budget.slice(1, -1));
+
+        const options = optionsString.slice(0, budgetIdx).split(',');
+        options.forEach(option => {
           if (
-            !option.includes(',') &&
-            !option.includes('±') &&
             !option.includes('E') &&
             !option.includes('I') &&
             !majorArray.includes(option)
@@ -220,7 +224,6 @@ export function SettingPage({ cardId }: { cardId: number }) {
           if (option.includes('E') || option.includes('I'))
             setInitialMbti(option);
           if (majorArray.includes(option)) setInitialMajor(option);
-          if (option.includes(',')) setInitialBudget(option);
         });
         setSelectedOptions(initialOptions);
       }
@@ -269,16 +272,19 @@ export function SettingPage({ cardId }: { cardId: number }) {
     const array = Object.keys(selectedOptions).filter(
       key => selectedOptions[key] && key !== '전공' && key !== '엠비티아이',
     );
+    const options = [
+      ...array,
+      ...(mbti != null ? [mbti] : []),
+      ...(major != null ? [major] : []),
+      ...(budget != null ? [budget] : []),
+    ].filter(Boolean);
 
     const location = locationInput ?? '';
     const myFeatures = [
-      selectedState.smoking,
-      selectedState.room,
-      mateAge !== '' ? mateAge : undefined,
-      ...array,
-      ...(mbti !== null && mbti !== undefined ? [mbti] : []),
-      ...(major !== null && major !== undefined ? [major] : []),
-      budget,
+      `smoking:${selectedState.smoking}`,
+      `room:${selectedState.room}`,
+      `mateAge:${mateAge !== '' ? mateAge : undefined}`,
+      `options:${options.join(',')}`,
     ];
 
     mutate({ location, features: myFeatures });
@@ -379,24 +385,45 @@ export function SettingPage({ cardId }: { cardId: number }) {
             </styles.miniCardList>
           </styles.miniCardKeywordsContainer>
         </styles.miniCard>
-        <UserInputSection
-          gender={userData?.gender}
-          birthYear={userData?.birthYear}
-          location={card.data?.data.location}
-          features={features}
-          isMySelf={isMySelf}
-          type={type}
-          mbti={initialMbti}
-          major={initialMajor}
-          budget={initialBudget}
-          onVitalChange={handleFeatureChange}
-          onOptionChange={handleOptionClick}
-          onLocationChange={setLocation}
-          onMateAgeChange={setMateAge}
-          onMbtiChange={setMbti}
-          onMajorChange={setMajor}
-          onBudgetChange={setBudget}
-        />
+        {type === 'myCard' ? (
+          <UserInputSection
+            gender={userData?.gender}
+            birthYear={userData?.birthYear}
+            location={card.data?.data.location}
+            features={features}
+            isMySelf={isMySelf}
+            type="myCard"
+            mbti={initialMbti}
+            major={initialMajor}
+            budget={initialBudget}
+            onVitalChange={handleFeatureChange}
+            onOptionChange={handleOptionClick}
+            onLocationChange={setLocation}
+            onMateAgeChange={setMateAge}
+            onMbtiChange={setMbti}
+            onMajorChange={setMajor}
+            onBudgetChange={setBudget}
+          />
+        ) : (
+          <UserInputSection
+            gender={userData?.gender}
+            birthYear={userData?.birthYear}
+            location={card.data?.data.location}
+            features={features}
+            isMySelf={isMySelf}
+            type="mateCard"
+            mbti={initialMbti}
+            major={initialMajor}
+            budget={initialBudget}
+            onVitalChange={handleFeatureChange}
+            onOptionChange={handleOptionClick}
+            onLocationChange={setLocation}
+            onMateAgeChange={setMateAge}
+            onMbtiChange={setMbti}
+            onMajorChange={setMajor}
+            onBudgetChange={setBudget}
+          />
+        )}
       </styles.cardContainer>
     </styles.pageContainer>
   );
