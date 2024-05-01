@@ -93,6 +93,14 @@ const styles = {
     max-height: 12rem;
     overflow-y: auto;
     gap: 1rem;
+
+    &::-webkit-scrollbar {
+      width: 0.5rem;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #ced3da;
+      border-radius: 4px;
+    }
   `,
   userList: styled.li`
     display: flex;

@@ -79,7 +79,15 @@ const styles = {
     height: calc(100% - 3.25rem);
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+      width: 0.5rem;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #ced3da;
+      border-radius: 4px;
+    }
   `,
   searchButton: styled.img`
     width: 1.2rem;

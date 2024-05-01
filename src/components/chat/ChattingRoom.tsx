@@ -75,6 +75,14 @@ const styles = {
     height: calc(100% - 7.5rem);
     box-shadow: 0px -1px 0px 0px #e5e5ea inset;
     position: relative;
+
+    &::-webkit-scrollbar {
+      width: 0.5rem;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #ced3da;
+      border-radius: 4px;
+    }
   `,
   senderFrame: styled.div`
     display: flex;
