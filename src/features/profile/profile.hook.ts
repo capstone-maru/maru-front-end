@@ -4,13 +4,15 @@ import {
   getUserProfileData,
   getUserCard,
   getFollowingListData,
-  postFollowData,
   putUserCard,
+  postSearchUser,
+  postUnfollowUser,
+  postFollowUser,
 } from './profile.api';
 
 export const useProfileData = (memberId: string) =>
   useQuery({
-    queryKey: [`/api/profile/${memberId}`],
+    queryKey: [`/api/profile`, memberId],
     queryFn: async () => await getUserProfileData(memberId),
     enabled: memberId !== undefined,
   });
@@ -36,9 +38,22 @@ export const useFollowingListData = () =>
     queryFn: getFollowingListData,
   });
 
-export const useFollowData = () =>
+export const useFollowUser = (memberId: string) =>
   useMutation({
-    mutationFn: async (memberId: string) => {
-      await postFollowData(memberId);
+    mutationFn: async () => {
+      await postFollowUser(memberId);
     },
+  });
+
+export const useUnfollowUser = (memberId: string) =>
+  useMutation({
+    mutationFn: async () => {
+      await postUnfollowUser(memberId);
+    },
+  });
+
+export const useSearchUser = (email: string) =>
+  useMutation({
+    mutationFn: async () => await postSearchUser(email),
+    onSuccess: data => data.data,
   });

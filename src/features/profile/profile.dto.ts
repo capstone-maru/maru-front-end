@@ -44,10 +44,14 @@ export interface PutUserCardDTO extends SuccessBaseDTO {
 
 export interface GetFollowingListDTO extends SuccessBaseDTO {
   data: {
-    followingList: string[];
+    followingList: Record<string, string[]>;
   };
 }
 
-export interface PostFollowDTO extends SuccessBaseDTO {
-  data: null;
+export interface PostSearchDTO extends SuccessBaseDTO {
+  data: {
+    memberId: string;
+    nickname: string;
+    profileImageUrl: string;
+  };
 }
