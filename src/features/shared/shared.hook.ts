@@ -223,7 +223,7 @@ export const useUserInputSection = () => {
     });
   }, []);
 
-  const derivedFeatures = useMemo(() => {
+  const stringifyFeatures = useMemo(() => {
     const options: string[] = [];
     features.options.forEach(option => options.push(option));
 
@@ -234,10 +234,6 @@ export const useUserInputSection = () => {
       options,
     });
   }, [features]);
-
-  useEffect(() => {
-    console.log(derivedFeatures);
-  }, [derivedFeatures]);
 
   const auth = useAuthValue();
   useEffect(() => {
@@ -260,7 +256,7 @@ export const useUserInputSection = () => {
       setMajor,
       budget,
       setBudget,
-      derivedFeatures,
+      stringifyFeatures,
       handleEssentialFeatureChange,
       handleOptionalFeatureChange,
     }),
@@ -277,7 +273,7 @@ export const useUserInputSection = () => {
       setMajor,
       budget,
       setBudget,
-      derivedFeatures,
+      stringifyFeatures,
       handleEssentialFeatureChange,
       handleOptionalFeatureChange,
     ],
