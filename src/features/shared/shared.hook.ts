@@ -130,6 +130,32 @@ export const useCreateSharedPostProps = () => {
     [selectedExtraOptions],
   );
 
+  const isPostCreatable = useMemo(
+    () =>
+      images.length > 0 &&
+      title.trim().length > 0 &&
+      content.trim().length > 0 &&
+      selectedOptions.budget != null &&
+      expectedMonthlyFee > 0 &&
+      selectedOptions.roomType != null &&
+      houseSize > 0 &&
+      selectedOptions.roomCount != null &&
+      selectedOptions.restRoomCount != null &&
+      selectedOptions.livingRoom != null &&
+      mateLimit > 0 &&
+      address != null,
+    [
+      images,
+      title,
+      content,
+      selectedOptions,
+      expectedMonthlyFee,
+      houseSize,
+      mateLimit,
+      address,
+    ],
+  );
+
   return useMemo(
     () => ({
       title,
@@ -154,6 +180,7 @@ export const useCreateSharedPostProps = () => {
       handleExtraOptionClick,
       isOptionSelected,
       isExtraOptionSelected,
+      isPostCreatable,
     }),
     [
       title,
@@ -178,6 +205,7 @@ export const useCreateSharedPostProps = () => {
       handleExtraOptionClick,
       isOptionSelected,
       isExtraOptionSelected,
+      isPostCreatable,
     ],
   );
 };
@@ -223,16 +251,16 @@ export const useUserInputSection = () => {
     });
   }, []);
 
-  const stringifyFeatures = useMemo(() => {
+  const derivedFeatures = useMemo(() => {
     const options: string[] = [];
     features.options.forEach(option => options.push(option));
 
-    return JSON.stringify({
+    return {
       smoking: features?.smoking,
       room: features?.room,
       mateAge: features?.mateAge,
       options,
-    });
+    };
   }, [features]);
 
   const auth = useAuthValue();
@@ -241,6 +269,12 @@ export const useUserInputSection = () => {
       setGender(auth.user.gender);
     }
   }, [auth?.user]);
+
+  const isMateCardCreatable = useMemo(
+    () =>
+      gender != null && birthYear != null && location != null && budget != null,
+    [gender, birthYear, location, budget],
+  );
 
   return useMemo(
     () => ({
@@ -256,9 +290,10 @@ export const useUserInputSection = () => {
       setMajor,
       budget,
       setBudget,
-      stringifyFeatures,
+      derivedFeatures,
       handleEssentialFeatureChange,
       handleOptionalFeatureChange,
+      isMateCardCreatable,
     }),
     [
       gender,
@@ -273,9 +308,10 @@ export const useUserInputSection = () => {
       setMajor,
       budget,
       setBudget,
-      stringifyFeatures,
+      derivedFeatures,
       handleEssentialFeatureChange,
       handleOptionalFeatureChange,
+      isMateCardCreatable,
     ],
   );
 };

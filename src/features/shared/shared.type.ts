@@ -40,29 +40,33 @@ export interface CreateSharedPostProps {
   };
   transactionData: {
     rentalType: string;
-    price: number;
-    monthlyFee: number;
-    managementFee: number;
+    expectedPayment: number;
   };
   roomDetailData: {
     roomType: string;
+    floorType: string;
     size: number;
     numberOfRoom: number;
+    numberOfBathRoom: number;
+    hasLivingRoom: boolean;
     recruitmentCapacity: number;
+    extraOption: {
+      canPark: boolean;
+      hasAirConditioner: boolean;
+      hasRefrigerator: boolean;
+      hasWasher: boolean;
+      hasTerrace: boolean;
+    };
   };
   locationData: {
     city: string;
     oldAddress: string;
     roadAddress: string;
-    stationName: string;
-    stationTime: number;
-    busStopTime: number;
-    schoolName: string;
-    schoolTime: number;
-    convenienceStoreTime: number;
+    detailAddress: string;
   };
   roomMateCardData: {
     location: string;
     features: string[];
   };
+  participationMemberIds: string[];
 }

@@ -394,16 +394,16 @@ const styles = {
 const DealOptions = ['월세', '전세'];
 const RoomOptions = ['원룸', '빌라/투룸이상', '아파트', '오피스텔'];
 const LivingRoomOptions = ['유', '무'];
-const RoomCountOptions = ['1개', '2개', '3개 이상'];
-const RestRoomCountOptions = ['1개', '2개', '3개 이상'];
+const RoomCountOptions = { '1개': 1, '2개': 2, '3개 이상': 3 };
+const RestRoomCountOptions = { '1개': 1, '2개': 2, '3개 이상': 3 };
 const FloorOptions = ['지상', '반지하', '옥탑'];
-const AdditionalOptions = [
-  '주차가능',
-  '에어컨',
-  '냉장고',
-  '세탁기',
-  '베란다/테라스',
-];
+const AdditionalOptions = {
+  canPark: '주차가능',
+  hasAirConditioner: '에어컨',
+  hasRefrigerator: '냉장고',
+  hasWasher: '세탁기',
+  hasTerrace: '베란다/테라스',
+};
 
 interface ButtonActiveProps {
   $isSelected: boolean;
@@ -420,18 +420,21 @@ export function WritingPostPage() {
 
   const {
     title,
-    setTitle,
     content,
-    setContent,
     images,
-    setImages,
     mateLimit,
-    setMateLimit,
     houseSize,
-    setHouseSize,
     address,
-    setAddress,
+    selectedOptions,
+    selectedExtraOptions,
     expectedMonthlyFee,
+    isPostCreatable,
+    setTitle,
+    setContent,
+    setImages,
+    setMateLimit,
+    setHouseSize,
+    setAddress,
     setExpectedMonthlyFee,
     handleOptionClick,
     handleExtraOptionClick,
@@ -445,6 +448,7 @@ export function WritingPostPage() {
     mbti,
     major,
     budget,
+    isMateCardCreatable,
     setBirthYear,
     setMbti,
     setMajor,
@@ -508,99 +512,136 @@ export function WritingPostPage() {
   };
 
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!isPostCreatable || !isMateCardCreatable) return;
+
+    const rentalType = selectedOptions.budget;
+    const { roomType } = selectedOptions;
+    const { floorType } = selectedOptions;
+
+    if (
+      rentalType == null ||
+      roomType == null ||
+      floorType == null ||
+      address == null ||
+      selectedOptions.roomCount == null ||
+      !(selectedOptions.roomCount in RoomCountOptions) ||
+      selectedOptions.restRoomCount == null ||
+      !(selectedOptions.restRoomCount in RestRoomCountOptions)
+    )
+      return;
+
+    const numberOfRoomOption = selectedOptions.roomCount as
+      | '1개'
+      | '2개'
+      | '3개 이상';
+    const numberOfRoom = RoomCountOptions[numberOfRoomOption];
+
+    const numberOfBathRoomOption = selectedOptions.restRoomCount as
+      | '1개'
+      | '2개'
+      | '3개 이상';
+    const numberOfBathRoom = RestRoomCountOptions[numberOfBathRoomOption];
+
     (async () => {
-      if (images.length > 0) {
-        try {
-          const getResults = await Promise.allSettled(
-            images.map(async ({ extension, file }) => {
-              const result = await getImageURL(extension);
-              return {
-                ...result.data.data,
-                file,
-              };
-            }),
-          );
+      try {
+        const getResults = await Promise.allSettled(
+          images.map(async ({ extension, file }) => {
+            const result = await getImageURL(extension);
+            return {
+              ...result.data.data,
+              file,
+            };
+          }),
+        );
 
-          const urls = getResults.reduce<
-            Array<{ file: File; fileName: string; url: string }>
-          >((prev, result) => {
-            if (result.status === 'rejected') return prev;
-            return prev.concat(result.value);
-          }, []);
+        const urls = getResults.reduce<
+          Array<{ file: File; fileName: string; url: string }>
+        >((prev, result) => {
+          if (result.status === 'rejected') return prev;
+          return prev.concat(result.value);
+        }, []);
 
-          const putResults = await Promise.allSettled(
-            urls.map(async url => {
-              await putImage(url.url, url.file);
-              return { fileName: url.fileName };
-            }),
-          );
+        const putResults = await Promise.allSettled(
+          urls.map(async url => {
+            await putImage(url.url, url.file);
+            return { fileName: url.fileName };
+          }),
+        );
 
-          const uploadedImages = putResults.reduce<
-            Array<{ fileName: string; isThumbNail: boolean; order: number }>
-          >((prev, result) => {
-            if (result.status === 'rejected') return prev;
-            return prev.concat({
-              fileName: result.value.fileName,
-              isThumbNail: prev.length === 0,
-              order: prev.length + 1,
-            });
-          }, []);
+        const uploadedImages = putResults.reduce<
+          Array<{ fileName: string; isThumbNail: boolean; order: number }>
+        >((prev, result) => {
+          if (result.status === 'rejected') return prev;
+          return prev.concat({
+            fileName: result.value.fileName,
+            isThumbNail: prev.length === 0,
+            order: prev.length + 1,
+          });
+        }, []);
 
-          mutate(
-            {
-              imageFilesData: uploadedImages,
-              postData: { content, title },
-              transactionData: {
-                rentalType: '0',
-                price: 100000,
-                monthlyFee: 10000,
-                managementFee: 1000,
-              },
-              roomDetailData: {
-                roomType: '0',
-                size: 5,
-                numberOfRoom: 1,
-                recruitmentCapacity: 2,
-              },
-              locationData: {
-                city: 'SEOUL',
-                oldAddress: 'test old address',
-                roadAddress: 'test road address',
-                stationName: 'mokdong',
-                stationTime: 10,
-                busStopTime: 3,
-                schoolName: 'kookmin',
-                schoolTime: 20,
-                convenienceStoreTime: 2,
-              },
-              roomMateCardData: {
-                location: '솔샘로 44',
-                features: ['특징1', '특징2', '특징3'],
+        mutate(
+          {
+            imageFilesData: uploadedImages,
+            postData: { title, content },
+            transactionData: {
+              rentalType,
+              expectedPayment: expectedMonthlyFee,
+            },
+            roomDetailData: {
+              roomType,
+              floorType,
+              size: houseSize,
+              numberOfRoom,
+              numberOfBathRoom,
+              hasLivingRoom: selectedOptions.livingRoom === '유',
+              recruitmentCapacity: mateLimit,
+              extraOption: {
+                canPark: selectedExtraOptions.canPark,
+                hasAirConditioner: selectedExtraOptions.hasAirConditioner,
+                hasRefrigerator: selectedExtraOptions.hasRefrigerator,
+                hasWasher: selectedExtraOptions.hasWasher,
+                hasTerrace: selectedExtraOptions.hasTerrace,
               },
             },
-            {
-              onSuccess: () => {
-                createToast({
-                  message: '게시글이 정상적으로 업로드되었습니다.',
-                  option: {
-                    duration: 3000,
-                  },
-                });
-                router.back();
-              },
-              onError: () => {
-                createToast({
-                  message: '게시글 업로드에 실패했습니다.',
-                  option: {
-                    duration: 3000,
-                  },
-                });
-              },
+            locationData: {
+              city: address?.roadAddress.split(' ').slice(0, 2).join(' '),
+              oldAddress: address?.jibunAddress,
+              roadAddress: address?.roadAddress,
+              detailAddress: '',
             },
-          );
-        } catch (error) {
-          console.error(error);
-        }
+            roomMateCardData: {
+              location: address?.roadAddress,
+              features: [],
+            },
+            participationMemberIds: [],
+          },
+          {
+            onSuccess: () => {
+              createToast({
+                message: '게시글이 정상적으로 업로드되었습니다.',
+                option: {
+                  duration: 3000,
+                },
+              });
+              router.back();
+            },
+            onError: () => {
+              createToast({
+                message: '게시글 업로드에 실패했습니다.',
+                option: {
+                  duration: 3000,
+                },
+              });
+            },
+          },
+        );
+      } catch (error) {
+        createToast({
+          message: '게시글 업로드에 실패했습니다.',
+          option: {
+            duration: 3000,
+          },
+        });
       }
     })();
   };
@@ -823,15 +864,15 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>추가 옵션</styles.option>
           <styles.optionRow>
-            {AdditionalOptions.map(option => (
+            {Object.entries(AdditionalOptions).map(([option, value]) => (
               <styles.optionButtonContainer key={option}>
                 <styles.customCheckBox
-                  $isSelected={isExtraOptionSelected(option)}
+                  $isSelected={isExtraOptionSelected(value)}
                   onClick={() => {
-                    handleExtraOptionClick(option);
+                    handleExtraOptionClick(value);
                   }}
                 />
-                <span>{option}</span>
+                <span>{value}</span>
               </styles.optionButtonContainer>
             ))}
           </styles.optionRow>
@@ -865,7 +906,7 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>방 개수</styles.option>
           <styles.optionRow>
-            {RoomCountOptions.map(option => (
+            {Object.keys(RoomCountOptions).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
                   $isSelected={isOptionSelected('roomCount', option)}
@@ -879,7 +920,7 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>화장실 개수</styles.option>
           <styles.optionRow>
-            {RestRoomCountOptions.map(option => (
+            {Object.keys(RestRoomCountOptions).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
                   $isSelected={isOptionSelected('restRoomCount', option)}

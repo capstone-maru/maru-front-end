@@ -17,14 +17,14 @@ const filterConvertToValues = (filter: GetSharedPostsFilter) => {
   const result: Partial<Record<keyof GetSharedPostsFilter, number[]>> = {};
 
   if (filter.roomType !== undefined) {
-    result.roomType = Object.values(filter.roomType).map(
-      value => RoomTypeValue[value],
+    result.roomType = Object.values(filter.roomType).map(value =>
+      Number(RoomTypeValue[value]),
     );
   }
 
   if (filter.rentalType !== undefined) {
-    result.rentalType = Object.values(filter.rentalType).map(
-      value => RentalTypeValue[value],
+    result.rentalType = Object.values(filter.rentalType).map(value =>
+      Number(RentalTypeValue[value]),
     );
   }
 
