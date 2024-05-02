@@ -208,14 +208,23 @@ export function FloatingChatting() {
               <styles.searchButton src="/icon-search.svg" />
             </div>
           </styles.chattingHeader>
-          <button
-            type="button"
-            onClick={() => {
-              chattingMutate();
+          <div
+            className="test"
+            style={{
+              display: 'flex',
+              gap: '1rem',
             }}
           >
-            채팅방 생성
-          </button>
+            <button
+              type="button"
+              onClick={() => {
+                chattingMutate();
+              }}
+            >
+              채팅방 생성
+            </button>
+          </div>
+
           <styles.chattingSection>
             {chatRooms.map((room, index) => (
               <ChattingList

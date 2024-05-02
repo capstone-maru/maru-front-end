@@ -253,18 +253,20 @@ export function ChatMenu({
                   <styles.searchButton src="/icon-search.svg" />
                 </styles.searchBox>
                 <styles.followingUserContainer>
-                  <styles.userList style={{ flexDirection: 'column' }}>
-                    <styles.userImg src="__avatar_url.png" />
-                    김마루
-                  </styles.userList>
-                  <styles.userList style={{ flexDirection: 'column' }}>
-                    <styles.userImg src="__avatar_url.png" />
-                    김마루
-                  </styles.userList>
-                  <styles.userList style={{ flexDirection: 'column' }}>
-                    <styles.userImg src="__avatar_url.png" />
-                    김마루
-                  </styles.userList>
+                  {/* {Object.values(
+                    folloingUsers.data?.data.followingList as Record<
+                      string,
+                      string[]
+                    >,
+                  ).map((user, index) => (
+                    <styles.userList
+                      key={index}
+                      style={{ flexDirection: 'column' }}
+                    >
+                      <styles.userImg src={user[1]} />
+                      {user[0]}
+                    </styles.userList>
+                  ))} */}
                 </styles.followingUserContainer>
               </styles.followingListContainer>
             </styles.dropDownContainer>

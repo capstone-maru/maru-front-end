@@ -1,7 +1,7 @@
 'use client';
 
 import { Client } from '@stomp/stompjs';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { ChatMenu } from './ChatMenu';
@@ -162,13 +162,12 @@ export function ChattingRoom({
 
   const auth = useAuthValue();
   const user = userId;
-  const reversedChatRoomData = chatRoomData?.reverse();
 
   useEffect(() => {
     const initializeChat = async () => {
       try {
         const stomp = new Client({
-          brokerURL: `ws://ec2-3-35-138-168.ap-northeast-2.compute.amazonaws.com:8080/ws`,
+          brokerURL: `ws://ec2-54-180-133-123.ap-northeast-2.compute.amazonaws.com:8080/ws`,
           connectHeaders: {
             Authorization: `Bearer ${auth?.accessToken}`,
           },
@@ -241,6 +240,22 @@ export function ChattingRoom({
     }
   }
 
+  const messageContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messageContainerRef.current != null) {
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
+    }
+  }, [chatRoomData]);
+
+  useEffect(() => {
+    if (messageContainerRef.current != null) {
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
     <styles.container>
       <styles.header>
@@ -257,20 +272,23 @@ export function ChattingRoom({
           <ChatMenu roomId={roomId} onMenuClicked={setIsMenuClick} />
         )}
       </styles.header>
-      <styles.messageContainer>
-        {reversedChatRoomData?.map((message, index) => (
-          <div key={index}>
-            {message.sender === userId ? (
-              <styles.senderFrame>
-                <SenderMessage message={message.message} />
-              </styles.senderFrame>
-            ) : (
-              <styles.receiverFrame>
-                <ReceiverMessage message={message.message} />
-              </styles.receiverFrame>
-            )}
-          </div>
-        ))}
+      <styles.messageContainer ref={messageContainerRef}>
+        {chatRoomData
+          ?.slice()
+          .reverse()
+          ?.map((message, index) => (
+            <div key={index}>
+              {message.sender === userId ? (
+                <styles.senderFrame>
+                  <SenderMessage message={message.message} />
+                </styles.senderFrame>
+              ) : (
+                <styles.receiverFrame>
+                  <ReceiverMessage message={message.message} />
+                </styles.receiverFrame>
+              )}
+            </div>
+          ))}
         {messages.map((message, index) => (
           <div key={index}>
             {message.sender === userId ? (
