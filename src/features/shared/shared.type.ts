@@ -39,12 +39,12 @@ export interface CreateSharedPostProps {
     content: string;
   };
   transactionData: {
-    rentalType: string;
+    rentalType: number;
     expectedPayment: number;
   };
   roomDetailData: {
-    roomType: string;
-    floorType: string;
+    roomType: number;
+    floorType: number;
     size: number;
     numberOfRoom: number;
     numberOfBathRoom: number;
@@ -59,14 +59,17 @@ export interface CreateSharedPostProps {
     };
   };
   locationData: {
-    city: string;
     oldAddress: string;
     roadAddress: string;
-    detailAddress: string;
   };
   roomMateCardData: {
     location: string;
-    features: string[];
+    features: {
+      smoking: string;
+      roomSharingOption: string;
+      mateAge: number | null; // 0 ~ 10: +- 범위 값, null: 상관 없어요.
+      options: string;
+    };
   };
   participationMemberIds: string[];
 }

@@ -255,11 +255,24 @@ export const useUserInputSection = () => {
     const options: string[] = [];
     features.options.forEach(option => options.push(option));
 
+    let mateAge: number | null = null;
+    if (features?.mateAge != null) {
+      if (features.mateAge === '동갑') {
+        mateAge = 0;
+      } else if (features.mateAge === '상관없어요') {
+        mateAge = null;
+      } else {
+        mateAge = Number(features.mateAge.slice(1));
+      }
+    } else {
+      mateAge = null;
+    }
+
     return {
-      smoking: features?.smoking,
-      room: features?.room,
-      mateAge: features?.mateAge,
-      options,
+      smoking: features?.smoking ?? '상관없어요',
+      roomSharingOption: features?.room ?? '상관없어요',
+      mateAge: mateAge ?? null,
+      options: JSON.stringify(options),
     };
   }, [features]);
 
