@@ -9,6 +9,7 @@ import {
   LocationSearchBox,
   MateSearchBox,
 } from '@/components/writing-post-page';
+import { useAuthValue } from '@/features/auth';
 import { getImageURL, putImage } from '@/features/image';
 import {
   useCreateSharedPost,
@@ -476,6 +477,8 @@ export function WritingPostPage() {
   const { mutate } = useCreateSharedPost();
   const { createToast } = useToast();
 
+  const auth = useAuthValue();
+
   const handleTitleInputChanged = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -633,7 +636,8 @@ export function WritingPostPage() {
               location: address?.roadAddress,
               features: derivedFeatures,
             },
-            participationMemberIds: ['kakao_3401909236'],
+            participationMemberIds:
+              auth?.user != null ? [auth.user.memberId] : [],
           },
           {
             onSuccess: () => {
