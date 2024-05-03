@@ -2,6 +2,8 @@
 
 import styled from 'styled-components';
 
+import { getLocalTime } from '@/shared';
+
 const styles = {
   container: styled.div`
     display: inline-flex;
@@ -84,7 +86,13 @@ const styles = {
   `,
 };
 
-export function SenderMessage({ message }: { message: string }) {
+export function SenderMessage({
+  message,
+  time,
+}: {
+  message: string;
+  time: string;
+}) {
   return (
     <styles.container>
       <styles.right>
@@ -92,7 +100,7 @@ export function SenderMessage({ message }: { message: string }) {
           <styles.messageBody>
             <styles.message>{message} </styles.message>
             <styles.messageInfo>
-              <styles.time>11:31 AM</styles.time>
+              <styles.time>{getLocalTime(time)}</styles.time>
               <styles.readState />
             </styles.messageInfo>
           </styles.messageBody>

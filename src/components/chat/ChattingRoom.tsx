@@ -127,7 +127,21 @@ const styles = {
 interface Content {
   roomId: number;
   message: string;
-  sender?: string;
+  sender: string;
+}
+
+function calTimeDiff(time: string) {
+  const lastTime = new Date(time);
+  const currentTime = new Date();
+  const timeDiff = Math.floor(
+    (currentTime.getTime() - lastTime.getTime()) / (1000 * 60),
+  );
+
+  if (timeDiff < 60) return `${timeDiff}분 전`;
+
+  if (timeDiff < 60 * 24) return `${Math.floor(timeDiff / 60)}시간 전`;
+
+  return `${Math.floor(timeDiff / (60 * 24))}일 전`;
 }
 
 export function ChattingRoom({
@@ -234,7 +248,7 @@ export function ChattingRoom({
     onRoomClick(isBackClick);
   };
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+  function handleKeyUp(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.keyCode === 13) {
       sendMessage();
     }
@@ -265,7 +279,7 @@ export function ChattingRoom({
         />
         <styles.roomInfo>
           <styles.roomName>{roomName}</styles.roomName>
-          <styles.latestTime>{lastTime}</styles.latestTime>
+          <styles.latestTime>{calTimeDiff(lastTime)}</styles.latestTime>
         </styles.roomInfo>
         <styles.menu onClick={handleMenuClick} />
         {isMenuClick && (
@@ -280,11 +294,18 @@ export function ChattingRoom({
             <div key={index}>
               {message.sender === userId ? (
                 <styles.senderFrame>
-                  <SenderMessage message={message.message} />
+                  <SenderMessage
+                    message={message.message}
+                    time={message.createdAt}
+                  />
                 </styles.senderFrame>
               ) : (
                 <styles.receiverFrame>
-                  <ReceiverMessage message={message.message} />
+                  <ReceiverMessage
+                    message={message.message}
+                    reciever={message.sender}
+                    time={message.createdAt}
+                  />
                 </styles.receiverFrame>
               )}
             </div>
@@ -293,11 +314,18 @@ export function ChattingRoom({
           <div key={index}>
             {message.sender === userId ? (
               <styles.senderFrame>
-                <SenderMessage message={message.message} />
+                <SenderMessage
+                  message={message.message}
+                  time={new Date().toISOString()}
+                />
               </styles.senderFrame>
             ) : (
               <styles.receiverFrame>
-                <ReceiverMessage message={message.message} />
+                <ReceiverMessage
+                  message={message.message}
+                  reciever={message.sender}
+                  time={new Date().toISOString()}
+                />
               </styles.receiverFrame>
             )}
           </div>
@@ -310,7 +338,7 @@ export function ChattingRoom({
           onChange={e => {
             setInputMessage(e.target.value);
           }}
-          onKeyDown={handleKeyDown}
+          onKeyUp={handleKeyUp}
         />
       </styles.messageInput>
     </styles.container>

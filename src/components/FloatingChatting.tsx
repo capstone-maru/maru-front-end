@@ -174,8 +174,9 @@ export function FloatingChatting() {
   }, [chatRoomData]);
 
   const chatRoomList = useChatRoomList(auth?.accessToken);
+
   useEffect(() => {
-    if (chatRoomList.data !== undefined) {
+    if (chatRoomList.data != null) {
       const chatRoomListData: ChatRoom[] = chatRoomList.data.data;
       setChatRooms(chatRoomListData);
     }
