@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .catch((err: Error) => {
             if (isAxiosError(err)) {
               remove({ type: 'local', key: 'refreshToken' });
-              router.replace('/');
+              if (pathName !== '/') router.replace('/');
             }
           });
       } else {
