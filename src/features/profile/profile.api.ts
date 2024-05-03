@@ -1,19 +1,20 @@
 import axios from 'axios';
 
 import {
-  type GetUserProfileDTO,
+  type PostUserProfileDTO,
   type GetUserCardDTO,
   type PutUserCardDTO,
   type GetFollowingListDTO,
   type PostSearchDTO,
 } from './profile.dto';
 
-export const getUserProfileData = async (memberId: string) =>
-  await axios
-    .get<GetUserProfileDTO>(`/maru-api/profile/${memberId}`, {
-      // params: { memberId: memberId },
-    })
-    .then(res => res.data);
+export const postUserProfile = async (memberId: string) => {
+  const res = await axios.post<PostUserProfileDTO>(`/maru-api/profile`, {
+    memberId: memberId,
+  });
+
+  return res.data;
+};
 
 export const getUserCard = async (cardId: number) =>
   await axios
@@ -45,10 +46,7 @@ export const postFollowUser = async (memberId: string) => {
     .post(`/maru-api/profile/follow`, {
       memberId: memberId,
     })
-    .then(res => {
-      console.log('follow');
-      return res.data;
-    });
+    .then(res => res.data);
 };
 
 export const postUnfollowUser = async (memberId: string) => {
@@ -56,10 +54,7 @@ export const postUnfollowUser = async (memberId: string) => {
     .post(`/maru-api/profile/unfollow`, {
       memberId: memberId,
     })
-    .then(res => {
-      console.log('unfollow');
-      return res.data;
-    });
+    .then(res => res.data);
 };
 
 export const postSearchUser = async (email: string) => {

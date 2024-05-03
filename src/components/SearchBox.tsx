@@ -24,11 +24,9 @@ const styles = {
 };
 
 export function SearchBox({
-  onClick,
   onContentChange,
   onEnter,
 }: {
-  onClick: React.Dispatch<React.SetStateAction<boolean>>;
   onContentChange: React.Dispatch<React.SetStateAction<string>>;
   onEnter: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
@@ -45,18 +43,14 @@ export function SearchBox({
   }
 
   return (
-    <styles.container
-      onClick={() => {
-        onClick(prev => !prev);
-      }}
-    >
+    <styles.container>
       <img alt="" src="/icon-search.svg" />
       <styles.input
         value={content}
         onChange={e => {
           setContent(e.target.value);
         }}
-        onKeyDown={handleKeyUp}
+        onKeyUp={handleKeyUp}
       />
     </styles.container>
   );

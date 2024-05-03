@@ -9,8 +9,8 @@ import { useAuthValue, useUserData } from '@/features/auth';
 import {
   useFollowUser,
   useFollowingListData,
-  useProfileData,
   useUnfollowUser,
+  useUserProfile,
 } from '@/features/profile';
 
 const styles = {
@@ -574,15 +574,21 @@ export function ProfilePage({ memberId }: { memberId: string }) {
   const auth = useAuthValue();
   const { data } = useUserData(auth?.accessToken !== undefined);
 
-  const id = data?.memberId;
+  const authId = data?.memberId;
 
-  const user = useProfileData(memberId);
   const [userData, setUserData] = useState<UserProps | null>(null);
   const [isMySelf, setIsMySelf] = useState(false);
 
+  const { mutate: profile, data: profileData } = useUserProfile(memberId);
+  const [profileImg, setProfileImg] = useState<string>('');
+
   useEffect(() => {
-    if (user.data !== undefined) {
-      const userProfileData = user.data.data.authResponse;
+    profile();
+  }, [auth]);
+
+  useEffect(() => {
+    if (profileData?.data !== undefined) {
+      const userProfileData = profileData.data.authResponse;
       const {
         name,
         email,
@@ -604,11 +610,12 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         myCardId,
         mateCardId,
       });
-      if (id === memberId) {
+      setProfileImg(profileData.data.profileImage);
+      if (authId === memberId) {
         setIsMySelf(true);
       }
     }
-  }, [user.data, memberId]);
+  }, [profileData, memberId]);
 
   return (
     <styles.pageContainer>
@@ -616,7 +623,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         name={userData?.name ?? ''}
         email={userData?.email ?? ''}
         phoneNum={userData?.phoneNumber ?? ''}
-        src={user.data?.data.profileImage}
+        src={profileImg}
         memberId={memberId}
         isMySelf={isMySelf}
       />

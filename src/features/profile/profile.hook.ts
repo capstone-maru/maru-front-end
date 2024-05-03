@@ -1,20 +1,19 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 
 import {
-  getUserProfileData,
   getUserCard,
   getFollowingListData,
   putUserCard,
   postSearchUser,
   postUnfollowUser,
   postFollowUser,
+  postUserProfile,
 } from './profile.api';
 
-export const useProfileData = (memberId: string) =>
-  useQuery({
-    queryKey: [`/api/profile`, memberId],
-    queryFn: async () => await getUserProfileData(memberId),
-    enabled: memberId !== undefined,
+export const useUserProfile = (memberId: string) =>
+  useMutation({
+    mutationFn: async () => await postUserProfile(memberId),
+    onSuccess: data => data.data,
   });
 
 export const useUserCard = (cardId: number) =>

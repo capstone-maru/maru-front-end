@@ -123,18 +123,10 @@ export function NavigationBar() {
     }
   };
 
-  interface user {
-    memberId: string;
-    nickname: string;
-    profileImageUrl: string;
-  }
-
-  const [isSearchBox, setIsSearchBox] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState<string>('');
   const [enter, setEnter] = useState(false);
 
   const { mutate: search, data: searchUser } = useSearchUser(email);
-  const [userData, setUserData] = useState<user>();
 
   useEffect(() => {
     if (enter) {
@@ -144,7 +136,8 @@ export function NavigationBar() {
   }, [enter]);
 
   useEffect(() => {
-    setUserData(searchUser?.data);
+    if (searchUser?.data != null)
+      router.replace(`/profile/${searchUser?.data.memberId}`);
   }, [searchUser]);
 
   return (
@@ -153,23 +146,7 @@ export function NavigationBar() {
         <styles.title>
           <Link href="/">maru</Link>
         </styles.title>
-        <SearchBox
-          onClick={setIsSearchBox}
-          onContentChange={setEmail}
-          onEnter={setEnter}
-        />
-        {isSearchBox && (
-          <styles.searchUserBox>
-            <styles.userContainer
-              onClick={() => {
-                setIsSearchBox(false);
-              }}
-            >
-              <styles.userImg src={userData?.profileImageUrl ?? ''} />
-              {userData?.nickname ?? ''}
-            </styles.userContainer>
-          </styles.searchUserBox>
-        )}
+        <SearchBox onContentChange={setEmail} onEnter={setEnter} />
       </styles.utils>
       <styles.links>
         <Link href="/shared">메이트찾기</Link>

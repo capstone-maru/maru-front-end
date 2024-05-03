@@ -1,6 +1,6 @@
 import { type SuccessBaseDTO } from '@/shared/types';
 
-export interface GetUserProfileDTO extends SuccessBaseDTO {
+export interface PostUserProfileDTO extends SuccessBaseDTO {
   data: {
     authResponse: {
       memberId: string;

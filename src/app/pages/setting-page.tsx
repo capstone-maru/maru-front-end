@@ -6,10 +6,11 @@ import { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 
 import { UserInputSection } from '@/components';
+import { useAuthValue } from '@/features/auth';
 import {
-  useProfileData,
   usePutUserCard,
   useUserCard,
+  useUserProfile,
 } from '@/features/profile';
 import Location from '@/public/option-img/location_on.svg';
 import Meeting from '@/public/option-img/meeting_room.svg';
@@ -153,18 +154,23 @@ export function SettingPage({ cardId }: { cardId: number }) {
   const isMySelf = isMySelfStr === 'true';
   const type = params.get('type') ?? '';
 
-  const user = useProfileData(memberId);
+  const auth = useAuthValue();
+  const { mutate: profile, data: profileData } = useUserProfile(memberId);
   const [userData, setUserData] = useState<UserProps | null>(null);
 
   useEffect(() => {
-    if (user.data !== undefined) {
-      const userProfileData = user.data.data.authResponse;
+    profile();
+  }, [auth]);
+
+  useEffect(() => {
+    if (profileData?.data !== undefined) {
+      const userProfileData = profileData.data.authResponse;
       if (userProfileData !== undefined) {
         const { name, birthYear, gender } = userProfileData;
         setUserData({ name, gender, birthYear });
       }
     }
-  }, [user.data]);
+  }, [profileData]);
 
   const card = useUserCard(cardId);
   const [features, setFeatures] = useState<string[] | null>(null);
