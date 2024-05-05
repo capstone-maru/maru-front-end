@@ -209,11 +209,15 @@ const CheckItem = styled.div<CheckItemProps>`
         }};
 `;
 
-const years = Array.from({ length: 100 }, (_, index) => 2024 - index);
+const years = Array.from(
+  { length: 100 },
+  (_, index) => new Date().getFullYear() - index,
+);
 
 interface SelectedState {
-  smoking: string | undefined;
-  room: string | undefined;
+  smoking?: string;
+  room?: string;
+  mateAge?: string;
 }
 
 export function VitalSection({
@@ -227,14 +231,11 @@ export function VitalSection({
   isMySelf,
   type,
 }: {
-  gender: string | undefined;
-  birthYear: string | undefined;
-  location: string | undefined;
-  vitalFeatures: string[] | null;
-  onFeatureChange: (
-    optionName: keyof SelectedState,
-    item: string | number,
-  ) => void;
+  gender?: string;
+  birthYear?: string;
+  location?: string;
+  vitalFeatures?: string[];
+  onFeatureChange: (optionName: keyof SelectedState, item: string) => void;
   onLocationChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   onMateAgeChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   isMySelf: boolean;
@@ -252,10 +253,7 @@ export function VitalSection({
     });
   }, [vitalFeatures]);
 
-  function handleOptionClick(
-    optionName: keyof SelectedState,
-    item: string | number,
-  ) {
+  function handleOptionClick(optionName: keyof SelectedState, item: string) {
     setSelectedState(prevState => ({
       ...prevState,
       [optionName]: prevState[optionName] === item ? null : item,
@@ -284,13 +282,13 @@ export function VitalSection({
 
   const [initialAge, setInitialAge] = useState(0);
   useEffect(() => {
-    if (vitalFeatures !== null)
+    if (vitalFeatures != null)
       setInitialAge(Number(vitalFeatures?.[2].split(':')[1].slice(1)));
   }, [vitalFeatures?.[2]]);
 
   const [ageValue, setAgeValue] = useState<number>(0);
   useEffect(() => {
-    if (initialAge !== undefined) setAgeValue(initialAge);
+    if (initialAge != null) setAgeValue(initialAge);
   }, [initialAge]);
 
   const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {

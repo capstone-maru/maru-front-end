@@ -133,8 +133,9 @@ const styles = {
 };
 
 interface SelectedState {
-  smoking: string | undefined;
-  room: string | undefined;
+  smoking?: string;
+  room?: string;
+  mateAge?: string;
 }
 
 interface UserProps {
@@ -167,25 +168,22 @@ export function SettingPage({ cardId }: { cardId: number }) {
   }, [user.data]);
 
   const card = useUserCard(cardId);
-  const [features, setFeatures] = useState<string[] | null>(null);
+  const [features, setFeatures] = useState<string[] | undefined>(undefined);
 
   useEffect(() => {
     if (isMySelf) {
       if (card !== undefined) {
-        const featuresData = card.data?.data.myFeatures ?? null;
+        const featuresData = card.data?.data.myFeatures ?? undefined;
         setFeatures(featuresData);
       }
     }
   }, [card, isMySelf]);
 
-  const [selectedState, setSelectedState] = useState<SelectedState>({
-    smoking: undefined,
-    room: undefined,
-  });
+  const [selectedState, setSelectedState] = useState<SelectedState>({});
 
   useEffect(() => {
     if (isMySelf) {
-      if (features !== null) {
+      if (features != null) {
         setSelectedState({
           ...selectedState,
           smoking: features[0].split(':')[1],
@@ -204,7 +202,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
 
   useEffect(() => {
     if (isMySelf) {
-      if (features !== null) {
+      if (features != null) {
         const initialOptions: SelectedOptions = {};
         const optionsString = features[3].split(':')[1];
         const budgetIdx = optionsString.indexOf('[');

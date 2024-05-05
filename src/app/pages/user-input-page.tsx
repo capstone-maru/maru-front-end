@@ -476,7 +476,7 @@ export function UserInputPage() {
             gender={user?.gender}
             birthYear={user?.birthYear}
             location={undefined}
-            vitalFeatures={null}
+            vitalFeatures={undefined}
             onFeatureChange={handleFeatureChange}
             onLocationChange={setLocation}
             onMateAgeChange={() => {}}
@@ -488,7 +488,7 @@ export function UserInputPage() {
             mbti={undefined}
             major={undefined}
             budget={undefined}
-            optionFeatures={null}
+            optionFeatures={undefined}
             onFeatureChange={handleOptionClick}
             onMbtiChange={setMbti}
             onMajorChange={setMajor}
@@ -502,7 +502,7 @@ export function UserInputPage() {
             gender={user?.gender}
             birthYear={undefined}
             location={locationInput}
-            vitalFeatures={null}
+            vitalFeatures={undefined}
             onFeatureChange={handleMateFeatureChange}
             onLocationChange={setLocation}
             onMateAgeChange={setMateAge}
@@ -514,7 +514,7 @@ export function UserInputPage() {
             mbti={undefined}
             major={undefined}
             budget={undefined}
-            optionFeatures={null}
+            optionFeatures={undefined}
             onFeatureChange={handleMateOptionClick}
             onMbtiChange={setMateMbti}
             onMajorChange={setMateMajor}

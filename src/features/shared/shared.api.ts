@@ -8,23 +8,66 @@ import {
 } from './shared.type';
 
 import {
+  FloorTypeValue,
   RentalTypeValue,
   RoomTypeValue,
   type SuccessBaseDTO,
 } from '@/shared/types';
 
-const filterConvertToValues = (filter: GetSharedPostsFilter) => {
-  const result: Partial<Record<keyof GetSharedPostsFilter, number[]>> = {};
+const filterConvertToValues = ({
+  roomTypes,
+  rentalTypes,
+  expectedPaymentRange,
+  hasLivingRoom,
+  numberOfRoom,
+  roomSizeRange,
+  floorTypes,
+  canPark,
+  hasAirConditioner,
+  hasRefrigerator,
+  hasWasher,
+  hasTerrace,
+}: GetSharedPostsFilter) => {
+  const result: {
+    roomTypes?: number[];
+    rentalTypes?: number[];
+    expectedPaymentRange?: { start: number; end: number };
+    hasLivingRoom?: boolean;
+    numberOfRoom?: number;
+    roomSizeRange?: { start: number; end: number };
+    floorTypes?: number[];
+    canPark?: boolean;
+    hasAirConditioner?: boolean;
+    hasRefrigerator?: boolean;
+    hasWasher?: boolean;
+    hasTerrace?: boolean;
+  } = {
+    expectedPaymentRange,
+    hasLivingRoom,
+    numberOfRoom,
+    roomSizeRange,
+    canPark,
+    hasAirConditioner,
+    hasRefrigerator,
+    hasWasher,
+    hasTerrace,
+  };
 
-  if (filter.roomType !== undefined) {
-    result.roomType = Object.values(filter.roomType).map(
-      value => RoomTypeValue[value],
+  if (roomTypes != null) {
+    result.roomTypes = Object.values(roomTypes).map(value =>
+      Number(RoomTypeValue[value]),
     );
   }
 
-  if (filter.rentalType !== undefined) {
-    result.rentalType = Object.values(filter.rentalType).map(
-      value => RentalTypeValue[value],
+  if (rentalTypes != null) {
+    result.rentalTypes = Object.values(rentalTypes).map(value =>
+      Number(RentalTypeValue[value]),
+    );
+  }
+
+  if (floorTypes != null) {
+    result.floorTypes = Object.values(floorTypes).map(value =>
+      Number(FloorTypeValue[value]),
     );
   }
 
@@ -40,11 +83,11 @@ export const getSharedPosts = async ({
     const baseURL = '/maru-api/shared/posts/studio';
     let query = '';
 
-    if (filter !== undefined) {
+    if (filter != null) {
       query += `filter=${JSON.stringify(filterConvertToValues(filter))}`;
     }
 
-    if (search !== undefined) {
+    if (search != null) {
       query += `&search=${search}`;
     }
 
@@ -56,28 +99,8 @@ export const getSharedPosts = async ({
   return await axios.get<GetSharedPostsDTO>(getURI());
 };
 
-export const createSharedPost = async ({
-  imageFilesData,
-  postData,
-  transactionData,
-  roomDetailData,
-  locationData,
-}: CreateSharedPostProps) => {
-  const formData = new FormData();
-  formData.append('imageFilesData', JSON.stringify(imageFilesData));
-  formData.append('postData', JSON.stringify(postData));
-  formData.append('transactionData', JSON.stringify(transactionData));
-  formData.append('roomDetailData', JSON.stringify(roomDetailData));
-  formData.append('locationData', JSON.stringify(locationData));
-
-  return await axios.post<SuccessBaseDTO>(
-    `/maru-api/shared/posts/studio`,
-    formData,
-    {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    },
-  );
-};
+export const createSharedPost = async (postData: CreateSharedPostProps) =>
+  await axios.post<SuccessBaseDTO>(`/maru-api/shared/posts/studio`, postData);
 
 export const getSharedPost = async (postId: number) =>
   await axios.get<GetSharedPostDTO>(`/maru-api/shared/posts/studio/${postId}`);

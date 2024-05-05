@@ -16,6 +16,7 @@ export interface SharedPostListItem {
     birthYear: string;
     gender: string;
     phoneNumber: string;
+    profileImageFileName: string;
     createdAt: Date;
     createdBy: string;
     modifiedAt: Date;
@@ -24,25 +25,16 @@ export interface SharedPostListItem {
   roomInfo: {
     id: number;
     address: {
-      city: string;
       oldAddress: string;
       roadAddress: string;
-      detailAddress?: string;
-      stationName: string;
-      stationTime: number;
-      busStopTime: number;
-      schoolName: string;
-      schoolTime: number;
-      convenienceStortTime: number;
     };
     roomType: string;
+    floorType: string;
     size: number;
     numberOfRoom: number;
+    numberOfBathRoom: number;
     rentalType: string;
-    price: number;
-    managementFee: number;
     expectedPayment: number;
-    monthlyFee: number;
   };
   isScrapped: boolean;
   createdAt: Date;
@@ -55,6 +47,8 @@ export interface SharedPost {
   id: number;
   title: string;
   content: string;
+  roomMateFeatures: string[];
+  participants: Array<{ memberId: string; profileImage: string }>;
   roomImages: Set<{
     fileName: string;
     isThumbnail: boolean;
@@ -81,24 +75,27 @@ export interface SharedPost {
       oldAddress: string;
       roadAddress: string;
       detailAddress?: string;
-      stationName: string;
-      stationTime: number;
-      busStopTime: number;
-      schoolName: string;
-      schoolTime: number;
-      convenienceStortTime: number;
     };
     roomType: RoomType;
+    floorType: string;
     size: number;
     numberOfRoom: number;
+    numberOfBathRoom: number;
+    hasLivingRoom: boolean;
+    recruitmentCapacity: number;
     rentalType: RentalType;
-    price: number;
-    managementFee: number;
     expectedPayment: number;
-    monthlyFee: number;
+    extraOption: {
+      canPark: boolean;
+      hasAirConditioner: boolean;
+      hasRefrigerator: boolean;
+      hasWasher: boolean;
+      hasTerrace: boolean;
+    };
   };
   isScrapped: boolean;
   scrapCount: number;
+  viewCount: number;
   createdAt: Date;
   createdBy: string;
   modifiedAt: Date;

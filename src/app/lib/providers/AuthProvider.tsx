@@ -1,5 +1,6 @@
 'use client';
 
+import { isAxiosError } from 'axios';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -8,7 +9,7 @@ import {
   useAuthActions,
   useAuthValue,
 } from '@/features/auth';
-import { load } from '@/shared/storage';
+import { load, remove } from '@/shared/storage';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const auth = useAuthValue();
@@ -22,26 +23,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (auth === null) {
+    if (auth == null) {
       const refreshToken = load<string>({ type: 'local', key: 'refreshToken' });
-      if (refreshToken !== null) {
+      if (refreshToken != null) {
         postTokenRefresh(refreshToken)
           .then(({ data }) => {
             login({
               accessToken: data.accessToken,
-              refreshToken,
+              refreshToken: data.refreshToken,
               expiresIn: data.expiresIn,
             });
           })
-          .catch(err => {
-            console.error(err);
-            router.replace('/');
+          .catch((err: Error) => {
+            if (isAxiosError(err)) {
+              remove({ type: 'local', key: 'refreshToken' });
+              if (pathName !== '/') router.replace('/');
+            }
           });
       } else {
         router.replace('/');
       }
     }
-  }, [auth, login, router, pathName]);
+  });
 
   return <>{children}</>;
 }
