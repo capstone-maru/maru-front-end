@@ -4,8 +4,9 @@ import {
   getChatRoomList,
   getChatRoomUser,
   postChatRoom,
-  postEnterChatRoom,
+  getEnterChatRoom,
   postInviteUser,
+  postExitChatRoom,
 } from './chat.api';
 
 export const useChatRoomList = (token: string | undefined) =>
@@ -30,9 +31,16 @@ export const useInviteUsers = (roomId: number, members: string[]) =>
   });
 
 export const useEnterChatRoom = (roomId: number, page: number, size: number) =>
+  useQuery({
+    queryKey: [`/api/chatRoom/${roomId}/chat`, page, size],
+    queryFn: async () => await getEnterChatRoom(roomId, page, size),
+  });
+
+export const useExitChatRoom = (roomId: number) =>
   useMutation({
-    mutationFn: async () => await postEnterChatRoom(roomId, page, size),
-    onSuccess: data => data.data,
+    mutationFn: async () => {
+      await postExitChatRoom(roomId);
+    },
   });
 
 export const useChatRoomUser = (roomId: number) =>

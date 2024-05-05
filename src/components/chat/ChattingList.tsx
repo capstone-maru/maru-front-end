@@ -35,16 +35,6 @@ const styles = {
     border-radius: 50%;
     background: url('__avatar_url.png') lightgray 50% / cover no-repeat;
   `,
-  activeCircle: styled.div`
-    width: 0.6rem;
-    height: 0.6rem;
-    position: absolute;
-    left: 2.375rem;
-    bottom: 0.125rem;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    background-color: #27da4e;
-  `,
   roomName: styled.p`
     color: #000;
 
@@ -101,7 +91,6 @@ export function ChattingList({
     <styles.chattingRoom onClick={onClick}>
       <styles.infoSection>
         <styles.userProfile />
-        <styles.activeCircle />
         <styles.textSection>
           <styles.roomName>{name}</styles.roomName>
           <styles.message>{lastMessage}</styles.message>

@@ -9,6 +9,7 @@ import { ReceiverMessage } from './ReceiverMessage';
 import { SenderMessage } from './SenderMessage';
 
 import { useAuthValue } from '@/features/auth';
+import { useEnterChatRoom, useExitChatRoom } from '@/features/chat';
 
 const styles = {
   container: styled.div`
@@ -128,10 +129,12 @@ interface Content {
   roomId: number;
   message: string;
   sender: string;
+  nickname: string;
 }
 
 function calTimeDiff(time: string) {
   const lastTime = new Date(time);
+  lastTime.setHours(lastTime.getHours() + 9);
   const currentTime = new Date();
   const timeDiff = Math.floor(
     (currentTime.getTime() - lastTime.getTime()) / (1000 * 60),
@@ -145,24 +148,15 @@ function calTimeDiff(time: string) {
 }
 
 export function ChattingRoom({
-  chatRoomData,
   userId,
+  userName,
   roomId,
   roomName,
   lastTime,
   onRoomClick,
 }: {
-  chatRoomData:
-    | [
-        {
-          messageId: string;
-          sender: string;
-          message: string;
-          createdAt: string;
-        },
-      ]
-    | undefined;
   userId: string | undefined;
+  userName: string;
   roomId: number;
   roomName: string;
   lastTime: string;
@@ -176,6 +170,25 @@ export function ChattingRoom({
 
   const auth = useAuthValue();
   const user = userId;
+  const [roomData, setRoomData] = useState<
+    | [
+        {
+          messageId: string;
+          sender: string;
+          message: string;
+          createdAt: string;
+          nickname: string;
+        },
+      ]
+    | undefined
+  >();
+
+  const chattingRoom = useEnterChatRoom(roomId, 0, 2);
+  useEffect(() => {
+    if (chattingRoom != null) {
+      setRoomData(chattingRoom.data?.data);
+    }
+  }, [chattingRoom]);
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -216,7 +229,7 @@ export function ChattingRoom({
     }
 
     return () => {
-      if (stompClient !== null && stompClient.connected) {
+      if (stompClient != null && stompClient.connected) {
         void stompClient.deactivate();
       }
     };
@@ -232,6 +245,7 @@ export function ChattingRoom({
           roomId: roomId,
           sender: user,
           message: inputMessage,
+          nickname: userName,
         }),
       });
     }
@@ -243,7 +257,10 @@ export function ChattingRoom({
     setIsMenuClick(prev => !prev);
   };
 
+  const { mutate: exit } = useExitChatRoom(roomId);
+
   const handleBackClick = () => {
+    exit();
     setIsBackClick(prev => !prev);
     onRoomClick(isBackClick);
   };
@@ -261,7 +278,7 @@ export function ChattingRoom({
       messageContainerRef.current.scrollTop =
         messageContainerRef.current.scrollHeight;
     }
-  }, [chatRoomData]);
+  }, [roomData]);
 
   useEffect(() => {
     if (messageContainerRef.current != null) {
@@ -287,7 +304,7 @@ export function ChattingRoom({
         )}
       </styles.header>
       <styles.messageContainer ref={messageContainerRef}>
-        {chatRoomData
+        {roomData
           ?.slice()
           .reverse()
           ?.map((message, index) => (
@@ -297,14 +314,16 @@ export function ChattingRoom({
                   <SenderMessage
                     message={message.message}
                     time={message.createdAt}
+                    type="server"
                   />
                 </styles.senderFrame>
               ) : (
                 <styles.receiverFrame>
                   <ReceiverMessage
                     message={message.message}
-                    reciever={message.sender}
+                    receiver={message.nickname}
                     time={message.createdAt}
+                    type="server"
                   />
                 </styles.receiverFrame>
               )}
@@ -317,14 +336,16 @@ export function ChattingRoom({
                 <SenderMessage
                   message={message.message}
                   time={new Date().toISOString()}
+                  type="client"
                 />
               </styles.senderFrame>
             ) : (
               <styles.receiverFrame>
                 <ReceiverMessage
                   message={message.message}
-                  reciever={message.sender}
+                  receiver={message.nickname}
                   time={new Date().toISOString()}
+                  type="client"
                 />
               </styles.receiverFrame>
             )}

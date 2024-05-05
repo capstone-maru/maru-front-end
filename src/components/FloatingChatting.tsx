@@ -7,11 +7,7 @@ import { ChattingList } from './chat/ChattingList';
 import { ChattingRoom } from './chat/ChattingRoom';
 
 import { useAuthValue, useUserData } from '@/features/auth';
-import {
-  useChatRoomList,
-  useCreateChatRoom,
-  useEnterChatRoom,
-} from '@/features/chat';
+import { useChatRoomList } from '@/features/chat';
 
 const styles = {
   chattingButton: styled.div`
@@ -124,54 +120,28 @@ interface ChatRoom {
   lastMessageTime: string;
 }
 
-export function FloatingChatting() {
-  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+function FloatingChattingBox() {
   const [isChatRoomOpen, setIsChatRoomOpen] = useState<boolean>(false);
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [selectedRoomId, setSelectedRoomId] = useState<number>(0);
   const [selectedRoomName, setSelectedRoomName] = useState<string>('');
   const [selectedRoomLastTime, setSelectedRoomLastTime] = useState<string>('');
-  const [roomData, setRoomData] = useState<
-    | [
-        {
-          messageId: string;
-          sender: string;
-          message: string;
-          createdAt: string;
-        },
-      ]
-    | undefined
-  >();
-
-  const toggleChat = () => {
-    setIsChatOpen(prevState => !prevState);
-    if (isChatRoomOpen) setIsChatRoomOpen(false);
-  };
 
   const auth = useAuthValue();
   const { data } = useUserData(auth?.accessToken !== undefined);
   const [userId, setUserId] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
 
   useEffect(() => {
-    if (data !== undefined) setUserId(data.memberId);
+    if (data !== undefined) {
+      setUserId(data.memberId);
+      setUserName(data.name);
+    }
   }, [data]);
 
-  const page = 0;
-  const size = 2;
-  const { mutate: enterChatting, data: chatRoomData } = useEnterChatRoom(
-    selectedRoomId,
-    page,
-    size,
-  );
-
   const handleChatRoomClick = () => {
-    enterChatting();
     setIsChatRoomOpen(prev => !prev);
   };
-
-  useEffect(() => {
-    setRoomData(chatRoomData?.data);
-  }, [chatRoomData]);
 
   const chatRoomList = useChatRoomList(auth?.accessToken);
 
@@ -182,78 +152,79 @@ export function FloatingChatting() {
     }
   }, [chatRoomList.data]);
 
-  const roomName = 'test2';
-  const members = ['naver_htT4VdDRPKqGqKpnncpa71HCA4CVg5LdRC1cWZhCnF8'];
-  const { mutate: chattingMutate } = useCreateChatRoom(roomName, members);
+  // const roomName = 'test2';
+  // const members = ['naver_htT4VdDRPKqGqKpnncpa71HCA4CVg5LdRC1cWZhCnF8'];
+  // const { mutate: chattingCreate } = useCreateChatRoom(roomName, members);
 
   return (
     <>
-      <styles.chattingButton onClick={toggleChat}>
-        <styles.buttonIcon src="/chatting.svg" />
-      </styles.chattingButton>
-      {isChatOpen && (
-        <styles.container>
-          <styles.chattingHeader>
-            <div>
-              <styles.title style={{ color: 'var(--Main-1, #E15637)' }}>
-                maru{' '}
-              </styles.title>
-              <styles.title style={{ color: 'var(--Gray, #8C95A8)' }}>
-                chat
-              </styles.title>
-            </div>
-            <div
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-            >
-              <styles.searchInput />
-              <styles.searchButton src="/icon-search.svg" />
-            </div>
-          </styles.chattingHeader>
-          <div
-            className="test"
-            style={{
-              display: 'flex',
-              gap: '1rem',
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => {
-                chattingMutate();
-              }}
-            >
-              채팅방 생성
-            </button>
+      <styles.container>
+        <styles.chattingHeader>
+          <div>
+            <styles.title style={{ color: 'var(--Main-1, #E15637)' }}>
+              maru{' '}
+            </styles.title>
+            <styles.title style={{ color: 'var(--Gray, #8C95A8)' }}>
+              chat
+            </styles.title>
           </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <styles.searchInput />
+            <styles.searchButton src="/icon-search.svg" />
+          </div>
+        </styles.chattingHeader>
+        {/* <button
+          onClick={() => {
+            chattingCreate();
+          }}
+        >
+          생성
+        </button> */}
 
-          <styles.chattingSection>
-            {chatRooms.map((room, index) => (
-              <ChattingList
-                key={index}
-                name={room.roomName}
-                unreadCount={room.unreadCount}
-                lastMessage={room.lastMessage}
-                onClick={() => {
-                  handleChatRoomClick();
-                  setSelectedRoomId(room.roomId);
-                  setSelectedRoomName(room.roomName);
-                  setSelectedRoomLastTime(room.lastMessageTime);
-                }}
-              />
-            ))}
-          </styles.chattingSection>
-        </styles.container>
-      )}
+        <styles.chattingSection>
+          {chatRooms.map((room, index) => (
+            <ChattingList
+              key={index}
+              name={room.roomName}
+              unreadCount={room.unreadCount}
+              lastMessage={room.lastMessage}
+              onClick={() => {
+                handleChatRoomClick();
+                setSelectedRoomId(room.roomId);
+                setSelectedRoomName(room.roomName);
+                setSelectedRoomLastTime(room.lastMessageTime);
+              }}
+            />
+          ))}
+        </styles.chattingSection>
+      </styles.container>
       {isChatRoomOpen && (
         <ChattingRoom
-          chatRoomData={roomData}
           userId={userId}
+          userName={userName}
           roomId={selectedRoomId}
           roomName={selectedRoomName}
           lastTime={selectedRoomLastTime}
           onRoomClick={setIsChatRoomOpen}
         />
       )}
+    </>
+  );
+}
+
+export function FloatingChatting() {
+  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+
+  const toggleChat = () => {
+    setIsChatOpen(prevState => !prevState);
+  };
+
+  return (
+    <>
+      <styles.chattingButton onClick={toggleChat}>
+        <styles.buttonIcon src="/chatting.svg" />
+      </styles.chattingButton>
+      {isChatOpen && <FloatingChattingBox />}
     </>
   );
 }

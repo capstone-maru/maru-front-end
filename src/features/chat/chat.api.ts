@@ -31,25 +31,27 @@ export const postInviteUser = async (roomId: number, members: string[]) => {
     .then(res => res.data);
 };
 
-export const postEnterChatRoom = async (
+export const getEnterChatRoom = async (
   roomId: number,
   page: number,
   size: number,
 ) => {
-  const res = await axios.post<PostChatRoomEnterDTO>(
-    `/maru-api/chatRoom/chat`,
+  const res = await axios.get<PostChatRoomEnterDTO>(
+    `/maru-api/chatRoom/${roomId}/chat`,
     {
-      roomId: roomId,
-      page: page,
-      size: size,
+      params: {
+        roomId: roomId,
+        page: page,
+        size: size,
+      },
     },
   );
-
+  console.log(res.data);
   return res.data;
 };
 
-export const getEnterChatRoom = async () => {
-  await axios.get<PostChatRoomEnterDTO>(`/maru-api/chatRoom/chat`);
+export const postExitChatRoom = async (roomId: number) => {
+  await axios.post(`/maru-api/chatRoom/${roomId}/exit`).then(res => res.data);
 };
 
 export const getChatRoomUser = async (roomId: number) =>

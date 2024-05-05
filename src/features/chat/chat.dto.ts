@@ -35,6 +35,7 @@ export interface PostChatRoomEnterDTO extends SuccessBaseDTO {
       sender: string;
       message: string;
       createdAt: string;
+      nickname: string;
     },
   ];
 }

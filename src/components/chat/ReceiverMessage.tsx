@@ -112,18 +112,20 @@ const styles = {
 
 export function ReceiverMessage({
   message,
-  reciever,
+  receiver,
   time,
+  type,
 }: {
   message: string;
-  reciever: string;
+  receiver: string;
   time: string;
+  type: string;
 }) {
   return (
     <styles.container>
       <styles.profileSection>
         <styles.profilePic />
-        <styles.userName>{reciever}</styles.userName>
+        <styles.userName>{receiver}</styles.userName>
       </styles.profileSection>
       <styles.messageContainer>
         <styles.left>
@@ -136,7 +138,7 @@ export function ReceiverMessage({
             <styles.messageBody>
               <styles.message>{message}</styles.message>
               <styles.messageInfo>
-                <styles.time>{getLocalTime(time)}</styles.time>
+                <styles.time>{getLocalTime(time, type)}</styles.time>
               </styles.messageInfo>
             </styles.messageBody>
           </styles.messageFrame>

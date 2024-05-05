@@ -89,9 +89,11 @@ const styles = {
 export function SenderMessage({
   message,
   time,
+  type,
 }: {
   message: string;
   time: string;
+  type: string;
 }) {
   return (
     <styles.container>
@@ -100,7 +102,7 @@ export function SenderMessage({
           <styles.messageBody>
             <styles.message>{message} </styles.message>
             <styles.messageInfo>
-              <styles.time>{getLocalTime(time)}</styles.time>
+              <styles.time>{getLocalTime(time, type)}</styles.time>
               <styles.readState />
             </styles.messageInfo>
           </styles.messageBody>
