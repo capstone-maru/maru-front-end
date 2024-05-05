@@ -73,7 +73,7 @@ export function ExtraInfoFilter() {
 
   const handleOptionClick = (option: AdditionalInfoTypeFilter) => {
     setFilter(prev => {
-      const value = prev.extraInfo[option] ?? true;
+      const value = prev.extraInfo[option] ?? false;
       return {
         ...prev,
         extraInfo: {
