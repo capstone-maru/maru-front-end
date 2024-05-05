@@ -1,32 +1,30 @@
-export type CardType = 'my' | 'mate';
-export type DealType = '전세' | '월세';
-export type RoomType = '원룸' | '빌라/투룸이상' | '아파트' | '오피스텔';
-export type RoomCountType = '1개' | '2개' | '3개 이상';
-export type FloorType = '지상' | '반지하' | '옥탑';
-export type ExtraInfoType =
-  | '주차 가능'
+export type CardTypeFilter = 'my' | 'mate';
+export type DealTypeFilter = '전세' | '월세';
+export type RoomTypeFilter = '원룸' | '빌라/투룸이상' | '아파트' | '오피스텔';
+export type FloorTypeFilter = '지상' | '반지하' | '옥탑';
+export type RoomCountTypeFilter = '1개' | '2개' | '3개 이상';
+export type AdditionalInfoTypeFilter =
+  | '주차가능'
   | '에어컨'
   | '냉장고'
   | '세탁기'
-  | '엘리베이터'
-  | '베란다/테라스'
-  | '복층형';
+  | '베란다/테라스';
 
 export interface SharedPostsFilter {
-  cardType?: CardType;
+  cardType?: CardTypeFilter;
   roomInfo: {
-    roomType?: RoomType;
+    roomType?: RoomTypeFilter;
     hasLivingRoom: boolean;
-    roomCount?: RoomCountType;
-    restRoomCount?: RoomCountType;
+    roomCount?: RoomCountTypeFilter;
+    restRoomCount?: RoomCountTypeFilter;
     size?: { low: number; high: number };
-    floor?: FloorType;
+    floor?: FloorTypeFilter;
   };
-  dealInfo?: {
-    dealType?: DealType;
+  dealInfo: {
+    dealType?: DealTypeFilter;
     expectedFee?: { low: number; high: number };
   };
-  extraInfo: Partial<Record<ExtraInfoType, boolean>>;
+  extraInfo: Partial<Record<AdditionalInfoTypeFilter, boolean>>;
 }
 
 export type SharedPostsFilterType = keyof SharedPostsFilter;

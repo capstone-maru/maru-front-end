@@ -1,4 +1,4 @@
-import { type CardType } from '@/entities/shared-posts-filter';
+import { type CardTypeFilter } from '@/entities/shared-posts-filter';
 
 export interface GetRecommendationMateDTO {
   user: { userId: string; gender: string };
@@ -6,6 +6,6 @@ export interface GetRecommendationMateDTO {
     userId: string;
     name: string;
     similarity: number;
-    cardType: CardType;
+    cardType: CardTypeFilter;
   }>;
 }

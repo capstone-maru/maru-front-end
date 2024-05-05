@@ -216,7 +216,7 @@ const years = Array.from(
 
 interface SelectedState {
   smoking?: string;
-  room?: string;
+  roomSharingOption?: string;
   mateAge?: string;
 }
 
@@ -243,13 +243,13 @@ export function VitalSection({
 }) {
   const [selectedState, setSelectedState] = useState<SelectedState>({
     smoking: undefined,
-    room: undefined,
+    roomSharingOption: undefined,
   });
   useEffect(() => {
     setSelectedState({
       ...selectedState,
       smoking: vitalFeatures?.[0].split(':')[1],
-      room: vitalFeatures?.[1].split(':')[1],
+      roomSharingOption: vitalFeatures?.[1].split(':')[1],
     });
   }, [vitalFeatures]);
 
@@ -411,30 +411,30 @@ export function VitalSection({
           </styles.vitalListItemDescription>
           <styles.vitalCheckListContainer>
             <CheckItem
-              $isSelected={selectedState.room === '같은 방'}
+              $isSelected={selectedState.roomSharingOption === '같은 방'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('room', '같은 방');
+                  handleOptionClick('roomSharingOption', '같은 방');
                 }
               }}
             >
               같은 방
             </CheckItem>
             <CheckItem
-              $isSelected={selectedState.room === '다른 방'}
+              $isSelected={selectedState.roomSharingOption === '다른 방'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('room', '다른 방');
+                  handleOptionClick('roomSharingOption', '다른 방');
                 }
               }}
             >
               다른 방
             </CheckItem>
             <CheckItem
-              $isSelected={selectedState.room === '상관없어요'}
+              $isSelected={selectedState.roomSharingOption === '상관없어요'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('room', '상관없어요');
+                  handleOptionClick('roomSharingOption', '상관없어요');
                 }
               }}
             >

@@ -25,7 +25,7 @@ const styles = {
 
 interface SelectedState {
   smoking?: string;
-  room?: string;
+  roomSharingOption?: string;
   mateAge?: string;
 }
 

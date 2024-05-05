@@ -6,6 +6,7 @@ export interface GetSharedPostsFilter {
   expectedPaymentRange?: { start: number; end: number };
   hasLivingRoom?: boolean;
   numberOfRoom?: number;
+  numberOfRestRoom?: number;
   roomSizeRange?: { start: number; end: number };
   floorTypes?: FloorType[];
   canPark?: boolean;

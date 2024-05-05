@@ -8,6 +8,7 @@ export const sharedPostsFilterState = atom<SharedPostsFilter>({
     roomInfo: {
       hasLivingRoom: false,
     },
+    dealInfo: {},
     extraInfo: {},
   },
 });

@@ -226,7 +226,7 @@ interface UserProps {
 
 interface SelectedState {
   smoking: string | undefined;
-  room: string | undefined;
+  roomSharingOption: string | undefined;
   mateAge: string | undefined;
 }
 type SelectedOptions = Record<string, boolean>;
@@ -239,7 +239,7 @@ const useSelectedState = (): [
 ] => {
   const [selectedState, setSelectedState] = useState<SelectedState>({
     smoking: undefined,
-    room: undefined,
+    roomSharingOption: undefined,
     mateAge: undefined,
   });
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
@@ -333,14 +333,14 @@ export function UserInputPage() {
     const location = locationInput ?? '';
     const myFeatures = [
       `smoking:${selectedState.smoking}`,
-      `room:${selectedState.room}`,
+      `roomSharingOption:${selectedState.roomSharingOption}`,
       `mateAge:${mateAge !== '' ? mateAge : undefined}`,
       `options:${myOptionsString.join(',')}`,
     ];
 
     const mateFeatures = [
       `smoking:${selectedMateState.smoking}`,
-      `room:${selectedMateState.room}`,
+      `roomSharingOption:${selectedMateState.roomSharingOption}`,
       `mateAge:${mateAge !== '' ? mateAge : undefined}`,
       `options:${mateOptionsString.join(',')}`,
     ];
@@ -413,7 +413,7 @@ export function UserInputPage() {
                 <styles.miniCardList>
                   <styles.miniCardMeeting $active={activeContainer === 'my'} />
                   <styles.miniCardText $active={activeContainer === 'my'}>
-                    메이트와 {selectedState.room}
+                    메이트와 {selectedState.roomSharingOption}
                   </styles.miniCardText>
                 </styles.miniCardList>
                 <styles.miniCardList>
@@ -455,7 +455,7 @@ export function UserInputPage() {
                     $active={activeContainer === 'mate'}
                   />
                   <styles.miniCardText $active={activeContainer === 'mate'}>
-                    메이트와 {selectedMateState.room}
+                    메이트와 {selectedMateState.roomSharingOption}
                   </styles.miniCardText>
                 </styles.miniCardList>
                 <styles.miniCardList>

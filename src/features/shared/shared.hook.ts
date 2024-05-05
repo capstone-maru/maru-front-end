@@ -220,13 +220,13 @@ export const usePostMateCardInputSection = () => {
 
   const [features, setFeatures] = useState<{
     smoking?: string;
-    room?: string;
+    roomSharingOption?: string;
     mateAge?: string;
     options: Set<string>;
   }>({ options: new Set() });
 
   const handleEssentialFeatureChange = useCallback(
-    (key: 'smoking' | 'room' | 'mateAge', value: string) => {
+    (key: 'smoking' | 'roomSharingOption' | 'mateAge', value: string) => {
       setFeatures(prev => {
         if (prev[key] === value) {
           const newFeatures = { ...prev };
@@ -270,7 +270,7 @@ export const usePostMateCardInputSection = () => {
 
     return {
       smoking: features?.smoking ?? '상관없어요',
-      roomSharingOption: features?.room ?? '상관없어요',
+      roomSharingOption: features?.roomSharingOption ?? '상관없어요',
       mateAge: mateAge ?? null,
       options: JSON.stringify(options),
     };

@@ -120,9 +120,8 @@ export function SharedPostsPage() {
     useState<GetSharedPostsDTO | null>(null);
   const { setAuthUserData } = useAuthActions();
 
-  const { filter, reset } = useSharedPostsFilter();
-
-  const { data: userData } = useUserData(auth?.accessToken !== undefined);
+  const { filter, derivedFilter, reset: resetFilter } = useSharedPostsFilter();
+  const { data: userData } = useUserData(auth?.accessToken != null);
 
   const {
     page,
@@ -138,7 +137,9 @@ export function SharedPostsPage() {
     sliceSize: 10,
   });
 
+  // TODO: 디바운싱 추가 필요
   const { data: sharedPosts } = useSharedPosts({
+    filter: derivedFilter,
     enabled: auth?.accessToken != null && selected === 'hasRoom',
     page: page - 1,
   });
@@ -150,9 +151,9 @@ export function SharedPostsPage() {
   });
 
   useEffect(() => {
-    reset();
+    resetFilter();
     return () => {
-      reset();
+      resetFilter();
     };
   }, []);
 

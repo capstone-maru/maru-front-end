@@ -9,6 +9,13 @@ import {
   LocationSearchBox,
   MateSearchBox,
 } from '@/components/writing-post-page';
+import {
+  type RoomTypeFilter,
+  type DealTypeFilter,
+  type RoomCountTypeFilter,
+  type FloorTypeFilter,
+  type AdditionalInfoTypeFilter,
+} from '@/entities/shared-posts-filter';
 import { useAuthValue } from '@/features/auth';
 import { getImageURL, putImage } from '@/features/image';
 import {
@@ -400,27 +407,38 @@ const styles = {
   `,
 };
 
-const DealOptions = { 월세: 'MONTHLY', 전세: 'JEONSE' };
-const RoomOptions = {
+const DealOptions: Record<DealTypeFilter, string> = {
+  월세: 'MONTHLY',
+  전세: 'JEONSE',
+};
+const RoomOptions: Record<RoomTypeFilter, string> = {
   원룸: 'ONE_ROOM',
   '빌라/투룸이상': 'TWO_ROOM_VILLA',
   아파트: 'APT',
   오피스텔: 'OFFICE_TEL',
 };
 const LivingRoomOptions = ['유', '무'];
-const RoomCountOptions = { '1개': 1, '2개': 2, '3개 이상': 3 };
-const RestRoomCountOptions = { '1개': 1, '2개': 2, '3개 이상': 3 };
-const FloorOptions = {
+const RoomCountOptions: Record<RoomCountTypeFilter, number> = {
+  '1개': 1,
+  '2개': 2,
+  '3개 이상': 3,
+};
+const RestRoomCountOptions: Record<RoomCountTypeFilter, number> = {
+  '1개': 1,
+  '2개': 2,
+  '3개 이상': 3,
+};
+const FloorOptions: Record<FloorTypeFilter, string> = {
   지상: 'GROUND',
   반지하: 'SEMI_BASEMENT',
   옥탑: 'PENTHOUSE',
 };
-const AdditionalOptions = {
-  canPark: '주차가능',
-  hasAirConditioner: '에어컨',
-  hasRefrigerator: '냉장고',
-  hasWasher: '세탁기',
-  hasTerrace: '베란다/테라스',
+const AdditionalOptions: Record<AdditionalInfoTypeFilter, string> = {
+  주차가능: 'canPark',
+  에어컨: 'hasAirConditioner',
+  냉장고: 'hasRefrigerator',
+  세탁기: 'hasWasher',
+  '베란다/테라스': 'hasTerrace',
 };
 
 interface ButtonActiveProps {
@@ -531,7 +549,6 @@ export function WritingPostPage() {
   };
 
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
-    createToast({ message: '생성 버튼 클릭', option: { duration: 1000 } });
     // if (!isPostCreatable || !isMateCardCreatable) return;
 
     const rentalType = selectedOptions.budget;
@@ -823,7 +840,7 @@ export function WritingPostPage() {
                 type="mateCard"
                 onVitalChange={(optionName, option) => {
                   if (
-                    optionName === 'room' ||
+                    optionName === 'roomSharingOption' ||
                     optionName === 'smoking' ||
                     optionName === 'mateAge'
                   ) {
@@ -889,14 +906,14 @@ export function WritingPostPage() {
           <styles.option>추가 옵션</styles.option>
           <styles.optionRow>
             {Object.entries(AdditionalOptions).map(([option, value]) => (
-              <styles.optionButtonContainer key={option}>
+              <styles.optionButtonContainer key={value}>
                 <styles.customCheckBox
-                  $isSelected={isExtraOptionSelected(value)}
+                  $isSelected={isExtraOptionSelected(option)}
                   onClick={() => {
-                    handleExtraOptionClick(value);
+                    handleExtraOptionClick(option);
                   }}
                 />
-                <span>{value}</span>
+                <span>{option}</span>
               </styles.optionButtonContainer>
             ))}
           </styles.optionRow>

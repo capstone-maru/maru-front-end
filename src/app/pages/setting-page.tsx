@@ -134,7 +134,7 @@ const styles = {
 
 interface SelectedState {
   smoking?: string;
-  room?: string;
+  roomSharingOption?: string;
   mateAge?: string;
 }
 
@@ -187,7 +187,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
         setSelectedState({
           ...selectedState,
           smoking: features[0].split(':')[1],
-          room: features[1].split(':')[1],
+          roomSharingOption: features[1].split(':')[1],
         });
       }
     }
@@ -280,7 +280,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
     const location = locationInput ?? '';
     const myFeatures = [
       `smoking:${selectedState.smoking}`,
-      `room:${selectedState.room}`,
+      `roomSharingOption:${selectedState.roomSharingOption}`,
       `mateAge:${mateAge !== '' ? mateAge : undefined}`,
       `options:${options.join(',')}`,
     ];
@@ -371,7 +371,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
             <styles.miniCardList>
               <styles.miniCardMeeting />
               <styles.miniCardText>
-                메이트와 {selectedState.room}
+                메이트와 {selectedState.roomSharingOption}
               </styles.miniCardText>
             </styles.miniCardList>
             <styles.miniCardList>
