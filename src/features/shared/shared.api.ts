@@ -8,23 +8,66 @@ import {
 } from './shared.type';
 
 import {
+  FloorTypeValue,
   RentalTypeValue,
   RoomTypeValue,
   type SuccessBaseDTO,
 } from '@/shared/types';
 
-const filterConvertToValues = (filter: GetSharedPostsFilter) => {
-  const result: Partial<Record<keyof GetSharedPostsFilter, number[]>> = {};
+const filterConvertToValues = ({
+  roomTypes,
+  rentalTypes,
+  expectedPaymentRange,
+  hasLivingRoom,
+  numberOfRoom,
+  roomSizeRange,
+  floorTypes,
+  canPark,
+  hasAirConditioner,
+  hasRefrigerator,
+  hasWasher,
+  hasTerrace,
+}: GetSharedPostsFilter) => {
+  const result: {
+    roomTypes?: number[];
+    rentalTypes?: number[];
+    expectedPaymentRange?: { start: number; end: number };
+    hasLivingRoom?: boolean;
+    numberOfRoom?: number;
+    roomSizeRange?: { start: number; end: number };
+    floorTypes?: number[];
+    canPark?: boolean;
+    hasAirConditioner?: boolean;
+    hasRefrigerator?: boolean;
+    hasWasher?: boolean;
+    hasTerrace?: boolean;
+  } = {
+    expectedPaymentRange,
+    hasLivingRoom,
+    numberOfRoom,
+    roomSizeRange,
+    canPark,
+    hasAirConditioner,
+    hasRefrigerator,
+    hasWasher,
+    hasTerrace,
+  };
 
-  if (filter.roomType !== undefined) {
-    result.roomType = Object.values(filter.roomType).map(value =>
+  if (roomTypes != null) {
+    result.roomTypes = Object.values(roomTypes).map(value =>
       Number(RoomTypeValue[value]),
     );
   }
 
-  if (filter.rentalType !== undefined) {
-    result.rentalType = Object.values(filter.rentalType).map(value =>
+  if (rentalTypes != null) {
+    result.rentalTypes = Object.values(rentalTypes).map(value =>
       Number(RentalTypeValue[value]),
+    );
+  }
+
+  if (floorTypes != null) {
+    result.floorTypes = Object.values(floorTypes).map(value =>
+      Number(FloorTypeValue[value]),
     );
   }
 
@@ -40,11 +83,11 @@ export const getSharedPosts = async ({
     const baseURL = '/maru-api/shared/posts/studio';
     let query = '';
 
-    if (filter !== undefined) {
+    if (filter != null) {
       query += `filter=${JSON.stringify(filterConvertToValues(filter))}`;
     }
 
-    if (search !== undefined) {
+    if (search != null) {
       query += `&search=${search}`;
     }
 

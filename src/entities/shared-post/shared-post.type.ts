@@ -16,6 +16,7 @@ export interface SharedPostListItem {
     birthYear: string;
     gender: string;
     phoneNumber: string;
+    profileImageFileName: string;
     createdAt: Date;
     createdBy: string;
     modifiedAt: Date;
@@ -24,15 +25,14 @@ export interface SharedPostListItem {
   roomInfo: {
     id: number;
     address: {
-      city: string;
       oldAddress: string;
       roadAddress: string;
-      detailAddress?: string;
     };
     roomType: string;
     floorType: string;
     size: number;
     numberOfRoom: number;
+    numberOfBathRoom: number;
     rentalType: string;
     expectedPayment: number;
   };
