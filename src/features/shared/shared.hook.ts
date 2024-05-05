@@ -210,7 +210,7 @@ export const useCreateSharedPostProps = () => {
   );
 };
 
-export const useUserInputSection = () => {
+export const usePostMateCardInputSection = () => {
   const [gender, setGender] = useState<string | undefined>(undefined);
   const [birthYear, setBirthYear] = useState<string | undefined>(undefined);
   const [location, setLocation] = useState<string | undefined>(undefined);

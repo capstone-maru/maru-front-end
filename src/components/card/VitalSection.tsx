@@ -282,13 +282,13 @@ export function VitalSection({
 
   const [initialAge, setInitialAge] = useState(0);
   useEffect(() => {
-    if (vitalFeatures !== null)
+    if (vitalFeatures != null)
       setInitialAge(Number(vitalFeatures?.[2].split(':')[1].slice(1)));
   }, [vitalFeatures?.[2]]);
 
   const [ageValue, setAgeValue] = useState<number>(0);
   useEffect(() => {
-    if (initialAge !== undefined) setAgeValue(initialAge);
+    if (initialAge != null) setAgeValue(initialAge);
   }, [initialAge]);
 
   const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {

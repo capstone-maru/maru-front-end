@@ -14,7 +14,7 @@ import { getImageURL, putImage } from '@/features/image';
 import {
   useCreateSharedPost,
   useCreateSharedPostProps,
-  useUserInputSection,
+  usePostMateCardInputSection,
   type ImageFile,
 } from '@/features/shared';
 import { useToast } from '@/features/toast';
@@ -472,7 +472,7 @@ export function WritingPostPage() {
     setBudget,
     handleEssentialFeatureChange,
     handleOptionalFeatureChange,
-  } = useUserInputSection();
+  } = usePostMateCardInputSection();
 
   const { mutate } = useCreateSharedPost();
   const { createToast } = useToast();
