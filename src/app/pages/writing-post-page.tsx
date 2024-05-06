@@ -10,11 +10,15 @@ import {
   MateSearchBox,
 } from '@/components/writing-post-page';
 import {
-  type RoomTypeFilterOptions,
-  type DealTypeFilterOptions,
-  type RoomCountTypeFilterOptions,
-  type FloorTypeFilterOptions,
-  type AdditionalInfoTypeFilterOptions,
+  CountTypeValue,
+  type DealType,
+  DealTypeValue,
+  RoomTypeValue,
+  type RoomType,
+  FloorTypeValue,
+  type FloorType,
+  AdditionalInfoTypeValue,
+  LivingRoomTypeValue,
 } from '@/entities/shared-posts-filter';
 import { useAuthValue } from '@/features/auth';
 import { getImageURL, putImage } from '@/features/image';
@@ -25,14 +29,6 @@ import {
   type ImageFile,
 } from '@/features/shared';
 import { useToast } from '@/features/toast';
-import {
-  type RentalType,
-  RoomTypeValue,
-  RentalTypeValue,
-  type RoomType,
-  FloorTypeValue,
-  type FloorType,
-} from '@/shared/types';
 
 const styles = {
   pageContainer: styled.div`
@@ -407,40 +403,6 @@ const styles = {
   `,
 };
 
-const DealOptions: Record<DealTypeFilterOptions, string> = {
-  월세: 'MONTHLY',
-  전세: 'JEONSE',
-};
-const RoomOptions: Record<RoomTypeFilterOptions, string> = {
-  원룸: 'ONE_ROOM',
-  '빌라/투룸이상': 'TWO_ROOM_VILLA',
-  아파트: 'APT',
-  오피스텔: 'OFFICE_TEL',
-};
-const LivingRoomOptions = ['유', '무'];
-const RoomCountOptions: Record<RoomCountTypeFilterOptions, number> = {
-  '1개': 1,
-  '2개': 2,
-  '3개 이상': 3,
-};
-const RestRoomCountOptions: Record<RoomCountTypeFilterOptions, number> = {
-  '1개': 1,
-  '2개': 2,
-  '3개 이상': 3,
-};
-const FloorOptions: Record<FloorTypeFilterOptions, string> = {
-  지상: 'GROUND',
-  반지하: 'SEMI_BASEMENT',
-  옥탑: 'PENTHOUSE',
-};
-const AdditionalOptions: Record<AdditionalInfoTypeFilterOptions, string> = {
-  주차가능: 'canPark',
-  에어컨: 'hasAirConditioner',
-  냉장고: 'hasRefrigerator',
-  세탁기: 'hasWasher',
-  '베란다/테라스': 'hasTerrace',
-};
-
 interface ButtonActiveProps {
   $isSelected: boolean;
 }
@@ -551,19 +513,19 @@ export function WritingPostPage() {
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
     // if (!isPostCreatable || !isMateCardCreatable) return;
 
-    const rentalType = selectedOptions.budget;
+    const dealType = selectedOptions.budget;
     const { roomType } = selectedOptions;
     const { floorType } = selectedOptions;
 
     if (
-      rentalType == null ||
+      dealType == null ||
       roomType == null ||
       floorType == null ||
       address == null ||
       selectedOptions.roomCount == null ||
-      !(selectedOptions.roomCount in RoomCountOptions) ||
+      !(selectedOptions.roomCount in CountTypeValue) ||
       selectedOptions.restRoomCount == null ||
-      !(selectedOptions.restRoomCount in RestRoomCountOptions)
+      !(selectedOptions.restRoomCount in CountTypeValue)
     )
       return;
 
@@ -571,15 +533,15 @@ export function WritingPostPage() {
       | '1개'
       | '2개'
       | '3개 이상';
-    const numberOfRoom = RoomCountOptions[numberOfRoomOption];
+    const numberOfRoom = CountTypeValue[numberOfRoomOption];
 
     const numberOfBathRoomOption = selectedOptions.restRoomCount as
       | '1개'
       | '2개'
       | '3개 이상';
-    const numberOfBathRoom = RestRoomCountOptions[numberOfBathRoomOption];
+    const numberOfBathRoom = CountTypeValue[numberOfBathRoomOption];
 
-    const rentalTypeValue = RentalTypeValue[rentalType as RentalType];
+    const dealTypeValue = DealTypeValue[dealType as DealType];
     const roomTypeValue = RoomTypeValue[roomType as RoomType];
     const floorTypeValue = FloorTypeValue[floorType as FloorType];
 
@@ -625,7 +587,7 @@ export function WritingPostPage() {
             imageFilesData: uploadedImages,
             postData: { title, content },
             transactionData: {
-              rentalType: rentalTypeValue,
+              rentalType: dealTypeValue,
               expectedPayment: expectedMonthlyFee,
             },
             roomDetailData: {
@@ -861,12 +823,12 @@ export function WritingPostPage() {
           <styles.optionCategory>거래 정보</styles.optionCategory>
           <styles.option>거래 방식</styles.option>
           <styles.optionRow>
-            {Object.entries(DealOptions).map(([option, value]) => (
+            {Object.keys(DealTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
-                  $isSelected={isOptionSelected('budget', value)}
+                  $isSelected={isOptionSelected('budget', option)}
                   onClick={() => {
-                    handleOptionClick('budget', value);
+                    handleOptionClick('budget', option);
                   }}
                 />
                 <span>{option}</span>
@@ -891,12 +853,12 @@ export function WritingPostPage() {
           <styles.optionCategory>방 정보</styles.optionCategory>
           <styles.option>층</styles.option>
           <styles.optionRow>
-            {Object.entries(FloorOptions).map(([option, value]) => (
+            {Object.keys(FloorTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
-                  $isSelected={isOptionSelected('floorType', value)}
+                  $isSelected={isOptionSelected('floorType', option)}
                   onClick={() => {
-                    handleOptionClick('floorType', value);
+                    handleOptionClick('floorType', option);
                   }}
                 />
                 <span>{option}</span>
@@ -905,8 +867,8 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>추가 옵션</styles.option>
           <styles.optionRow>
-            {Object.entries(AdditionalOptions).map(([option, value]) => (
-              <styles.optionButtonContainer key={value}>
+            {Object.keys(AdditionalInfoTypeValue).map(option => (
+              <styles.optionButtonContainer key={option}>
                 <styles.customCheckBox
                   $isSelected={isExtraOptionSelected(option)}
                   onClick={() => {
@@ -919,12 +881,12 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>방 종류</styles.option>
           <styles.optionRow>
-            {Object.entries(RoomOptions).map(([option, value]) => (
+            {Object.keys(RoomTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
-                  $isSelected={isOptionSelected('roomType', value)}
+                  $isSelected={isOptionSelected('roomType', option)}
                   onClick={() => {
-                    handleOptionClick('roomType', value);
+                    handleOptionClick('roomType', option);
                   }}
                 />
                 <span>{option}</span>
@@ -933,7 +895,7 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>거실</styles.option>
           <styles.optionRow>
-            {LivingRoomOptions.map(option => (
+            {Object.keys(LivingRoomTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
                   $isSelected={isOptionSelected('livingRoom', option)}
@@ -947,7 +909,7 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>방 개수</styles.option>
           <styles.optionRow>
-            {Object.keys(RoomCountOptions).map(option => (
+            {Object.keys(CountTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
                   $isSelected={isOptionSelected('roomCount', option)}
@@ -961,7 +923,7 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>화장실 개수</styles.option>
           <styles.optionRow>
-            {Object.keys(RestRoomCountOptions).map(option => (
+            {Object.keys(CountTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
                   $isSelected={isOptionSelected('restRoomCount', option)}

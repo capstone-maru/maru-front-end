@@ -1,14 +1,12 @@
-import { type FloorType, type RentalType, type RoomType } from '@/shared/types';
-
 export interface GetSharedPostsFilter {
-  roomTypes?: RoomType[];
-  rentalTypes?: RentalType[];
+  roomTypes?: number[];
+  rentalTypes?: number[];
   expectedPaymentRange?: { start: number; end: number };
   hasLivingRoom?: boolean;
   numberOfRoom?: number;
   numberOfRestRoom?: number;
   roomSizeRange?: { start: number; end: number };
-  floorTypes?: FloorType[];
+  floorTypes?: number[];
   canPark?: boolean;
   hasAirConditioner?: boolean;
   hasRefrigerator?: boolean;

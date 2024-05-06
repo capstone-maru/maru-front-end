@@ -2,9 +2,15 @@ import { useMemo } from 'react';
 import { useRecoilState, useResetRecoilState } from 'recoil';
 
 import { sharedPostsFilterState } from './shared-posts-filter.atom';
-import { type SharedPostsFilter } from './shared-posts-filter.type';
-
-import { type FloorType, type RentalType, type RoomType } from '@/shared/types';
+import {
+  type RoomType,
+  RoomTypeValue,
+  type SharedPostsFilter,
+  type DealType,
+  DealTypeValue,
+  type FloorType,
+  FloorTypeValue,
+} from './shared-posts-filter.type';
 
 export const useSharedPostsFilter = () => {
   const [filter, setFilter] = useRecoilState<SharedPostsFilter>(
@@ -14,14 +20,14 @@ export const useSharedPostsFilter = () => {
   const reset = useResetRecoilState(sharedPostsFilterState);
 
   const derivedFilter = useMemo<{
-    roomTypes?: RoomType[];
-    rentalTypes?: RentalType[];
+    roomTypes?: number[];
+    rentalTypes?: number[];
     expectedPaymentRange?: { start: number; end: number };
     hasLivingRoom?: boolean;
     numberOfRoom?: number;
     numberOfRestRoom?: number;
     roomSizeRange?: { start: number; end: number };
-    floorTypes?: FloorType[];
+    floorTypes?: number[];
     canPark?: boolean;
     hasAirConditioner?: boolean;
     hasRefrigerator?: boolean;
@@ -38,9 +44,45 @@ export const useSharedPostsFilter = () => {
     else if (filter.roomInfo.restRoomCount === '2개') numberOfRestRoom = 2;
     else if (filter.roomInfo.restRoomCount === '3개 이상') numberOfRestRoom = 3;
 
+    const isRoomType = (option: string): option is RoomType =>
+      Object.keys(RoomTypeValue).includes(option);
+    const roomTypes: number[] =
+      filter.roomInfo.roomType != null
+        ? Object.entries(filter.roomInfo.roomType)
+            .filter(([option, selected]) => selected)
+            .reduce<number[]>((prev, [option, selected]) => {
+              if (isRoomType(option)) prev.push(RoomTypeValue[option]);
+              return prev;
+            }, [])
+        : [];
+
+    const isDealType = (option: string): option is DealType =>
+      Object.keys(DealTypeValue).includes(option);
+    const rentalTypes: number[] =
+      filter.dealInfo.dealType != null
+        ? Object.entries(filter.dealInfo.dealType)
+            .filter(([option, selected]) => selected)
+            .reduce<number[]>((prev, [option, selected]) => {
+              if (isDealType(option)) prev.push(DealTypeValue[option]);
+              return prev;
+            }, [])
+        : [];
+
+    const isFloorType = (option: string): option is FloorType =>
+      Object.keys(FloorTypeValue).includes(option);
+    const floorTypes: number[] =
+      filter.roomInfo.floor != null
+        ? Object.entries(filter.roomInfo.floor)
+            .filter(([option, selected]) => selected)
+            .reduce<number[]>((prev, [option, selected]) => {
+              if (isFloorType(option)) prev.push(FloorTypeValue[option]);
+              return prev;
+            }, [])
+        : [];
+
     return {
-      roomTypes: [], // TODO: 다중 선택으로 수정 필요.
-      rentalTypes: [], // TODO: 다중 선택으로 수정 필요.
+      roomTypes,
+      rentalTypes,
       expectedPaymentRange:
         filter.dealInfo?.expectedFee != null
           ? {
@@ -58,7 +100,7 @@ export const useSharedPostsFilter = () => {
               end: filter.roomInfo.size.high,
             }
           : undefined,
-      floorTypes: [], // TODO: 다중 선택으로 수정 필요.
+      floorTypes,
       canPark: filter.extraInfo.주차가능,
       hasAirConditioner: filter.extraInfo.에어컨,
       hasRefrigerator: filter.extraInfo.냉장고,

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { RangeSlider } from '@/components';
 import {
-  type DealTypeFilterOptions,
+  type DealType,
   useSharedPostsFilter,
 } from '@/entities/shared-posts-filter';
 
@@ -82,7 +82,7 @@ export function DealTypeFilter() {
   const { filter, setFilter } = useSharedPostsFilter();
 
   const isDealTypeSelected = useCallback(
-    (dealTypeOption: DealTypeFilterOptions) => {
+    (dealTypeOption: DealType) => {
       if (filter.dealInfo?.dealType?.[dealTypeOption] === true) return true;
       return false;
     },
@@ -90,7 +90,7 @@ export function DealTypeFilter() {
   );
 
   const handleDealTypeClick = useCallback(
-    (dealTypeOption: DealTypeFilterOptions) => {
+    (dealTypeOption: DealType) => {
       setFilter(prev => {
         const value = prev.dealInfo.dealType?.[dealTypeOption] ?? false;
         return {

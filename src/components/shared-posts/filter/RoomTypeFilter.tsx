@@ -7,8 +7,8 @@ import { RangeSlider } from '@/components/RangeSlider';
 import { ToggleSwitch } from '@/components/ToggleSwitch';
 import {
   useSharedPostsFilter,
-  type FloorTypeFilterOptions,
-  type RoomTypeFilterOptions,
+  type FloorType,
+  type RoomType,
 } from '@/entities/shared-posts-filter';
 
 const styles = {
@@ -126,7 +126,7 @@ export function RoomTypeFilter() {
   const { filter, setFilter } = useSharedPostsFilter();
 
   const handleRoomTypeClick = useCallback(
-    (roomTypeFilterOption: RoomTypeFilterOptions) => {
+    (roomTypeFilterOption: RoomType) => {
       setFilter(prev => {
         const value = prev.roomInfo.roomType?.[roomTypeFilterOption] ?? false;
         return {
@@ -144,7 +144,7 @@ export function RoomTypeFilter() {
     [setFilter],
   );
   const isRoomTypeSelected = useCallback(
-    (roomTypeFilterOption: RoomTypeFilterOptions) => {
+    (roomTypeFilterOption: RoomType) => {
       if (filter.roomInfo.roomType?.[roomTypeFilterOption] === true)
         return true;
       return false;
@@ -153,7 +153,7 @@ export function RoomTypeFilter() {
   );
 
   const handleFloorTypeClick = useCallback(
-    (floorTypeFilterOption: FloorTypeFilterOptions) => {
+    (floorTypeFilterOption: FloorType) => {
       setFilter(prev => {
         const value = prev.roomInfo.floor?.[floorTypeFilterOption] ?? false;
         return {
@@ -171,7 +171,7 @@ export function RoomTypeFilter() {
     [setFilter],
   );
   const isFloorTypeSelected = useCallback(
-    (floorTypeFilterOption: FloorTypeFilterOptions) => {
+    (floorTypeFilterOption: FloorType) => {
       if (filter.roomInfo.floor?.[floorTypeFilterOption] === true) return true;
       return false;
     },

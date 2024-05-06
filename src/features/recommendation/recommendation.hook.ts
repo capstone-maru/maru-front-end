@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getRecommendationMate } from './recommendation.api';
 
-import { type CardTypeFilterOptions } from '@/entities/shared-posts-filter';
+import { type CardType } from '@/entities/shared-posts-filter';
 
 export const useRecommendationMate = ({
   memberId,
@@ -10,7 +10,7 @@ export const useRecommendationMate = ({
   enabled,
 }: {
   memberId: string;
-  cardType: CardTypeFilterOptions;
+  cardType: CardType;
   enabled: boolean;
 }) =>
   useQuery({

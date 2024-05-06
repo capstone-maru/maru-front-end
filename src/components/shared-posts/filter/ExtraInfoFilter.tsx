@@ -3,7 +3,7 @@
 import styled from 'styled-components';
 
 import {
-  type AdditionalInfoTypeFilterOptions,
+  type AdditionalInfoType,
   useSharedPostsFilter,
 } from '@/entities/shared-posts-filter';
 
@@ -71,7 +71,7 @@ const styles = {
 export function ExtraInfoFilter() {
   const { filter, setFilter } = useSharedPostsFilter();
 
-  const handleOptionClick = (option: AdditionalInfoTypeFilterOptions) => {
+  const handleOptionClick = (option: AdditionalInfoType) => {
     setFilter(prev => {
       const value = prev.extraInfo[option] ?? false;
       return {
@@ -84,7 +84,7 @@ export function ExtraInfoFilter() {
     });
   };
 
-  const isSelectedChecker = (option: AdditionalInfoTypeFilterOptions) =>
+  const isSelectedChecker = (option: AdditionalInfoType) =>
     filter.extraInfo[option] === true;
 
   return (
