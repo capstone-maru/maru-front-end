@@ -1,5 +1,6 @@
 'use client';
 
+import { Client } from '@stomp/stompjs';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -131,6 +132,52 @@ function FloatingChattingBox() {
   const { data } = useUserData(auth?.accessToken !== undefined);
   const [userId, setUserId] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
+
+  const [stompClient, setStompClient] = useState<Client | null>(null);
+
+  useEffect(() => {
+    const initializeChat = async () => {
+      try {
+        const stomp = new Client({
+          brokerURL: `ws://ec2-54-180-133-123.ap-northeast-2.compute.amazonaws.com:8080/ws`,
+          connectHeaders: {
+            Authorization: `Bearer ${auth?.accessToken}`,
+          },
+          debug: (str: string) => {
+            console.log(str);
+          },
+          reconnectDelay: 5000,
+          heartbeatIncoming: 4000,
+          heartbeatOutgoing: 4000,
+        });
+        setStompClient(stomp);
+        stomp.activate();
+
+        stomp.onConnect = () => {
+          console.log('WebSocket 연결이 열렸습니다.');
+          stomp.subscribe(`/roomList/${userId}`, frame => {
+            try {
+              console.log(JSON.parse(frame.body));
+            } catch (error) {
+              console.error('오류가 발생했습니다:', error);
+            }
+          });
+        };
+      } catch (error) {
+        console.error('채팅 룸 생성 중 오류가 발생했습니다:', error);
+      }
+    };
+
+    if (auth?.accessToken != null) {
+      void initializeChat();
+    }
+
+    return () => {
+      if (stompClient != null && stompClient.connected) {
+        void stompClient.deactivate();
+      }
+    };
+  }, [auth?.accessToken, userId]);
 
   useEffect(() => {
     if (data !== undefined) {
