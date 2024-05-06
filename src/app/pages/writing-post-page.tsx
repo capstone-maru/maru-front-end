@@ -10,11 +10,11 @@ import {
   MateSearchBox,
 } from '@/components/writing-post-page';
 import {
-  type RoomTypeFilter,
-  type DealTypeFilter,
-  type RoomCountTypeFilter,
-  type FloorTypeFilter,
-  type AdditionalInfoTypeFilter,
+  type RoomTypeFilterOptions,
+  type DealTypeFilterOptions,
+  type RoomCountTypeFilterOptions,
+  type FloorTypeFilterOptions,
+  type AdditionalInfoTypeFilterOptions,
 } from '@/entities/shared-posts-filter';
 import { useAuthValue } from '@/features/auth';
 import { getImageURL, putImage } from '@/features/image';
@@ -407,33 +407,33 @@ const styles = {
   `,
 };
 
-const DealOptions: Record<DealTypeFilter, string> = {
+const DealOptions: Record<DealTypeFilterOptions, string> = {
   월세: 'MONTHLY',
   전세: 'JEONSE',
 };
-const RoomOptions: Record<RoomTypeFilter, string> = {
+const RoomOptions: Record<RoomTypeFilterOptions, string> = {
   원룸: 'ONE_ROOM',
   '빌라/투룸이상': 'TWO_ROOM_VILLA',
   아파트: 'APT',
   오피스텔: 'OFFICE_TEL',
 };
 const LivingRoomOptions = ['유', '무'];
-const RoomCountOptions: Record<RoomCountTypeFilter, number> = {
+const RoomCountOptions: Record<RoomCountTypeFilterOptions, number> = {
   '1개': 1,
   '2개': 2,
   '3개 이상': 3,
 };
-const RestRoomCountOptions: Record<RoomCountTypeFilter, number> = {
+const RestRoomCountOptions: Record<RoomCountTypeFilterOptions, number> = {
   '1개': 1,
   '2개': 2,
   '3개 이상': 3,
 };
-const FloorOptions: Record<FloorTypeFilter, string> = {
+const FloorOptions: Record<FloorTypeFilterOptions, string> = {
   지상: 'GROUND',
   반지하: 'SEMI_BASEMENT',
   옥탑: 'PENTHOUSE',
 };
-const AdditionalOptions: Record<AdditionalInfoTypeFilter, string> = {
+const AdditionalOptions: Record<AdditionalInfoTypeFilterOptions, string> = {
   주차가능: 'canPark',
   에어컨: 'hasAirConditioner',
   냉장고: 'hasRefrigerator',
