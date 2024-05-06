@@ -579,11 +579,11 @@ export function ProfilePage({ memberId }: { memberId: string }) {
   const [userData, setUserData] = useState<UserProps | null>(null);
   const [isMySelf, setIsMySelf] = useState(false);
 
-  const { mutate: profile, data: profileData } = useUserProfile(memberId);
+  const { mutate: mutateProfile, data: profileData } = useUserProfile(memberId);
   const [profileImg, setProfileImg] = useState<string>('');
 
   useEffect(() => {
-    profile();
+    mutateProfile();
   }, [auth]);
 
   useEffect(() => {

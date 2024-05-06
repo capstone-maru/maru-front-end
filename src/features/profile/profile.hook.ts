@@ -14,6 +14,7 @@ export const useUserProfile = (memberId: string) =>
   useMutation({
     mutationFn: async () => await postUserProfile(memberId),
     onSuccess: data => data.data,
+    onError: error => error,
   });
 
 export const useUserCard = (cardId: number) =>
