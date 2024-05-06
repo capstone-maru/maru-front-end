@@ -20,10 +20,11 @@ import { load } from '@/shared/storage';
 const styles = {
   container: styled.nav`
     display: flex;
+    flex: 1;
+    min-width: 1440px;
     width: 100%;
     height: 4.5rem;
     padding: 1rem 11.25rem;
-    flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
 
