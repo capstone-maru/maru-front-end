@@ -155,7 +155,7 @@ export function SharedPostsPage() {
     return () => {
       resetFilter();
     };
-  }, []);
+  }, [resetFilter]);
 
   useEffect(() => {
     if (sharedPosts != null) {
