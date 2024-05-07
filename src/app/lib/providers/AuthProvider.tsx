@@ -51,6 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [pathName, auth, login, router, isLoading]);
 
-  if (pathName !== '/' && (isLoading || auth == null)) return <></>;
+  if (pathName !== '/' && pathName !== '/login' && (isLoading || auth == null))
+    return <></>;
   return <>{children}</>;
 }
