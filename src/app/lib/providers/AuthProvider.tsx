@@ -2,7 +2,7 @@
 
 import { isAxiosError } from 'axios';
 import { usePathname, useRouter } from 'next/navigation';
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
 import {
   postTokenRefresh,
@@ -17,6 +17,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const router = useRouter();
   const pathName = usePathname();
+  const [isLoading, setIsLoading] = useState(false);
 
   useLayoutEffect(() => {
     if (pathName === '/login') {
@@ -25,7 +26,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (auth == null) {
       const refreshToken = load<string>({ type: 'local', key: 'refreshToken' });
-      if (refreshToken != null) {
+      if (refreshToken != null && !isLoading) {
+        setIsLoading(true);
         postTokenRefresh(refreshToken)
           .then(({ data }) => {
             login({
@@ -39,12 +41,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               remove({ type: 'local', key: 'refreshToken' });
               if (pathName !== '/') router.replace('/');
             }
+          })
+          .finally(() => {
+            setIsLoading(false);
           });
       } else {
         router.replace('/');
       }
     }
-  });
+  }, [pathName, auth, login, router, isLoading]);
 
+  if (pathName !== '/' && (isLoading || auth == null)) return <></>;
   return <>{children}</>;
 }

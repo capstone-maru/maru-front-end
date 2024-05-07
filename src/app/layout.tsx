@@ -38,8 +38,8 @@ export default function RootLayout({
         <TanstackQueryProvider>
           <RecoilRootProvider>
             <StyledComponentsRegistry>
+              <NavigationBar />
               <AuthProvider>
-                <NavigationBar />
                 <main>{children}</main>
                 <FloatingChatting />
                 <ToastProvider />

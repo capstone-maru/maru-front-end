@@ -81,16 +81,16 @@ export function NavigationBar() {
 
   const handleLogout = () => {
     const refreshToken = load<string>({ type: 'local', key: 'refreshToken' });
-    if (refreshToken !== null) {
+    if (refreshToken != null) {
       getAuthLogout(refreshToken)
         .then(() => {
-          router.replace('/');
           logout();
         })
         .catch(err => {
           console.error(err);
         });
     }
+    router.replace('/');
   };
 
   return (
