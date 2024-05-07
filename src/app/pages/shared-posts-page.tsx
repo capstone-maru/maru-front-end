@@ -137,7 +137,6 @@ export function SharedPostsPage() {
     sliceSize: 10,
   });
 
-  // TODO: 디바운싱 추가 필요
   const { data: sharedPosts } = useSharedPosts({
     filter: derivedFilter,
     enabled: auth?.accessToken != null && selected === 'hasRoom',
