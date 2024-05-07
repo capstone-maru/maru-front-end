@@ -2,7 +2,7 @@
 
 import { isAxiosError } from 'axios';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 import {
   postTokenRefresh,
@@ -18,7 +18,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathName = usePathname();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (pathName === '/login') {
       return;
     }
