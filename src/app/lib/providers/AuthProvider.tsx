@@ -20,34 +20,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
 
   useLayoutEffect(() => {
-    if (pathName === '/login') {
+    if (pathName === '/login' || auth != null) {
       return;
     }
 
-    if (auth == null) {
-      const refreshToken = load<string>({ type: 'local', key: 'refreshToken' });
-      if (refreshToken != null && !isLoading) {
-        setIsLoading(true);
-        postTokenRefresh(refreshToken)
-          .then(({ data }) => {
-            login({
-              accessToken: data.accessToken,
-              refreshToken: data.refreshToken,
-              expiresIn: data.expiresIn,
-            });
-          })
-          .catch((err: Error) => {
-            if (isAxiosError(err)) {
-              remove({ type: 'local', key: 'refreshToken' });
-              if (pathName !== '/') router.replace('/');
-            }
-          })
-          .finally(() => {
-            setIsLoading(false);
+    const refreshToken = load<string>({ type: 'local', key: 'refreshToken' });
+    if (refreshToken != null && !isLoading) {
+      setIsLoading(true);
+      postTokenRefresh(refreshToken)
+        .then(({ data }) => {
+          login({
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken,
+            expiresIn: data.expiresIn,
           });
-      } else {
-        router.replace('/');
-      }
+        })
+        .catch((err: Error) => {
+          if (isAxiosError(err)) {
+            remove({ type: 'local', key: 'refreshToken' });
+            if (pathName !== '/') router.replace('/');
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+      router.replace('/');
     }
   }, [pathName, auth, login, router, isLoading]);
 
