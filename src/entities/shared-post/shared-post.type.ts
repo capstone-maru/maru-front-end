@@ -1,5 +1,3 @@
-import { type RentalType, type RoomType } from '@/shared/types';
-
 export interface SharedPostListItem {
   id: number;
   title: string;
@@ -47,7 +45,15 @@ export interface SharedPost {
   id: number;
   title: string;
   content: string;
-  roomMateFeatures: string[];
+  roomMateFeatures: {
+    location: string;
+    features: {
+      smoking: string;
+      roomSharingOption: string;
+      mateAge: string;
+      options: string; // 프런트에서 파싱 필요.
+    };
+  };
   participants: Array<{ memberId: string; profileImage: string }>;
   roomImages: Set<{
     fileName: string;
@@ -61,29 +67,26 @@ export interface SharedPost {
     birthYear: string;
     gender: string;
     phoneNumber: string;
-    myCardFeatures: string[];
-    mateCardFeatures: string[];
+    profileImageFileName: string;
     createdAt: Date;
     createdBy: string;
     modifiedAt: Date;
     modifiedBy: string;
   };
+  address: {
+    oldAddress: string;
+    roadAddress: string;
+  };
   roomInfo: {
     id: number;
-    address: {
-      city: string;
-      oldAddress: string;
-      roadAddress: string;
-      detailAddress?: string;
-    };
-    roomType: RoomType;
+    roomType: string;
     floorType: string;
     size: number;
     numberOfRoom: number;
     numberOfBathRoom: number;
     hasLivingRoom: boolean;
     recruitmentCapacity: number;
-    rentalType: RentalType;
+    rentalType: string;
     expectedPayment: number;
     extraOption: {
       canPark: boolean;
