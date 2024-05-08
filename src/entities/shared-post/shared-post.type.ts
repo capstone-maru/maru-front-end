@@ -22,12 +22,12 @@ export interface SharedPostListItem {
     modifiedAt: Date;
     modifiedBy: string;
   };
+  address: {
+    oldAddress: string;
+    roadAddress: string;
+  };
   roomInfo: {
     id: number;
-    address: {
-      oldAddress: string;
-      roadAddress: string;
-    };
     roomType: string;
     floorType: string;
     size: number;
