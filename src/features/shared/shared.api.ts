@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-import { type GetSharedPostDTO, type GetSharedPostsDTO } from './shared.dto';
+import {
+  type GetDormitorySharedPostDTO,
+  type GetDormitorySharedPostsDTO,
+  type GetSharedPostDTO,
+  type GetSharedPostsDTO,
+} from './shared.dto';
 import {
   type CreateSharedPostProps,
   type GetSharedPostsFilter,
@@ -119,7 +124,7 @@ export const getDormitorySharedPosts = async ({
   page,
 }: GetSharedPostsProps) => {
   const getURI = () => {
-    const baseURL = '/maru-api/shared/posts/studio';
+    const baseURL = '/maru-api/shared/posts/dormitory';
     let query = '';
 
     if (filter != null) {
@@ -135,5 +140,10 @@ export const getDormitorySharedPosts = async ({
     return `${baseURL}?${encodeURI(query)}`;
   };
 
-  return await axios.get<GetSharedPostsDTO>(getURI());
+  return await axios.get<GetDormitorySharedPostsDTO>(getURI());
 };
+
+export const getDormitorySharedPost = async (postId: number) =>
+  await axios.get<GetDormitorySharedPostDTO>(
+    `/maru-api/shared/posts/dormitory/${postId}`,
+  );

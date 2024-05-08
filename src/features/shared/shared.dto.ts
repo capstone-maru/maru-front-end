@@ -1,4 +1,5 @@
 import {
+  type DormitorySharedPost,
   type DormitorySharedPostListItem,
   type SharedPost,
   type SharedPostListItem,
@@ -69,4 +70,8 @@ export interface GetDormitorySharedPostsDTO extends SuccessBaseDTO {
     numberOfElements: number;
     empty: boolean;
   };
+}
+
+export interface GetDormitorySharedPostDTO extends SuccessBaseDTO {
+  data: DormitorySharedPost;
 }

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   createSharedPost,
   deleteSharedPost,
+  getDormitorySharedPost,
   getDormitorySharedPosts,
   getSharedPost,
   getSharedPosts,
@@ -395,11 +396,25 @@ export const useDormitorySharedPosts = ({
   enabled,
 }: GetSharedPostsProps & { enabled: boolean }) =>
   useQuery({
-    queryKey: ['/api/shared/posts/studio', { filter, search, page }],
+    queryKey: ['/api/shared/posts/dormitory', { filter, search, page }],
     queryFn: async () =>
       await getDormitorySharedPosts({ filter, search, page }).then(
         response => response.data,
       ),
     staleTime: 60000,
+    enabled,
+  });
+
+export const useDormitorySharedPost = ({
+  postId,
+  enabled,
+}: {
+  postId: number;
+  enabled: boolean;
+}) =>
+  useQuery({
+    queryKey: [`/api/shared/posts/dormitory/${postId}`],
+    queryFn: async () =>
+      await getDormitorySharedPost(postId).then(response => response.data),
     enabled,
   });
