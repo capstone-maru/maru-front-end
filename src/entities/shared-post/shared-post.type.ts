@@ -104,3 +104,36 @@ export interface SharedPost {
   modifiedAt: Date;
   modifiedBy: string;
 }
+
+export interface DormitorySharedPostListItem {
+  id: number;
+  title: string;
+  content: string;
+  thumbnail: {
+    fileName: string;
+    isThumbNail: boolean;
+    order: number;
+  };
+  publisherAccount: {
+    memberId: string;
+    email: string;
+    nickname: string;
+    birthYear: string;
+    gender: string;
+    phoneNumber: string;
+    profileImageFileName: string;
+    createdAt: Date;
+    createdBy: string;
+    modifiedAt: Date;
+    modifiedBy: string;
+  };
+  address: {
+    oldAddress: string;
+    roadAddress: string;
+  };
+  isScrapped: boolean;
+  createdAt: Date;
+  createdBy: string;
+  modifiedAt: Date;
+  modifiedBy: string;
+}

@@ -112,3 +112,28 @@ export const scrapPost = async (postId: number) =>
   await axios.get<SuccessBaseDTO>(
     `/maru-api/shared/posts/studio/${postId}/scrap`,
   );
+
+export const getDormitorySharedPosts = async ({
+  filter,
+  search,
+  page,
+}: GetSharedPostsProps) => {
+  const getURI = () => {
+    const baseURL = '/maru-api/shared/posts/studio';
+    let query = '';
+
+    if (filter != null) {
+      query += `filter=${JSON.stringify(filterConvertToValues(filter))}`;
+    }
+
+    if (search != null) {
+      query += `&search=${search}`;
+    }
+
+    query += `&page=${page}`;
+
+    return `${baseURL}?${encodeURI(query)}`;
+  };
+
+  return await axios.get<GetSharedPostsDTO>(getURI());
+};

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   createSharedPost,
   deleteSharedPost,
+  getDormitorySharedPosts,
   getSharedPost,
   getSharedPosts,
   scrapPost,
@@ -385,4 +386,20 @@ export const useDeleteSharedPost = ({
 export const useScrapSharedPost = () =>
   useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, number>({
     mutationFn: scrapPost,
+  });
+
+export const useDormitorySharedPosts = ({
+  filter,
+  search,
+  page,
+  enabled,
+}: GetSharedPostsProps & { enabled: boolean }) =>
+  useQuery({
+    queryKey: ['/api/shared/posts/studio', { filter, search, page }],
+    queryFn: async () =>
+      await getDormitorySharedPosts({ filter, search, page }).then(
+        response => response.data,
+      ),
+    staleTime: 60000,
+    enabled,
   });

@@ -1,4 +1,5 @@
 import {
+  type DormitorySharedPostListItem,
   type SharedPost,
   type SharedPostListItem,
 } from '@/entities/shared-post';
@@ -37,4 +38,35 @@ export interface GetSharedPostsDTO extends SuccessBaseDTO {
 
 export interface GetSharedPostDTO extends SuccessBaseDTO {
   data: SharedPost;
+}
+
+export interface GetDormitorySharedPostsDTO extends SuccessBaseDTO {
+  data: {
+    content: DormitorySharedPostListItem[];
+    pageable: {
+      pageNumber: number;
+      pageSize: number;
+      sort: {
+        empty: boolean;
+        unsorted: boolean;
+        sorted: boolean;
+      };
+      offset: number;
+      paged: boolean;
+      unpaged: boolean;
+    };
+    last: boolean;
+    totalPages: number;
+    totalElements: number;
+    first: boolean;
+    size: number;
+    number: number;
+    sort: {
+      empty: boolean;
+      unsorted: boolean;
+      sorted: boolean;
+    };
+    numberOfElements: number;
+    empty: boolean;
+  };
 }
