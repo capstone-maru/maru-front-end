@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   createSharedPost,
+  deleteDormitorySharedPost,
   deleteSharedPost,
   getDormitorySharedPost,
   getDormitorySharedPosts,
@@ -417,4 +418,20 @@ export const useDormitorySharedPost = ({
     queryFn: async () =>
       await getDormitorySharedPost(postId).then(response => response.data),
     enabled,
+  });
+
+export const useDeleteDormitorySharedPost = ({
+  postId,
+  onSuccess,
+  onError,
+}: {
+  postId: number;
+  onSuccess: (data: SuccessBaseDTO) => void;
+  onError: (error: Error) => void;
+}) =>
+  useMutation({
+    mutationFn: async () =>
+      await deleteDormitorySharedPost(postId).then(response => response.data),
+    onSuccess,
+    onError,
   });

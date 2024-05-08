@@ -147,3 +147,8 @@ export const getDormitorySharedPost = async (postId: number) =>
   await axios.get<GetDormitorySharedPostDTO>(
     `/maru-api/shared/posts/dormitory/${postId}`,
   );
+
+export const deleteDormitorySharedPost = async (postId: number) =>
+  await axios.delete<SuccessBaseDTO>(
+    `/maru-api/shared/posts/dormitory/${postId}`,
+  );
