@@ -28,7 +28,12 @@ export const usePutUserCard = (cardId: number) =>
   useMutation({
     mutationFn: async (data: {
       location: string;
-      features: Array<string | undefined>;
+      features: {
+        smoking: string;
+        roomSharingOption: string;
+        mateAge: number;
+        options: string;
+      };
     }) => await putUserCard(cardId, data.location, data.features),
   });
 

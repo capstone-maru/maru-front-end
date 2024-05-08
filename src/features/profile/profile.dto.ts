@@ -17,12 +17,22 @@ export interface PostUserProfileDTO extends SuccessBaseDTO {
     myCard: {
       id: number;
       location: string;
-      myFeatures: string[];
+      myFeatures: {
+        smoking: string;
+        roomSharingOption: string;
+        mateAge: number;
+        options: string;
+      };
     };
     mateCard: {
       id: number;
       location: string;
-      myFeatures: string[];
+      myFeatures: {
+        smoking: string;
+        roomSharingOption: string;
+        mateAge: number;
+        options: string;
+      };
     };
   };
 }
@@ -31,14 +41,24 @@ export interface GetUserCardDTO extends SuccessBaseDTO {
   data: {
     id: number;
     location: string;
-    myFeatures: string[];
+    myFeatures: {
+      smoking: string;
+      roomSharingOption: string;
+      mateAge: number;
+      options: string;
+    };
   };
 }
 
 export interface PutUserCardDTO extends SuccessBaseDTO {
   data: {
     location: string;
-    features: string[];
+    features: {
+      smoking: string;
+      roomSharingOption: string;
+      mateAge: number;
+      options: string;
+    };
   };
 }
 

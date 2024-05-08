@@ -24,7 +24,12 @@ export const getUserCard = async (cardId: number) =>
 export const putUserCard = async (
   cardId: number,
   location: string,
-  features: Array<string | undefined>,
+  features: {
+    smoking: string;
+    roomSharingOption: string;
+    mateAge: number;
+    options: string;
+  },
 ) =>
   await axios
     .put<PutUserCardDTO>(`/maru-api/profile/${cardId}`, {

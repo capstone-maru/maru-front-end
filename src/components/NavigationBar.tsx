@@ -2,10 +2,9 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { SearchBox } from './SearchBox';
+import { UserSearchBox } from './UserSearchBox';
 
 import {
   getAuthLogout,
@@ -14,8 +13,6 @@ import {
   useAuthValue,
   useUserData,
 } from '@/features/auth';
-import { useSearchUser, useUserProfile } from '@/features/profile';
-import { useToast } from '@/features/toast';
 import { load } from '@/shared/storage';
 
 const styles = {
@@ -125,49 +122,13 @@ export function NavigationBar() {
     }
   };
 
-  const [email, setEmail] = useState<string>('');
-  const [enter, setEnter] = useState(false);
-
-  const { mutate: search, data: searchUser } = useSearchUser(email);
-
-  useEffect(() => {
-    if (enter) {
-      search();
-      setEnter(false);
-    }
-  }, [enter]);
-
-  const { createToast } = useToast();
-  const {
-    mutate: mutateSearchUserProfile,
-    data: searchUserProfile,
-    error,
-  } = useUserProfile(searchUser?.data.memberId ?? '');
-
-  useEffect(() => {
-    if (searchUser?.data != null) {
-      mutateSearchUserProfile();
-    }
-  }, [searchUser]);
-
-  useEffect(() => {
-    if (error != null) {
-      createToast({
-        message: '존재하지 않는 유저입니다.',
-        option: { duration: 3000 },
-      });
-    }
-    if (searchUserProfile != null)
-      router.replace(`/profile/${searchUser?.data.memberId}`);
-  }, [searchUserProfile, error]);
-
   return (
     <styles.container>
       <styles.utils>
         <styles.title>
           <Link href="/">maru</Link>
         </styles.title>
-        <SearchBox onContentChange={setEmail} onEnter={setEnter} />
+        <UserSearchBox />
       </styles.utils>
       <styles.links>
         <Link href="/shared">메이트찾기</Link>
