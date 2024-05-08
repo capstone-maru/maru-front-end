@@ -233,7 +233,7 @@ export const usePostMateCardInputSection = () => {
   const handleEssentialFeatureChange = useCallback(
     (
       key: 'smoking' | 'roomSharingOption' | 'mateAge',
-      value: string | number,
+      value: string | number | undefined,
     ) => {
       setFeatures(prev => {
         if (prev[key] === value) {
@@ -266,10 +266,10 @@ export const usePostMateCardInputSection = () => {
     return {
       smoking: features?.smoking ?? '상관없어요',
       roomSharingOption: features?.roomSharingOption ?? '상관없어요',
-      mateAge: features?.mateAge ?? 0,
+      mateAge: birthYear,
       options: JSON.stringify(options),
     };
-  }, [features]);
+  }, [features, birthYear]);
 
   const auth = useAuthValue();
   useEffect(() => {

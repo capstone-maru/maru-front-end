@@ -33,6 +33,7 @@ export interface SharedPostListItem {
     numberOfBathRoom: number;
     rentalType: string;
     expectedPayment: number;
+    recruitmentCapacity: number;
   };
   isScrapped: boolean;
   createdAt: Date;
@@ -131,6 +132,7 @@ export interface DormitorySharedPostListItem {
     oldAddress: string;
     roadAddress: string;
   };
+  recruitmentCapacity: number;
   isScrapped: boolean;
   createdAt: Date;
   createdBy: string;
@@ -177,6 +179,7 @@ export interface DormitorySharedPost {
     oldAddress: string;
     roadAddress: string;
   };
+  recruitmentCapacity: number;
   isScrapped: boolean;
   scrapCount: number;
   viewCount: number;

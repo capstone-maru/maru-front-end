@@ -76,7 +76,7 @@ export interface CreateSharedPostProps {
     features: {
       smoking: string;
       roomSharingOption: string;
-      mateAge: number | null; // 0 ~ 10: +- 범위 값, null: 상관 없어요.
+      mateAge: number | undefined; // 0 ~ 10: +- 범위 값, null: 상관 없어요.
       options: string;
     };
   };

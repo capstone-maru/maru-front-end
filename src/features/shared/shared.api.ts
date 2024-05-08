@@ -61,10 +61,6 @@ export const getDormitorySharedPosts = async ({
     const baseURL = '/maru-api/shared/posts/dormitory';
     let query = '';
 
-    if (filter != null) {
-      query += `filter=${JSON.stringify(filterConvertToValues(filter))}`;
-    }
-
     if (search != null) {
       query += `&search=${search}`;
     }
