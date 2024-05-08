@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { CleanTest } from './CleanTest';
@@ -182,7 +182,12 @@ export function OptionSection({
   mbti?: string;
   major?: string;
   budget?: string;
-  optionFeatures?: string[];
+  optionFeatures?: {
+    smoking?: string;
+    roomSharingOption?: string;
+    mateAge?: number;
+    options?: Set<string>;
+  };
   onFeatureChange: (option: string) => void;
   onMbtiChange: React.Dispatch<React.SetStateAction<string | undefined>>;
   onMajorChange: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -190,38 +195,38 @@ export function OptionSection({
   isMySelf: boolean;
   type: string;
 }) {
-  type SelectedOptions = Record<string, boolean>;
-  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
-
   const majorArray = ['공학', '교육', '인문', '사회', '자연', '예체능', '의약'];
+
+  const [features, setFeatures] = useState<Set<string>>();
 
   useEffect(() => {
     if (optionFeatures != null) {
-      const initialOptions: SelectedOptions = {};
-      const optionsString = optionFeatures[3].split(':')[1];
-      const budgetIdx = optionsString.indexOf('[');
-
-      const options = optionsString.slice(0, budgetIdx).split(',');
-      options.forEach(option => {
+      const optionsSet = new Set<string>();
+      optionFeatures.options?.forEach((option: string) => {
         if (
           !option.includes('E') &&
           !option.includes('I') &&
+          !option.includes(',') &&
           !majorArray.includes(option)
         ) {
-          initialOptions[option] = true;
+          optionsSet.add(option);
         }
       });
-      setSelectedOptions(initialOptions);
+      setFeatures(optionsSet);
     }
-  }, [optionFeatures]);
+  }, [optionFeatures?.options]);
 
-  const handleOptionClick = (option: string) => {
-    setSelectedOptions(prevSelectedOptions => ({
-      ...prevSelectedOptions,
-      [option]: !prevSelectedOptions[option],
-    }));
+  const handleOptionalFeatureChange = useCallback((option: string) => {
+    setFeatures(prev => {
+      const newOptions = new Set(prev);
+
+      if (prev != null && prev.has(option)) newOptions.delete(option);
+      else newOptions.add(option);
+
+      return newOptions;
+    });
     onFeatureChange(option);
-  };
+  }, []);
 
   const [isTestVisible, setIsTestVisible] = useState(false);
   const [score, setScore] = useState(-1);
@@ -234,20 +239,22 @@ export function OptionSection({
   };
 
   useEffect(() => {
-    if (score < 5.34 && score > 0) {
-      if (!selectedOptions['상']) handleOptionClick('상');
-      if (selectedOptions['평범보통']) handleOptionClick('평범보통');
-      if (selectedOptions['천하태평']) handleOptionClick('천하태평');
-    }
-    if (score > 5.34 && score < 10.67) {
-      if (!selectedOptions['평범보통']) handleOptionClick('평범보통');
-      if (selectedOptions['상']) handleOptionClick('상');
-      if (selectedOptions['천하태평']) handleOptionClick('천하태평');
-    }
-    if (score > 10.67) {
-      if (!selectedOptions['천하태평']) handleOptionClick('천하태평');
-      if (selectedOptions['평범보통']) handleOptionClick('평범보통');
-      if (selectedOptions['상']) handleOptionClick('상');
+    if (features != null) {
+      if (score < 5.34 && score > 0) {
+        if (!features.has('상')) handleOptionalFeatureChange('상');
+        if (features.has('평범보통')) handleOptionalFeatureChange('평범보통');
+        if (features.has('천하태평')) handleOptionalFeatureChange('천하태평');
+      }
+      if (score > 5.34 && score < 10.67) {
+        if (features.has('상')) handleOptionalFeatureChange('상');
+        if (!features.has('평범보통')) handleOptionalFeatureChange('평범보통');
+        if (features.has('천하태평')) handleOptionalFeatureChange('천하태평');
+      }
+      if (score > 10.67) {
+        if (features.has('상')) handleOptionalFeatureChange('상');
+        if (features.has('평범보통')) handleOptionalFeatureChange('평범보통');
+        if (!features.has('천하태평')) handleOptionalFeatureChange('천하태평');
+      }
     }
   }, [score]);
 
@@ -256,7 +263,7 @@ export function OptionSection({
 
   useEffect(() => {
     if (budget !== undefined) {
-      const [min, max] = budget.split(',').map(Number);
+      const [min, max] = budget.slice(1, -1).split(',').map(Number);
       setInitialMin(min);
       setInitialMax(max);
     }
@@ -264,6 +271,7 @@ export function OptionSection({
 
   const [budgetMin, setBudgetMin] = useState(0);
   const [budgetMax, setBudgetMax] = useState(355);
+
   useEffect(() => {
     setBudgetMin(initialMin);
     setBudgetMax(initialMax);
@@ -273,6 +281,11 @@ export function OptionSection({
     setBudgetMin(min);
     setBudgetMax(max);
   };
+
+  useEffect(() => {
+    const budgetString = `[${budgetMin},${budgetMax}]`;
+    onBudgetChange(budgetString);
+  }, [budgetMin, budgetMax]);
 
   const [isTestSelected, setIsTestSelected] = useState(false);
   const [isMajorSelected, setIsMajorSelected] = useState(false);
@@ -300,11 +313,6 @@ export function OptionSection({
     onMajorChange(selectedMajor);
   }, [selectedMajor]);
 
-  useEffect(() => {
-    const budgetString = `[${budgetMin},${budgetMax}]`;
-    onBudgetChange(budgetString);
-  }, [budgetMin, budgetMax]);
-
   const handleMajorSelect = () => {
     setIsMajorSelected(!isMajorSelected);
     setIsTestSelected(false);
@@ -326,23 +334,24 @@ export function OptionSection({
             <styles.optionListImg src="/option-img/visibility.svg" />
             <styles.optionListCheckItemContainer>
               <CheckItem
-                $isSelected={selectedOptions['아침형']}
+                $isSelected={features?.has('아침형') ?? false}
                 onClick={() => {
                   if (isMySelf) {
-                    handleOptionClick('아침형');
-                    if (selectedOptions['올빼미형'])
-                      handleOptionClick('올빼미형');
+                    handleOptionalFeatureChange('아침형');
+                    if (features != null && features.has('올빼미형'))
+                      handleOptionalFeatureChange('올빼미형');
                   }
                 }}
               >
                 아침형
               </CheckItem>
               <CheckItem
-                $isSelected={selectedOptions['올빼미형']}
+                $isSelected={features?.has('올빼미형') ?? false}
                 onClick={() => {
                   if (isMySelf) {
-                    handleOptionClick('올빼미형');
-                    if (selectedOptions['아침형']) handleOptionClick('아침형');
+                    handleOptionalFeatureChange('올빼미형');
+                    if (features != null && features.has('아침형'))
+                      handleOptionalFeatureChange('아침형');
                   }
                 }}
               >
@@ -356,10 +365,10 @@ export function OptionSection({
               {EatingOptions.map(option => (
                 <CheckItem
                   key={option}
-                  $isSelected={selectedOptions[option]}
+                  $isSelected={features?.has(option) ?? false}
                   onClick={() => {
                     if (isMySelf) {
-                      handleOptionClick(option);
+                      handleOptionalFeatureChange(option);
                     }
                   }}
                 >
@@ -374,10 +383,10 @@ export function OptionSection({
               {HearingOptions.map(option => (
                 <CheckItem
                   key={option}
-                  $isSelected={selectedOptions[option]}
+                  $isSelected={features?.has(option) ?? false}
                   onClick={() => {
                     if (isMySelf) {
-                      handleOptionClick(option);
+                      handleOptionalFeatureChange(option);
                     }
                   }}
                 >
@@ -392,10 +401,10 @@ export function OptionSection({
               {WeatherOptions.map(option => (
                 <CheckItem
                   key={option}
-                  $isSelected={selectedOptions[option]}
+                  $isSelected={features?.has(option) ?? false}
                   onClick={() => {
                     if (isMySelf) {
-                      handleOptionClick(option);
+                      handleOptionalFeatureChange(option);
                     }
                   }}
                 >
@@ -417,51 +426,55 @@ export function OptionSection({
                     {isTestVisible ? '결과 확인하기' : '테스트 하기'}
                   </styles.cleanTestDescription>
                 </styles.cleanTestContainer>
-                <CheckItem $isSelected={selectedOptions['상']}>상</CheckItem>
-                <CheckItem $isSelected={selectedOptions['평범보통']}>
+                <CheckItem $isSelected={features?.has('상') ?? false}>
+                  상
+                </CheckItem>
+                <CheckItem $isSelected={features?.has('평범보통') ?? false}>
                   평범보통
                 </CheckItem>
-                <CheckItem $isSelected={selectedOptions['천하태평']}>
+                <CheckItem $isSelected={features?.has('천하태평') ?? false}>
                   천하태평
                 </CheckItem>
               </styles.optionListCheckItemContainer>
             ) : (
               <styles.optionListCheckItemContainer>
                 <CheckItem
-                  $isSelected={selectedOptions['상']}
+                  $isSelected={features?.has('상') ?? false}
                   onClick={() => {
                     if (isMySelf) {
-                      handleOptionClick('상');
-                      if (selectedOptions['평범보통'])
-                        handleOptionClick('평범보통');
-                      if (selectedOptions['천하태평'])
-                        handleOptionClick('천하태평');
+                      handleOptionalFeatureChange('상');
+                      if (features != null && features.has('평범보통'))
+                        handleOptionalFeatureChange('평범보통');
+                      if (features != null && features.has('천하태평'))
+                        handleOptionalFeatureChange('천하태평');
                     }
                   }}
                 >
                   상
                 </CheckItem>
                 <CheckItem
-                  $isSelected={selectedOptions['평범보통']}
+                  $isSelected={features?.has('평범보통') ?? false}
                   onClick={() => {
                     if (isMySelf) {
-                      handleOptionClick('평범보통');
-                      if (selectedOptions['상']) handleOptionClick('상');
-                      if (selectedOptions['천하태평'])
-                        handleOptionClick('천하태평');
+                      handleOptionalFeatureChange('평범보통');
+                      if (features != null && features.has('상'))
+                        handleOptionalFeatureChange('상');
+                      if (features != null && features.has('천하태평'))
+                        handleOptionalFeatureChange('천하태평');
                     }
                   }}
                 >
                   평범보통
                 </CheckItem>
                 <CheckItem
-                  $isSelected={selectedOptions['천하태평']}
+                  $isSelected={features?.has('천하태평') ?? false}
                   onClick={() => {
                     if (isMySelf) {
-                      handleOptionClick('천하태평');
-                      if (selectedOptions['상']) handleOptionClick('상');
-                      if (selectedOptions['평범보통'])
-                        handleOptionClick('평범보통');
+                      handleOptionalFeatureChange('천하태평');
+                      if (features != null && features.has('상'))
+                        handleOptionalFeatureChange('상');
+                      if (features != null && features.has('평범보통'))
+                        handleOptionalFeatureChange('평범보통');
                     }
                   }}
                 >
@@ -479,10 +492,10 @@ export function OptionSection({
               {PersonalOptions.map(option => (
                 <CheckItem
                   key={option}
-                  $isSelected={selectedOptions[option]}
+                  $isSelected={features?.has(option) ?? false}
                   onClick={() => {
                     if (isMySelf) {
-                      handleOptionClick(option);
+                      handleOptionalFeatureChange(option);
                     }
                   }}
                 >
@@ -490,7 +503,7 @@ export function OptionSection({
                 </CheckItem>
               ))}
               <CheckItem
-                $isSelected={selectedOptions['엠비티아이']}
+                $isSelected={features?.has('엠비티아이') ?? false}
                 onClick={() => {
                   if (isMySelf) {
                     handleMbtiSelect();
@@ -500,7 +513,7 @@ export function OptionSection({
                 MBTI
               </CheckItem>
               <CheckItem
-                $isSelected={selectedOptions['전공']}
+                $isSelected={features?.has('전공') ?? false}
                 onClick={() => {
                   if (isMySelf) {
                     handleMajorSelect();

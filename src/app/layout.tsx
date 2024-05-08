@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import React from 'react';
 import './globals.scss';
-import '@/app/lib/axios-interceptor';
 
 import {
   AuthProvider,
@@ -38,8 +37,8 @@ export default function RootLayout({
         <TanstackQueryProvider>
           <RecoilRootProvider>
             <StyledComponentsRegistry>
+              <NavigationBar />
               <AuthProvider>
-                <NavigationBar />
                 <main>{children}</main>
                 <FloatingChatting />
                 <ToastProvider />

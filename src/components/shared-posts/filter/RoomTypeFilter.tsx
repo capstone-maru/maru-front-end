@@ -1,10 +1,15 @@
 'use client';
 
+import { useCallback } from 'react';
 import styled from 'styled-components';
 
 import { RangeSlider } from '@/components/RangeSlider';
 import { ToggleSwitch } from '@/components/ToggleSwitch';
-import { useSharedPostsFilter } from '@/entities/shared-posts-filter';
+import {
+  useSharedPostsFilter,
+  type FloorType,
+  type RoomType,
+} from '@/entities/shared-posts-filter';
 
 const styles = {
   container: styled.div`
@@ -120,6 +125,59 @@ const styles = {
 export function RoomTypeFilter() {
   const { filter, setFilter } = useSharedPostsFilter();
 
+  const handleRoomTypeClick = useCallback(
+    (roomTypeFilterOption: RoomType) => {
+      setFilter(prev => {
+        const value = prev.roomInfo.roomType?.[roomTypeFilterOption] ?? false;
+        return {
+          ...prev,
+          roomInfo: {
+            ...prev.roomInfo,
+            roomType: {
+              ...prev.roomInfo.roomType,
+              [roomTypeFilterOption]: !value,
+            },
+          },
+        };
+      });
+    },
+    [setFilter],
+  );
+  const isRoomTypeSelected = useCallback(
+    (roomTypeFilterOption: RoomType) => {
+      if (filter.roomInfo.roomType?.[roomTypeFilterOption] === true)
+        return true;
+      return false;
+    },
+    [filter.roomInfo.roomType],
+  );
+
+  const handleFloorTypeClick = useCallback(
+    (floorTypeFilterOption: FloorType) => {
+      setFilter(prev => {
+        const value = prev.roomInfo.floor?.[floorTypeFilterOption] ?? false;
+        return {
+          ...prev,
+          roomInfo: {
+            ...prev.roomInfo,
+            floor: {
+              ...prev.roomInfo.floor,
+              [floorTypeFilterOption]: !value,
+            },
+          },
+        };
+      });
+    },
+    [setFilter],
+  );
+  const isFloorTypeSelected = useCallback(
+    (floorTypeFilterOption: FloorType) => {
+      if (filter.roomInfo.floor?.[floorTypeFilterOption] === true) return true;
+      return false;
+    },
+    [filter.roomInfo.floor],
+  );
+
   return (
     <styles.container>
       <styles.roomType>
@@ -127,52 +185,36 @@ export function RoomTypeFilter() {
         <div>
           <button
             type="button"
-            className={filter.roomInfo?.roomType === '원룸' ? 'selected' : ''}
+            className={isRoomTypeSelected('원룸') ? 'selected' : ''}
             onClick={() => {
-              setFilter(prev => ({
-                ...prev,
-                roomInfo: { ...prev.roomInfo, roomType: '원룸' },
-              }));
+              handleRoomTypeClick('원룸');
             }}
           >
             원룸
           </button>
           <button
             type="button"
-            className={
-              filter.roomInfo?.roomType === '빌라/투룸이상' ? 'selected' : ''
-            }
+            className={isRoomTypeSelected('빌라/투룸이상') ? 'selected' : ''}
             onClick={() => {
-              setFilter(prev => ({
-                ...prev,
-                roomInfo: { ...prev.roomInfo, roomType: '빌라/투룸이상' },
-              }));
+              handleRoomTypeClick('빌라/투룸이상');
             }}
           >
             빌라/투룸이상
           </button>
           <button
             type="button"
-            className={filter.roomInfo?.roomType === '아파트' ? 'selected' : ''}
+            className={isRoomTypeSelected('아파트') ? 'selected' : ''}
             onClick={() => {
-              setFilter(prev => ({
-                ...prev,
-                roomInfo: { ...prev.roomInfo, roomType: '아파트' },
-              }));
+              handleRoomTypeClick('아파트');
             }}
           >
             아파트
           </button>
           <button
             type="button"
-            className={
-              filter.roomInfo?.roomType === '오피스텔' ? 'selected' : ''
-            }
+            className={isRoomTypeSelected('오피스텔') ? 'selected' : ''}
             onClick={() => {
-              setFilter(prev => ({
-                ...prev,
-                roomInfo: { ...prev.roomInfo, roomType: '오피스텔' },
-              }));
+              handleRoomTypeClick('오피스텔');
             }}
           >
             오피스텔
@@ -306,36 +348,27 @@ export function RoomTypeFilter() {
         <div>
           <button
             type="button"
-            className={filter.roomInfo?.floor === '지상' ? 'selected' : ''}
+            className={isFloorTypeSelected('지상') ? 'selected' : ''}
             onClick={() => {
-              setFilter(prev => ({
-                ...prev,
-                roomInfo: { ...prev.roomInfo, floor: '지상' },
-              }));
+              handleFloorTypeClick('지상');
             }}
           >
             지상
           </button>
           <button
             type="button"
-            className={filter.roomInfo?.floor === '반지하' ? 'selected' : ''}
+            className={isFloorTypeSelected('반지하') ? 'selected' : ''}
             onClick={() => {
-              setFilter(prev => ({
-                ...prev,
-                roomInfo: { ...prev.roomInfo, floor: '반지하' },
-              }));
+              handleFloorTypeClick('반지하');
             }}
           >
             반지하
           </button>
           <button
             type="button"
-            className={filter.roomInfo?.floor === '옥탑' ? 'selected' : ''}
+            className={isFloorTypeSelected('옥탑') ? 'selected' : ''}
             onClick={() => {
-              setFilter(prev => ({
-                ...prev,
-                roomInfo: { ...prev.roomInfo, floor: '옥탑' },
-              }));
+              handleFloorTypeClick('옥탑');
             }}
           >
             옥탑

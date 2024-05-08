@@ -1,9 +1,13 @@
 'use client';
 
+import { useCallback } from 'react';
 import styled from 'styled-components';
 
 import { RangeSlider } from '@/components';
-import { useSharedPostsFilter } from '@/entities/shared-posts-filter';
+import {
+  type DealType,
+  useSharedPostsFilter,
+} from '@/entities/shared-posts-filter';
 
 const styles = {
   container: styled.div`
@@ -77,6 +81,33 @@ const styles = {
 export function DealTypeFilter() {
   const { filter, setFilter } = useSharedPostsFilter();
 
+  const isDealTypeSelected = useCallback(
+    (dealTypeOption: DealType) => {
+      if (filter.dealInfo?.dealType?.[dealTypeOption] === true) return true;
+      return false;
+    },
+    [filter.dealInfo.dealType],
+  );
+
+  const handleDealTypeClick = useCallback(
+    (dealTypeOption: DealType) => {
+      setFilter(prev => {
+        const value = prev.dealInfo.dealType?.[dealTypeOption] ?? false;
+        return {
+          ...prev,
+          dealInfo: {
+            ...prev.dealInfo,
+            dealType: {
+              ...prev.dealInfo.dealType,
+              [dealTypeOption]: !value,
+            },
+          },
+        };
+      });
+    },
+    [setFilter],
+  );
+
   return (
     <styles.container>
       <styles.item>
@@ -84,24 +115,18 @@ export function DealTypeFilter() {
         <div>
           <button
             type="button"
-            className={filter?.dealInfo?.dealType === '전세' ? 'selected' : ''}
+            className={isDealTypeSelected('전세') ? 'selected' : ''}
             onClick={() => {
-              setFilter(prev => ({
-                ...prev,
-                dealInfo: { ...prev.dealInfo, dealType: '전세' },
-              }));
+              handleDealTypeClick('전세');
             }}
           >
             전세
           </button>
           <button
             type="button"
-            className={filter?.dealInfo?.dealType === '월세' ? 'selected' : ''}
+            className={isDealTypeSelected('월세') ? 'selected' : ''}
             onClick={() => {
-              setFilter(prev => ({
-                ...prev,
-                dealInfo: { ...prev.dealInfo, dealType: '월세' },
-              }));
+              handleDealTypeClick('월세');
             }}
           >
             월세

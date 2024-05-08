@@ -8,76 +8,10 @@ import {
 } from './shared.dto';
 import {
   type CreateSharedPostProps,
-  type GetSharedPostsFilter,
   type GetSharedPostsProps,
 } from './shared.type';
 
-import {
-  FloorTypeValue,
-  RentalTypeValue,
-  RoomTypeValue,
-  type SuccessBaseDTO,
-} from '@/shared/types';
-
-const filterConvertToValues = ({
-  roomTypes,
-  rentalTypes,
-  expectedPaymentRange,
-  hasLivingRoom,
-  numberOfRoom,
-  roomSizeRange,
-  floorTypes,
-  canPark,
-  hasAirConditioner,
-  hasRefrigerator,
-  hasWasher,
-  hasTerrace,
-}: GetSharedPostsFilter) => {
-  const result: {
-    roomTypes?: number[];
-    rentalTypes?: number[];
-    expectedPaymentRange?: { start: number; end: number };
-    hasLivingRoom?: boolean;
-    numberOfRoom?: number;
-    roomSizeRange?: { start: number; end: number };
-    floorTypes?: number[];
-    canPark?: boolean;
-    hasAirConditioner?: boolean;
-    hasRefrigerator?: boolean;
-    hasWasher?: boolean;
-    hasTerrace?: boolean;
-  } = {
-    expectedPaymentRange,
-    hasLivingRoom,
-    numberOfRoom,
-    roomSizeRange,
-    canPark,
-    hasAirConditioner,
-    hasRefrigerator,
-    hasWasher,
-    hasTerrace,
-  };
-
-  if (roomTypes != null) {
-    result.roomTypes = Object.values(roomTypes).map(value =>
-      Number(RoomTypeValue[value]),
-    );
-  }
-
-  if (rentalTypes != null) {
-    result.rentalTypes = Object.values(rentalTypes).map(value =>
-      Number(RentalTypeValue[value]),
-    );
-  }
-
-  if (floorTypes != null) {
-    result.floorTypes = Object.values(floorTypes).map(value =>
-      Number(FloorTypeValue[value]),
-    );
-  }
-
-  return result;
-};
+import { type SuccessBaseDTO } from '@/shared/types';
 
 export const getSharedPosts = async ({
   filter,
@@ -89,7 +23,7 @@ export const getSharedPosts = async ({
     let query = '';
 
     if (filter != null) {
-      query += `filter=${JSON.stringify(filterConvertToValues(filter))}`;
+      query += `filter=${JSON.stringify(filter)}`;
     }
 
     if (search != null) {

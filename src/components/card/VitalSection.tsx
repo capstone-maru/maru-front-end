@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -214,12 +214,6 @@ const years = Array.from(
   (_, index) => new Date().getFullYear() - index,
 );
 
-interface SelectedState {
-  smoking?: string;
-  room?: string;
-  mateAge?: string;
-}
-
 export function VitalSection({
   gender,
   birthYear,
@@ -234,32 +228,51 @@ export function VitalSection({
   gender?: string;
   birthYear?: string;
   location?: string;
-  vitalFeatures?: string[];
-  onFeatureChange: (optionName: keyof SelectedState, item: string) => void;
+  vitalFeatures?: {
+    smoking?: string;
+    roomSharingOption?: string;
+    mateAge?: number;
+    options?: Set<string>;
+  };
+  onFeatureChange: (
+    key: 'smoking' | 'roomSharingOption' | 'mateAge',
+    value: string,
+  ) => void;
   onLocationChange: React.Dispatch<React.SetStateAction<string | undefined>>;
-  onMateAgeChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onMateAgeChange: React.Dispatch<React.SetStateAction<number | undefined>>;
   isMySelf: boolean;
   type: string;
 }) {
-  const [selectedState, setSelectedState] = useState<SelectedState>({
-    smoking: undefined,
-    room: undefined,
-  });
-  useEffect(() => {
-    setSelectedState({
-      ...selectedState,
-      smoking: vitalFeatures?.[0].split(':')[1],
-      room: vitalFeatures?.[1].split(':')[1],
-    });
-  }, [vitalFeatures]);
+  const [features, setFeatures] = useState<{
+    smoking?: string;
+    roomSharingOption?: string;
+    mateAge?: number;
+  }>();
 
-  function handleOptionClick(optionName: keyof SelectedState, item: string) {
-    setSelectedState(prevState => ({
-      ...prevState,
-      [optionName]: prevState[optionName] === item ? null : item,
-    }));
-    onFeatureChange(optionName, item);
-  }
+  useEffect(() => {
+    if (vitalFeatures != null) {
+      const data = {
+        smoking: vitalFeatures.smoking ?? '상관없어요',
+        roomSharingOption: vitalFeatures.roomSharingOption ?? '상관없어요',
+        mateAge: vitalFeatures.mateAge ?? 0,
+      };
+
+      setFeatures(data);
+    }
+  }, []);
+
+  const handleEssentialFeatureChange = useCallback(
+    (key: 'smoking' | 'roomSharingOption' | 'mateAge', value: string) => {
+      setFeatures(prev => {
+        if (prev?.[key] === value) {
+          return { ...prev, [key]: undefined };
+        }
+        return { ...prev, [key]: value };
+      });
+      onFeatureChange(key, value);
+    },
+    [],
+  );
 
   const [initialLocation, setInitialLocation] = useState('');
   useEffect(() => {
@@ -280,24 +293,21 @@ export function VitalSection({
     onLocationChange(locationInput);
   }, [locationInput]);
 
-  const [initialAge, setInitialAge] = useState(0);
-  useEffect(() => {
-    if (vitalFeatures != null)
-      setInitialAge(Number(vitalFeatures?.[2].split(':')[1].slice(1)));
-  }, [vitalFeatures?.[2]]);
-
+  const [initialAge, setInitialAge] = useState<number>(0);
   const [ageValue, setAgeValue] = useState<number>(0);
+
+  useEffect(() => {
+    if (vitalFeatures?.mateAge != null) setInitialAge(vitalFeatures.mateAge);
+  }, [vitalFeatures?.mateAge]);
+
   useEffect(() => {
     if (initialAge != null) setAgeValue(initialAge);
   }, [initialAge]);
 
   const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAgeValue(Number(e.target.value));
+    onMateAgeChange(Number(e.target.value));
   };
-  useEffect(() => {
-    const ageString = `±${ageValue}`;
-    onMateAgeChange(ageString);
-  }, [ageValue]);
 
   let ageValueString;
   switch (ageValue) {
@@ -374,30 +384,30 @@ export function VitalSection({
           </styles.vitalListItemDescription>
           <styles.vitalCheckListContainer>
             <CheckItem
-              $isSelected={selectedState.smoking === '흡연'}
+              $isSelected={features?.smoking === '흡연'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('smoking', '흡연');
+                  handleEssentialFeatureChange('smoking', '흡연');
                 }
               }}
             >
               흡연
             </CheckItem>
             <CheckItem
-              $isSelected={selectedState.smoking === '비흡연'}
+              $isSelected={features?.smoking === '비흡연'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('smoking', '비흡연');
+                  handleEssentialFeatureChange('smoking', '비흡연');
                 }
               }}
             >
               비흡연
             </CheckItem>
             <CheckItem
-              $isSelected={selectedState.smoking === '상관없어요'}
+              $isSelected={features?.smoking === '상관없어요'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('smoking', '상관없어요');
+                  handleEssentialFeatureChange('smoking', '상관없어요');
                 }
               }}
             >
@@ -411,30 +421,33 @@ export function VitalSection({
           </styles.vitalListItemDescription>
           <styles.vitalCheckListContainer>
             <CheckItem
-              $isSelected={selectedState.room === '같은 방'}
+              $isSelected={features?.roomSharingOption === '같은 방'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('room', '같은 방');
+                  handleEssentialFeatureChange('roomSharingOption', '같은 방');
                 }
               }}
             >
               같은 방
             </CheckItem>
             <CheckItem
-              $isSelected={selectedState.room === '다른 방'}
+              $isSelected={features?.roomSharingOption === '다른 방'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('room', '다른 방');
+                  handleEssentialFeatureChange('roomSharingOption', '다른 방');
                 }
               }}
             >
               다른 방
             </CheckItem>
             <CheckItem
-              $isSelected={selectedState.room === '상관없어요'}
+              $isSelected={features?.roomSharingOption === '상관없어요'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('room', '상관없어요');
+                  handleEssentialFeatureChange(
+                    'roomSharingOption',
+                    '상관없어요',
+                  );
                 }
               }}
             >

@@ -23,6 +23,7 @@ import {
 
 import { useAuthValue } from '@/features/auth';
 import { type NaverAddress } from '@/features/geocoding';
+import { useDebounce } from '@/shared/debounce';
 import { type FailureDTO, type SuccessBaseDTO } from '@/shared/types';
 
 export const usePaging = ({
@@ -216,7 +217,7 @@ export const useCreateSharedPostProps = () => {
 
 export const usePostMateCardInputSection = () => {
   const [gender, setGender] = useState<string | undefined>(undefined);
-  const [birthYear, setBirthYear] = useState<string | undefined>(undefined);
+  const [birthYear, setBirthYear] = useState<number | undefined>(undefined);
   const [location, setLocation] = useState<string | undefined>(undefined);
   const [mbti, setMbti] = useState<string | undefined>(undefined);
   const [major, setMajor] = useState<string | undefined>(undefined);
@@ -224,13 +225,16 @@ export const usePostMateCardInputSection = () => {
 
   const [features, setFeatures] = useState<{
     smoking?: string;
-    room?: string;
-    mateAge?: string;
+    roomSharingOption?: string;
+    mateAge?: number;
     options: Set<string>;
   }>({ options: new Set() });
 
   const handleEssentialFeatureChange = useCallback(
-    (key: 'smoking' | 'room' | 'mateAge', value: string) => {
+    (
+      key: 'smoking' | 'roomSharingOption' | 'mateAge',
+      value: string | number,
+    ) => {
       setFeatures(prev => {
         if (prev[key] === value) {
           const newFeatures = { ...prev };
@@ -259,23 +263,10 @@ export const usePostMateCardInputSection = () => {
     const options: string[] = [];
     features.options.forEach(option => options.push(option));
 
-    let mateAge: number | null = null;
-    if (features?.mateAge != null) {
-      if (features.mateAge === '동갑') {
-        mateAge = 0;
-      } else if (features.mateAge === '상관없어요') {
-        mateAge = null;
-      } else {
-        mateAge = Number(features.mateAge.slice(1));
-      }
-    } else {
-      mateAge = null;
-    }
-
     return {
       smoking: features?.smoking ?? '상관없어요',
-      roomSharingOption: features?.room ?? '상관없어요',
-      mateAge: mateAge ?? null,
+      roomSharingOption: features?.roomSharingOption ?? '상관없어요',
+      mateAge: features?.mateAge ?? 0,
       options: JSON.stringify(options),
     };
   }, [features]);
@@ -345,16 +336,19 @@ export const useSharedPosts = ({
   search,
   page,
   enabled,
-}: GetSharedPostsProps & { enabled: boolean }) =>
-  useQuery({
-    queryKey: ['/api/shared/posts/studio', { filter, search, page }],
+}: GetSharedPostsProps & { enabled: boolean }) => {
+  const debounceFilter = useDebounce(filter, 1000);
+
+  return useQuery({
+    queryKey: ['/api/shared/posts/studio', { debounceFilter, search, page }],
     queryFn: async () =>
-      await getSharedPosts({ filter, search, page }).then(
+      await getSharedPosts({ filter: debounceFilter, search, page }).then(
         response => response.data,
       ),
     staleTime: 60000,
     enabled,
   });
+};
 
 export const useSharedPost = ({
   postId,

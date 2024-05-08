@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 
-import { SearchBox } from './SearchBox';
+import { UserSearchBox } from './UserSearchBox';
 
 import {
   getAuthLogout,
@@ -13,6 +13,7 @@ import {
   useAuthValue,
   useUserData,
 } from '@/features/auth';
+import { useToast } from '@/features/toast';
 import { load } from '@/shared/storage';
 
 const styles = {
@@ -68,6 +69,35 @@ const styles = {
 
     cursor: pointer;
   `,
+  searchUserBox: styled.ul`
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 6rem;
+    left: 19rem;
+    background-color: #fff;
+    min-width: 20rem;
+    min-height: 10rem;
+    border-radius: 1rem;
+    box-shadow: 0px 0px 20px -2px rgba(0, 0, 0, 0.05);
+    z-index: 20000;
+  `,
+  userContainer: styled.li`
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+
+    color: var(--Text-grayDark, #2c2c2e);
+    font-family: 'Noto Sans KR';
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  `,
+  userImg: styled.img`
+    width: 1rem;
+    height: 1rem;
+  `,
 };
 
 export function NavigationBar() {
@@ -76,19 +106,31 @@ export function NavigationBar() {
 
   const auth = useAuthValue();
   const { logout } = useAuthActions();
+  const { createToast } = useToast();
 
   const { data } = useUserData(auth?.accessToken !== undefined);
 
   const handleLogout = () => {
     const refreshToken = load<string>({ type: 'local', key: 'refreshToken' });
-    if (refreshToken !== null) {
+    router.replace('/');
+    if (refreshToken != null) {
       getAuthLogout(refreshToken)
         .then(() => {
-          router.replace('/');
           logout();
+          createToast({
+            message: '로그아웃이 정상적으로 이루어졌습니다.',
+            option: {
+              duration: 3000,
+            },
+          });
         })
-        .catch(err => {
-          console.error(err);
+        .catch(() => {
+          createToast({
+            message: '로그아웃에 실패했습니다.',
+            option: {
+              duration: 3000,
+            },
+          });
         });
     }
   };
@@ -99,7 +141,7 @@ export function NavigationBar() {
         <styles.title>
           <Link href="/">maru</Link>
         </styles.title>
-        <SearchBox />
+        <UserSearchBox />
       </styles.utils>
       <styles.links>
         <Link href="/shared">메이트찾기</Link>

@@ -9,6 +9,17 @@ import {
   LocationSearchBox,
   MateSearchBox,
 } from '@/components/writing-post-page';
+import {
+  CountTypeValue,
+  type DealType,
+  DealTypeValue,
+  RoomTypeValue,
+  type RoomType,
+  FloorTypeValue,
+  type FloorType,
+  AdditionalInfoTypeValue,
+  LivingRoomTypeValue,
+} from '@/entities/shared-posts-filter';
 import { useAuthValue } from '@/features/auth';
 import { getImageURL, putImage } from '@/features/image';
 import {
@@ -18,14 +29,6 @@ import {
   type ImageFile,
 } from '@/features/shared';
 import { useToast } from '@/features/toast';
-import {
-  type RentalType,
-  RoomTypeValue,
-  RentalTypeValue,
-  type RoomType,
-  FloorTypeValue,
-  type FloorType,
-} from '@/shared/types';
 
 const styles = {
   pageContainer: styled.div`
@@ -400,29 +403,6 @@ const styles = {
   `,
 };
 
-const DealOptions = { 월세: 'MONTHLY', 전세: 'JEONSE' };
-const RoomOptions = {
-  원룸: 'ONE_ROOM',
-  '빌라/투룸이상': 'TWO_ROOM_VILLA',
-  아파트: 'APT',
-  오피스텔: 'OFFICE_TEL',
-};
-const LivingRoomOptions = ['유', '무'];
-const RoomCountOptions = { '1개': 1, '2개': 2, '3개 이상': 3 };
-const RestRoomCountOptions = { '1개': 1, '2개': 2, '3개 이상': 3 };
-const FloorOptions = {
-  지상: 'GROUND',
-  반지하: 'SEMI_BASEMENT',
-  옥탑: 'PENTHOUSE',
-};
-const AdditionalOptions = {
-  canPark: '주차가능',
-  hasAirConditioner: '에어컨',
-  hasRefrigerator: '냉장고',
-  hasWasher: '세탁기',
-  hasTerrace: '베란다/테라스',
-};
-
 interface ButtonActiveProps {
   $isSelected: boolean;
 }
@@ -531,22 +511,21 @@ export function WritingPostPage() {
   };
 
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
-    createToast({ message: '생성 버튼 클릭', option: { duration: 1000 } });
     // if (!isPostCreatable || !isMateCardCreatable) return;
 
-    const rentalType = selectedOptions.budget;
+    const dealType = selectedOptions.budget;
     const { roomType } = selectedOptions;
     const { floorType } = selectedOptions;
 
     if (
-      rentalType == null ||
+      dealType == null ||
       roomType == null ||
       floorType == null ||
       address == null ||
       selectedOptions.roomCount == null ||
-      !(selectedOptions.roomCount in RoomCountOptions) ||
+      !(selectedOptions.roomCount in CountTypeValue) ||
       selectedOptions.restRoomCount == null ||
-      !(selectedOptions.restRoomCount in RestRoomCountOptions)
+      !(selectedOptions.restRoomCount in CountTypeValue)
     )
       return;
 
@@ -554,15 +533,15 @@ export function WritingPostPage() {
       | '1개'
       | '2개'
       | '3개 이상';
-    const numberOfRoom = RoomCountOptions[numberOfRoomOption];
+    const numberOfRoom = CountTypeValue[numberOfRoomOption];
 
     const numberOfBathRoomOption = selectedOptions.restRoomCount as
       | '1개'
       | '2개'
       | '3개 이상';
-    const numberOfBathRoom = RestRoomCountOptions[numberOfBathRoomOption];
+    const numberOfBathRoom = CountTypeValue[numberOfBathRoomOption];
 
-    const rentalTypeValue = RentalTypeValue[rentalType as RentalType];
+    const dealTypeValue = DealTypeValue[dealType as DealType];
     const roomTypeValue = RoomTypeValue[roomType as RoomType];
     const floorTypeValue = FloorTypeValue[floorType as FloorType];
 
@@ -608,7 +587,7 @@ export function WritingPostPage() {
             imageFilesData: uploadedImages,
             postData: { title, content },
             transactionData: {
-              rentalType: rentalTypeValue,
+              rentalType: dealTypeValue,
               expectedPayment: expectedMonthlyFee,
             },
             roomDetailData: {
@@ -813,7 +792,7 @@ export function WritingPostPage() {
             {showMateCardForm && (
               <UserInputSection
                 gender={gender}
-                birthYear={birthYear}
+                birthYear={birthYear?.toString()}
                 location={address?.roadAddress ?? '주소를 입력해주세요.'}
                 mbti={mbti}
                 major={major}
@@ -821,15 +800,7 @@ export function WritingPostPage() {
                 features={undefined}
                 isMySelf
                 type="mateCard"
-                onVitalChange={(optionName, option) => {
-                  if (
-                    optionName === 'room' ||
-                    optionName === 'smoking' ||
-                    optionName === 'mateAge'
-                  ) {
-                    handleEssentialFeatureChange(optionName, option);
-                  }
-                }}
+                onVitalChange={handleEssentialFeatureChange}
                 onOptionChange={handleOptionalFeatureChange}
                 onLocationChange={() => {}}
                 onMateAgeChange={setBirthYear}
@@ -844,12 +815,12 @@ export function WritingPostPage() {
           <styles.optionCategory>거래 정보</styles.optionCategory>
           <styles.option>거래 방식</styles.option>
           <styles.optionRow>
-            {Object.entries(DealOptions).map(([option, value]) => (
+            {Object.keys(DealTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
-                  $isSelected={isOptionSelected('budget', value)}
+                  $isSelected={isOptionSelected('budget', option)}
                   onClick={() => {
-                    handleOptionClick('budget', value);
+                    handleOptionClick('budget', option);
                   }}
                 />
                 <span>{option}</span>
@@ -874,12 +845,12 @@ export function WritingPostPage() {
           <styles.optionCategory>방 정보</styles.optionCategory>
           <styles.option>층</styles.option>
           <styles.optionRow>
-            {Object.entries(FloorOptions).map(([option, value]) => (
+            {Object.keys(FloorTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
-                  $isSelected={isOptionSelected('floorType', value)}
+                  $isSelected={isOptionSelected('floorType', option)}
                   onClick={() => {
-                    handleOptionClick('floorType', value);
+                    handleOptionClick('floorType', option);
                   }}
                 />
                 <span>{option}</span>
@@ -888,26 +859,26 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>추가 옵션</styles.option>
           <styles.optionRow>
-            {Object.entries(AdditionalOptions).map(([option, value]) => (
+            {Object.keys(AdditionalInfoTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customCheckBox
-                  $isSelected={isExtraOptionSelected(value)}
+                  $isSelected={isExtraOptionSelected(option)}
                   onClick={() => {
-                    handleExtraOptionClick(value);
+                    handleExtraOptionClick(option);
                   }}
                 />
-                <span>{value}</span>
+                <span>{option}</span>
               </styles.optionButtonContainer>
             ))}
           </styles.optionRow>
           <styles.option>방 종류</styles.option>
           <styles.optionRow>
-            {Object.entries(RoomOptions).map(([option, value]) => (
+            {Object.keys(RoomTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
-                  $isSelected={isOptionSelected('roomType', value)}
+                  $isSelected={isOptionSelected('roomType', option)}
                   onClick={() => {
-                    handleOptionClick('roomType', value);
+                    handleOptionClick('roomType', option);
                   }}
                 />
                 <span>{option}</span>
@@ -916,7 +887,7 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>거실</styles.option>
           <styles.optionRow>
-            {LivingRoomOptions.map(option => (
+            {Object.keys(LivingRoomTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
                   $isSelected={isOptionSelected('livingRoom', option)}
@@ -930,7 +901,7 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>방 개수</styles.option>
           <styles.optionRow>
-            {Object.keys(RoomCountOptions).map(option => (
+            {Object.keys(CountTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
                   $isSelected={isOptionSelected('roomCount', option)}
@@ -944,7 +915,7 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>화장실 개수</styles.option>
           <styles.optionRow>
-            {Object.keys(RestRoomCountOptions).map(option => (
+            {Object.keys(CountTypeValue).map(option => (
               <styles.optionButtonContainer key={option}>
                 <styles.customRadioButton
                   $isSelected={isOptionSelected('restRoomCount', option)}
