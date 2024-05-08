@@ -131,7 +131,7 @@ export function PostCard({ post }: { post: SharedPostListItem }) {
         <styles.content>
           <div>
             <h1>{post.title}</h1>
-            <h2>{post.roomInfo.address.roadAddress}</h2>
+            <h2>{post.address.roadAddress}</h2>
           </div>
           <div>
             <p>모집 1명 / 총원 2명</p>
