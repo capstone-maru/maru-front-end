@@ -311,7 +311,6 @@ export function UserInputPage() {
 
   const handleButtonClick = () => {
     const location = locationInput ?? '';
-
     const myOptions: string[] = [mbti ?? '', major ?? '', budget ?? ''];
     myFeatures?.options?.forEach(option => myOptions.push(option));
 

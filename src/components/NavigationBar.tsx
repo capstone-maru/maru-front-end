@@ -13,6 +13,7 @@ import {
   useAuthValue,
   useUserData,
 } from '@/features/auth';
+import { useToast } from '@/features/toast';
 import { load } from '@/shared/storage';
 
 const styles = {
@@ -105,19 +106,31 @@ export function NavigationBar() {
 
   const auth = useAuthValue();
   const { logout } = useAuthActions();
+  const { createToast } = useToast();
 
   const { data } = useUserData(auth?.accessToken !== undefined);
 
   const handleLogout = () => {
     const refreshToken = load<string>({ type: 'local', key: 'refreshToken' });
-    if (refreshToken !== null) {
+    router.replace('/');
+    if (refreshToken != null) {
       getAuthLogout(refreshToken)
         .then(() => {
-          router.replace('/');
           logout();
+          createToast({
+            message: '로그아웃이 정상적으로 이루어졌습니다.',
+            option: {
+              duration: 3000,
+            },
+          });
         })
-        .catch(err => {
-          console.error(err);
+        .catch(() => {
+          createToast({
+            message: '로그아웃에 실패했습니다.',
+            option: {
+              duration: 3000,
+            },
+          });
         });
     }
   };

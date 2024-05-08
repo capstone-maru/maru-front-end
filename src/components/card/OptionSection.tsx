@@ -264,7 +264,6 @@ export function OptionSection({
   useEffect(() => {
     if (budget !== undefined) {
       const [min, max] = budget.slice(1, -1).split(',').map(Number);
-      console.log(min, max);
       setInitialMin(min);
       setInitialMax(max);
     }

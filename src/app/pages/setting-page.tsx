@@ -266,7 +266,6 @@ export function SettingPage({ cardId }: { cardId: number }) {
 
   const saveData = () => {
     const location = locationInput ?? '';
-
     const options: string[] = [mbti ?? '', major ?? '', budget ?? ''];
     features?.options?.forEach(option => options.push(option));
 

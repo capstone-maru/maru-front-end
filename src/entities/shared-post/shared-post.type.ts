@@ -1,5 +1,3 @@
-import { type RentalType, type RoomType } from '@/shared/types';
-
 export interface SharedPostListItem {
   id: number;
   title: string;
@@ -76,14 +74,14 @@ export interface SharedPost {
       roadAddress: string;
       detailAddress?: string;
     };
-    roomType: RoomType;
+    roomType: string;
     floorType: string;
     size: number;
     numberOfRoom: number;
     numberOfBathRoom: number;
     hasLivingRoom: boolean;
     recruitmentCapacity: number;
-    rentalType: RentalType;
+    rentalType: string;
     expectedPayment: number;
     extraOption: {
       canPark: boolean;

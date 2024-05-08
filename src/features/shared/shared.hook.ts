@@ -19,6 +19,7 @@ import {
 
 import { useAuthValue } from '@/features/auth';
 import { type NaverAddress } from '@/features/geocoding';
+import { useDebounce } from '@/shared/debounce';
 import { type FailureDTO, type SuccessBaseDTO } from '@/shared/types';
 
 export const usePaging = ({
@@ -258,19 +259,6 @@ export const usePostMateCardInputSection = () => {
     const options: string[] = [];
     features.options.forEach(option => options.push(option));
 
-    // let mateAge: number | null = null;
-    // if (features?.mateAge != null) {
-    //   if (features.mateAge === '동갑') {
-    //     mateAge = 0;
-    //   } else if (features.mateAge === '상관없어요') {
-    //     mateAge = null;
-    //   } else {
-    //     mateAge = Number(features.mateAge.slice(1));
-    //   }
-    // } else {
-    //   mateAge = null;
-    // }
-
     return {
       smoking: features?.smoking ?? '상관없어요',
       roomSharingOption: features?.roomSharingOption ?? '상관없어요',
@@ -344,16 +332,19 @@ export const useSharedPosts = ({
   search,
   page,
   enabled,
-}: GetSharedPostsProps & { enabled: boolean }) =>
-  useQuery({
-    queryKey: ['/api/shared/posts/studio', { filter, search, page }],
+}: GetSharedPostsProps & { enabled: boolean }) => {
+  const debounceFilter = useDebounce(filter, 1000);
+
+  return useQuery({
+    queryKey: ['/api/shared/posts/studio', { debounceFilter, search, page }],
     queryFn: async () =>
-      await getSharedPosts({ filter, search, page }).then(
+      await getSharedPosts({ filter: debounceFilter, search, page }).then(
         response => response.data,
       ),
     staleTime: 60000,
     enabled,
   });
+};
 
 export const useSharedPost = ({
   postId,
