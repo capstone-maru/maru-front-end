@@ -4,8 +4,14 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+import { Bookmark } from '@/components';
 import { useAuthValue, useUserData } from '@/features/auth';
-import { useProfileData } from '@/features/profile';
+import {
+  useFollowUser,
+  useFollowingListData,
+  useUnfollowUser,
+  useUserProfile,
+} from '@/features/profile';
 
 const styles = {
   pageContainer: styled.div`
@@ -61,9 +67,8 @@ const styles = {
   userDetailedContainer: styled.div`
     display: inline-flex;
     width: 100%;
-    flex-direction: column;
     align-items: flex-start;
-    gap: 0.25rem;
+    gap: 2rem;
   `,
   userName: styled.div`
     color: #000;
@@ -338,14 +343,31 @@ interface UserProfileInfoProps {
   email: string | undefined;
   phoneNum: string | undefined;
   src: string | undefined;
+  memberId: string;
+  isMySelf: boolean;
 }
 
-function UserInfo({ name, email, phoneNum, src }: UserProfileInfoProps) {
+function UserInfo({
+  name,
+  email,
+  phoneNum,
+  src,
+  memberId,
+  isMySelf,
+}: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(false);
+
+  const followList = useFollowingListData();
+  const [isMarked, setIsMarked] = useState(
+    followList.data?.data.followingList[memberId] != null,
+  );
 
   const toggleSwitch = () => {
     setIsChecked(!isChecked);
   };
+
+  const { mutate: follow } = useFollowUser(memberId);
+  const { mutate: unfollow } = useUnfollowUser(memberId);
 
   return (
     <styles.userProfileContainer>
@@ -359,8 +381,28 @@ function UserInfo({ name, email, phoneNum, src }: UserProfileInfoProps) {
         <styles.userName>{name}</styles.userName>
         <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
         <styles.userDetailedContainer>
-          <styles.userDetailedInfo>{phoneNum}</styles.userDetailedInfo>
-          <styles.userDetailedInfo>{email}</styles.userDetailedInfo>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.25rem',
+            }}
+          >
+            <styles.userDetailedInfo>{phoneNum}</styles.userDetailedInfo>
+            <styles.userDetailedInfo>{email}</styles.userDetailedInfo>
+          </div>
+          {!isMySelf && (
+            <Bookmark
+              marked={isMarked}
+              onToggle={() => {
+                if (isMarked) unfollow();
+                else follow();
+                setIsMarked(prev => !prev);
+              }}
+              hasBorder
+              color="#888"
+            />
+          )}
         </styles.userDetailedContainer>
       </styles.userInfoContainer>
     </styles.userProfileContainer>
@@ -532,15 +574,21 @@ export function ProfilePage({ memberId }: { memberId: string }) {
   const auth = useAuthValue();
   const { data } = useUserData(auth?.accessToken !== undefined);
 
-  const id = data?.memberId;
+  const authId = data?.memberId;
 
-  const user = useProfileData(memberId);
   const [userData, setUserData] = useState<UserProps | null>(null);
   const [isMySelf, setIsMySelf] = useState(false);
 
+  const { mutate: mutateProfile, data: profileData } = useUserProfile(memberId);
+  const [profileImg, setProfileImg] = useState<string>('');
+
   useEffect(() => {
-    if (user.data !== undefined) {
-      const userProfileData = user.data.data.authResponse;
+    mutateProfile();
+  }, [auth]);
+
+  useEffect(() => {
+    if (profileData?.data !== undefined) {
+      const userProfileData = profileData.data.authResponse;
       const {
         name,
         email,
@@ -562,11 +610,12 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         myCardId,
         mateCardId,
       });
-      if (id === memberId) {
+      setProfileImg(profileData.data.profileImage);
+      if (authId === memberId) {
         setIsMySelf(true);
       }
     }
-  }, [user.data, memberId]);
+  }, [profileData, memberId]);
 
   return (
     <styles.pageContainer>
@@ -574,7 +623,9 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         name={userData?.name ?? ''}
         email={userData?.email ?? ''}
         phoneNum={userData?.phoneNumber ?? ''}
-        src={user.data?.data.profileImage}
+        src={profileImg}
+        memberId={memberId}
+        isMySelf={isMySelf}
       />
       <Card
         name={userData?.name}

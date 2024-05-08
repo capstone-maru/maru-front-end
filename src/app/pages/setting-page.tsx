@@ -2,14 +2,15 @@
 
 import { type NavigateOptions } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 
 import { UserInputSection } from '@/components';
+import { useAuthValue } from '@/features/auth';
 import {
-  useProfileData,
   usePutUserCard,
   useUserCard,
+  useUserProfile,
 } from '@/features/profile';
 import Location from '@/public/option-img/location_on.svg';
 import Meeting from '@/public/option-img/meeting_room.svg';
@@ -132,19 +133,11 @@ const styles = {
   `,
 };
 
-interface SelectedState {
-  smoking?: string;
-  roomSharingOption?: string;
-  mateAge?: string;
-}
-
 interface UserProps {
   name: string;
   gender: string;
   birthYear: string;
 }
-
-type SelectedOptions = Record<string, boolean>;
 
 export function SettingPage({ cardId }: { cardId: number }) {
   const params = useSearchParams();
@@ -154,79 +147,25 @@ export function SettingPage({ cardId }: { cardId: number }) {
   const isMySelf = isMySelfStr === 'true';
   const type = params.get('type') ?? '';
 
-  const user = useProfileData(memberId);
+  const auth = useAuthValue();
+  const { mutate: mutateProfile, data: profileData } = useUserProfile(memberId);
   const [userData, setUserData] = useState<UserProps | null>(null);
 
   useEffect(() => {
-    if (user.data !== undefined) {
-      const userProfileData = user.data.data.authResponse;
+    mutateProfile();
+  }, [auth]);
+
+  useEffect(() => {
+    if (profileData?.data !== undefined) {
+      const userProfileData = profileData.data.authResponse;
       if (userProfileData !== undefined) {
         const { name, birthYear, gender } = userProfileData;
         setUserData({ name, gender, birthYear });
       }
     }
-  }, [user.data]);
+  }, [profileData]);
 
   const card = useUserCard(cardId);
-  const [features, setFeatures] = useState<string[] | undefined>(undefined);
-
-  useEffect(() => {
-    if (isMySelf) {
-      if (card !== undefined) {
-        const featuresData = card.data?.data.myFeatures ?? undefined;
-        setFeatures(featuresData);
-      }
-    }
-  }, [card, isMySelf]);
-
-  const [selectedState, setSelectedState] = useState<SelectedState>({});
-
-  useEffect(() => {
-    if (isMySelf) {
-      if (features != null) {
-        setSelectedState({
-          ...selectedState,
-          smoking: features[0].split(':')[1],
-          roomSharingOption: features[1].split(':')[1],
-        });
-      }
-    }
-  }, [features, isMySelf]);
-
-  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
-  const [initialMbti, setInitialMbti] = useState('');
-  const [initialMajor, setInitialMajor] = useState('');
-  const [initialBudget, setInitialBudget] = useState('');
-
-  const majorArray = ['공학', '교육', '인문', '사회', '자연', '예체능', '의약'];
-
-  useEffect(() => {
-    if (isMySelf) {
-      if (features != null) {
-        const initialOptions: SelectedOptions = {};
-        const optionsString = features[3].split(':')[1];
-        const budgetIdx = optionsString.indexOf('[');
-        const budget = optionsString.slice(budgetIdx);
-        setInitialBudget(budget.slice(1, -1));
-
-        const options = optionsString.slice(0, budgetIdx).split(',');
-        options.forEach(option => {
-          if (
-            !option.includes('E') &&
-            !option.includes('I') &&
-            !majorArray.includes(option)
-          ) {
-            initialOptions[option] = true;
-          }
-
-          if (option.includes('E') || option.includes('I'))
-            setInitialMbti(option);
-          if (majorArray.includes(option)) setInitialMajor(option);
-        });
-        setSelectedOptions(initialOptions);
-      }
-    }
-  }, [features, isMySelf]);
 
   const [locationInput, setLocation] = useState<string | undefined>(
     card.data?.data.location,
@@ -238,52 +177,104 @@ export function SettingPage({ cardId }: { cardId: number }) {
     }
   }, [card.data?.data.location]);
 
+  const [features, setFeatures] = useState<{
+    smoking?: string;
+    roomSharingOption?: string;
+    mateAge?: number;
+    options?: Set<string>;
+  }>({ options: new Set() });
+
+  const [initialMbti, setInitialMbti] = useState('');
+  const [initialMajor, setInitialMajor] = useState('');
+  const [initialBudget, setInitialBudget] = useState('');
+
+  const majorArray = ['공학', '교육', '인문', '사회', '자연', '예체능', '의약'];
+
   const [mbti, setMbti] = useState<string | undefined>('');
   const [major, setMajor] = useState<string | undefined>('');
   const [budget, setBudget] = useState<string | undefined>('');
-  const [mateAge, setMateAge] = useState<string | undefined>('');
+  const [mateAge, setMateAge] = useState<number | undefined>(0);
 
-  const handleFeatureChange = (
-    optionName: keyof SelectedState,
-    item: string | number,
-  ) => {
+  useEffect(() => {
     if (isMySelf) {
-      setSelectedState(prevState => ({
-        ...prevState,
-        [optionName]: prevState[optionName] === item ? null : item,
-      }));
+      if (card != null) {
+        const featuresData = card.data?.data.myFeatures;
+        if (featuresData != null) {
+          const options = JSON.parse(featuresData.options);
+          const optionsSet = new Set<string>();
+          options.forEach((option: string) => {
+            if (
+              !option.includes('E') &&
+              !option.includes('I') &&
+              !option.includes(',') &&
+              !majorArray.includes(option)
+            ) {
+              optionsSet.add(option);
+            }
+            if (option.includes('E') || option.includes('I'))
+              setInitialMbti(option);
+            if (option.includes(',')) {
+              console.log(option);
+              setInitialBudget(option);
+            }
+            if (majorArray.includes(option)) setInitialMajor(option);
+          });
+          const data = {
+            smoking: featuresData.smoking,
+            roomSharingOption: featuresData.roomSharingOption,
+            mateAge: featuresData.mateAge,
+            options: optionsSet,
+          };
+          setMateAge(featuresData.mateAge);
+          setFeatures(data);
+        }
+      }
     }
-  };
-  const handleOptionClick = (option: string) => {
-    if (isMySelf) {
-      setSelectedOptions(prevSelectedOptions => ({
-        ...prevSelectedOptions,
-        [option]: !prevSelectedOptions[option],
-      }));
-    }
-  };
+  }, [isMySelf, card.data?.data.myFeatures]);
+
+  const handleEssentialFeatureChange = useCallback(
+    (
+      key: 'smoking' | 'roomSharingOption' | 'mateAge',
+      value: string | number,
+    ) => {
+      setFeatures(prev => {
+        if (prev?.[key] === value) {
+          return { ...prev, [key]: undefined };
+        }
+        return { ...prev, [key]: value };
+      });
+    },
+    [],
+  );
+
+  const handleOptionalFeatureChange = useCallback((option: string) => {
+    setFeatures(prev => {
+      const { options } = prev;
+      const newOptions = new Set(options);
+
+      if (options != null && options.has(option)) {
+        newOptions.delete(option);
+        console.log(newOptions);
+      } else newOptions.add(option);
+
+      return { ...prev, options: newOptions };
+    });
+  }, []);
 
   const { mutate } = usePutUserCard(cardId);
   const router = useRouter();
 
   const saveData = () => {
-    const array = Object.keys(selectedOptions).filter(
-      key => selectedOptions[key] && key !== '전공' && key !== '엠비티아이',
-    );
-    const options = [
-      ...array,
-      ...(mbti != null ? [mbti] : []),
-      ...(major != null ? [major] : []),
-      ...(budget != null ? [budget] : []),
-    ].filter(Boolean);
-
     const location = locationInput ?? '';
-    const myFeatures = [
-      `smoking:${selectedState.smoking}`,
-      `roomSharingOption:${selectedState.roomSharingOption}`,
-      `mateAge:${mateAge !== '' ? mateAge : undefined}`,
-      `options:${options.join(',')}`,
-    ];
+    const options: string[] = [mbti ?? '', major ?? '', budget ?? ''];
+    features?.options?.forEach(option => options.push(option));
+
+    const myFeatures = {
+      smoking: features?.smoking ?? '상관없어요',
+      roomSharingOption: features?.roomSharingOption ?? '상관없어요',
+      mateAge: mateAge ?? 0,
+      options: JSON.stringify(options.filter(value => value !== '')),
+    };
 
     mutate({ location, features: myFeatures });
   };
@@ -330,19 +321,20 @@ export function SettingPage({ cardId }: { cardId: number }) {
     };
   }, [handlePopState]);
 
-  let ageString;
+  let ageString: string;
+
   if (type === 'myCard') {
     ageString = `${userData?.birthYear.slice(2)}년생`;
   } else {
     switch (mateAge) {
-      case '±0':
+      case 0:
         ageString = '동갑';
         break;
-      case '±11':
+      case 11:
         ageString = '상관없어요';
         break;
       default:
-        ageString = `${mateAge}년생`;
+        ageString = `±${mateAge}년생`;
     }
   }
 
@@ -361,7 +353,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
               <styles.miniCardPerson />
               <styles.miniCardText>
                 {userData?.gender === 'MALE' ? '남성' : '여성'} · {ageString} ·{' '}
-                {selectedState.smoking}
+                {features?.smoking}
               </styles.miniCardText>
             </styles.miniCardList>
             <styles.miniCardList>
@@ -371,14 +363,18 @@ export function SettingPage({ cardId }: { cardId: number }) {
             <styles.miniCardList>
               <styles.miniCardMeeting />
               <styles.miniCardText>
-                메이트와 {selectedState.roomSharingOption}
+                메이트와 {features?.roomSharingOption}
               </styles.miniCardText>
             </styles.miniCardList>
             <styles.miniCardList>
               <styles.miniCardVisibility />
               <styles.miniCardText>
-                {selectedOptions['아침형'] ? '아침형' : null}
-                {selectedOptions['올빼미형'] ? '올빼미형' : null}
+                {features?.options != null && features.options.has('아침형')
+                  ? '아침형'
+                  : null}
+                {features?.options != null && features.options.has('올빼미형')
+                  ? '올빼미형'
+                  : null}
               </styles.miniCardText>
             </styles.miniCardList>
           </styles.miniCardKeywordsContainer>
@@ -394,8 +390,8 @@ export function SettingPage({ cardId }: { cardId: number }) {
             mbti={initialMbti}
             major={initialMajor}
             budget={initialBudget}
-            onVitalChange={handleFeatureChange}
-            onOptionChange={handleOptionClick}
+            onVitalChange={handleEssentialFeatureChange}
+            onOptionChange={handleOptionalFeatureChange}
             onLocationChange={setLocation}
             onMateAgeChange={setMateAge}
             onMbtiChange={setMbti}
@@ -413,8 +409,8 @@ export function SettingPage({ cardId }: { cardId: number }) {
             mbti={initialMbti}
             major={initialMajor}
             budget={initialBudget}
-            onVitalChange={handleFeatureChange}
-            onOptionChange={handleOptionClick}
+            onVitalChange={handleEssentialFeatureChange}
+            onOptionChange={handleOptionalFeatureChange}
             onLocationChange={setLocation}
             onMateAgeChange={setMateAge}
             onMbtiChange={setMbti}

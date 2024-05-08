@@ -792,7 +792,7 @@ export function WritingPostPage() {
             {showMateCardForm && (
               <UserInputSection
                 gender={gender}
-                birthYear={birthYear}
+                birthYear={birthYear?.toString()}
                 location={address?.roadAddress ?? '주소를 입력해주세요.'}
                 mbti={mbti}
                 major={major}
@@ -800,15 +800,7 @@ export function WritingPostPage() {
                 features={undefined}
                 isMySelf
                 type="mateCard"
-                onVitalChange={(optionName, option) => {
-                  if (
-                    optionName === 'roomSharingOption' ||
-                    optionName === 'smoking' ||
-                    optionName === 'mateAge'
-                  ) {
-                    handleEssentialFeatureChange(optionName, option);
-                  }
-                }}
+                onVitalChange={handleEssentialFeatureChange}
                 onOptionChange={handleOptionalFeatureChange}
                 onLocationChange={() => {}}
                 onMateAgeChange={setBirthYear}

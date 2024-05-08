@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 
 import { VitalSection, OptionSection } from '@/components';
@@ -224,49 +224,54 @@ interface UserProps {
   mateCardId: number | undefined;
 }
 
-interface SelectedState {
-  smoking: string | undefined;
-  roomSharingOption: string | undefined;
-  mateAge: string | undefined;
-}
-type SelectedOptions = Record<string, boolean>;
-
 const useSelectedState = (): [
-  SelectedState,
-  SelectedOptions,
-  (optionName: keyof SelectedState, item: string | number) => void,
+  (
+    | {
+        smoking?: string;
+        roomSharingOption?: string;
+        mateAge?: number;
+        options?: Set<string>;
+      }
+    | undefined
+  ),
+  (key: 'smoking' | 'roomSharingOption' | 'mateAge', value: string) => void,
   (option: string) => void,
 ] => {
-  const [selectedState, setSelectedState] = useState<SelectedState>({
-    smoking: undefined,
-    roomSharingOption: undefined,
-    mateAge: undefined,
-  });
-  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+  const [features, setFeatures] = useState<{
+    smoking?: string;
+    roomSharingOption?: string;
+    mateAge?: number;
+    options?: Set<string>;
+  }>({ options: new Set() });
 
-  const handleFeatureChange = (
-    optionName: keyof SelectedState,
-    item: string | number,
-  ) => {
-    setSelectedState(prevState => ({
-      ...prevState,
-      [optionName]: prevState[optionName] === item ? undefined : item,
-    }));
-  };
+  const handleEssentialFeatureChange = useCallback(
+    (
+      key: 'smoking' | 'roomSharingOption' | 'mateAge',
+      value: string | number,
+    ) => {
+      setFeatures(prev => {
+        if (prev?.[key] === value) {
+          return { ...prev, [key]: undefined };
+        }
+        return { ...prev, [key]: value };
+      });
+    },
+    [],
+  );
 
-  const handleOptionClick = (option: string) => {
-    setSelectedOptions(prevSelectedOptions => ({
-      ...prevSelectedOptions,
-      [option]: !prevSelectedOptions[option],
-    }));
-  };
+  const handleOptionalFeatureChange = useCallback((option: string) => {
+    setFeatures(prev => {
+      const { options } = prev;
+      const newOptions = new Set(options);
 
-  return [
-    selectedState,
-    selectedOptions,
-    handleFeatureChange,
-    handleOptionClick,
-  ];
+      if (options != null && options.has(option)) newOptions.delete(option);
+      else newOptions.add(option);
+
+      return { ...prev, options: newOptions };
+    });
+  }, []);
+
+  return [features, handleEssentialFeatureChange, handleOptionalFeatureChange];
 };
 
 export function UserInputPage() {
@@ -281,18 +286,10 @@ export function UserInputPage() {
     }
   }, [data]);
 
-  const [
-    selectedState,
-    selectedOptions,
-    handleFeatureChange,
-    handleOptionClick,
-  ] = useSelectedState();
-  const [
-    selectedMateState,
-    selectedMateOptions,
-    handleMateFeatureChange,
-    handleMateOptionClick,
-  ] = useSelectedState();
+  const [myFeatures, handleFeatureChange, handleOptionClick] =
+    useSelectedState();
+  const [mateFeatures, handleMateFeatureChange, handleMateOptionClick] =
+    useSelectedState();
 
   const myCardId = user?.myCardId ?? 0;
   const mateCardId = user?.mateCardId ?? 0;
@@ -301,58 +298,51 @@ export function UserInputPage() {
   const { mutate: mutateMateCard } = usePutUserCard(mateCardId);
 
   const [locationInput, setLocation] = useState<string | undefined>('');
+
   const [mbti, setMbti] = useState<string | undefined>('');
   const [major, setMajor] = useState<string | undefined>('');
   const [budget, setBudget] = useState<string | undefined>('');
+
   const [mateMbti, setMateMbti] = useState<string | undefined>('');
   const [mateMajor, setMateMajor] = useState<string | undefined>('');
   const [mateBudget, setMateBudget] = useState<string | undefined>('');
-  const [mateAge, setMateAge] = useState<string | undefined>('');
+
+  const [mateAge, setMateAge] = useState<number | undefined>(0);
 
   const handleButtonClick = () => {
-    const myOptions = Object.keys(selectedOptions).filter(
-      key => selectedOptions[key] && key !== '전공' && key !== '엠비티아이',
-    );
-    const mateOptions = Object.keys(selectedMateOptions).filter(
-      key => selectedMateOptions[key] && key !== '전공' && key !== '엠비티아이',
-    );
-
-    const myOptionsString = [
-      ...myOptions,
-      ...(mbti != null ? [mbti] : []),
-      ...(major != null ? [major] : []),
-      ...(budget != null ? [budget] : []),
-    ].filter(Boolean);
-    const mateOptionsString = [
-      ...mateOptions,
-      ...(mateMbti != null ? [mateMbti] : []),
-      ...(mateMajor != null ? [mateMajor] : []),
-      ...(mateBudget != null ? [mateBudget] : []),
-    ].filter(Boolean);
-
     const location = locationInput ?? '';
-    const myFeatures = [
-      `smoking:${selectedState.smoking}`,
-      `roomSharingOption:${selectedState.roomSharingOption}`,
-      `mateAge:${mateAge !== '' ? mateAge : undefined}`,
-      `options:${myOptionsString.join(',')}`,
-    ];
+    const myOptions: string[] = [mbti ?? '', major ?? '', budget ?? ''];
+    myFeatures?.options?.forEach(option => myOptions.push(option));
 
-    const mateFeatures = [
-      `smoking:${selectedMateState.smoking}`,
-      `roomSharingOption:${selectedMateState.roomSharingOption}`,
-      `mateAge:${mateAge !== '' ? mateAge : undefined}`,
-      `options:${mateOptionsString.join(',')}`,
+    const mutateMyfeatures = {
+      smoking: myFeatures?.smoking ?? '상관없어요',
+      roomSharingOption: myFeatures?.roomSharingOption ?? '상관없어요',
+      mateAge: mateAge ?? 0,
+      options: JSON.stringify(myOptions.filter(value => value !== '')),
+    };
+
+    const mateOptions: string[] = [
+      mateMbti ?? '',
+      mateMajor ?? '',
+      mateBudget ?? '',
     ];
+    mateFeatures?.options?.forEach(option => mateOptions.push(option));
+
+    const mutateMateFeatures = {
+      smoking: mateFeatures?.smoking ?? '상관없어요',
+      roomSharingOption: mateFeatures?.roomSharingOption ?? '상관없어요',
+      mateAge: mateAge ?? 0,
+      options: JSON.stringify(mateOptions.filter(value => value !== '')),
+    };
 
     try {
       mutateMyCard({
         location,
-        features: myFeatures,
+        features: mutateMyfeatures,
       });
       mutateMateCard({
         location,
-        features: mateFeatures,
+        features: mutateMateFeatures,
       });
     } catch (error) {
       console.error(error);
@@ -371,14 +361,14 @@ export function UserInputPage() {
 
   let ageString;
   switch (mateAge) {
-    case '±0':
+    case 0:
       ageString = '동갑';
       break;
-    case '±11':
+    case 11:
       ageString = '상관없어요';
       break;
     default:
-      ageString = `${mateAge}년생`;
+      ageString = `±${mateAge}년생`;
   }
 
   return (
@@ -401,7 +391,7 @@ export function UserInputPage() {
                   <styles.miniCardPerson $active={activeContainer === 'my'} />
                   <styles.miniCardText $active={activeContainer === 'my'}>
                     {user?.gender === 'MALE' ? '남성' : '여성'} ·{' '}
-                    {user?.birthYear?.slice(2)}년생 · {selectedState.smoking}
+                    {user?.birthYear?.slice(2)}년생 · {myFeatures?.smoking}
                   </styles.miniCardText>
                 </styles.miniCardList>
                 <styles.miniCardList>
@@ -413,7 +403,7 @@ export function UserInputPage() {
                 <styles.miniCardList>
                   <styles.miniCardMeeting $active={activeContainer === 'my'} />
                   <styles.miniCardText $active={activeContainer === 'my'}>
-                    메이트와 {selectedState.roomSharingOption}
+                    메이트와 {myFeatures?.roomSharingOption}
                   </styles.miniCardText>
                 </styles.miniCardList>
                 <styles.miniCardList>
@@ -421,8 +411,14 @@ export function UserInputPage() {
                     $active={activeContainer === 'my'}
                   />
                   <styles.miniCardText $active={activeContainer === 'my'}>
-                    {selectedOptions['아침형'] ? '아침형' : null}
-                    {selectedOptions['올빼미형'] ? '올빼미형' : null}
+                    {myFeatures?.options != null &&
+                    myFeatures.options.has('아침형')
+                      ? '아침형'
+                      : null}
+                    {myFeatures?.options != null &&
+                    myFeatures.options.has('올빼미형')
+                      ? '올빼미형'
+                      : null}
                   </styles.miniCardText>
                 </styles.miniCardList>
               </styles.miniCardKeywordsContainer>
@@ -439,7 +435,7 @@ export function UserInputPage() {
                   <styles.miniCardPerson $active={activeContainer === 'mate'} />
                   <styles.miniCardText $active={activeContainer === 'mate'}>
                     {user?.gender === 'MALE' ? '남성' : '여성'} · {ageString} ·{' '}
-                    {selectedMateState.smoking}
+                    {mateFeatures?.smoking}
                   </styles.miniCardText>
                 </styles.miniCardList>
                 <styles.miniCardList>
@@ -455,7 +451,7 @@ export function UserInputPage() {
                     $active={activeContainer === 'mate'}
                   />
                   <styles.miniCardText $active={activeContainer === 'mate'}>
-                    메이트와 {selectedMateState.roomSharingOption}
+                    메이트와 {mateFeatures?.roomSharingOption}
                   </styles.miniCardText>
                 </styles.miniCardList>
                 <styles.miniCardList>
@@ -463,8 +459,14 @@ export function UserInputPage() {
                     $active={activeContainer === 'mate'}
                   />
                   <styles.miniCardText $active={activeContainer === 'mate'}>
-                    {selectedMateOptions['아침형'] ? '아침형' : null}
-                    {selectedMateOptions['올빼미형'] ? '올빼미형' : null}
+                    {mateFeatures?.options != null &&
+                    mateFeatures.options.has('아침형')
+                      ? '아침형'
+                      : null}
+                    {mateFeatures?.options != null &&
+                    mateFeatures.options.has('올빼미형')
+                      ? '올빼미형'
+                      : null}
                   </styles.miniCardText>
                 </styles.miniCardList>
               </styles.miniCardKeywordsContainer>
