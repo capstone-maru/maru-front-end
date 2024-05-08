@@ -470,7 +470,7 @@ export function SharedPostPage({ postId }: { postId: number }) {
           </styles.roomInfoContainer>
           <styles.locationInfoContainer>
             <h2>위치 정보</h2>
-            <p>{sharedPost?.data.roomInfo.address.roadAddress}</p>
+            <p>{sharedPost?.data.address.roadAddress}</p>
             <div id="map" />
           </styles.locationInfoContainer>
         </styles.postContainer>
