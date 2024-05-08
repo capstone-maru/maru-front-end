@@ -10,6 +10,7 @@ import {
   getDormitorySharedPosts,
   getSharedPost,
   getSharedPosts,
+  scrapDormitoryPost,
   scrapPost,
 } from './shared.api';
 import {
@@ -434,4 +435,9 @@ export const useDeleteDormitorySharedPost = ({
       await deleteDormitorySharedPost(postId).then(response => response.data),
     onSuccess,
     onError,
+  });
+
+export const useScrapDormitorySharedPost = () =>
+  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, number>({
+    mutationFn: scrapDormitoryPost,
   });

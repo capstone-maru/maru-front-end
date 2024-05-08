@@ -114,7 +114,7 @@ export const deleteSharedPost = async (postId: number) =>
   await axios.delete<SuccessBaseDTO>(`/maru-api/shared/posts/studio/${postId}`);
 
 export const scrapPost = async (postId: number) =>
-  await axios.get<SuccessBaseDTO>(
+  await axios.post<SuccessBaseDTO>(
     `/maru-api/shared/posts/studio/${postId}/scrap`,
   );
 
@@ -151,4 +151,9 @@ export const getDormitorySharedPost = async (postId: number) =>
 export const deleteDormitorySharedPost = async (postId: number) =>
   await axios.delete<SuccessBaseDTO>(
     `/maru-api/shared/posts/dormitory/${postId}`,
+  );
+
+export const scrapDormitoryPost = async (postId: number) =>
+  await axios.post<SuccessBaseDTO>(
+    `/maru-api/shared/posts/dormitory/${postId}/scrap`,
   );
