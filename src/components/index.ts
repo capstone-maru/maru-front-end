@@ -12,4 +12,5 @@ export * from './NavigationBar';
 export * from './RangeSlider';
 export * from './UserInputSection';
 export * from './SearchBox';
+export * from './UserSearchBox';
 export * from './ToggleSwitch';

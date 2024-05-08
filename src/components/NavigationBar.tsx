@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 
-import { SearchBox } from './SearchBox';
+import { UserSearchBox } from './UserSearchBox';
 
 import {
   getAuthLogout,
@@ -68,6 +68,35 @@ const styles = {
 
     cursor: pointer;
   `,
+  searchUserBox: styled.ul`
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 6rem;
+    left: 19rem;
+    background-color: #fff;
+    min-width: 20rem;
+    min-height: 10rem;
+    border-radius: 1rem;
+    box-shadow: 0px 0px 20px -2px rgba(0, 0, 0, 0.05);
+    z-index: 20000;
+  `,
+  userContainer: styled.li`
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+
+    color: var(--Text-grayDark, #2c2c2e);
+    font-family: 'Noto Sans KR';
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  `,
+  userImg: styled.img`
+    width: 1rem;
+    height: 1rem;
+  `,
 };
 
 export function NavigationBar() {
@@ -99,7 +128,7 @@ export function NavigationBar() {
         <styles.title>
           <Link href="/">maru</Link>
         </styles.title>
-        <SearchBox />
+        <UserSearchBox />
       </styles.utils>
       <styles.links>
         <Link href="/shared">메이트찾기</Link>
