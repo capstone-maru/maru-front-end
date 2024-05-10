@@ -1,6 +1,7 @@
 'use client';
 
 import { Client } from '@stomp/stompjs';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -8,7 +9,7 @@ import { ChattingList } from './chat/ChattingList';
 import { ChattingRoom } from './chat/ChattingRoom';
 
 import { useAuthValue, useUserData } from '@/features/auth';
-import { useChatRoomList } from '@/features/chat';
+import { type GetChatRoomDTO } from '@/features/chat';
 
 const styles = {
   chattingButton: styled.div`
@@ -121,9 +122,19 @@ interface ChatRoom {
   lastMessageTime: string;
 }
 
+interface Message {
+  createAt: string;
+  message: string;
+  messageId: string;
+  nickname: string;
+  roomId: number;
+  sender: string;
+}
+
 function FloatingChattingBox() {
   const [isChatRoomOpen, setIsChatRoomOpen] = useState<boolean>(false);
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+  const [message, setMessage] = useState<Message>();
   const [selectedRoomId, setSelectedRoomId] = useState<number>(0);
   const [selectedRoomName, setSelectedRoomName] = useState<string>('');
   const [selectedRoomLastTime, setSelectedRoomLastTime] = useState<string>('');
@@ -157,7 +168,8 @@ function FloatingChattingBox() {
           console.log('WebSocket 연결이 열렸습니다.');
           stomp.subscribe(`/roomList/${userId}`, frame => {
             try {
-              console.log(JSON.parse(frame.body));
+              const newMessage: Message = JSON.parse(frame.body);
+              if (newMessage != null) setMessage(newMessage);
             } catch (error) {
               console.error('오류가 발생했습니다:', error);
             }
@@ -187,17 +199,44 @@ function FloatingChattingBox() {
   }, [data]);
 
   const handleChatRoomClick = () => {
-    setIsChatRoomOpen(prev => !prev);
+    setIsChatRoomOpen(true);
   };
 
-  const chatRoomList = useChatRoomList(auth?.accessToken);
+  useEffect(() => {
+    setTimeout(() => {
+      (async () => {
+        if (!isChatRoomOpen) {
+          try {
+            const res = await axios.get<GetChatRoomDTO>('/maru-api/chatRoom');
+            const chatRoomListData: ChatRoom[] = res.data.data;
+            setChatRooms(chatRoomListData);
+            return true;
+          } catch (error) {
+            console.error(error);
+            return false;
+          }
+        }
+        return true;
+      })();
+    }, 50);
+  }, [auth, isChatRoomOpen]);
 
   useEffect(() => {
-    if (chatRoomList.data != null) {
-      const chatRoomListData: ChatRoom[] = chatRoomList.data.data;
-      setChatRooms(chatRoomListData);
+    if (!isChatRoomOpen) {
+      setChatRooms(prevChatRooms =>
+        prevChatRooms.map(room => {
+          if (room.roomId === message?.roomId) {
+            return {
+              ...room,
+              unreadCount: room.unreadCount + 1,
+              lastMessage: message.message,
+            };
+          }
+          return room;
+        }),
+      );
     }
-  }, [chatRoomList.data]);
+  }, [message, isChatRoomOpen]);
 
   // const roomName = 'test2';
   // const members = ['naver_htT4VdDRPKqGqKpnncpa71HCA4CVg5LdRC1cWZhCnF8'];
@@ -220,15 +259,15 @@ function FloatingChattingBox() {
             <styles.searchButton src="/icon-search.svg" />
           </div>
         </styles.chattingHeader>
-        {/* <button
+
+        <styles.chattingSection>
+          {/* <button
           onClick={() => {
             chattingCreate();
           }}
         >
           생성
         </button> */}
-
-        <styles.chattingSection>
           {chatRooms.map((room, index) => (
             <ChattingList
               key={index}

@@ -132,9 +132,9 @@ interface Content {
   nickname: string;
 }
 
-function calTimeDiff(time: string) {
+function calTimeDiff(time: string, type: string) {
   const lastTime = new Date(time);
-  lastTime.setHours(lastTime.getHours() + 9);
+  if (type === 'server') lastTime.setHours(lastTime.getHours() + 9);
   const currentTime = new Date();
   const timeDiff = Math.floor(
     (currentTime.getTime() - lastTime.getTime()) / (1000 * 60),
@@ -183,12 +183,15 @@ export function ChattingRoom({
     | undefined
   >();
 
-  const chattingRoom = useEnterChatRoom(roomId, 0, 2);
+  const chattingRoom = useEnterChatRoom(roomId, 0, 10);
   useEffect(() => {
     if (chattingRoom != null) {
       setRoomData(chattingRoom.data?.data);
     }
   }, [chattingRoom]);
+
+  const [time, setTime] = useState<string>(lastTime);
+  const [type, setType] = useState<string>('server');
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -212,6 +215,8 @@ export function ChattingRoom({
           console.log('WebSocket 연결이 열렸습니다.');
           stomp.subscribe(`/room/${roomId}`, frame => {
             try {
+              setTime(new Date().toISOString());
+              setType('client');
               const parsedMessage = JSON.parse(frame.body);
               setMessages(prevMessages => [...prevMessages, parsedMessage]);
             } catch (error) {
@@ -296,7 +301,7 @@ export function ChattingRoom({
         />
         <styles.roomInfo>
           <styles.roomName>{roomName}</styles.roomName>
-          <styles.latestTime>{calTimeDiff(lastTime)}</styles.latestTime>
+          <styles.latestTime>{calTimeDiff(time, type)}</styles.latestTime>
         </styles.roomInfo>
         <styles.menu onClick={handleMenuClick} />
         {isMenuClick && (

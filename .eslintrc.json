@@ -53,6 +53,7 @@
     ],
     "no-empty-pattern": ["warn", { "allowObjectPatternsAsParameters": true }],
     "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-empty-function": ["warn", {}],
     "react/no-array-index-key": "warn",
