@@ -373,20 +373,19 @@ const styles = {
   `,
 };
 
-const dummyImages = [
-  'https://s3-alpha-sig.figma.com/img/efd0/12b5/6a0078a4aa75b0e9a9fb53a6d9a7c560?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=ciMXf2L3kV1XzY76T5Ak5h2Ii1fEeZvK7KAykXxq3BIrlhdagKrN13jKM7UcWH5KgkEkHQjTDTHgII6Wv9Ffzswzz1ZabaSwefdVk9~NveeheHxjY2asCCinzAyQOtSXSqFavmapvkqIsc3YKmtqm6ic13PHPfaKEkoqm9lIrpb2fE60VY9A9gWTK1JycwjACH4hy4R44fDTNWaji9ItzR4Ch-vzDWd3rqINyRRFYbnIFj-ow6CSsBDqKWu-5X3Bq2teT9N8Xj2mULZjQtfd7pLtd55QoMHtRzzqtR-M-Pf4cLpmBZYN-0hkC4XHY3rq2HKQHOSd16k~azGjBkOBqQ__',
-  'https://s3-alpha-sig.figma.com/img/ff85/788d/96b4a3ec1b31b6baf36b11c772529753?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=nvS2kVR-bHmV41ZhIADPEQMxhHJcFPtvDB2S4-h6IVQRRaRrzmPfYac5YIKkghcQELjIqKfePgsmRO-jVIQj-k6GVCcMQPkXxYJjT7x6UVeygGkBx5AVkmgE4yBgrpv~UzCIPKMY5TrK1KnCkZp9N9rus-8ooKMenzuYjbqqNS41WzYkQQvHD9KHafnRU7nb7pgA0fMe88teFauhpW3sCAgJvEWdkQQTtBgedIiphLU7vX9Kww54tCoNZ3vshSbggZW6L4wG39ztH5oSpjiRyviYmZ6z5WXUCno3YPGSVQLfzpfBYYh-tPEaicdxyUD5QhP9rDTee1aU3DDkPCwx1g__',
-];
-
-// const dummyMates = [
-//   'https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ou47yOoRJ57c0QqtWD~w0S6BP1UYWpmpCOCgsq9YTqfbNq~TmwfAI2T24-fYxpKSiBDv8y1Tkup68OTc5v2ZHIG~~CLwn6NCBF7QqTu7sQB0oPCvdRFdBm~y4wI8VEIErYhPsCuV2k7L0GVlJss4KkeM1tt1RX0kwfINvh03yzFf8wtjd0xsUJjMaKjNxU3muS2Cj8BZymckjgNGrTvafiGbAfHt0Bw2fTkH8tctfNNXpnZgqrEeDldEuENV~g-fSsLSFbMceZGN5ILEd9gd6fnY2YYeB7qtb9xozvczwTbz6kYIzzHJc7veYTsvxjqx~qTiKF2Yrn45cn5pXvOv1w__',
-// ];
-
 export function SharedPostPage({ postId }: { postId: number }) {
   const auth = useAuthValue();
   const [, setMap] = useState<naver.maps.Map | null>(null);
 
-  const { data: sharedPost } = useSharedPost({
+  const [selected, setSelected] = useState<
+    | {
+        memberId: string;
+        profileImage: string;
+      }
+    | undefined
+  >(undefined);
+
+  const { isLoading, data: sharedPost } = useSharedPost({
     postId,
     enabled: auth?.accessToken !== undefined,
   });
@@ -438,17 +437,21 @@ export function SharedPostPage({ postId }: { postId: number }) {
   const members = [userId];
   const { mutate: chattingMutate } = useCreateChatRoom(roomName, members);
 
+  if (isLoading || sharedPost == null) return <></>;
+
   return (
     <styles.container>
       <styles.contentContainer>
         <styles.postContainer>
-          <styles.ImageGrid images={dummyImages} />
+          <styles.ImageGrid
+            images={sharedPost.data.roomImages.map(({ fileName }) => fileName)}
+          />
           <styles.postInfoContainer>
             <div>
-              <h1>{sharedPost?.data.title}</h1>
+              <h1>{sharedPost.data.title}</h1>
               <Bookmark
                 hasBorder={false}
-                marked={sharedPost?.data.isScrapped ?? false}
+                marked={sharedPost.data.isScrapped}
                 onToggle={() => {
                   scrapPost(postId);
                 }}
@@ -456,79 +459,85 @@ export function SharedPostPage({ postId }: { postId: number }) {
               />
             </div>
             <styles.postInfoContent>
-              <span>모집 1명 / 총원 2명</span>
-              <span>원룸 / 방 1</span>
+              <span>모집 {sharedPost.data.roomInfo.recruitmentCapacity}명</span>
+              <span>
+                {sharedPost.data.roomInfo.roomType} · 방{' '}
+                {sharedPost.data.roomInfo.numberOfRoom} · 화장실{' '}
+                {sharedPost.data.roomInfo.numberOfBathRoom}
+              </span>
               <div>
-                <span>희망 월 분담금 65만원</span>
-                <span>저장 4 · 조회 22</span>
+                <span>
+                  희망 월 분담금 {sharedPost.data.roomInfo.expectedPayment}만원
+                </span>
+                <span>
+                  저장 {sharedPost.data.scrapCount} · 조회{' '}
+                  {sharedPost.data.viewCount}
+                </span>
               </div>
             </styles.postInfoContent>
           </styles.postInfoContainer>
           <styles.postContentContainer>
             <h2>상세 정보</h2>
-            <p>
-              안녕하세요! 저는 현재 룸메이트를 찾고 있는 정연수입니다. 서울시
-              정릉동에서 함께 살아갈 룸메이트를 구하고 있습니다. 주로 밤에
-              작업을 하며 새벽 2시~3시쯤에 취침합니다. 관심있으신 분들 연락
-              주세요!
-            </p>
+            <p>{sharedPost.data.content}</p>
           </styles.postContentContainer>
           <styles.divider />
           <styles.dealInfoContainer>
             <h2>거래 정보</h2>
             <div>
               <span>거래 방식</span>
-              <span>월세</span>
+              <span>{sharedPost.data.roomInfo.rentalType}</span>
             </div>
             <div>
               <span>희망 월 분담금</span>
-              <span>65만원</span>
+              <span>{sharedPost.data.roomInfo.expectedPayment}</span>
             </div>
           </styles.dealInfoContainer>
           <styles.roomInfoContainer>
             <h2>방 정보</h2>
             <div>
               <span>방 종류</span>
-              <span>원룸</span>
+              <span>{sharedPost.data.roomInfo.roomType}</span>
             </div>
             <div>
               <span>거실 보유</span>
-              <span>있음</span>
+              <span>
+                {sharedPost.data.roomInfo.hasLivingRoom ? '유' : '무'}
+              </span>
             </div>
             <div>
               <span>방 개수</span>
-              <span>2개</span>
+              <span>{sharedPost.data.roomInfo.numberOfRoom}개</span>
             </div>
             <div>
               <span>화장실 개수</span>
-              <span>1개</span>
+              <span>{sharedPost.data.roomInfo.numberOfBathRoom}개</span>
             </div>
             <div>
               <span>평수</span>
-              <span>14평</span>
+              <span>{sharedPost.data.roomInfo.size}평</span>
             </div>
           </styles.roomInfoContainer>
           <styles.locationInfoContainer>
             <h2>위치 정보</h2>
-            <p>{sharedPost?.data.roomInfo.address.roadAddress}</p>
+            <p>{sharedPost.data.address.roadAddress}</p>
             <div id="map" />
           </styles.locationInfoContainer>
         </styles.postContainer>
         <styles.mateContainer>
           <styles.mates>
-            <styles.mate
-              $selected
-              $zIndex={3}
-              src="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ou47yOoRJ57c0QqtWD~w0S6BP1UYWpmpCOCgsq9YTqfbNq~TmwfAI2T24-fYxpKSiBDv8y1Tkup68OTc5v2ZHIG~~CLwn6NCBF7QqTu7sQB0oPCvdRFdBm~y4wI8VEIErYhPsCuV2k7L0GVlJss4KkeM1tt1RX0kwfINvh03yzFf8wtjd0xsUJjMaKjNxU3muS2Cj8BZymckjgNGrTvafiGbAfHt0Bw2fTkH8tctfNNXpnZgqrEeDldEuENV~g-fSsLSFbMceZGN5ILEd9gd6fnY2YYeB7qtb9xozvczwTbz6kYIzzHJc7veYTsvxjqx~qTiKF2Yrn45cn5pXvOv1w__"
-            />
-            <styles.mate
-              $zIndex={2}
-              src="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ou47yOoRJ57c0QqtWD~w0S6BP1UYWpmpCOCgsq9YTqfbNq~TmwfAI2T24-fYxpKSiBDv8y1Tkup68OTc5v2ZHIG~~CLwn6NCBF7QqTu7sQB0oPCvdRFdBm~y4wI8VEIErYhPsCuV2k7L0GVlJss4KkeM1tt1RX0kwfINvh03yzFf8wtjd0xsUJjMaKjNxU3muS2Cj8BZymckjgNGrTvafiGbAfHt0Bw2fTkH8tctfNNXpnZgqrEeDldEuENV~g-fSsLSFbMceZGN5ILEd9gd6fnY2YYeB7qtb9xozvczwTbz6kYIzzHJc7veYTsvxjqx~qTiKF2Yrn45cn5pXvOv1w__"
-            />
-            <styles.mate
-              $zIndex={1}
-              src="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ou47yOoRJ57c0QqtWD~w0S6BP1UYWpmpCOCgsq9YTqfbNq~TmwfAI2T24-fYxpKSiBDv8y1Tkup68OTc5v2ZHIG~~CLwn6NCBF7QqTu7sQB0oPCvdRFdBm~y4wI8VEIErYhPsCuV2k7L0GVlJss4KkeM1tt1RX0kwfINvh03yzFf8wtjd0xsUJjMaKjNxU3muS2Cj8BZymckjgNGrTvafiGbAfHt0Bw2fTkH8tctfNNXpnZgqrEeDldEuENV~g-fSsLSFbMceZGN5ILEd9gd6fnY2YYeB7qtb9xozvczwTbz6kYIzzHJc7veYTsvxjqx~qTiKF2Yrn45cn5pXvOv1w__"
-            />
+            {sharedPost.data.participants.map(
+              ({ memberId, profileImage }, index) => (
+                <styles.mate
+                  key={memberId}
+                  $selected={memberId === selected?.memberId}
+                  $zIndex={index}
+                  src={profileImage}
+                  onClick={() => {
+                    setSelected({ memberId, profileImage });
+                  }}
+                />
+              ),
+            )}
           </styles.mates>
           <styles.selectedMateContainer>
             <styles.profile>
@@ -539,15 +548,15 @@ export function SharedPostPage({ postId }: { postId: number }) {
               />
               <styles.profileInfo>
                 <p className="name">
-                  {sharedPost?.data.publisherAccount.nickname}
+                  {sharedPost.data.publisherAccount.nickname}
                 </p>
                 <div>
                   <p>
-                    {sharedPost?.data.publisherAccount.birthYear != null
+                    {sharedPost.data.publisherAccount.birthYear != null
                       ? getAge(+sharedPost.data.publisherAccount.birthYear)
                       : new Date().getFullYear()}
                   </p>
-                  <p>서웉특별시 성북구</p>
+                  <p>{sharedPost.data.address.roadAddress}</p>
                 </div>
               </styles.profileInfo>
             </styles.profile>

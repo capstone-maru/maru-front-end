@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-import { type GetSharedPostDTO, type GetSharedPostsDTO } from './shared.dto';
+import {
+  type GetDormitorySharedPostDTO,
+  type GetDormitorySharedPostsDTO,
+  type GetSharedPostDTO,
+  type GetSharedPostsDTO,
+} from './shared.dto';
 import {
   type CreateSharedPostProps,
   type GetSharedPostsProps,
@@ -43,6 +48,42 @@ export const deleteSharedPost = async (postId: number) =>
   await axios.delete<SuccessBaseDTO>(`/maru-api/shared/posts/studio/${postId}`);
 
 export const scrapPost = async (postId: number) =>
-  await axios.get<SuccessBaseDTO>(
+  await axios.post<SuccessBaseDTO>(
     `/maru-api/shared/posts/studio/${postId}/scrap`,
+  );
+
+export const getDormitorySharedPosts = async ({
+  filter,
+  search,
+  page,
+}: GetSharedPostsProps) => {
+  const getURI = () => {
+    const baseURL = '/maru-api/shared/posts/dormitory';
+    let query = '';
+
+    if (search != null) {
+      query += `&search=${search}`;
+    }
+
+    query += `&page=${page}`;
+
+    return `${baseURL}?${encodeURI(query)}`;
+  };
+
+  return await axios.get<GetDormitorySharedPostsDTO>(getURI());
+};
+
+export const getDormitorySharedPost = async (postId: number) =>
+  await axios.get<GetDormitorySharedPostDTO>(
+    `/maru-api/shared/posts/dormitory/${postId}`,
+  );
+
+export const deleteDormitorySharedPost = async (postId: number) =>
+  await axios.delete<SuccessBaseDTO>(
+    `/maru-api/shared/posts/dormitory/${postId}`,
+  );
+
+export const scrapDormitoryPost = async (postId: number) =>
+  await axios.post<SuccessBaseDTO>(
+    `/maru-api/shared/posts/dormitory/${postId}/scrap`,
   );

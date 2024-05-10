@@ -9,7 +9,7 @@ import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
 import { getGeolocation } from '@/features/geocoding';
-import { useRecommendationMate } from '@/features/recommendation';
+import { useDummyUsers } from '@/features/shared';
 
 const styles = {
   container: styled.div`
@@ -94,11 +94,11 @@ export function MainPage() {
 
   const { data: userData } = useUserData(auth?.accessToken !== undefined);
 
-  const { data: recommendationMates } = useRecommendationMate({
-    memberId: auth?.user?.memberId ?? 'undefined',
-    cardType: 'mate',
-    enabled: auth?.accessToken != null,
-  });
+  // const { data: recommendationMates } = useRecommendationMate({
+  //   memberId: auth?.user?.memberId ?? 'undefined',
+  //   cardType: 'mate',
+  //   enabled: auth?.accessToken != null,
+  // });
 
   const [map, setMap] = useState<naver.maps.Map | null>(null);
 
@@ -147,6 +147,8 @@ export function MainPage() {
     }
   }, [userData, router, setAuthUserData]);
 
+  const users = useDummyUsers();
+
   return (
     <styles.container>
       <styles.map id="map">
@@ -168,14 +170,26 @@ export function MainPage() {
             onClick={handleScrollLeft}
           />
           <styles.mateRecommendation ref={scrollRef}>
-            {recommendationMates?.map(({ name, similarity, userId }) => (
+            {/* {recommendationMates?.map(({ name, similarity, userId }) => (
               <Link key={userId} href={`/profile/${userId}`}>
                 <UserCard
                   name={name}
                   percentage={Math.floor(similarity * 100)}
                 />
               </Link>
-            ))}
+            ))} */}
+            {users?.map(
+              ({
+                userId,
+                data: {
+                  authResponse: { name },
+                },
+              }) => (
+                <Link key={userId} href={`/profile/${userId}`}>
+                  <UserCard name={name} percentage={50} />
+                </Link>
+              ),
+            )}
           </styles.mateRecommendation>
           <CircularButton
             direction="right"

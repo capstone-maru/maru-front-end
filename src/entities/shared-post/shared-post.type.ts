@@ -20,12 +20,12 @@ export interface SharedPostListItem {
     modifiedAt: Date;
     modifiedBy: string;
   };
+  address: {
+    oldAddress: string;
+    roadAddress: string;
+  };
   roomInfo: {
     id: number;
-    address: {
-      oldAddress: string;
-      roadAddress: string;
-    };
     roomType: string;
     floorType: string;
     size: number;
@@ -33,6 +33,7 @@ export interface SharedPostListItem {
     numberOfBathRoom: number;
     rentalType: string;
     expectedPayment: number;
+    recruitmentCapacity: number;
   };
   isScrapped: boolean;
   createdAt: Date;
@@ -45,9 +46,17 @@ export interface SharedPost {
   id: number;
   title: string;
   content: string;
-  roomMateFeatures: string[];
+  roomMateFeatures: {
+    location: string;
+    features: {
+      smoking: string;
+      roomSharingOption: string;
+      mateAge: string;
+      options: string; // 프런트에서 파싱 필요.
+    };
+  };
   participants: Array<{ memberId: string; profileImage: string }>;
-  roomImages: Set<{
+  roomImages: Array<{
     fileName: string;
     isThumbnail: boolean;
     order: number;
@@ -59,21 +68,18 @@ export interface SharedPost {
     birthYear: string;
     gender: string;
     phoneNumber: string;
-    myCardFeatures: string[];
-    mateCardFeatures: string[];
+    profileImageFileName: string;
     createdAt: Date;
     createdBy: string;
     modifiedAt: Date;
     modifiedBy: string;
   };
+  address: {
+    oldAddress: string;
+    roadAddress: string;
+  };
   roomInfo: {
     id: number;
-    address: {
-      city: string;
-      oldAddress: string;
-      roadAddress: string;
-      detailAddress?: string;
-    };
     roomType: string;
     floorType: string;
     size: number;
@@ -91,6 +97,89 @@ export interface SharedPost {
       hasTerrace: boolean;
     };
   };
+  isScrapped: boolean;
+  scrapCount: number;
+  viewCount: number;
+  createdAt: Date;
+  createdBy: string;
+  modifiedAt: Date;
+  modifiedBy: string;
+}
+
+export interface DormitorySharedPostListItem {
+  id: number;
+  title: string;
+  content: string;
+  thumbnail: {
+    fileName: string;
+    isThumbNail: boolean;
+    order: number;
+  };
+  publisherAccount: {
+    memberId: string;
+    email: string;
+    nickname: string;
+    birthYear: string;
+    gender: string;
+    phoneNumber: string;
+    profileImageFileName: string;
+    createdAt: Date;
+    createdBy: string;
+    modifiedAt: Date;
+    modifiedBy: string;
+  };
+  address: {
+    oldAddress: string;
+    roadAddress: string;
+  };
+  recruitmentCapacity: number;
+  isScrapped: boolean;
+  createdAt: Date;
+  createdBy: string;
+  modifiedAt: Date;
+  modifiedBy: string;
+}
+
+export interface DormitorySharedPost {
+  id: number;
+  title: string;
+  content: string;
+  roomMateFeatures: {
+    location: string;
+    features: {
+      smoking: string;
+      roomSharingOption: string;
+      mateAge: string;
+      options: string;
+    };
+  };
+  participants: Array<{
+    memberId: string;
+    profileImageFileName: string;
+  }>;
+  roomImages: Array<{
+    fileName: string;
+    isThumbNail: boolean;
+    order: number;
+  }>;
+  publisherAccount: {
+    memberId: string;
+    email: string;
+    nickname: string;
+    birthYear: string;
+    gender: string;
+    phoneNumber: string;
+    profileImageFileName: string;
+    createdAt: Date;
+    createdBy: string;
+    modifiedAt: Date;
+    modifiedBy: string;
+  };
+  address: {
+    oldAddress: string;
+    roadAddress: string;
+  };
+  recruitmentCapacity: number;
   isScrapped: boolean;
   scrapCount: number;
   viewCount: number;

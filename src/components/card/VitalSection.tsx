@@ -271,7 +271,7 @@ export function VitalSection({
       });
       onFeatureChange(key, value);
     },
-    [],
+    [onFeatureChange],
   );
 
   const [initialLocation, setInitialLocation] = useState('');
@@ -279,7 +279,7 @@ export function VitalSection({
     if (location !== undefined && type === 'myCard') {
       setInitialLocation(location);
     }
-  }, [location]);
+  }, [location, type]);
 
   const [locationInput, setLocation] = useState('');
   useEffect(() => {
@@ -289,9 +289,10 @@ export function VitalSection({
   const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLocation(event.target.value);
   };
+
   useEffect(() => {
     onLocationChange(locationInput);
-  }, [locationInput]);
+  }, [onLocationChange, locationInput]);
 
   const [initialAge, setInitialAge] = useState<number>(0);
   const [ageValue, setAgeValue] = useState<number>(0);
@@ -305,8 +306,11 @@ export function VitalSection({
   }, [initialAge]);
 
   const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAgeValue(Number(e.target.value));
-    onMateAgeChange(Number(e.target.value));
+    if (!Number.isNaN(e.target.value)) {
+      const n = Number(e.target.value);
+      setAgeValue(n);
+      onMateAgeChange(n === 11 ? undefined : n);
+    }
   };
 
   let ageValueString;

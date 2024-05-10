@@ -4,18 +4,24 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   createSharedPost,
+  deleteDormitorySharedPost,
   deleteSharedPost,
+  getDormitorySharedPost,
+  getDormitorySharedPosts,
   getSharedPost,
   getSharedPosts,
+  scrapDormitoryPost,
   scrapPost,
 } from './shared.api';
 import {
-  type ImageFile,
   type CreateSharedPostProps,
   type GetSharedPostsProps,
+  type ImageFile,
   type SelectedExtraOptions,
   type SelectedOptions,
 } from './shared.type';
+import { postUserProfile } from '../profile/profile.api';
+import { type PostUserProfileDTO } from '../profile/profile.dto';
 
 import { useAuthValue } from '@/features/auth';
 import { type NaverAddress } from '@/features/geocoding';
@@ -229,7 +235,7 @@ export const usePostMateCardInputSection = () => {
   const handleEssentialFeatureChange = useCallback(
     (
       key: 'smoking' | 'roomSharingOption' | 'mateAge',
-      value: string | number,
+      value: string | number | undefined,
     ) => {
       setFeatures(prev => {
         if (prev[key] === value) {
@@ -262,10 +268,10 @@ export const usePostMateCardInputSection = () => {
     return {
       smoking: features?.smoking ?? '상관없어요',
       roomSharingOption: features?.roomSharingOption ?? '상관없어요',
-      mateAge: features?.mateAge ?? 0,
+      mateAge: birthYear,
       options: JSON.stringify(options),
     };
-  }, [features]);
+  }, [features, birthYear]);
 
   const auth = useAuthValue();
   useEffect(() => {
@@ -380,3 +386,107 @@ export const useScrapSharedPost = () =>
   useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, number>({
     mutationFn: scrapPost,
   });
+
+export const useDormitorySharedPosts = ({
+  filter,
+  search,
+  page,
+  enabled,
+}: GetSharedPostsProps & { enabled: boolean }) =>
+  useQuery({
+    queryKey: ['/api/shared/posts/dormitory', { filter, search, page }],
+    queryFn: async () =>
+      await getDormitorySharedPosts({ filter, search, page }).then(
+        response => response.data,
+      ),
+    staleTime: 60000,
+    enabled,
+  });
+
+export const useDormitorySharedPost = ({
+  postId,
+  enabled,
+}: {
+  postId: number;
+  enabled: boolean;
+}) =>
+  useQuery({
+    queryKey: [`/api/shared/posts/dormitory/${postId}`],
+    queryFn: async () =>
+      await getDormitorySharedPost(postId).then(response => response.data),
+    enabled,
+  });
+
+export const useDeleteDormitorySharedPost = ({
+  postId,
+  onSuccess,
+  onError,
+}: {
+  postId: number;
+  onSuccess: (data: SuccessBaseDTO) => void;
+  onError: (error: Error) => void;
+}) =>
+  useMutation({
+    mutationFn: async () =>
+      await deleteDormitorySharedPost(postId).then(response => response.data),
+    onSuccess,
+    onError,
+  });
+
+export const useScrapDormitorySharedPost = () =>
+  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, number>({
+    mutationFn: scrapDormitoryPost,
+  });
+
+const userIds = [
+  'naver_0',
+  'kakao_1',
+  'kakao_2',
+  'naver_3',
+  'kakao_4',
+  'naver_5',
+  'kakao_6',
+  'kakao_7',
+  'kakao_8',
+  'naver_9',
+  'naver_10',
+  'naver_11',
+  'naver_12',
+  'naver_13',
+  'kakao_14',
+  'naver_15',
+  'kakao_16',
+  'naver_17',
+  'naver_18',
+  'kakao_19',
+];
+
+export const useDummyUsers = () => {
+  const [users, setUsers] =
+    useState<Array<PostUserProfileDTO & { userId: string }>>();
+
+  useEffect(() => {
+    (async () => {
+      const userData = await Promise.allSettled(
+        userIds.map(async userId => {
+          const result = await postUserProfile(userId);
+          return { ...result, userId };
+        }),
+      );
+
+      setUsers(
+        userData.reduce<Array<PostUserProfileDTO & { userId: string }>>(
+          (prev, curr) => {
+            if (curr.status === 'fulfilled') {
+              prev.push({ ...curr.value, userId: curr.value.userId });
+            }
+            return prev;
+          },
+          [],
+        ),
+      );
+    })();
+  }, []);
+
+  return users;
+};

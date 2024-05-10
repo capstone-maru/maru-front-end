@@ -124,26 +124,23 @@ export function PostCard({ post }: { post: SharedPostListItem }) {
   return (
     <div>
       <styles.container>
-        <styles.thumbnail
-          alt=""
-          src="https://s3-alpha-sig.figma.com/img/2d52/bfda/0a900d41e2a6d77dd731fac06577540c?Expires=1712534400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Q9zefEFzqJ-RNfzsNdrJTBDLNSZWOpY-3j8DE04rk-t2MmcZieVHD4MJG5EAEVd1PLLCpN~BKGfMyCHGgjGTr6XcjSifghDXqpxM2fUQSWznNWBdmn4ZrylLoeV17NzynTtmPSND8eo5r86Gv5DAHWNWwmnP6kDtApBlJjoeVSzqTiC7JS4COohy1Wb6Z7Du-ra9apbhzsvoYFytJR68WVqYI0eNAltK3iy23Pn-dysqHoLvty67TI60IYQkcRuU93K6bx4W8tZkxtTg7EW-dZ9uOSLSdwFQ2s14WXXKgQQySfbJH2~g1-usTVjv5u4nVBmV-afBaQbyDbPkkksW8Q__"
-        />
+        <styles.thumbnail alt="" src={post.thumbnail.fileName} />
         <styles.content>
           <div>
             <h1>{post.title}</h1>
-            <h2>{post.roomInfo.address.roadAddress}</h2>
+            <h2>{post.address.roadAddress}</h2>
           </div>
           <div>
-            <p>모집 1명 / 총원 2명</p>
-            <p>원룸 · 방1</p>
-            <p>500 / 50 / 5</p>
+            <p>모집 {post.roomInfo.recruitmentCapacity}명</p>
+            <p>
+              {post.roomInfo.roomType} · 방 {post.roomInfo.numberOfRoom} ·
+              화장실 {post.roomInfo.numberOfBathRoom}
+            </p>
+            <p>희망 월 분담금 {post.roomInfo.expectedPayment}</p>
           </div>
         </styles.content>
         <styles.writer>
-          <img
-            alt=""
-            src="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1712534400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=otR4I8Y0NumUlQW6NsUkXOvTzPqQhjjq1BLNd~EcweuN0Q0vRcVUvMuhlAx2vlsr2lOiqAgoyuXkYlVrK2qknRxQffQDRjGbRsK6CyebC76kXWw5Zu0SxlwtUdiYVV8VI0lWwoRsKqnoI4DXOqChcEMKPQamtpUmTx~NHx8t5cKSdvAMu0tqlPPdF7Sa51Vcuzrryfj~mcZXXEdEltEACAxPsFxhCelyDPB2Se7ZihPK1RGrtvovJZkc-64whNnji8Z0AOm-~irZhl0WQh0jhsaUpp2T5h9drq8-UwVdco3GBNXLSk3ygioYruN0j4U7SkqKVt7~ng1G7IH7395B4A__"
-          />
+          <img alt="" src={post.publisherAccount.profileImageFileName} />
           <styles.percentage>
             <p>50%</p>
           </styles.percentage>
