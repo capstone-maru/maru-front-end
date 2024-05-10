@@ -14,6 +14,7 @@ const styles = {
     border-bottom: 1px solid var(--Gray-4, #dfdfdf);
     background: #fff;
     cursor: pointer;
+    overflow-y: auto;
   `,
   infoSection: styled.div`
     display: flex;
@@ -33,16 +34,6 @@ const styles = {
     height: 3rem;
     border-radius: 50%;
     background: url('__avatar_url.png') lightgray 50% / cover no-repeat;
-  `,
-  activeCircle: styled.div`
-    width: 0.6rem;
-    height: 0.6rem;
-    position: absolute;
-    left: 2.375rem;
-    bottom: 0.125rem;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    background-color: #27da4e;
   `,
   roomName: styled.p`
     color: #000;
@@ -85,18 +76,27 @@ const styles = {
   `,
 };
 
-export function ChattingList() {
+export function ChattingList({
+  name,
+  unreadCount,
+  lastMessage,
+  onClick,
+}: {
+  name: string;
+  unreadCount: number;
+  lastMessage: string;
+  onClick: () => void;
+}) {
   return (
-    <styles.chattingRoom>
+    <styles.chattingRoom onClick={onClick}>
       <styles.infoSection>
         <styles.userProfile />
-        <styles.activeCircle />
         <styles.textSection>
-          <styles.roomName>room1</styles.roomName>
-          <styles.message>hi</styles.message>
+          <styles.roomName>{name}</styles.roomName>
+          <styles.message>{lastMessage}</styles.message>
         </styles.textSection>
       </styles.infoSection>
-      <styles.newMessageCount>2</styles.newMessageCount>
+      <styles.newMessageCount>{unreadCount}</styles.newMessageCount>
     </styles.chattingRoom>
   );
 }
