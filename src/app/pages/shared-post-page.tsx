@@ -376,6 +376,14 @@ export function SharedPostPage({ postId }: { postId: number }) {
   const auth = useAuthValue();
   const [, setMap] = useState<naver.maps.Map | null>(null);
 
+  const [selected, setSelected] = useState<
+    | {
+        memberId: string;
+        profileImage: string;
+      }
+    | undefined
+  >(undefined);
+
   const { isLoading, data: sharedPost } = useSharedPost({
     postId,
     enabled: auth?.accessToken !== undefined,
@@ -396,14 +404,6 @@ export function SharedPostPage({ postId }: { postId: number }) {
   const { mutate: unfollow } = useUnfollowUser(
     sharedPost?.data.publisherAccount.memberId ?? '',
   );
-
-  const [selected, setSelected] = useState<
-    | {
-        memberId: string;
-        profileImage: string;
-      }
-    | undefined
-  >(undefined);
 
   useEffect(() => {
     const center = new naver.maps.LatLng(37.6090857, 126.9966865);

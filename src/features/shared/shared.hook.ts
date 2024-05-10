@@ -14,12 +14,14 @@ import {
   scrapPost,
 } from './shared.api';
 import {
-  type ImageFile,
   type CreateSharedPostProps,
   type GetSharedPostsProps,
+  type ImageFile,
   type SelectedExtraOptions,
   type SelectedOptions,
 } from './shared.type';
+import { postUserProfile } from '../profile/profile.api';
+import { type PostUserProfileDTO } from '../profile/profile.dto';
 
 import { useAuthValue } from '@/features/auth';
 import { type NaverAddress } from '@/features/geocoding';
@@ -435,3 +437,56 @@ export const useScrapDormitorySharedPost = () =>
   useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, number>({
     mutationFn: scrapDormitoryPost,
   });
+
+const userIds = [
+  'naver_0',
+  'kakao_1',
+  'kakao_2',
+  'naver_3',
+  'kakao_4',
+  'naver_5',
+  'kakao_6',
+  'kakao_7',
+  'kakao_8',
+  'naver_9',
+  'naver_10',
+  'naver_11',
+  'naver_12',
+  'naver_13',
+  'kakao_14',
+  'naver_15',
+  'kakao_16',
+  'naver_17',
+  'naver_18',
+  'kakao_19',
+];
+
+export const useDummyUsers = () => {
+  const [users, setUsers] =
+    useState<Array<PostUserProfileDTO & { userId: string }>>();
+
+  useEffect(() => {
+    (async () => {
+      const userData = await Promise.allSettled(
+        userIds.map(async userId => {
+          const result = await postUserProfile(userId);
+          return { ...result, userId };
+        }),
+      );
+
+      setUsers(
+        userData.reduce<Array<PostUserProfileDTO & { userId: string }>>(
+          (prev, curr) => {
+            if (curr.status === 'fulfilled') {
+              prev.push({ ...curr.value, userId: curr.value.userId });
+            }
+            return prev;
+          },
+          [],
+        ),
+      );
+    })();
+  }, []);
+
+  return users;
+};
