@@ -2,6 +2,8 @@
 
 import styled from 'styled-components';
 
+import { getLocalTime } from '@/shared';
+
 const styles = {
   container: styled.div`
     display: flex;
@@ -108,12 +110,22 @@ const styles = {
   `,
 };
 
-export function ReceiverMessage() {
+export function ReceiverMessage({
+  message,
+  receiver,
+  time,
+  type,
+}: {
+  message: string;
+  receiver: string;
+  time: string;
+  type: string;
+}) {
   return (
     <styles.container>
       <styles.profileSection>
         <styles.profilePic />
-        <styles.userName>김마루</styles.userName>
+        <styles.userName>{receiver}</styles.userName>
       </styles.profileSection>
       <styles.messageContainer>
         <styles.left>
@@ -124,9 +136,9 @@ export function ReceiverMessage() {
         <styles.right>
           <styles.messageFrame>
             <styles.messageBody>
-              <styles.message>hi</styles.message>
+              <styles.message>{message}</styles.message>
               <styles.messageInfo>
-                <styles.time>11:31 AM</styles.time>
+                <styles.time>{getLocalTime(time, type)}</styles.time>
               </styles.messageInfo>
             </styles.messageBody>
           </styles.messageFrame>
