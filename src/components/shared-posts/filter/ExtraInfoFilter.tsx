@@ -3,7 +3,7 @@
 import styled from 'styled-components';
 
 import {
-  type ExtraInfoType,
+  type AdditionalInfoType,
   useSharedPostsFilter,
 } from '@/entities/shared-posts-filter';
 
@@ -71,9 +71,9 @@ const styles = {
 export function ExtraInfoFilter() {
   const { filter, setFilter } = useSharedPostsFilter();
 
-  const handleOptionClick = (option: ExtraInfoType) => {
+  const handleOptionClick = (option: AdditionalInfoType) => {
     setFilter(prev => {
-      const value = prev.extraInfo[option] ?? true;
+      const value = prev.extraInfo[option] ?? false;
       return {
         ...prev,
         extraInfo: {
@@ -84,7 +84,7 @@ export function ExtraInfoFilter() {
     });
   };
 
-  const isSelectedChecker = (option: ExtraInfoType) =>
+  const isSelectedChecker = (option: AdditionalInfoType) =>
     filter.extraInfo[option] === true;
 
   return (
@@ -93,9 +93,9 @@ export function ExtraInfoFilter() {
       <div>
         <button
           type="button"
-          className={isSelectedChecker('주차 가능') ? 'selected' : ''}
+          className={isSelectedChecker('주차가능') ? 'selected' : ''}
           onClick={() => {
-            handleOptionClick('주차 가능');
+            handleOptionClick('주차가능');
           }}
         >
           주차 가능
@@ -129,30 +129,12 @@ export function ExtraInfoFilter() {
         </button>
         <button
           type="button"
-          className={isSelectedChecker('엘리베이터') ? 'selected' : ''}
-          onClick={() => {
-            handleOptionClick('엘리베이터');
-          }}
-        >
-          엘리베이터
-        </button>
-        <button
-          type="button"
           className={isSelectedChecker('베란다/테라스') ? 'selected' : ''}
           onClick={() => {
             handleOptionClick('베란다/테라스');
           }}
         >
           베란다/테라스
-        </button>
-        <button
-          type="button"
-          className={isSelectedChecker('복층형') ? 'selected' : ''}
-          onClick={() => {
-            handleOptionClick('복층형');
-          }}
-        >
-          복층형
         </button>
       </div>
     </styles.container>

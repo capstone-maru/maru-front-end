@@ -1,14 +1,40 @@
-import { type RentalType, type RoomType } from '@/shared/types';
-
 export interface GetSharedPostsFilter {
-  roomType?: RoomType[];
-  rentalType?: RentalType[];
+  roomTypes?: number[];
+  rentalTypes?: number[];
+  expectedPaymentRange?: { start: number; end: number };
+  hasLivingRoom?: boolean;
+  numberOfRoom?: number;
+  numberOfRestRoom?: number;
+  roomSizeRange?: { start: number; end: number };
+  floorTypes?: number[];
+  canPark?: boolean;
+  hasAirConditioner?: boolean;
+  hasRefrigerator?: boolean;
+  hasWasher?: boolean;
+  hasTerrace?: boolean;
 }
 
 export interface GetSharedPostsProps {
   filter?: GetSharedPostsFilter;
   search?: string;
   page: number;
+}
+
+export interface SelectedOptions {
+  budget?: string;
+  roomType?: string;
+  livingRoom?: string;
+  roomCount?: string;
+  restRoomCount?: string;
+  floorType?: string;
+}
+
+export type SelectedExtraOptions = Record<string, boolean>;
+
+export interface ImageFile {
+  url: string;
+  file: File;
+  extension: string;
 }
 
 export interface CreateSharedPostProps {
@@ -22,26 +48,37 @@ export interface CreateSharedPostProps {
     content: string;
   };
   transactionData: {
-    rentalType: string;
-    price: number;
-    monthlyFee: number;
-    managementFee: number;
+    rentalType: number;
+    expectedPayment: number;
   };
   roomDetailData: {
-    roomType: string;
+    roomType: number;
+    floorType: number;
     size: number;
     numberOfRoom: number;
+    numberOfBathRoom: number;
+    hasLivingRoom: boolean;
     recruitmentCapacity: number;
+    extraOption: {
+      canPark: boolean;
+      hasAirConditioner: boolean;
+      hasRefrigerator: boolean;
+      hasWasher: boolean;
+      hasTerrace: boolean;
+    };
   };
   locationData: {
-    city: string;
     oldAddress: string;
     roadAddress: string;
-    stationName: string;
-    stationTime: number;
-    busStopTime: number;
-    schoolName: string;
-    schoolTime: number;
-    convenienceStoreTime: number;
   };
+  roomMateCardData: {
+    location: string;
+    features: {
+      smoking: string;
+      roomSharingOption: string;
+      mateAge: number | null; // 0 ~ 10: +- 범위 값, null: 상관 없어요.
+      options: string;
+    };
+  };
+  participationMemberIds: string[];
 }

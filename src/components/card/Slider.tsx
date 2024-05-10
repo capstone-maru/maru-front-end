@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
@@ -9,7 +9,7 @@ const styles = {
     align-items: center;
   `,
   sliderContainer: styled.div`
-    width: 25rem;
+    width: 22rem;
     height: 1.875rem;
     position: relative;
   `,
@@ -57,6 +57,7 @@ const styles = {
       cursor: pointer;
       position: relative;
       z-index: 1;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
     }
   `,
 };
@@ -65,6 +66,8 @@ interface SliderProps {
   min: number;
   max: number;
   step: number;
+  initialMin: number;
+  initialMax: number;
   onChange: (min: number, max: number) => void;
 }
 
@@ -74,19 +77,58 @@ interface FillProps {
   $right: string;
 }
 
-export function Slider({ min, max, step, onChange }: SliderProps) {
-  const [minValue, setMinValue] = useState(min);
-  const [maxValue, setMaxValue] = useState(max);
+interface SliderProps {
+  min: number;
+  max: number;
+  step: number;
+  initialMin: number;
+  initialMax: number;
+  onChange: (minValue: number, maxValue: number) => void;
+}
+
+export function Slider({
+  min,
+  max,
+  step,
+  initialMin,
+  initialMax,
+  onChange,
+}: SliderProps) {
+  const inputMinRef = useRef<HTMLInputElement>(null);
+  const inputMaxRef = useRef<HTMLInputElement>(null);
+  const [minValue, setMinValue] = useState(initialMin);
+  const [maxValue, setMaxValue] = useState(initialMax);
+
+  useEffect(() => {
+    setMinValue(initialMin);
+    setMaxValue(initialMax);
+  }, [initialMin, initialMax]);
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLow = Number(e.target.value);
-    if (newLow > maxValue) setMaxValue(newLow);
+    const currentMax =
+      inputMaxRef.current !== null
+        ? Number(inputMaxRef.current.value)
+        : initialMin;
+    if (newLow > currentMax) {
+      setMaxValue(newLow);
+      inputMaxRef.current !== null &&
+        (inputMaxRef.current.value = newLow.toString());
+    }
     setMinValue(newLow);
   };
 
   const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHigh = Number(e.target.value);
-    if (newHigh < minValue) setMinValue(newHigh);
+    const currentMin =
+      inputMinRef.current !== null
+        ? Number(inputMinRef.current.value)
+        : initialMax;
+    if (newHigh < currentMin) {
+      setMinValue(newHigh);
+      inputMinRef.current !== null &&
+        (inputMinRef.current.value = newHigh.toString());
+    }
     setMaxValue(newHigh);
   };
 
@@ -105,18 +147,20 @@ export function Slider({ min, max, step, onChange }: SliderProps) {
         />
         <styles.slider
           type="range"
+          ref={inputMinRef}
           min={min}
           max={max}
           step={step}
-          value={minValue}
+          value={minValue ?? min}
           onChange={handleMinChange}
         />
         <styles.slider
           type="range"
+          ref={inputMaxRef}
           min={min}
           max={max}
           step={step}
-          value={maxValue}
+          value={maxValue ?? max}
           onChange={handleMaxChange}
         />
       </styles.sliderContainer>

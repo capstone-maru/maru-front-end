@@ -1,18 +1,20 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 
 import {
-  getUserProfileData,
   getUserCard,
   getFollowingListData,
-  postFollowData,
   putUserCard,
+  postSearchUser,
+  postUnfollowUser,
+  postFollowUser,
+  postUserProfile,
 } from './profile.api';
 
-export const useProfileData = (memberId: string) =>
-  useQuery({
-    queryKey: [`/api/profile/${memberId}`],
-    queryFn: async () => await getUserProfileData(memberId),
-    enabled: memberId !== undefined,
+export const useUserProfile = (memberId: string) =>
+  useMutation({
+    mutationFn: async () => await postUserProfile(memberId),
+    onSuccess: data => data.data,
+    onError: error => error,
   });
 
 export const useUserCard = (cardId: number) =>
@@ -26,7 +28,12 @@ export const usePutUserCard = (cardId: number) =>
   useMutation({
     mutationFn: async (data: {
       location: string;
-      features: Array<string | undefined>;
+      features: {
+        smoking: string;
+        roomSharingOption: string;
+        mateAge: number;
+        options: string;
+      };
     }) => await putUserCard(cardId, data.location, data.features),
   });
 
@@ -36,9 +43,22 @@ export const useFollowingListData = () =>
     queryFn: getFollowingListData,
   });
 
-export const useFollowData = (memberId: string) =>
+export const useFollowUser = (memberId: string) =>
   useMutation({
     mutationFn: async () => {
-      await postFollowData(memberId);
+      await postFollowUser(memberId);
     },
+  });
+
+export const useUnfollowUser = (memberId: string) =>
+  useMutation({
+    mutationFn: async () => {
+      await postUnfollowUser(memberId);
+    },
+  });
+
+export const useSearchUser = (email: string) =>
+  useMutation({
+    mutationFn: async () => await postSearchUser(email),
+    onSuccess: data => data.data,
   });

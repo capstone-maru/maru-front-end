@@ -1,16 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const styles = {
   mbtiSection: styled.div`
     position: absolute;
-    bottom: -18rem;
+    bottom: -7rem;
     padding: 2rem;
     border-radius: 16px;
     display: inline-flex;
-    flex-direction: column;
     align-items: center;
     gap: 2rem;
     margin: 0.5rem 0;
@@ -74,6 +73,16 @@ const styles = {
     width: 1rem;
     height: 1rem;
   `,
+  value: styled.p`
+    color: #000;
+
+    font-family: 'Noto Sans KR';
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    align-self: stretch;
+  `,
 };
 
 interface ToggleSwitchProps {
@@ -106,7 +115,13 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
   );
 }
 
-export function MbtiToggle() {
+export function MbtiToggle({
+  mbti,
+  onChange,
+}: {
+  mbti: string | undefined;
+  onChange: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const [toggleStates, setToggleStates] = useState({
     toggle1: false,
     toggle2: false,
@@ -114,14 +129,78 @@ export function MbtiToggle() {
     toggle4: false,
   });
 
+  const [result, setResult] = useState('');
+  useEffect(() => {
+    if (mbti !== undefined) setResult(mbti);
+  }, [mbti]);
+
+  useEffect(() => {
+    if (mbti !== undefined && mbti.charAt(0) === 'I') {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle1: true,
+      }));
+    } else {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle1: false,
+      }));
+    }
+    if (mbti !== undefined && mbti.charAt(1) === 'S') {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle2: true,
+      }));
+    } else {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle2: false,
+      }));
+    }
+    if (mbti !== undefined && mbti.charAt(2) === 'T') {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle3: true,
+      }));
+    } else {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle3: false,
+      }));
+    }
+    if (mbti !== undefined && mbti.charAt(3) === 'J') {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle4: true,
+      }));
+    } else {
+      setToggleStates(prevState => ({
+        ...prevState,
+        toggle4: false,
+      }));
+    }
+  }, [mbti]);
+
   const toggleSwitch = (toggleName: keyof typeof toggleStates) => {
     setToggleStates(prevState => ({
       ...prevState,
       [toggleName]: !prevState[toggleName],
     }));
   };
+  useEffect(() => {
+    const mbtiString: string[] = ['E', 'N', 'F', 'P'];
+    if (toggleStates.toggle1) mbtiString[0] = 'I';
+    if (toggleStates.toggle2) mbtiString[1] = 'S';
+    if (toggleStates.toggle3) mbtiString[2] = 'T';
+    if (toggleStates.toggle4) mbtiString[3] = 'J';
+    const newResult = mbtiString.join('');
+    setResult(newResult);
+    onChange(newResult);
+  }, [toggleStates, onChange]);
+
   return (
     <styles.mbtiSection>
+      <styles.value>{result}</styles.value>
       <styles.mbtiToggleContainer>
         E
         <ToggleSwitch

@@ -7,7 +7,11 @@ import { Bookmark, CircularProfileImage } from '@/components';
 import { ImageGrid } from '@/components/shared-post-page';
 import { useAuthValue, useUserData } from '@/features/auth';
 import { useCreateChatRoom } from '@/features/chat';
-import { useFollowData } from '@/features/profile';
+import {
+  useFollowUser,
+  useFollowingListData,
+  useUnfollowUser,
+} from '@/features/profile';
 import { useScrapSharedPost, useSharedPost } from '@/features/shared';
 import { getAge } from '@/shared';
 
@@ -398,6 +402,20 @@ export function SharedPostPage({ postId }: { postId: number }) {
 
   const { mutate: scrapPost } = useScrapSharedPost();
 
+  const followList = useFollowingListData();
+  const [isFollowed, setIsFollowed] = useState(
+    followList.data?.data.followingList[
+      sharedPost?.data.publisherAccount.memberId ?? ''
+    ] != null,
+  );
+
+  const { mutate: follow } = useFollowUser(
+    sharedPost?.data.publisherAccount.memberId ?? '',
+  );
+  const { mutate: unfollow } = useUnfollowUser(
+    sharedPost?.data.publisherAccount.memberId ?? '',
+  );
+
   useEffect(() => {
     const center = new naver.maps.LatLng(37.6090857, 126.9966865);
     setMap(
@@ -419,8 +437,6 @@ export function SharedPostPage({ postId }: { postId: number }) {
 
   const members = [userId];
   const { mutate: chattingMutate } = useCreateChatRoom(roomName, members);
-
-  const { mutate: followingMutate } = useFollowData(userId);
 
   return (
     <styles.container>
@@ -546,12 +562,14 @@ export function SharedPostPage({ postId }: { postId: number }) {
               <div>
                 <styles.showProfileButton>프로필 보기</styles.showProfileButton>
                 <Bookmark
+                  marked={isFollowed}
+                  onToggle={() => {
+                    if (isFollowed) unfollow();
+                    else follow();
+                    setIsFollowed(prev => !prev);
+                  }}
                   hasBorder
                   color="#888"
-                  marked={false}
-                  onToggle={() => {
-                    followingMutate();
-                  }}
                 />
               </div>
             </styles.buttons>

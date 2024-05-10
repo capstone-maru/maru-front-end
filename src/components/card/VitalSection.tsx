@@ -1,17 +1,18 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-
-import { Slider } from './card/Slider';
 
 const styles = {
   vitalContainer: styled.div`
     display: flex;
     flex-direction: column;
-    width: 100%;
+    align-items: flex-start;
+    gap: 1rem;
+    align-self: stretch;
   `,
   vitalDescription: styled.p`
+    width: 2.6875rem;
     color: var(--Main-1, #e15637);
     font-family: 'Noto Sans KR';
     font-size: 1rem;
@@ -22,21 +23,21 @@ const styles = {
   vitalListContainer: styled.ul`
     display: flex;
     flex-direction: column;
-    margin-top: 2.62rem;
-    gap: 1.5rem;
+    align-items: flex-start;
+    gap: 1rem;
+    align-self: stretch;
   `,
   vitalList: styled.li`
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 2.5rem;
-    flex-shrink: 0;
+    gap: 2rem;
+    align-self: stretch;
   `,
   vitalListItemDescription: styled.p`
-    width: 5.125rem;
-    color: #000;
-
+    width: 5rem;
+    color: var(--Main-2, #767d86);
     font-family: 'Noto Sans KR';
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
@@ -98,7 +99,16 @@ const styles = {
     }
   `,
   value: styled.span`
-    color: #000;
+    display: flex;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 10px;
+    border: 2px solid #dfdfdf;
+    background: #fff;
+
+    color: #888;
 
     font-family: 'Noto Sans KR';
     font-size: 1rem;
@@ -106,10 +116,65 @@ const styles = {
     font-weight: 500;
     line-height: normal;
   `,
+
+  sliderContainer: styled.div`
+    width: 22rem;
+    height: 1.875rem;
+    position: relative;
+  `,
+  sliderTrack: styled.div`
+    width: 100%;
+    height: 0.3125rem;
+    border-radius: 20px;
+    background: #d9d9d9;
+    position: absolute;
+    top: calc(50% - 2px);
+  `,
+  sliderFillTrack: styled.div<FillProps>`
+    width: ${props => props.$fill};
+    height: 0.3125rem;
+    border-radius: 2px;
+    background: var(--Main-1, #e15637);
+    position: absolute;
+    top: calc(50% - 2px);
+  `,
+  slider: styled.input`
+    position: absolute;
+    width: 100%;
+    height: 0.3125rem;
+    border-radius: 1.25rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    top: calc(50% - 2px);
+
+    &:focus {
+      outline: none;
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      pointer-events: all;
+      width: 1.875rem;
+      height: 1.875rem;
+      background-color: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px #c6c6c6;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    }
+  `,
 };
 
 interface CheckItemProps {
   $isSelected: boolean;
+}
+
+interface FillProps {
+  $fill: string;
 }
 
 const CheckItem = styled.div<CheckItemProps>`
@@ -144,64 +209,117 @@ const CheckItem = styled.div<CheckItemProps>`
         }};
 `;
 
-const years = Array.from({ length: 100 }, (_, index) => 2024 - index);
-
-interface SelectedState {
-  smoking: string | undefined;
-  room: string | undefined;
-}
+const years = Array.from(
+  { length: 100 },
+  (_, index) => new Date().getFullYear() - index,
+);
 
 export function VitalSection({
   gender,
   birthYear,
   location,
-  smoking,
-  room,
+  vitalFeatures,
   onFeatureChange,
+  onLocationChange,
+  onMateAgeChange,
   isMySelf,
   type,
 }: {
-  gender: string | undefined;
-  birthYear: string | undefined;
-  location: string | undefined;
-  smoking: string | undefined;
-  room: string | undefined;
+  gender?: string;
+  birthYear?: string;
+  location?: string;
+  vitalFeatures?: {
+    smoking?: string;
+    roomSharingOption?: string;
+    mateAge?: number;
+    options?: Set<string>;
+  };
   onFeatureChange: (
-    optionName: keyof SelectedState,
-    item: string | number,
+    key: 'smoking' | 'roomSharingOption' | 'mateAge',
+    value: string,
   ) => void;
+  onLocationChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onMateAgeChange: React.Dispatch<React.SetStateAction<number | undefined>>;
   isMySelf: boolean;
   type: string;
 }) {
-  const [selectedState, setSelectedState] = useState<SelectedState>({
-    smoking: undefined,
-    room: undefined,
-  });
+  const [features, setFeatures] = useState<{
+    smoking?: string;
+    roomSharingOption?: string;
+    mateAge?: number;
+  }>();
+
   useEffect(() => {
-    setSelectedState({
-      ...selectedState,
-      smoking: smoking,
-      room: room,
-    });
-  }, [smoking, room]);
+    if (vitalFeatures != null) {
+      const data = {
+        smoking: vitalFeatures.smoking ?? '상관없어요',
+        roomSharingOption: vitalFeatures.roomSharingOption ?? '상관없어요',
+        mateAge: vitalFeatures.mateAge ?? 0,
+      };
 
-  function handleOptionClick(
-    optionName: keyof SelectedState,
-    item: string | number,
-  ) {
-    setSelectedState(prevState => ({
-      ...prevState,
-      [optionName]: prevState[optionName] === item ? null : item,
-    }));
-    onFeatureChange(optionName, item);
-  }
+      setFeatures(data);
+    }
+  }, []);
 
-  const [mateMinAge, setMateMinAge] = useState(0);
-  const [mateMaxAge, setMateMaxAge] = useState(11);
-  const handleAgeChange = (min: number, max: number) => {
-    setMateMinAge(min);
-    setMateMaxAge(max);
+  const handleEssentialFeatureChange = useCallback(
+    (key: 'smoking' | 'roomSharingOption' | 'mateAge', value: string) => {
+      setFeatures(prev => {
+        if (prev?.[key] === value) {
+          return { ...prev, [key]: undefined };
+        }
+        return { ...prev, [key]: value };
+      });
+      onFeatureChange(key, value);
+    },
+    [],
+  );
+
+  const [initialLocation, setInitialLocation] = useState('');
+  useEffect(() => {
+    if (location !== undefined && type === 'myCard') {
+      setInitialLocation(location);
+    }
+  }, [location]);
+
+  const [locationInput, setLocation] = useState('');
+  useEffect(() => {
+    setLocation(initialLocation);
+  }, [initialLocation]);
+
+  const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLocation(event.target.value);
   };
+  useEffect(() => {
+    onLocationChange(locationInput);
+  }, [locationInput]);
+
+  const [initialAge, setInitialAge] = useState<number>(0);
+  const [ageValue, setAgeValue] = useState<number>(0);
+
+  useEffect(() => {
+    if (vitalFeatures?.mateAge != null) setInitialAge(vitalFeatures.mateAge);
+  }, [vitalFeatures?.mateAge]);
+
+  useEffect(() => {
+    if (initialAge != null) setAgeValue(initialAge);
+  }, [initialAge]);
+
+  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAgeValue(Number(e.target.value));
+    onMateAgeChange(Number(e.target.value));
+  };
+
+  let ageValueString;
+  switch (ageValue) {
+    case 0:
+      ageValueString = '동갑';
+      break;
+    case 11:
+      ageValueString = '상관없어요';
+      break;
+    default:
+      ageValueString = `±${ageValue}년생`;
+  }
 
   return (
     <styles.vitalContainer>
@@ -243,15 +361,17 @@ export function VitalSection({
               <styles.mapInput
                 placeholder="ex) 한국동,한국역,한국대학교"
                 readOnly={!isMySelf}
+                value={locationInput ?? ''}
+                onChange={handleLocationChange}
               />
             </styles.searchBox>
           ) : (
             <CheckItem
               $isSelected
               style={{
-                border: gender === 'FEMALE' ? 'none' : '',
-                background: gender === 'FEMALE' ? 'var(--Gray-5, #828282)' : '',
-                color: gender === 'FEMALE' ? '#fff' : '',
+                border: 'none',
+                background: 'var(--Gray-5, #828282)',
+                color: '#fff',
               }}
             >
               {location}
@@ -264,30 +384,30 @@ export function VitalSection({
           </styles.vitalListItemDescription>
           <styles.vitalCheckListContainer>
             <CheckItem
-              $isSelected={selectedState.smoking === '흡연'}
+              $isSelected={features?.smoking === '흡연'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('smoking', '흡연');
+                  handleEssentialFeatureChange('smoking', '흡연');
                 }
               }}
             >
               흡연
             </CheckItem>
             <CheckItem
-              $isSelected={selectedState.smoking === '비흡연'}
+              $isSelected={features?.smoking === '비흡연'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('smoking', '비흡연');
+                  handleEssentialFeatureChange('smoking', '비흡연');
                 }
               }}
             >
               비흡연
             </CheckItem>
             <CheckItem
-              $isSelected={selectedState.smoking === '상관없어요'}
+              $isSelected={features?.smoking === '상관없어요'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('smoking', '상관없어요');
+                  handleEssentialFeatureChange('smoking', '상관없어요');
                 }
               }}
             >
@@ -301,30 +421,33 @@ export function VitalSection({
           </styles.vitalListItemDescription>
           <styles.vitalCheckListContainer>
             <CheckItem
-              $isSelected={selectedState.room === '같은 방'}
+              $isSelected={features?.roomSharingOption === '같은 방'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('room', '같은 방');
+                  handleEssentialFeatureChange('roomSharingOption', '같은 방');
                 }
               }}
             >
               같은 방
             </CheckItem>
             <CheckItem
-              $isSelected={selectedState.room === '다른 방'}
+              $isSelected={features?.roomSharingOption === '다른 방'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('room', '다른 방');
+                  handleEssentialFeatureChange('roomSharingOption', '다른 방');
                 }
               }}
             >
               다른 방
             </CheckItem>
             <CheckItem
-              $isSelected={selectedState.room === '상관없어요'}
+              $isSelected={features?.roomSharingOption === '상관없어요'}
               onClick={() => {
                 if (isMySelf) {
-                  handleOptionClick('room', '상관없어요');
+                  handleEssentialFeatureChange(
+                    'roomSharingOption',
+                    '상관없어요',
+                  );
                 }
               }}
             >
@@ -349,13 +472,27 @@ export function VitalSection({
               ))}
             </styles.birthYear>
           ) : (
-            <>
-              <Slider min={0} max={11} step={1} onChange={handleAgeChange} />
-              <styles.value>
-                {`${mateMinAge === 0 ? '동갑' : `±${mateMinAge}세`}`} ~{' '}
-                {`${mateMaxAge === 11 ? '무제한' : `±${mateMaxAge}세`}`}
-              </styles.value>
-            </>
+            <div
+              style={{
+                display: 'flex',
+                gap: '1rem',
+                alignItems: 'center',
+              }}
+            >
+              <styles.sliderContainer>
+                <styles.sliderTrack />
+                <styles.sliderFillTrack $fill={`${(ageValue / 11) * 100}%`} />
+                <styles.slider
+                  type="range"
+                  min={0}
+                  max={11}
+                  step={1}
+                  value={ageValue}
+                  onChange={handleAgeChange}
+                />
+              </styles.sliderContainer>
+              <styles.value>{ageValueString}</styles.value>
+            </div>
           )}
         </styles.vitalList>
       </styles.vitalListContainer>

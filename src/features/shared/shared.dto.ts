@@ -5,7 +5,6 @@ import {
 import { type SuccessBaseDTO } from '@/shared/types';
 
 export interface GetSharedPostsDTO extends SuccessBaseDTO {
-  message: string;
   data: {
     content: SharedPostListItem[];
     pageable: {
