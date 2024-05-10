@@ -17,7 +17,8 @@ import {
   type SharedPostsType,
 } from '@/entities/shared-posts-filter';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
-import { useDummyUsers, usePaging, useSharedPosts } from '@/features/shared';
+import { useRecommendationMate } from '@/features/recommendation';
+import { usePaging, useSharedPosts } from '@/features/shared';
 import { type GetSharedPostsDTO } from '@/features/shared/';
 
 const styles = {
@@ -119,7 +120,7 @@ export function SharedPostsPage() {
     useState<GetSharedPostsDTO | null>(null);
   const { setAuthUserData } = useAuthActions();
 
-  const { derivedFilter, reset: resetFilter } = useSharedPostsFilter();
+  const { filter, derivedFilter, reset: resetFilter } = useSharedPostsFilter();
   const { data: userData } = useUserData(auth?.accessToken != null);
 
   const {
@@ -142,11 +143,11 @@ export function SharedPostsPage() {
     page: page - 1,
   });
 
-  // const { data: recommendationMates } = useRecommendationMate({
-  //   memberId: auth?.user?.memberId ?? 'undefined',
-  //   cardType: filter.cardType ?? 'mate',
-  //   enabled: auth?.accessToken != null && selected === 'homeless',
-  // });
+  const { data: recommendationMates } = useRecommendationMate({
+    memberId: auth?.user?.memberId ?? 'undefined',
+    cardType: filter.cardType ?? 'mate',
+    enabled: auth?.accessToken != null && selected === 'homeless',
+  });
 
   useEffect(() => {
     resetFilter();
@@ -170,8 +171,6 @@ export function SharedPostsPage() {
       }
     }
   }, [userData, router, setAuthUserData]);
-
-  const users = useDummyUsers();
 
   return (
     <styles.container>
@@ -255,23 +254,11 @@ export function SharedPostsPage() {
         </>
       ) : (
         <styles.cards>
-          {/* {recommendationMates?.map(({ userId, name, similarity }) => (
+          {recommendationMates?.map(({ userId, name, similarity }) => (
             <Link href={`/profile/${userId}`} key={userId}>
               <UserCard name={name} percentage={Math.floor(similarity * 100)} />
             </Link>
-          ))} */}
-          {users?.map(
-            ({
-              userId,
-              data: {
-                authResponse: { name },
-              },
-            }) => (
-              <Link key={userId} href={`/profile/${userId}`}>
-                <UserCard name={name} percentage={50} />
-              </Link>
-            ),
-          )}
+          ))}
         </styles.cards>
       )}
     </styles.container>
