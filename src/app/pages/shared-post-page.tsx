@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { Bookmark, CircularProfileImage } from '@/components';
@@ -371,11 +371,36 @@ const styles = {
     font-weight: 600;
     line-height: 1.5rem;
   `,
+  modifyPostButton: styled.button`
+    all: unset;
+    cursor: pointer;
+
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 8px;
+    border: 1px solid var(--Gray-3, #888);
+    background: var(--White, #fff);
+
+    color: var(--Gray-3, #888);
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5rem;
+
+    align-self: end;
+  `,
 };
 
 export function SharedPostPage({ postId }: { postId: number }) {
   const auth = useAuthValue();
   const [, setMap] = useState<naver.maps.Map | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
 
   const [selected, setSelected] = useState<
     | {
@@ -416,15 +441,17 @@ export function SharedPostPage({ postId }: { postId: number }) {
   );
 
   useEffect(() => {
-    const center = new naver.maps.LatLng(37.6090857, 126.9966865);
-    setMap(
-      new naver.maps.Map('map', {
-        center,
-        disableKineticPan: false,
-        scrollWheel: false,
-      }),
-    );
-  }, []);
+    if (mapRef.current != null) {
+      const center = new naver.maps.LatLng(37.6090857, 126.9966865);
+      setMap(
+        new naver.maps.Map(mapRef.current, {
+          center,
+          disableKineticPan: false,
+          scrollWheel: false,
+        }),
+      );
+    }
+  }, [mapRef]);
 
   const [roomName, setRoomName] = useState<string>('');
 
@@ -520,8 +547,9 @@ export function SharedPostPage({ postId }: { postId: number }) {
           <styles.locationInfoContainer>
             <h2>위치 정보</h2>
             <p>{sharedPost.data.address.roadAddress}</p>
-            <div id="map" />
+            <div ref={mapRef} id="map" />
           </styles.locationInfoContainer>
+          <styles.modifyPostButton>수정하기</styles.modifyPostButton>
         </styles.postContainer>
         <styles.mateContainer>
           <styles.mates>
