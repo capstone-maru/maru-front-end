@@ -64,7 +64,7 @@ const styles = {
     width: 1rem;
     height: 1rem;
     flex-shrink: 0;
-    background: url('kebab-horizontal.svg') no-repeat;
+    background: url('/kebab-horizontal.svg') no-repeat;
     cursor: pointer;
   `,
   messageContainer: styled.div`

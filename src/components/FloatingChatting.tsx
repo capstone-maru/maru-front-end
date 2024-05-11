@@ -239,7 +239,7 @@ function FloatingChattingBox() {
   }, [message, isChatRoomOpen]);
 
   // const roomName = 'test2';
-  // const members = ['naver_htT4VdDRPKqGqKpnncpa71HCA4CVg5LdRC1cWZhCnF8'];
+  // const members = ['naver_hW_CDCYdU3NNTQWq_TV_MkpldnMZI6fOD1mnPo-V1NE'];
   // const { mutate: chattingCreate } = useCreateChatRoom(roomName, members);
 
   return (
@@ -262,12 +262,12 @@ function FloatingChattingBox() {
 
         <styles.chattingSection>
           {/* <button
-          onClick={() => {
-            chattingCreate();
-          }}
-        >
-          생성
-        </button> */}
+            onClick={() => {
+              chattingCreate();
+            }}
+          >
+            생성
+          </button> */}
           {chatRooms.map((room, index) => (
             <ChattingList
               key={index}
