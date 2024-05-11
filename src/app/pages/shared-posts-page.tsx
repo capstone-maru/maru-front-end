@@ -177,12 +177,10 @@ export function SharedPostsPage() {
       <styles.SharedPostsMenu selected={selected} handleSelect={setSelected} />
       <styles.createButtonRow>
         <SharedPostFilters selected={selected} />
-        {selected === 'hasRoom' || selected === 'dormitory' ? (
+        {(selected === 'hasRoom' || selected === 'dormitory') && (
           <Link href="/shared/writing">
             <styles.createButton>작성하기</styles.createButton>
           </Link>
-        ) : (
-          <></>
         )}
       </styles.createButtonRow>
       {selected === 'hasRoom' || selected === 'dormitory' ? (
