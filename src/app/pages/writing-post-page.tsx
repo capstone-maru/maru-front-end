@@ -608,8 +608,6 @@ export function WritingPostPage() {
           });
         }, []);
 
-        console.log(uploadedImages);
-
         if (postId == null) {
           createSharedPost(
             {

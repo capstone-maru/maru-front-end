@@ -15,10 +15,12 @@ import {
   useUnfollowUser,
 } from '@/features/profile';
 import {
+  useDeleteSharedPost,
   useScrapSharedPost,
   useSharedPost,
   useSharedPostProps,
 } from '@/features/shared';
+import { useToast } from '@/features/toast';
 import { getAge } from '@/shared';
 
 const styles = {
@@ -377,7 +379,14 @@ const styles = {
     font-weight: 600;
     line-height: 1.5rem;
   `,
-  modifyPostButton: styled.button`
+  rowForDeleteAndModify: styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+
+    align-self: end;
+  `,
+  postModifyButton: styled.button`
     all: unset;
     cursor: pointer;
 
@@ -398,8 +407,28 @@ const styles = {
     font-style: normal;
     font-weight: 600;
     line-height: 1.5rem;
+  `,
+  postDeleteButton: styled.div`
+    all: unset;
+    cursor: pointer;
 
-    align-self: end;
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 0.5rem;
+    background: #e15637;
+
+    color: #fff;
+    text-align: right;
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5rem;
   `,
 };
 
@@ -410,7 +439,10 @@ export function SharedPostPage({ postId }: { postId: number }) {
   const mapRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
+  const { createToast } = useToast();
   const { setStateWithPost } = useSharedPostProps();
+
+  const { mutate: deleteSharedPost } = useDeleteSharedPost();
 
   const [selected, setSelected] = useState<
     | {
@@ -568,14 +600,41 @@ export function SharedPostPage({ postId }: { postId: number }) {
           </styles.locationInfoContainer>
           {sharedPost.data.publisherAccount.memberId ===
             auth?.user?.memberId && (
-            <styles.modifyPostButton
-              onClick={() => {
-                setStateWithPost(sharedPost);
-                router.push('/shared/writing');
-              }}
-            >
-              수정하기
-            </styles.modifyPostButton>
+            <styles.rowForDeleteAndModify>
+              <styles.postModifyButton
+                onClick={() => {
+                  setStateWithPost(sharedPost);
+                  router.push('/shared/writing');
+                }}
+              >
+                수정하기
+              </styles.postModifyButton>
+              <styles.postDeleteButton
+                onClick={() => {
+                  deleteSharedPost(postId, {
+                    onSuccess: () => {
+                      createToast({
+                        message: '정상적으로 삭제되었습니다.',
+                        option: {
+                          duration: 3000,
+                        },
+                      });
+                      router.back();
+                    },
+                    onError: () => {
+                      createToast({
+                        message: '삭제하는데 실패하였습니다.',
+                        option: {
+                          duration: 3000,
+                        },
+                      });
+                    },
+                  });
+                }}
+              >
+                삭제하기
+              </styles.postDeleteButton>
+            </styles.rowForDeleteAndModify>
           )}
         </styles.postContainer>
         <styles.mateContainer>

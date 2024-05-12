@@ -347,20 +347,9 @@ export const useSharedPost = ({
     enabled,
   });
 
-export const useDeleteSharedPost = ({
-  postId,
-  onSuccess,
-  onError,
-}: {
-  postId: number;
-  onSuccess: (data: SuccessBaseDTO) => void;
-  onError: (error: Error) => void;
-}) =>
-  useMutation({
-    mutationFn: async () =>
-      await deleteSharedPost(postId).then(response => response.data),
-    onSuccess,
-    onError,
+export const useDeleteSharedPost = () =>
+  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, number>({
+    mutationFn: deleteSharedPost,
   });
 
 export const useScrapSharedPost = () =>
