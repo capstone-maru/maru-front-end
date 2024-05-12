@@ -44,7 +44,7 @@ export interface ImageFile {
   extension?: string;
 }
 
-export interface CreateSharedPostProps {
+export interface SharedPostProps {
   imageFilesData: Array<{
     fileName: string;
     isThumbNail: boolean;

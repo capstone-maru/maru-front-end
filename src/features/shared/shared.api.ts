@@ -6,10 +6,7 @@ import {
   type GetSharedPostDTO,
   type GetSharedPostsDTO,
 } from './shared.dto';
-import {
-  type CreateSharedPostProps,
-  type GetSharedPostsProps,
-} from './shared.type';
+import { type SharedPostProps, type GetSharedPostsProps } from './shared.type';
 
 import { type SuccessBaseDTO } from '@/shared/types';
 
@@ -38,8 +35,20 @@ export const getSharedPosts = async ({
   return await axios.get<GetSharedPostsDTO>(getURI());
 };
 
-export const createSharedPost = async (postData: CreateSharedPostProps) =>
+export const createSharedPost = async (postData: SharedPostProps) =>
   await axios.post<SuccessBaseDTO>(`/maru-api/shared/posts/studio`, postData);
+
+export const updateSharedPost = async ({
+  postId,
+  postData,
+}: {
+  postId: number;
+  postData: SharedPostProps;
+}) =>
+  await axios.put<SuccessBaseDTO>(
+    `/maru-api/shared/posts/studio/${postId}`,
+    postData,
+  );
 
 export const getSharedPost = async (postId: number) =>
   await axios.get<GetSharedPostDTO>(`/maru-api/shared/posts/studio/${postId}`);

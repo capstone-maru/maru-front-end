@@ -9,7 +9,7 @@ import {
 import { type NaverAddress } from '@/features/geocoding';
 
 export const sharedPostPropState = atom<{
-  mode: 'create' | 'modify';
+  postId?: number;
   title: string;
   content: string;
   images: ImageFile[];
@@ -22,7 +22,7 @@ export const sharedPostPropState = atom<{
 }>({
   key: 'sharedPostPropState',
   default: {
-    mode: 'create',
+    postId: undefined,
     title: '',
     content: '',
     images: [],

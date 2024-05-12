@@ -26,6 +26,7 @@ import {
   useCreateSharedPost,
   usePostMateCardInputSection,
   useSharedPostProps,
+  useUpdateSharedPost,
   type ImageFile,
 } from '@/features/shared';
 import { useToast } from '@/features/toast';
@@ -421,7 +422,7 @@ export function WritingPostPage() {
     useState<boolean>(false);
 
   const {
-    mode,
+    postId,
     title,
     content,
     images,
@@ -453,7 +454,9 @@ export function WritingPostPage() {
     handleOptionalFeatureChange,
   } = usePostMateCardInputSection();
 
-  const { mutate } = useCreateSharedPost();
+  const { mutate: createSharedPost } = useCreateSharedPost();
+  const { mutate: updateSharedPost } = useUpdateSharedPost();
+
   const { createToast } = useToast();
 
   const auth = useAuthValue();
@@ -586,7 +589,7 @@ export function WritingPostPage() {
 
         const putResults = await Promise.allSettled(
           urls.map(async ({ url, fileName, file, uploaded }) => {
-            if (uploaded) return { fileName };
+            if (uploaded) return { fileName: url };
 
             if (file != null) await putImage(url, file);
             return { fileName };
@@ -605,70 +608,128 @@ export function WritingPostPage() {
           });
         }, []);
 
-        console.log(selectedExtraOptions, {
-          canPark: selectedExtraOptions.canPark ?? false,
-          hasAirConditioner: selectedExtraOptions.hasAirConditioner ?? false,
-          hasRefrigerator: selectedExtraOptions.hasRefrigerator ?? false,
-          hasWasher: selectedExtraOptions.hasWasher ?? false,
-          hasTerrace: selectedExtraOptions.hasTerrace ?? false,
-        });
+        console.log(uploadedImages);
 
-        mutate(
-          {
-            imageFilesData: uploadedImages,
-            postData: { title, content },
-            transactionData: {
-              rentalType: dealTypeValue,
-              expectedPayment: expectedMonthlyFee,
+        if (postId == null) {
+          createSharedPost(
+            {
+              imageFilesData: uploadedImages,
+              postData: { title, content },
+              transactionData: {
+                rentalType: dealTypeValue,
+                expectedPayment: expectedMonthlyFee,
+              },
+              roomDetailData: {
+                roomType: roomTypeValue,
+                floorType: floorTypeValue,
+                size: houseSize,
+                numberOfRoom,
+                numberOfBathRoom,
+                hasLivingRoom: selectedOptions.livingRoom === '유',
+                recruitmentCapacity: mateLimit,
+                extraOption: {
+                  canPark: selectedExtraOptions.canPark ?? false,
+                  hasAirConditioner:
+                    selectedExtraOptions.hasAirConditioner ?? false,
+                  hasRefrigerator:
+                    selectedExtraOptions.hasRefrigerator ?? false,
+                  hasWasher: selectedExtraOptions.hasWasher ?? false,
+                  hasTerrace: selectedExtraOptions.hasTerrace ?? false,
+                },
+              },
+              locationData: {
+                oldAddress: address?.jibunAddress,
+                roadAddress: address?.roadAddress,
+              },
+              roomMateCardData: {
+                location: address?.roadAddress,
+                features: derivedFeatures,
+              },
+              participationMemberIds:
+                auth?.user != null ? [auth.user.memberId] : [],
             },
-            roomDetailData: {
-              roomType: roomTypeValue,
-              floorType: floorTypeValue,
-              size: houseSize,
-              numberOfRoom,
-              numberOfBathRoom,
-              hasLivingRoom: selectedOptions.livingRoom === '유',
-              recruitmentCapacity: mateLimit,
-              extraOption: {
-                canPark: selectedExtraOptions.canPark ?? false,
-                hasAirConditioner:
-                  selectedExtraOptions.hasAirConditioner ?? false,
-                hasRefrigerator: selectedExtraOptions.hasRefrigerator ?? false,
-                hasWasher: selectedExtraOptions.hasWasher ?? false,
-                hasTerrace: selectedExtraOptions.hasTerrace ?? false,
+            {
+              onSuccess: () => {
+                createToast({
+                  message: '게시글이 정상적으로 업로드되었습니다.',
+                  option: {
+                    duration: 3000,
+                  },
+                });
+                router.back();
+              },
+              onError: () => {
+                createToast({
+                  message: '게시글 업로드에 실패했습니다.',
+                  option: {
+                    duration: 3000,
+                  },
+                });
               },
             },
-            locationData: {
-              oldAddress: address?.jibunAddress,
-              roadAddress: address?.roadAddress,
-            },
-            roomMateCardData: {
-              location: address?.roadAddress,
-              features: derivedFeatures,
-            },
-            participationMemberIds:
-              auth?.user != null ? [auth.user.memberId] : [],
-          },
-          {
-            onSuccess: () => {
-              createToast({
-                message: '게시글이 정상적으로 업로드되었습니다.',
-                option: {
-                  duration: 3000,
+          );
+        } else if (postId != null) {
+          updateSharedPost(
+            {
+              postId,
+              postData: {
+                imageFilesData: uploadedImages,
+                postData: { title, content },
+                transactionData: {
+                  rentalType: dealTypeValue,
+                  expectedPayment: expectedMonthlyFee,
                 },
-              });
-              router.back();
-            },
-            onError: () => {
-              createToast({
-                message: '게시글 업로드에 실패했습니다.',
-                option: {
-                  duration: 3000,
+                roomDetailData: {
+                  roomType: roomTypeValue,
+                  floorType: floorTypeValue,
+                  size: houseSize,
+                  numberOfRoom,
+                  numberOfBathRoom,
+                  hasLivingRoom: selectedOptions.livingRoom === '유',
+                  recruitmentCapacity: mateLimit,
+                  extraOption: {
+                    canPark: selectedExtraOptions.canPark ?? false,
+                    hasAirConditioner:
+                      selectedExtraOptions.hasAirConditioner ?? false,
+                    hasRefrigerator:
+                      selectedExtraOptions.hasRefrigerator ?? false,
+                    hasWasher: selectedExtraOptions.hasWasher ?? false,
+                    hasTerrace: selectedExtraOptions.hasTerrace ?? false,
+                  },
                 },
-              });
+                locationData: {
+                  oldAddress: address?.jibunAddress,
+                  roadAddress: address?.roadAddress,
+                },
+                roomMateCardData: {
+                  location: address?.roadAddress,
+                  features: derivedFeatures,
+                },
+                participationMemberIds:
+                  auth?.user != null ? [auth.user.memberId] : [],
+              },
             },
-          },
-        );
+            {
+              onSuccess: () => {
+                createToast({
+                  message: '게시글이 정상적으로 수정되었습니다.',
+                  option: {
+                    duration: 3000,
+                  },
+                });
+                router.back();
+              },
+              onError: () => {
+                createToast({
+                  message: '게시글 수정에 실패했습니다.',
+                  option: {
+                    duration: 3000,
+                  },
+                });
+              },
+            },
+          );
+        }
       } catch (error) {
         createToast({
           message: '게시글 업로드에 실패했습니다.',
@@ -696,7 +757,7 @@ export function WritingPostPage() {
           <styles.row>
             <styles.optionCategory>기본 정보</styles.optionCategory>
             <styles.createButton onClick={handleCreatePost}>
-              {mode === 'create' ? '작성하기' : '수정하기'}
+              {postId == null ? '작성하기' : '수정하기'}
             </styles.createButton>
           </styles.row>
           <styles.optionCategory>제목</styles.optionCategory>

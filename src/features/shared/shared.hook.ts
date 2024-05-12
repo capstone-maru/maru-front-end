@@ -13,14 +13,15 @@ import {
   getSharedPosts,
   scrapDormitoryPost,
   scrapPost,
+  updateSharedPost,
 } from './shared.api';
 import { sharedPostPropState } from './shared.atom';
 import { type GetSharedPostDTO } from './shared.dto';
 import {
-  type SelectedExtraOptions,
-  type CreateSharedPostProps,
   type GetSharedPostsProps,
+  type SelectedExtraOptions,
   type SelectedOptions,
+  type SharedPostProps,
 } from './shared.type';
 import { fromAddrToCoord } from '../geocoding';
 
@@ -118,7 +119,7 @@ export const useSharedPostProps = () => {
     else if (data.roomInfo.numberOfBathRoom === 3) restRoomCount = '3개';
 
     setState({
-      mode: 'modify',
+      postId: data.id,
       title: data.title,
       content: data.content,
       images: data.roomImages.map(({ fileName }) => ({
@@ -300,11 +301,18 @@ export const usePostMateCardInputSection = () => {
 };
 
 export const useCreateSharedPost = () =>
-  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, CreateSharedPostProps>(
-    {
-      mutationFn: createSharedPost,
-    },
-  );
+  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, SharedPostProps>({
+    mutationFn: createSharedPost,
+  });
+
+export const useUpdateSharedPost = () =>
+  useMutation<
+    AxiosResponse<SuccessBaseDTO>,
+    FailureDTO,
+    { postId: number; postData: SharedPostProps }
+  >({
+    mutationFn: updateSharedPost,
+  });
 
 export const useSharedPosts = ({
   filter,
