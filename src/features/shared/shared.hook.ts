@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { type AxiosResponse } from 'axios';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRecoilState, useResetRecoilState } from 'recoil';
 
 import {
   createSharedPost,
@@ -13,16 +14,16 @@ import {
   scrapDormitoryPost,
   scrapPost,
 } from './shared.api';
+import { sharedPostPropState } from './shared.atom';
+import { type GetSharedPostDTO } from './shared.dto';
 import {
   type CreateSharedPostProps,
   type GetSharedPostsProps,
-  type ImageFile,
-  type SelectedExtraOptions,
   type SelectedOptions,
 } from './shared.type';
+import { fromAddrToCoord } from '../geocoding';
 
 import { useAuthValue } from '@/features/auth';
-import { type NaverAddress } from '@/features/geocoding';
 import { useDebounce } from '@/shared/debounce';
 import { type FailureDTO, type SuccessBaseDTO } from '@/shared/types';
 
@@ -93,126 +94,98 @@ export const usePaging = ({
   );
 };
 
-export const useCreateSharedPostProps = () => {
-  const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
-  const [images, setImages] = useState<ImageFile[]>([]);
-  const [address, setAddress] = useState<NaverAddress | null>(null);
+export const useSharedPostProps = () => {
+  const [state, setState] = useRecoilState(sharedPostPropState);
+  const reset = useResetRecoilState(sharedPostPropState);
 
-  const [mateLimit, setMateLimit] = useState(0);
-  const [expectedMonthlyFee, setExpectedMonthlyFee] = useState<number>(0);
+  const setStateWithPost = ({ data }: GetSharedPostDTO) => {
+    fromAddrToCoord({ query: data.address.roadAddress })
+      .then(res => {
+        const address = res.data.addresses.shift();
+        if (address != null) setState(prev => ({ ...prev, address }));
+      })
+      .catch(err => {
+        console.error(err);
+      });
 
-  const [houseSize, setHouseSize] = useState<number>(0);
-  const [selectedExtraOptions, setSelectedExtraOptions] =
-    useState<SelectedExtraOptions>({});
-  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+    let roomCount = '1개';
+    if (data.roomInfo.numberOfRoom === 2) roomCount = '2개';
+    else if (data.roomInfo.numberOfRoom === 3) roomCount = '3개 이상';
 
-  const handleExtraOptionClick = useCallback((option: string) => {
-    setSelectedExtraOptions(prevSelectedOptions => ({
-      ...prevSelectedOptions,
-      [option]: !prevSelectedOptions[option],
+    let restRoomCount = '1개';
+    if (data.roomInfo.numberOfBathRoom === 2) restRoomCount = '2개';
+    else if (data.roomInfo.numberOfBathRoom === 3) restRoomCount = '3개';
+
+    setState({
+      mode: 'modify',
+      title: data.title,
+      content: data.content,
+      images: data.roomImages.map(({ fileName }) => ({
+        url: fileName,
+        uploaded: true,
+      })),
+      mateLimit: data.roomInfo.recruitmentCapacity,
+      expectedMonthlyFee: data.roomInfo.expectedPayment,
+      houseSize: data.roomInfo.size,
+      selectedOptions: {
+        roomType: data.roomInfo.roomType,
+        roomCount,
+        budget: data.roomInfo.rentalType,
+        floorType: data.roomInfo.floorType,
+        livingRoom: data.roomInfo.hasLivingRoom ? '유' : '무',
+        restRoomCount,
+      },
+      selectedExtraOptions: {
+        주차가능: data.roomInfo.extraOption.canPark,
+        에어컨: data.roomInfo.extraOption.hasAirConditioner,
+        냉장고: data.roomInfo.extraOption.hasRefrigerator,
+        세탁기: data.roomInfo.extraOption.hasWasher,
+        '베란다/테라스': data.roomInfo.extraOption.hasTerrace,
+      },
+    });
+  };
+
+  const handleOptionClick = (
+    optionName: keyof SelectedOptions,
+    item: string,
+  ) => {
+    console.log(state.selectedOptions, optionName, item);
+    setState(prev => ({
+      ...prev,
+      selectedOptions: {
+        ...prev.selectedOptions,
+        [optionName]: prev.selectedOptions[optionName] === item ? null : item,
+      },
     }));
-  }, []);
+  };
 
-  const handleOptionClick = useCallback(
-    (optionName: keyof SelectedOptions, item: string) => {
-      setSelectedOptions(prevState => ({
-        ...prevState,
-        [optionName]: prevState[optionName] === item ? null : item,
-      }));
-    },
-    [],
-  );
+  const handleExtraOptionClick = (option: string) => {
+    console.log(state.selectedExtraOptions, option);
+    setState(prev => ({
+      ...prev,
+      selectedExtraOptions: {
+        ...prev.selectedExtraOptions,
+        [option]: !prev.selectedExtraOptions[option],
+      },
+    }));
+  };
 
-  const isOptionSelected = useCallback(
-    (optionName: keyof SelectedOptions, item: string) =>
-      selectedOptions[optionName] === item,
-    [selectedOptions],
-  );
+  const isOptionSelected = (optionName: keyof SelectedOptions, item: string) =>
+    state.selectedOptions[optionName] === item;
 
-  const isExtraOptionSelected = useCallback(
-    (item: string) => selectedExtraOptions[item],
-    [selectedExtraOptions],
-  );
+  const isExtraOptionSelected = (item: string) =>
+    state.selectedExtraOptions[item];
 
-  const isPostCreatable = useMemo(
-    () =>
-      images.length > 0 &&
-      title.trim().length > 0 &&
-      content.trim().length > 0 &&
-      selectedOptions.budget != null &&
-      expectedMonthlyFee > 0 &&
-      selectedOptions.roomType != null &&
-      houseSize > 0 &&
-      selectedOptions.roomCount != null &&
-      selectedOptions.restRoomCount != null &&
-      selectedOptions.livingRoom != null &&
-      mateLimit > 0 &&
-      address != null,
-    [
-      images,
-      title,
-      content,
-      selectedOptions,
-      expectedMonthlyFee,
-      houseSize,
-      mateLimit,
-      address,
-    ],
-  );
-
-  return useMemo(
-    () => ({
-      title,
-      setTitle,
-      content,
-      setContent,
-      images,
-      setImages,
-      address,
-      setAddress,
-      mateLimit,
-      setMateLimit,
-      expectedMonthlyFee,
-      setExpectedMonthlyFee,
-      houseSize,
-      setHouseSize,
-      selectedExtraOptions,
-      setSelectedExtraOptions,
-      selectedOptions,
-      setSelectedOptions,
-      handleOptionClick,
-      handleExtraOptionClick,
-      isOptionSelected,
-      isExtraOptionSelected,
-      isPostCreatable,
-    }),
-    [
-      title,
-      setTitle,
-      content,
-      setContent,
-      images,
-      setImages,
-      address,
-      setAddress,
-      mateLimit,
-      setMateLimit,
-      expectedMonthlyFee,
-      setExpectedMonthlyFee,
-      houseSize,
-      setHouseSize,
-      selectedExtraOptions,
-      setSelectedExtraOptions,
-      selectedOptions,
-      setSelectedOptions,
-      handleOptionClick,
-      handleExtraOptionClick,
-      isOptionSelected,
-      isExtraOptionSelected,
-      isPostCreatable,
-    ],
-  );
+  return {
+    ...state,
+    setSharedPostProps: setState,
+    setStateWithPost,
+    reset,
+    handleOptionClick,
+    handleExtraOptionClick,
+    isOptionSelected,
+    isExtraOptionSelected,
+  };
 };
 
 export const usePostMateCardInputSection = () => {

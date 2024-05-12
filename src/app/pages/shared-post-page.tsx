@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
@@ -7,12 +8,17 @@ import { Bookmark, CircularProfileImage } from '@/components';
 import { ImageGrid } from '@/components/shared-post-page';
 import { useAuthValue, useUserData } from '@/features/auth';
 import { useCreateChatRoom } from '@/features/chat';
+import { fromAddrToCoord } from '@/features/geocoding';
 import {
   useFollowUser,
   useFollowingListData,
   useUnfollowUser,
 } from '@/features/profile';
-import { useScrapSharedPost, useSharedPost } from '@/features/shared';
+import {
+  useScrapSharedPost,
+  useSharedPost,
+  useSharedPostProps,
+} from '@/features/shared';
 import { getAge } from '@/shared';
 
 const styles = {
@@ -399,8 +405,12 @@ const styles = {
 
 export function SharedPostPage({ postId }: { postId: number }) {
   const auth = useAuthValue();
+
   const [, setMap] = useState<naver.maps.Map | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter();
+  const { setStateWithPost } = useSharedPostProps();
 
   const [selected, setSelected] = useState<
     | {
@@ -441,17 +451,24 @@ export function SharedPostPage({ postId }: { postId: number }) {
   );
 
   useEffect(() => {
-    if (mapRef.current != null) {
-      const center = new naver.maps.LatLng(37.6090857, 126.9966865);
-      setMap(
-        new naver.maps.Map(mapRef.current, {
-          center,
-          disableKineticPan: false,
-          scrollWheel: false,
-        }),
+    if (sharedPost?.data.address.roadAddress != null) {
+      fromAddrToCoord({ query: sharedPost?.data.address.roadAddress }).then(
+        res => {
+          const address = res.data.addresses.shift();
+          if (address != null && mapRef.current != null) {
+            const center = new naver.maps.LatLng(+address.y, +address.x);
+            setMap(
+              new naver.maps.Map(mapRef.current, {
+                center,
+                disableKineticPan: false,
+                scrollWheel: false,
+              }),
+            );
+          }
+        },
       );
     }
-  }, [mapRef]);
+  }, [sharedPost]);
 
   const [roomName, setRoomName] = useState<string>('');
 
@@ -549,7 +566,17 @@ export function SharedPostPage({ postId }: { postId: number }) {
             <p>{sharedPost.data.address.roadAddress}</p>
             <div ref={mapRef} id="map" />
           </styles.locationInfoContainer>
-          <styles.modifyPostButton>수정하기</styles.modifyPostButton>
+          {sharedPost.data.publisherAccount.memberId ===
+            auth?.user?.memberId && (
+            <styles.modifyPostButton
+              onClick={() => {
+                setStateWithPost(sharedPost);
+                router.push('/shared/writing');
+              }}
+            >
+              수정하기
+            </styles.modifyPostButton>
+          )}
         </styles.postContainer>
         <styles.mateContainer>
           <styles.mates>

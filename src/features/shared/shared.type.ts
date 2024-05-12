@@ -33,8 +33,9 @@ export type SelectedExtraOptions = Record<string, boolean>;
 
 export interface ImageFile {
   url: string;
-  file: File;
-  extension: string;
+  uploaded: boolean;
+  file?: File;
+  extension?: string;
 }
 
 export interface CreateSharedPostProps {

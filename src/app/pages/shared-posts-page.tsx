@@ -18,7 +18,11 @@ import {
 } from '@/entities/shared-posts-filter';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
 import { useRecommendationMate } from '@/features/recommendation';
-import { usePaging, useSharedPosts } from '@/features/shared';
+import {
+  usePaging,
+  useSharedPostProps,
+  useSharedPosts,
+} from '@/features/shared';
 import { type GetSharedPostsDTO } from '@/features/shared/';
 
 const styles = {
@@ -120,6 +124,8 @@ export function SharedPostsPage() {
     useState<GetSharedPostsDTO | null>(null);
   const { setAuthUserData } = useAuthActions();
 
+  const { reset: resetSharedPostProps } = useSharedPostProps();
+
   const { filter, derivedFilter, reset: resetFilter } = useSharedPostsFilter();
   const { data: userData } = useUserData(auth?.accessToken != null);
 
@@ -178,9 +184,14 @@ export function SharedPostsPage() {
       <styles.createButtonRow>
         <SharedPostFilters selected={selected} />
         {(selected === 'hasRoom' || selected === 'dormitory') && (
-          <Link href="/shared/writing">
-            <styles.createButton>작성하기</styles.createButton>
-          </Link>
+          <styles.createButton
+            onClick={() => {
+              resetSharedPostProps();
+              router.push('/shared/writing');
+            }}
+          >
+            작성하기
+          </styles.createButton>
         )}
       </styles.createButtonRow>
       {selected === 'hasRoom' || selected === 'dormitory' ? (

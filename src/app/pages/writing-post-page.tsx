@@ -10,22 +10,22 @@ import {
   MateSearchBox,
 } from '@/components/writing-post-page';
 import {
-  CountTypeValue,
-  type DealType,
-  DealTypeValue,
-  RoomTypeValue,
-  type RoomType,
-  FloorTypeValue,
-  type FloorType,
   AdditionalInfoTypeValue,
+  CountTypeValue,
+  DealTypeValue,
+  FloorTypeValue,
   LivingRoomTypeValue,
+  RoomTypeValue,
+  type DealType,
+  type FloorType,
+  type RoomType,
 } from '@/entities/shared-posts-filter';
 import { useAuthValue } from '@/features/auth';
 import { getImageURL, putImage } from '@/features/image';
 import {
   useCreateSharedPost,
-  useCreateSharedPostProps,
   usePostMateCardInputSection,
+  useSharedPostProps,
   type ImageFile,
 } from '@/features/shared';
 import { useToast } from '@/features/toast';
@@ -68,9 +68,11 @@ const styles = {
 
     .column {
       display: flex;
+      width: 100%;
       flex-direction: column;
       gap: 1rem;
-      flex: 1 0 0;
+
+      overflow-x: auto;
     }
   `,
   mateCardContainer: styled.div`
@@ -284,19 +286,21 @@ const styles = {
   `,
   images: styled.div`
     display: flex;
+    width: fit-content;
     align-items: center;
     align-self: stretch;
     gap: 1rem;
 
     overflow-x: auto;
   `,
-  image: styled.img`
+  image: styled.div<{ $url: string }>`
     width: 14.4375rem;
     height: 9.875rem;
     background: #ededed;
 
-    object-fit: cover;
-    object-position: center;
+    background-image: ${({ $url }) => `url("${$url}")`};
+    background-position: center;
+    background-size: cover;
 
     cursor: pointer;
   `,
@@ -417,6 +421,7 @@ export function WritingPostPage() {
     useState<boolean>(false);
 
   const {
+    mode,
     title,
     content,
     images,
@@ -426,18 +431,12 @@ export function WritingPostPage() {
     selectedOptions,
     selectedExtraOptions,
     expectedMonthlyFee,
-    setTitle,
-    setContent,
-    setImages,
-    setMateLimit,
-    setHouseSize,
-    setAddress,
-    setExpectedMonthlyFee,
+    setSharedPostProps,
     handleOptionClick,
     handleExtraOptionClick,
     isOptionSelected,
     isExtraOptionSelected,
-  } = useCreateSharedPostProps();
+  } = useSharedPostProps();
 
   const {
     gender,
@@ -462,13 +461,19 @@ export function WritingPostPage() {
   const handleTitleInputChanged = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setTitle(event.target.value);
+    setSharedPostProps(prev => ({
+      ...prev,
+      title: event.target.value,
+    }));
   };
 
   const handleContentInputChanged = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    setContent(event.target.value);
+    setSharedPostProps(prev => ({
+      ...prev,
+      content: event.target.value,
+    }));
   };
 
   const handleImageInputClicked = () => {
@@ -482,13 +487,21 @@ export function WritingPostPage() {
         file,
         url: URL.createObjectURL(file),
         extension: `.${file.type.split('/')[1]}`,
+        uploaded: false,
       }));
-      setImages(prevImages => [...prevImages, ...imagesArray]);
+
+      setSharedPostProps(prev => ({
+        ...prev,
+        images: [...prev.images, ...imagesArray],
+      }));
     }
   };
 
   const handleRemoveImage = (removeImage: ImageFile) => {
-    setImages(prev => prev.filter(image => image.url !== removeImage.url));
+    setSharedPostProps(prev => ({
+      ...prev,
+      images: prev.images.filter(image => image.url !== removeImage.url),
+    }));
   };
 
   const convertToNumber = (value: string) => {
@@ -548,33 +561,43 @@ export function WritingPostPage() {
     (async () => {
       try {
         const getResults = await Promise.allSettled(
-          images.map(async ({ extension, file }) => {
+          images.map(async ({ url, extension, file, uploaded }) => {
+            if (uploaded || extension == null) return { url, uploaded };
             const result = await getImageURL(extension);
             return {
               ...result.data.data,
+              uploaded,
               file,
             };
           }),
         );
 
         const urls = getResults.reduce<
-          Array<{ file: File; fileName: string; url: string }>
+          Array<{
+            file?: File;
+            fileName?: string;
+            url: string;
+            uploaded: boolean;
+          }>
         >((prev, result) => {
           if (result.status === 'rejected') return prev;
           return prev.concat(result.value);
         }, []);
 
         const putResults = await Promise.allSettled(
-          urls.map(async url => {
-            await putImage(url.url, url.file);
-            return { fileName: url.fileName };
+          urls.map(async ({ url, fileName, file, uploaded }) => {
+            if (uploaded) return { fileName };
+
+            if (file != null) await putImage(url, file);
+            return { fileName };
           }),
         );
 
         const uploadedImages = putResults.reduce<
           Array<{ fileName: string; isThumbNail: boolean; order: number }>
         >((prev, result) => {
-          if (result.status === 'rejected') return prev;
+          if (result.status === 'rejected' || result.value.fileName == null)
+            return prev;
           return prev.concat({
             fileName: result.value.fileName,
             isThumbNail: prev.length === 0,
@@ -665,7 +688,7 @@ export function WritingPostPage() {
           <styles.row>
             <styles.optionCategory>기본 정보</styles.optionCategory>
             <styles.createButton onClick={handleCreatePost}>
-              작성하기
+              {mode === 'create' ? '작성하기' : '수정하기'}
             </styles.createButton>
           </styles.row>
           <styles.optionCategory>제목</styles.optionCategory>
@@ -694,7 +717,10 @@ export function WritingPostPage() {
           {showLocationSearchBox && (
             <LocationSearchBox
               onSelect={selectedAddress => {
-                setAddress(selectedAddress);
+                setSharedPostProps(prev => ({
+                  ...prev,
+                  address: selectedAddress,
+                }));
                 setShowLocationSearchBox(false);
               }}
               setHidden={() => {
@@ -720,7 +746,7 @@ export function WritingPostPage() {
                 {images.map(image => (
                   <styles.image
                     key={image.url}
-                    src={image.url}
+                    $url={image.url}
                     onClick={() => {
                       handleRemoveImage(image);
                     }}
@@ -746,7 +772,10 @@ export function WritingPostPage() {
                   value={mateLimit}
                   onChange={event => {
                     handleNumberInput(event.target.value, value => {
-                      setMateLimit(value);
+                      setSharedPostProps(prev => ({
+                        ...prev,
+                        mateLimit: value,
+                      }));
                     });
                   }}
                   $width={3}
@@ -833,7 +862,10 @@ export function WritingPostPage() {
               value={expectedMonthlyFee}
               onChange={event => {
                 handleNumberInput(event.target.value, value => {
-                  setExpectedMonthlyFee(value);
+                  setSharedPostProps(prev => ({
+                    ...prev,
+                    expectedMonthlyFee: value,
+                  }));
                 });
               }}
               $width={3}
@@ -933,7 +965,10 @@ export function WritingPostPage() {
               value={houseSize}
               onChange={event => {
                 handleNumberInput(event.target.value, value => {
-                  setHouseSize(value);
+                  setSharedPostProps(prev => ({
+                    ...prev,
+                    houseSize: value,
+                  }));
                 });
               }}
               $width={2}
