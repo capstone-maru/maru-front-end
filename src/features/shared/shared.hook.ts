@@ -119,6 +119,7 @@ export const useSharedPostProps = () => {
     else if (data.roomInfo.numberOfBathRoom === 3) restRoomCount = '3개';
 
     setState({
+      type: state.type,
       postId: data.id,
       title: data.title,
       content: data.content,
@@ -206,24 +207,21 @@ export const usePostMateCardInputSection = () => {
     options: Set<string>;
   }>({ options: new Set() });
 
-  const handleEssentialFeatureChange = useCallback(
-    (
-      key: 'smoking' | 'roomSharingOption' | 'mateAge',
-      value: string | number | undefined,
-    ) => {
-      setFeatures(prev => {
-        if (prev[key] === value) {
-          const newFeatures = { ...prev };
-          newFeatures[key] = undefined;
-          return newFeatures;
-        }
-        return { ...prev, [key]: value };
-      });
-    },
-    [],
-  );
+  const handleEssentialFeatureChange = (
+    key: 'smoking' | 'roomSharingOption' | 'mateAge',
+    value: string | number | undefined,
+  ) => {
+    setFeatures(prev => {
+      if (prev[key] === value) {
+        const newFeatures = { ...prev };
+        newFeatures[key] = undefined;
+        return newFeatures;
+      }
+      return { ...prev, [key]: value };
+    });
+  };
 
-  const handleOptionalFeatureChange = useCallback((option: string) => {
+  const handleOptionalFeatureChange = (option: string) => {
     setFeatures(prev => {
       const { options } = prev;
       const newOptions = new Set(options);
@@ -233,7 +231,7 @@ export const usePostMateCardInputSection = () => {
 
       return { ...prev, options: newOptions };
     });
-  }, []);
+  };
 
   const derivedFeatures = useMemo(() => {
     const options: string[] = [];
@@ -254,50 +252,23 @@ export const usePostMateCardInputSection = () => {
     }
   }, [auth?.user]);
 
-  const isMateCardCreatable = useMemo(
-    () =>
-      gender != null && birthYear != null && location != null && budget != null,
-    [gender, birthYear, location, budget],
-  );
-
-  return useMemo(
-    () => ({
-      gender,
-      setGender,
-      birthYear,
-      setBirthYear,
-      location,
-      setLocation,
-      mbti,
-      setMbti,
-      major,
-      setMajor,
-      budget,
-      setBudget,
-      derivedFeatures,
-      handleEssentialFeatureChange,
-      handleOptionalFeatureChange,
-      isMateCardCreatable,
-    }),
-    [
-      gender,
-      setGender,
-      birthYear,
-      setBirthYear,
-      location,
-      setLocation,
-      mbti,
-      setMbti,
-      major,
-      setMajor,
-      budget,
-      setBudget,
-      derivedFeatures,
-      handleEssentialFeatureChange,
-      handleOptionalFeatureChange,
-      isMateCardCreatable,
-    ],
-  );
+  return {
+    gender,
+    setGender,
+    birthYear,
+    setBirthYear,
+    location,
+    setLocation,
+    mbti,
+    setMbti,
+    major,
+    setMajor,
+    budget,
+    setBudget,
+    derivedFeatures,
+    handleEssentialFeatureChange,
+    handleOptionalFeatureChange,
+  };
 };
 
 export const useCreateSharedPost = () =>

@@ -9,6 +9,7 @@ import {
 import { type NaverAddress } from '@/features/geocoding';
 
 export const sharedPostPropState = atom<{
+  type: 'hasRoom' | 'dormitory';
   postId?: number;
   title: string;
   content: string;
@@ -22,6 +23,7 @@ export const sharedPostPropState = atom<{
 }>({
   key: 'sharedPostPropState',
   default: {
+    type: 'hasRoom',
     postId: undefined,
     title: '',
     content: '',

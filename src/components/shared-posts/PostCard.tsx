@@ -4,7 +4,10 @@ import styled from 'styled-components';
 
 import { HorizontalDivider } from '..';
 
-import { type SharedPostListItem } from '@/entities/shared-post';
+import {
+  type DormitorySharedPostListItem,
+  type SharedPostListItem,
+} from '@/entities/shared-post';
 
 const styles = {
   container: styled.div`
@@ -120,24 +123,32 @@ const styles = {
   `,
 };
 
-export function PostCard({ post }: { post: SharedPostListItem }) {
+export function PostCard({
+  post,
+  onClick,
+}: {
+  post: SharedPostListItem | DormitorySharedPostListItem;
+  onClick: () => void;
+}) {
   return (
     <div>
-      <styles.container>
+      <styles.container onClick={onClick}>
         <styles.thumbnail alt="" src={post.thumbnail.fileName} />
         <styles.content>
           <div>
             <h1>{post.title}</h1>
             <h2>{post.address.roadAddress}</h2>
           </div>
-          <div>
-            <p>모집 {post.roomInfo.recruitmentCapacity}명</p>
-            <p>
-              {post.roomInfo.roomType} · 방 {post.roomInfo.numberOfRoom} ·
-              화장실 {post.roomInfo.numberOfBathRoom}
-            </p>
-            <p>희망 월 분담금 {post.roomInfo.expectedPayment}</p>
-          </div>
+          {'roomInfo' in post && (
+            <div>
+              <p>모집 {post.roomInfo.recruitmentCapacity}명</p>
+              <p>
+                {post.roomInfo.roomType} · 방 {post.roomInfo.numberOfRoom} ·
+                화장실 {post.roomInfo.numberOfBathRoom}
+              </p>
+              <p>희망 월 분담금 {post.roomInfo.expectedPayment}만원</p>
+            </div>
+          )}
         </styles.content>
         <styles.writer>
           <img alt="" src={post.publisherAccount.profileImageFileName} />

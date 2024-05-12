@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { CircularButton } from '@/components';
@@ -19,11 +19,13 @@ import {
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
 import { useRecommendationMate } from '@/features/recommendation';
 import {
+  useDormitorySharedPosts,
   usePaging,
   useSharedPostProps,
   useSharedPosts,
+  type GetDormitorySharedPostsDTO,
+  type GetSharedPostsDTO,
 } from '@/features/shared';
-import { type GetSharedPostsDTO } from '@/features/shared/';
 
 const styles = {
   container: styled.div`
@@ -120,11 +122,13 @@ export function SharedPostsPage() {
   const auth = useAuthValue();
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
   const [totalPageCount, setTotalPageCount] = useState(0);
-  const [prevSharedPosts, setPrevSharedPosts] =
-    useState<GetSharedPostsDTO | null>(null);
+  const [prevSharedPosts, setPrevSharedPosts] = useState<
+    GetSharedPostsDTO | GetDormitorySharedPostsDTO | null
+  >(null);
   const { setAuthUserData } = useAuthActions();
 
-  const { reset: resetSharedPostProps } = useSharedPostProps();
+  const { setSharedPostProps, reset: resetSharedPostProps } =
+    useSharedPostProps();
 
   const { filter, derivedFilter, reset: resetFilter } = useSharedPostsFilter();
   const { data: userData } = useUserData(auth?.accessToken != null);
@@ -149,6 +153,17 @@ export function SharedPostsPage() {
     page: page - 1,
   });
 
+  const { data: dormitorySharedPosts } = useDormitorySharedPosts({
+    filter: derivedFilter,
+    enabled: auth?.accessToken != null && selected === 'dormitory',
+    page: page - 1,
+  });
+
+  const posts = useMemo(
+    () => (selected === 'hasRoom' ? sharedPosts : dormitorySharedPosts),
+    [selected, sharedPosts, dormitorySharedPosts],
+  );
+
   const { data: recommendationMates } = useRecommendationMate({
     memberId: auth?.user?.memberId ?? 'undefined',
     cardType: filter.cardType ?? 'mate',
@@ -160,14 +175,17 @@ export function SharedPostsPage() {
     return () => {
       resetFilter();
     };
-  }, [resetFilter]);
+  }, [selected, resetFilter]);
 
   useEffect(() => {
-    if (sharedPosts != null) {
+    if (selected === 'hasRoom' && sharedPosts != null) {
       setTotalPageCount(sharedPosts.data.totalPages);
       setPrevSharedPosts(null);
+    } else if (selected === 'dormitory' && dormitorySharedPosts != null) {
+      setTotalPageCount(dormitorySharedPosts.data.totalPages);
+      setPrevSharedPosts(null);
     }
-  }, [sharedPosts]);
+  }, [selected, dormitorySharedPosts, sharedPosts]);
 
   useEffect(() => {
     if (userData != null) {
@@ -187,6 +205,7 @@ export function SharedPostsPage() {
           <styles.createButton
             onClick={() => {
               resetSharedPostProps();
+              setSharedPostProps(prev => ({ ...prev, type: selected }));
               router.push('/shared/writing');
             }}
           >
@@ -199,17 +218,27 @@ export function SharedPostsPage() {
           <styles.posts>
             {prevSharedPosts != null
               ? prevSharedPosts.data.content.map(post => (
-                  <Link key={post.id} href={`/shared/${post.id}`}>
-                    <PostCard post={post} />
-                  </Link>
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onClick={() => {
+                      router.push(`/shared/${post.id}`);
+                      setSharedPostProps(prev => ({ ...prev, type: selected }));
+                    }}
+                  />
                 ))
-              : sharedPosts?.data.content.map(post => (
-                  <Link key={post.id} href={`/shared/${post.id}`}>
-                    <PostCard post={post} />
-                  </Link>
+              : posts?.data.content.map(post => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onClick={() => {
+                      router.push(`/shared/${post.id}`);
+                      setSharedPostProps(prev => ({ ...prev, type: selected }));
+                    }}
+                  />
                 ))}
           </styles.posts>
-          {sharedPosts?.data.content.length !== 0 && (
+          {posts?.data.content.length !== 0 && (
             <styles.pagingRow>
               <styles.CircularButton
                 direction="left"

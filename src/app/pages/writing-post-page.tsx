@@ -38,6 +38,7 @@ const styles = {
     padding: 2rem 10rem;
     width: 100%;
 
+    min-height: 100dvh;
     max-height: fit-content;
 
     background: var(--background, #f7f6f9);
@@ -422,6 +423,7 @@ export function WritingPostPage() {
     useState<boolean>(false);
 
   const {
+    type,
     postId,
     title,
     content,
@@ -907,142 +909,148 @@ export function WritingPostPage() {
             )}
           </styles.mateCardContainer>
         </styles.essentialInfoContainer>
-        <styles.dealInfoContainer>
-          <styles.optionCategory>거래 정보</styles.optionCategory>
-          <styles.option>거래 방식</styles.option>
-          <styles.optionRow>
-            {Object.keys(DealTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('budget', option)}
-                  onClick={() => {
-                    handleOptionClick('budget', option);
+        {type === 'hasRoom' && (
+          <>
+            <styles.dealInfoContainer>
+              <styles.optionCategory>거래 정보</styles.optionCategory>
+              <styles.option>거래 방식</styles.option>
+              <styles.optionRow>
+                {Object.keys(DealTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('budget', option)}
+                      onClick={() => {
+                        handleOptionClick('budget', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>희망 메이트 월 분담금</styles.option>
+              <styles.inputContainer>
+                <styles.input
+                  value={expectedMonthlyFee}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setSharedPostProps(prev => ({
+                        ...prev,
+                        expectedMonthlyFee: value,
+                      }));
+                    });
                   }}
+                  $width={3}
                 />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>희망 메이트 월 분담금</styles.option>
-          <styles.inputContainer>
-            <styles.input
-              value={expectedMonthlyFee}
-              onChange={event => {
-                handleNumberInput(event.target.value, value => {
-                  setSharedPostProps(prev => ({
-                    ...prev,
-                    expectedMonthlyFee: value,
-                  }));
-                });
-              }}
-              $width={3}
-            />
-            <styles.inputPlaceholder>만원</styles.inputPlaceholder>
-          </styles.inputContainer>
-        </styles.dealInfoContainer>
-        <styles.roomInfoContainer>
-          <styles.optionCategory>방 정보</styles.optionCategory>
-          <styles.option>층</styles.option>
-          <styles.optionRow>
-            {Object.keys(FloorTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('floorType', option)}
-                  onClick={() => {
-                    handleOptionClick('floorType', option);
+                <styles.inputPlaceholder>만원</styles.inputPlaceholder>
+              </styles.inputContainer>
+            </styles.dealInfoContainer>
+            <styles.roomInfoContainer>
+              <styles.optionCategory>방 정보</styles.optionCategory>
+              <styles.option>층</styles.option>
+              <styles.optionRow>
+                {Object.keys(FloorTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('floorType', option)}
+                      onClick={() => {
+                        handleOptionClick('floorType', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>추가 옵션</styles.option>
+              <styles.optionRow>
+                {Object.entries(AdditionalInfoTypeValue).map(
+                  ([option, value]) => (
+                    <styles.optionButtonContainer key={option}>
+                      <styles.customCheckBox
+                        $isSelected={isExtraOptionSelected(value)}
+                        onClick={() => {
+                          handleExtraOptionClick(value);
+                        }}
+                      />
+                      <span>{option}</span>
+                    </styles.optionButtonContainer>
+                  ),
+                )}
+              </styles.optionRow>
+              <styles.option>방 종류</styles.option>
+              <styles.optionRow>
+                {Object.keys(RoomTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('roomType', option)}
+                      onClick={() => {
+                        handleOptionClick('roomType', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>거실</styles.option>
+              <styles.optionRow>
+                {Object.keys(LivingRoomTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('livingRoom', option)}
+                      onClick={() => {
+                        handleOptionClick('livingRoom', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>방 개수</styles.option>
+              <styles.optionRow>
+                {Object.keys(CountTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('roomCount', option)}
+                      onClick={() => {
+                        handleOptionClick('roomCount', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>화장실 개수</styles.option>
+              <styles.optionRow>
+                {Object.keys(CountTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('restRoomCount', option)}
+                      onClick={() => {
+                        handleOptionClick('restRoomCount', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>전체 면적</styles.option>
+              <styles.inputContainer>
+                <styles.input
+                  value={houseSize}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setSharedPostProps(prev => ({
+                        ...prev,
+                        houseSize: value,
+                      }));
+                    });
                   }}
+                  $width={2}
                 />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>추가 옵션</styles.option>
-          <styles.optionRow>
-            {Object.entries(AdditionalInfoTypeValue).map(([option, value]) => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customCheckBox
-                  $isSelected={isExtraOptionSelected(value)}
-                  onClick={() => {
-                    handleExtraOptionClick(value);
-                  }}
-                />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>방 종류</styles.option>
-          <styles.optionRow>
-            {Object.keys(RoomTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('roomType', option)}
-                  onClick={() => {
-                    handleOptionClick('roomType', option);
-                  }}
-                />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>거실</styles.option>
-          <styles.optionRow>
-            {Object.keys(LivingRoomTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('livingRoom', option)}
-                  onClick={() => {
-                    handleOptionClick('livingRoom', option);
-                  }}
-                />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>방 개수</styles.option>
-          <styles.optionRow>
-            {Object.keys(CountTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('roomCount', option)}
-                  onClick={() => {
-                    handleOptionClick('roomCount', option);
-                  }}
-                />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>화장실 개수</styles.option>
-          <styles.optionRow>
-            {Object.keys(CountTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('restRoomCount', option)}
-                  onClick={() => {
-                    handleOptionClick('restRoomCount', option);
-                  }}
-                />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>전체 면적</styles.option>
-          <styles.inputContainer>
-            <styles.input
-              value={houseSize}
-              onChange={event => {
-                handleNumberInput(event.target.value, value => {
-                  setSharedPostProps(prev => ({
-                    ...prev,
-                    houseSize: value,
-                  }));
-                });
-              }}
-              $width={2}
-            />
-            <styles.inputPlaceholder>평</styles.inputPlaceholder>
-          </styles.inputContainer>
-        </styles.roomInfoContainer>
+                <styles.inputPlaceholder>평</styles.inputPlaceholder>
+              </styles.inputContainer>
+            </styles.roomInfoContainer>
+          </>
+        )}
       </styles.postContainer>
     </styles.pageContainer>
   );
