@@ -29,6 +29,10 @@ main {
   margin-top: 4.5rem;
   display: flex;
   justify-content: center;
+
+  @media (max-width: 768px) {
+    justify-content: flex-start;
+  }
 }
 
 a {
