@@ -29,7 +29,13 @@ export interface SelectedOptions {
   floorType?: string;
 }
 
-export type SelectedExtraOptions = Record<string, boolean>;
+export interface SelectedExtraOptions {
+  canPark?: boolean;
+  hasAirConditioner?: boolean;
+  hasRefrigerator?: boolean;
+  hasTerrace?: boolean;
+  hasWasher?: boolean;
+}
 
 export interface ImageFile {
   url: string;

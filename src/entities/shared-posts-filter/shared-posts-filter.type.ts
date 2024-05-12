@@ -1,10 +1,15 @@
+import { type SelectedExtraOptions } from '@/features/shared';
+
 export type AdditionalInfoType =
   | '주차가능'
   | '에어컨'
   | '냉장고'
   | '세탁기'
   | '베란다/테라스';
-export const AdditionalInfoTypeValue: Record<AdditionalInfoType, string> = {
+export const AdditionalInfoTypeValue: Record<
+  AdditionalInfoType,
+  keyof SelectedExtraOptions
+> = {
   주차가능: 'canPark',
   에어컨: 'hasAirConditioner',
   냉장고: 'hasRefrigerator',

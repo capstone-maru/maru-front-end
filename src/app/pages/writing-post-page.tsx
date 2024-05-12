@@ -605,6 +605,14 @@ export function WritingPostPage() {
           });
         }, []);
 
+        console.log(selectedExtraOptions, {
+          canPark: selectedExtraOptions.canPark ?? false,
+          hasAirConditioner: selectedExtraOptions.hasAirConditioner ?? false,
+          hasRefrigerator: selectedExtraOptions.hasRefrigerator ?? false,
+          hasWasher: selectedExtraOptions.hasWasher ?? false,
+          hasTerrace: selectedExtraOptions.hasTerrace ?? false,
+        });
+
         mutate(
           {
             imageFilesData: uploadedImages,
@@ -891,12 +899,12 @@ export function WritingPostPage() {
           </styles.optionRow>
           <styles.option>추가 옵션</styles.option>
           <styles.optionRow>
-            {Object.keys(AdditionalInfoTypeValue).map(option => (
+            {Object.entries(AdditionalInfoTypeValue).map(([option, value]) => (
               <styles.optionButtonContainer key={option}>
                 <styles.customCheckBox
-                  $isSelected={isExtraOptionSelected(option)}
+                  $isSelected={isExtraOptionSelected(value)}
                   onClick={() => {
-                    handleExtraOptionClick(option);
+                    handleExtraOptionClick(value);
                   }}
                 />
                 <span>{option}</span>

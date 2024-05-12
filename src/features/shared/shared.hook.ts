@@ -17,6 +17,7 @@ import {
 import { sharedPostPropState } from './shared.atom';
 import { type GetSharedPostDTO } from './shared.dto';
 import {
+  type SelectedExtraOptions,
   type CreateSharedPostProps,
   type GetSharedPostsProps,
   type SelectedOptions,
@@ -136,11 +137,11 @@ export const useSharedPostProps = () => {
         restRoomCount,
       },
       selectedExtraOptions: {
-        주차가능: data.roomInfo.extraOption.canPark,
-        에어컨: data.roomInfo.extraOption.hasAirConditioner,
-        냉장고: data.roomInfo.extraOption.hasRefrigerator,
-        세탁기: data.roomInfo.extraOption.hasWasher,
-        '베란다/테라스': data.roomInfo.extraOption.hasTerrace,
+        canPark: data.roomInfo.extraOption.canPark,
+        hasAirConditioner: data.roomInfo.extraOption.hasAirConditioner,
+        hasRefrigerator: data.roomInfo.extraOption.hasRefrigerator,
+        hasWasher: data.roomInfo.extraOption.hasWasher,
+        hasTerrace: data.roomInfo.extraOption.hasTerrace,
       },
     });
   };
@@ -149,7 +150,6 @@ export const useSharedPostProps = () => {
     optionName: keyof SelectedOptions,
     item: string,
   ) => {
-    console.log(state.selectedOptions, optionName, item);
     setState(prev => ({
       ...prev,
       selectedOptions: {
@@ -159,22 +159,24 @@ export const useSharedPostProps = () => {
     }));
   };
 
-  const handleExtraOptionClick = (option: string) => {
-    console.log(state.selectedExtraOptions, option);
-    setState(prev => ({
-      ...prev,
-      selectedExtraOptions: {
-        ...prev.selectedExtraOptions,
-        [option]: !prev.selectedExtraOptions[option],
-      },
-    }));
+  const handleExtraOptionClick = (option: keyof SelectedExtraOptions) => {
+    setState(prev => {
+      const value = prev.selectedExtraOptions[option] ?? false;
+      return {
+        ...prev,
+        selectedExtraOptions: {
+          ...prev.selectedExtraOptions,
+          [option]: !value,
+        },
+      };
+    });
   };
 
   const isOptionSelected = (optionName: keyof SelectedOptions, item: string) =>
     state.selectedOptions[optionName] === item;
 
-  const isExtraOptionSelected = (item: string) =>
-    state.selectedExtraOptions[item];
+  const isExtraOptionSelected = (item: keyof SelectedExtraOptions) =>
+    state.selectedExtraOptions[item] === true;
 
   return {
     ...state,
