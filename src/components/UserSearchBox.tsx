@@ -15,6 +15,7 @@ export function UserSearchBox() {
   const { mutate: search, data: searchUser } = useSearchUser(email);
 
   const { createToast } = useToast();
+
   const {
     mutate: mutateSearchUserProfile,
     data: searchUserProfile,

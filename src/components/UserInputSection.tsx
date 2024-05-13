@@ -18,6 +18,7 @@ const styles = {
 
     @media (max-width: 768px) {
       border-radius: 0 0 30px 30px;
+      width: 100%;
     }
   `,
   horizontalLine: styled.div`
