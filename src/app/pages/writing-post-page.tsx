@@ -27,6 +27,7 @@ import {
   useCreateSharedPost,
   usePostMateCardInputSection,
   useSharedPostProps,
+  useUpdateDormitorySharedPost,
   useUpdateSharedPost,
   type ImageFile,
 } from '@/features/shared';
@@ -460,6 +461,7 @@ export function WritingPostPage() {
   const { mutate: createSharedPost } = useCreateSharedPost();
   const { mutate: updateSharedPost } = useUpdateSharedPost();
   const { mutate: createDormitorySharedPost } = useCreateDormitorySharedPost();
+  const { mutate: updateDormitorySharedPost } = useUpdateDormitorySharedPost();
 
   const { createToast } = useToast();
 
@@ -756,6 +758,27 @@ export function WritingPostPage() {
                 recruitmentCapacity: mateLimit,
                 participationMemberIds:
                   auth?.user != null ? [auth.user.memberId] : [],
+              },
+            });
+          } else if (postId != null) {
+            updateDormitorySharedPost({
+              postId,
+              postData: {
+                imageFilesData: uploadedImages,
+                postData: { title, content },
+                locationData: {
+                  oldAddress: address?.jibunAddress,
+                  roadAddress: address?.roadAddress,
+                },
+                roomMateCardData: {
+                  location: address?.roadAddress,
+                  features: derivedFeatures,
+                },
+                participationData: {
+                  recruitmentCapacity: mateLimit,
+                  participationMemberIds:
+                    auth?.user != null ? [auth.user.memberId] : [],
+                },
               },
             });
           }

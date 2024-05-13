@@ -364,6 +364,15 @@ export const useDormitorySharedPost = ({
     enabled,
   });
 
+export const useUpdateDormitorySharedPost = () =>
+  useMutation<
+    AxiosResponse<SuccessBaseDTO>,
+    FailureDTO,
+    { postId: number; postData: SharedPostProps }
+  >({
+    mutationFn: updateSharedPost,
+  });
+
 export const useDeleteDormitorySharedPost = ({
   postId,
   onSuccess,
