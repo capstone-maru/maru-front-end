@@ -645,8 +645,11 @@ export function WritingPostPage() {
                 location: address?.roadAddress,
                 features: derivedFeatures,
               },
-              participationMemberIds:
-                auth?.user != null ? [auth.user.memberId] : [],
+              participationData: {
+                recruitmentCapacity: mateLimit,
+                participationMemberIds:
+                  auth?.user != null ? [auth.user.memberId] : [],
+              },
             },
             {
               onSuccess: () => {
@@ -705,8 +708,11 @@ export function WritingPostPage() {
                   location: address?.roadAddress,
                   features: derivedFeatures,
                 },
-                participationMemberIds:
-                  auth?.user != null ? [auth.user.memberId] : [],
+                participationData: {
+                  recruitmentCapacity: mateLimit,
+                  participationMemberIds:
+                    auth?.user != null ? [auth.user.memberId] : [],
+                },
               },
             },
             {

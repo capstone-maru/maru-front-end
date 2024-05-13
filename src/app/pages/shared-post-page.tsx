@@ -457,11 +457,11 @@ export function SharedPostPage({ postId }: { postId: number }) {
     enabled: auth?.accessToken !== undefined,
   });
 
-  const { data: userData } = useUserData(auth?.accessToken !== undefined);
+  const { data: userData } = useUserData(auth?.accessToken != null);
   const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
-    if (userData !== undefined) {
+    if (userData != null) {
       setUserId(userData.memberId);
     }
   }, [userData]);
@@ -565,7 +565,7 @@ export function SharedPostPage({ postId }: { postId: number }) {
             </div>
             <div>
               <span>희망 월 분담금</span>
-              <span>{sharedPost.data.roomInfo.expectedPayment}</span>
+              <span>{sharedPost.data.roomInfo.expectedPayment}만원</span>
             </div>
           </styles.dealInfoContainer>
           <styles.roomInfoContainer>

@@ -130,6 +130,11 @@ export function PostCard({
   post: SharedPostListItem | DormitorySharedPostListItem;
   onClick: () => void;
 }) {
+  const recruitmentCapacity =
+    'roomInfo' in post
+      ? post.roomInfo.expectedPayment
+      : post.recruitmentCapacity;
+
   return (
     <div>
       <styles.container onClick={onClick}>
@@ -139,16 +144,18 @@ export function PostCard({
             <h1>{post.title}</h1>
             <h2>{post.address.roadAddress}</h2>
           </div>
-          {'roomInfo' in post && (
-            <div>
-              <p>모집 {post.roomInfo.recruitmentCapacity}명</p>
-              <p>
-                {post.roomInfo.roomType} · 방 {post.roomInfo.numberOfRoom} ·
-                화장실 {post.roomInfo.numberOfBathRoom}
-              </p>
-              <p>희망 월 분담금 {post.roomInfo.expectedPayment}만원</p>
-            </div>
-          )}
+          <div>
+            <p>모집 {recruitmentCapacity}명</p>
+            {'roomInfo' in post && (
+              <>
+                <p>
+                  {post.roomInfo.roomType} · 방 {post.roomInfo.numberOfRoom} ·
+                  화장실 {post.roomInfo.numberOfBathRoom}
+                </p>
+                <p>희망 월 분담금 {post.roomInfo.expectedPayment}만원</p>
+              </>
+            )}
+          </div>
         </styles.content>
         <styles.writer>
           <img alt="" src={post.publisherAccount.profileImageFileName} />

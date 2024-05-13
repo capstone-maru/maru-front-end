@@ -87,5 +87,8 @@ export interface SharedPostProps {
       options: string;
     };
   };
-  participationMemberIds: string[];
+  participationData: {
+    recruitmentCapacity: number;
+    participationMemberIds: string[];
+  };
 }
