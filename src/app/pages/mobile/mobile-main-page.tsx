@@ -15,6 +15,7 @@ const styles = {
   container: styled.div`
     display: flex;
     width: 100vw;
+    min-width: 390px;
     height: 47.8125rem;
     padding-bottom: 2rem;
     flex-direction: column;
@@ -75,14 +76,14 @@ const styles = {
   mateRecommendationRow: styled.div`
     display: flex;
     width: 100%;
-    padding: 0rem 1.5rem;
+    padding: 0 1.5rem;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
   `,
   mateRecommendation: styled.div`
     display: flex;
-    width: 75%;
+    width: 69%;
     padding: 0.5rem 0rem;
     align-items: center;
     gap: 0.25rem;

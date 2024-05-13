@@ -56,14 +56,17 @@ const styles = {
     display: none;
 
     @media (max-width: 768px) {
-      display: block;
-      width: 40vw;
-      height: 100%;
+      display: flex;
+      flex-direction: column;
+      width: 15rem;
+      padding: 1rem;
       background: #fff;
       z-index: 20000;
       box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
+      border-radius: 1.25rem;
       position: fixed;
-      right: 0;
+      top: 5rem;
+      right: 0.5rem;
     }
   `,
   menuItem: styled.div`
@@ -178,7 +181,7 @@ export function NavigationBar() {
           <>
             <styles.title
               onClick={() => {
-                setIsMenuClick(prev => !prev);
+                setIsMenuClick(false);
               }}
             >
               <Link href="/">maru</Link>
@@ -216,7 +219,7 @@ export function NavigationBar() {
           <Link href="/shared">
             <styles.menuItem
               onClick={() => {
-                setIsMenuClick(prev => !prev);
+                setIsMenuClick(false);
               }}
             >
               <p>메이트 찾기</p>
@@ -225,7 +228,10 @@ export function NavigationBar() {
           <Link href={`/profile/${data?.memberId}`}>
             <styles.menuItem
               onClick={() => {
-                setIsMenuClick(prev => !prev);
+                setIsMenuClick(false);
+              }}
+              style={{
+                borderBottom: !isLogin ? 'none' : '1px solid #e5e5ea',
               }}
             >
               <p>마이페이지</p>
@@ -234,8 +240,11 @@ export function NavigationBar() {
           {isLogin && (
             <styles.menuItem
               onClick={() => {
-                setIsMenuClick(prev => !prev);
+                setIsMenuClick(false);
                 handleLogout();
+              }}
+              style={{
+                borderBottom: 'none',
               }}
             >
               <p>로그아웃</p>
