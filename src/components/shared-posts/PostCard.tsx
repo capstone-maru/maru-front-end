@@ -2,8 +2,7 @@
 
 import styled from 'styled-components';
 
-import { HorizontalDivider } from '..';
-
+import { HorizontalDivider } from '@/components';
 import {
   type DormitorySharedPostListItem,
   type SharedPostListItem,

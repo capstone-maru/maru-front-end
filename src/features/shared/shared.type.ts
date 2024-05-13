@@ -54,11 +54,11 @@ export interface SharedPostProps {
     title: string;
     content: string;
   };
-  transactionData: {
+  transactionData?: {
     rentalType: number;
     expectedPayment: number;
   };
-  roomDetailData: {
+  roomDetailData?: {
     roomType: number;
     floorType: number;
     size: number;

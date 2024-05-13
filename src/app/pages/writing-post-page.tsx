@@ -23,6 +23,7 @@ import {
 import { useAuthValue } from '@/features/auth';
 import { getImageURL, putImage } from '@/features/image';
 import {
+  useCreateDormitorySharedPost,
   useCreateSharedPost,
   usePostMateCardInputSection,
   useSharedPostProps,
@@ -458,6 +459,7 @@ export function WritingPostPage() {
 
   const { mutate: createSharedPost } = useCreateSharedPost();
   const { mutate: updateSharedPost } = useUpdateSharedPost();
+  const { mutate: createDormitorySharedPost } = useCreateDormitorySharedPost();
 
   const { createToast } = useToast();
 
@@ -610,72 +612,10 @@ export function WritingPostPage() {
           });
         }, []);
 
-        if (postId == null) {
-          createSharedPost(
-            {
-              imageFilesData: uploadedImages,
-              postData: { title, content },
-              transactionData: {
-                rentalType: dealTypeValue,
-                expectedPayment: expectedMonthlyFee,
-              },
-              roomDetailData: {
-                roomType: roomTypeValue,
-                floorType: floorTypeValue,
-                size: houseSize,
-                numberOfRoom,
-                numberOfBathRoom,
-                hasLivingRoom: selectedOptions.livingRoom === '유',
-                recruitmentCapacity: mateLimit,
-                extraOption: {
-                  canPark: selectedExtraOptions.canPark ?? false,
-                  hasAirConditioner:
-                    selectedExtraOptions.hasAirConditioner ?? false,
-                  hasRefrigerator:
-                    selectedExtraOptions.hasRefrigerator ?? false,
-                  hasWasher: selectedExtraOptions.hasWasher ?? false,
-                  hasTerrace: selectedExtraOptions.hasTerrace ?? false,
-                },
-              },
-              locationData: {
-                oldAddress: address?.jibunAddress,
-                roadAddress: address?.roadAddress,
-              },
-              roomMateCardData: {
-                location: address?.roadAddress,
-                features: derivedFeatures,
-              },
-              participationData: {
-                recruitmentCapacity: mateLimit,
-                participationMemberIds:
-                  auth?.user != null ? [auth.user.memberId] : [],
-              },
-            },
-            {
-              onSuccess: () => {
-                createToast({
-                  message: '게시글이 정상적으로 업로드되었습니다.',
-                  option: {
-                    duration: 3000,
-                  },
-                });
-                router.back();
-              },
-              onError: () => {
-                createToast({
-                  message: '게시글 업로드에 실패했습니다.',
-                  option: {
-                    duration: 3000,
-                  },
-                });
-              },
-            },
-          );
-        } else if (postId != null) {
-          updateSharedPost(
-            {
-              postId,
-              postData: {
+        if (type === 'hasRoom') {
+          if (postId == null) {
+            createSharedPost(
+              {
                 imageFilesData: uploadedImages,
                 postData: { title, content },
                 transactionData: {
@@ -714,27 +654,111 @@ export function WritingPostPage() {
                     auth?.user != null ? [auth.user.memberId] : [],
                 },
               },
-            },
-            {
-              onSuccess: () => {
-                createToast({
-                  message: '게시글이 정상적으로 수정되었습니다.',
-                  option: {
-                    duration: 3000,
-                  },
-                });
-                router.back();
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 업로드되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
+                },
+                onError: () => {
+                  createToast({
+                    message: '게시글 업로드에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                },
               },
-              onError: () => {
-                createToast({
-                  message: '게시글 수정에 실패했습니다.',
-                  option: {
-                    duration: 3000,
+            );
+          } else if (postId != null) {
+            updateSharedPost(
+              {
+                postId,
+                postData: {
+                  imageFilesData: uploadedImages,
+                  postData: { title, content },
+                  transactionData: {
+                    rentalType: dealTypeValue,
+                    expectedPayment: expectedMonthlyFee,
                   },
-                });
+                  roomDetailData: {
+                    roomType: roomTypeValue,
+                    floorType: floorTypeValue,
+                    size: houseSize,
+                    numberOfRoom,
+                    numberOfBathRoom,
+                    hasLivingRoom: selectedOptions.livingRoom === '유',
+                    recruitmentCapacity: mateLimit,
+                    extraOption: {
+                      canPark: selectedExtraOptions.canPark ?? false,
+                      hasAirConditioner:
+                        selectedExtraOptions.hasAirConditioner ?? false,
+                      hasRefrigerator:
+                        selectedExtraOptions.hasRefrigerator ?? false,
+                      hasWasher: selectedExtraOptions.hasWasher ?? false,
+                      hasTerrace: selectedExtraOptions.hasTerrace ?? false,
+                    },
+                  },
+                  locationData: {
+                    oldAddress: address?.jibunAddress,
+                    roadAddress: address?.roadAddress,
+                  },
+                  roomMateCardData: {
+                    location: address?.roadAddress,
+                    features: derivedFeatures,
+                  },
+                  participationData: {
+                    recruitmentCapacity: mateLimit,
+                    participationMemberIds:
+                      auth?.user != null ? [auth.user.memberId] : [],
+                  },
+                },
               },
-            },
-          );
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 수정되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
+                },
+                onError: () => {
+                  createToast({
+                    message: '게시글 수정에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                },
+              },
+            );
+          }
+        } else if (type === 'dormitory') {
+          if (postId == null) {
+            createDormitorySharedPost({
+              imageFilesData: uploadedImages,
+              postData: { title, content },
+              locationData: {
+                oldAddress: address?.jibunAddress,
+                roadAddress: address?.roadAddress,
+              },
+              roomMateCardData: {
+                location: address?.roadAddress,
+                features: derivedFeatures,
+              },
+              participationData: {
+                recruitmentCapacity: mateLimit,
+                participationMemberIds:
+                  auth?.user != null ? [auth.user.memberId] : [],
+              },
+            });
+          }
         }
       } catch (error) {
         createToast({

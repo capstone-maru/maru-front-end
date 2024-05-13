@@ -3,7 +3,6 @@
 import styled from 'styled-components';
 
 import { type SharedPostsType } from '@/entities/shared-posts-filter';
-import { useAuthValue } from '@/features/auth';
 
 const styles = {
   container: styled.div`
@@ -56,7 +55,7 @@ export function SharedPostsMenu({
   handleSelect,
   className,
 }: Props & React.ComponentProps<'div'>) {
-  const auth = useAuthValue();
+  // const auth = useAuthValue();
 
   return (
     <styles.container className={className}>
@@ -76,16 +75,16 @@ export function SharedPostsMenu({
       >
         방 없는 메이트
       </styles.item>
-      {auth?.user?.univCertified === true ?? (
-        <styles.item
-          onClick={() => {
-            handleSelect('dormitory');
-          }}
-          className={selected === 'dormitory' ? 'selected' : ''}
-        >
-          기숙사 메이트
-        </styles.item>
-      )}
+      {/* {auth?.user?.univCertified === true ?? (
+      )} */}
+      <styles.item
+        onClick={() => {
+          handleSelect('dormitory');
+        }}
+        className={selected === 'dormitory' ? 'selected' : ''}
+      >
+        기숙사 메이트
+      </styles.item>
     </styles.container>
   );
 }

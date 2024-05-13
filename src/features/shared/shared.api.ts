@@ -82,6 +82,12 @@ export const getDormitorySharedPosts = async ({
   return await axios.get<GetDormitorySharedPostsDTO>(getURI());
 };
 
+export const createDormitorySharedPost = async (postData: SharedPostProps) =>
+  await axios.post<SuccessBaseDTO>(
+    `/maru-api/shared/posts/dormitory`,
+    postData,
+  );
+
 export const getDormitorySharedPost = async (postId: number) =>
   await axios.get<GetDormitorySharedPostDTO>(
     `/maru-api/shared/posts/dormitory/${postId}`,

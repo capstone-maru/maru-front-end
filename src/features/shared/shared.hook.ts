@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRecoilState, useResetRecoilState } from 'recoil';
 
 import {
+  createDormitorySharedPost,
   createSharedPost,
   deleteDormitorySharedPost,
   deleteSharedPost,
@@ -276,15 +277,6 @@ export const useCreateSharedPost = () =>
     mutationFn: createSharedPost,
   });
 
-export const useUpdateSharedPost = () =>
-  useMutation<
-    AxiosResponse<SuccessBaseDTO>,
-    FailureDTO,
-    { postId: number; postData: SharedPostProps }
-  >({
-    mutationFn: updateSharedPost,
-  });
-
 export const useSharedPosts = ({
   filter,
   search,
@@ -318,6 +310,15 @@ export const useSharedPost = ({
     enabled,
   });
 
+export const useUpdateSharedPost = () =>
+  useMutation<
+    AxiosResponse<SuccessBaseDTO>,
+    FailureDTO,
+    { postId: number; postData: SharedPostProps }
+  >({
+    mutationFn: updateSharedPost,
+  });
+
 export const useDeleteSharedPost = () =>
   useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, number>({
     mutationFn: deleteSharedPost,
@@ -326,6 +327,11 @@ export const useDeleteSharedPost = () =>
 export const useScrapSharedPost = () =>
   useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, number>({
     mutationFn: scrapPost,
+  });
+
+export const useCreateDormitorySharedPost = () =>
+  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, SharedPostProps>({
+    mutationFn: createDormitorySharedPost,
   });
 
 export const useDormitorySharedPosts = ({
