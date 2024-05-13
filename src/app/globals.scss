@@ -7,6 +7,10 @@ body {
   min-height: 100dvh;
   min-width: 90rem;
   max-width: 100dvw;
+
+  @media (max-width: 768px) {
+    min-width: 390px;
+  }
 }
 
 * {
@@ -32,6 +36,7 @@ main {
 
   @media (max-width: 768px) {
     justify-content: flex-start;
+    main: 100vw;
   }
 }
 

@@ -24,6 +24,10 @@ const styles = {
     align-items: center;
     gap: 2rem;
     align-self: stretch;
+
+    @media (max-width: 768px) {
+      gap: 1rem;
+    }
   `,
   testDescription: styled.p`
     width: 7rem;
@@ -34,11 +38,20 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+      width: 4rem;
+    }
   `,
   testItemContainer: styled.div`
     display: flex;
     align-items: flex-end;
     gap: 0.5rem;
+
+    @media (max-width: 768px) {
+      flex-wrap: wrap;
+    }
   `,
 };
 
@@ -64,6 +77,11 @@ const CheckItem = styled.div<CheckItemProps>`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+    padding: 0.5rem 1rem;
+  }
 
   ${props =>
     props.$isSelected

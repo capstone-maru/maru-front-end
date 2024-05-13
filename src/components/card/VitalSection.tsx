@@ -10,6 +10,10 @@ const styles = {
     align-items: flex-start;
     gap: 1rem;
     align-self: stretch;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
   `,
   vitalDescription: styled.p`
     width: 2.6875rem;
@@ -19,6 +23,11 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+
+    @media (max-width: 768px) {
+      font-size: 0.75rem;
+      width: 1.5rem;
+    }
   `,
   vitalListContainer: styled.ul`
     display: flex;
@@ -32,6 +41,10 @@ const styles = {
     align-items: center;
     gap: 2rem;
     align-self: stretch;
+
+    @media (max-width: 768px) {
+      gap: 0.1rem;
+    }
   `,
   vitalListItemDescription: styled.p`
     width: 5rem;
@@ -41,13 +54,22 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-
     list-style-type: none;
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+      width: 3.5rem;
+    }
   `,
   vitalCheckListContainer: styled.div`
     display: inline-flex;
     align-items: flex-start;
     gap: 0.5rem;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      gap: 0.2rem;
+    }
   `,
 
   birthYear: styled.select`
@@ -77,6 +99,12 @@ const styles = {
     background-position: calc(100% - 0.6875rem) center;
 
     padding-right: 2.75rem;
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+      height: 2.8rem;
+      width: 6rem;
+    }
   `,
 
   searchBox: styled.div`
@@ -97,6 +125,10 @@ const styles = {
     &:focus {
       outline: none;
     }
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+    }
   `,
   value: styled.span`
     display: flex;
@@ -115,10 +147,15 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+
+    @media (max-width: 768px) {
+      padding: 0.5rem 1.25rem;
+      font-size: 0.625rem;
+    }
   `,
 
   sliderContainer: styled.div`
-    width: 22rem;
+    width: 50%;
     height: 1.875rem;
     position: relative;
   `,
@@ -165,6 +202,11 @@ const styles = {
       position: relative;
       z-index: 1;
       box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+
+      @media (max-width: 768px) {
+        width: 1.2rem;
+        height: 1.2rem;
+      }
     }
   `,
 };
@@ -196,6 +238,11 @@ const CheckItem = styled.div<CheckItemProps>`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 1rem;
+    font-size: 0.625rem;
+  }
 
   ${props =>
     props.$isSelected
@@ -480,6 +527,7 @@ export function VitalSection({
               style={{
                 display: 'flex',
                 gap: '1rem',
+                width: '100%',
                 alignItems: 'center',
               }}
             >

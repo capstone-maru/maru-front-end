@@ -13,8 +13,12 @@ const styles = {
     flex-direction: column;
     align-items: flex-start;
     gap: 2rem;
-    border-radius: 1.875rem;
+    border-radius: 30px;
     background: var(--background, #f7f6f9);
+
+    @media (max-width: 768px) {
+      border-radius: 0 0 30px 30px;
+    }
   `,
   horizontalLine: styled.div`
     width: 43.75rem;
