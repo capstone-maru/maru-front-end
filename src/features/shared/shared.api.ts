@@ -6,7 +6,7 @@ import {
   type GetSharedPostDTO,
   type GetSharedPostsDTO,
 } from './shared.dto';
-import { type SharedPostProps, type GetSharedPostsProps } from './shared.type';
+import { type GetSharedPostsProps, type SharedPostProps } from './shared.type';
 
 import { type SuccessBaseDTO } from '@/shared/types';
 
@@ -19,7 +19,7 @@ export const getSharedPosts = async ({
     const baseURL = '/maru-api/shared/posts/studio';
     let query = '';
 
-    if (filter != null) {
+    if (filter != null && Object.keys(filter).length > 0) {
       query += `filter=${JSON.stringify(filter)}`;
     }
 
@@ -69,6 +69,10 @@ export const getDormitorySharedPosts = async ({
   const getURI = () => {
     const baseURL = '/maru-api/shared/posts/dormitory';
     let query = '';
+
+    if (filter != null && Object.keys(filter).length > 0) {
+      query += `filter=${JSON.stringify(filter)}`;
+    }
 
     if (search != null) {
       query += `&search=${search}`;

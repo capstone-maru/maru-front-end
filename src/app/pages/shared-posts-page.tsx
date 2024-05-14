@@ -21,7 +21,6 @@ import { useRecommendationMate } from '@/features/recommendation';
 import {
   useDormitorySharedPosts,
   usePaging,
-  useSharedPostProps,
   useSharedPosts,
   type GetDormitorySharedPostsDTO,
   type GetSharedPostsDTO,
@@ -127,9 +126,6 @@ export function SharedPostsPage() {
   >(null);
   const { setAuthUserData } = useAuthActions();
 
-  const { setSharedPostProps, reset: resetSharedPostProps } =
-    useSharedPostProps();
-
   const { filter, derivedFilter, reset: resetFilter } = useSharedPostsFilter();
   const { data: userData } = useUserData(auth?.accessToken != null);
 
@@ -204,9 +200,9 @@ export function SharedPostsPage() {
         {(selected === 'hasRoom' || selected === 'dormitory') && (
           <styles.createButton
             onClick={() => {
-              resetSharedPostProps();
-              setSharedPostProps(prev => ({ ...prev, type: selected }));
-              router.push('/shared/writing');
+              router.push(
+                `/shared/writing/${selected === 'hasRoom' ? 'room' : 'dormitory'}`,
+              );
             }}
           >
             작성하기
@@ -223,7 +219,6 @@ export function SharedPostsPage() {
                     post={post}
                     onClick={() => {
                       router.push(`/shared/${post.id}`);
-                      setSharedPostProps(prev => ({ ...prev, type: selected }));
                     }}
                   />
                 ))
@@ -232,8 +227,9 @@ export function SharedPostsPage() {
                     key={post.id}
                     post={post}
                     onClick={() => {
-                      router.push(`/shared/${post.id}`);
-                      setSharedPostProps(prev => ({ ...prev, type: selected }));
+                      router.push(
+                        `/shared/${selected === 'hasRoom' ? 'room' : 'dormitory'}/${post.id}`,
+                      );
                     }}
                   />
                 ))}

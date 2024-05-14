@@ -247,7 +247,7 @@ export function ChattingRoom({
       stompClient.publish({
         destination,
         body: JSON.stringify({
-          roomId: roomId,
+          roomId,
           sender: user,
           message: inputMessage,
           nickname: userName,

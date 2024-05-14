@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { Bookmark, CircularProfileImage } from '@/components';
@@ -16,9 +16,9 @@ import {
 } from '@/features/profile';
 import {
   useDeleteSharedPost,
+  useDormitorySharedPost,
   useScrapSharedPost,
   useSharedPost,
-  useSharedPostProps,
 } from '@/features/shared';
 import { useToast } from '@/features/toast';
 import { getAge } from '@/shared';
@@ -432,7 +432,13 @@ const styles = {
   `,
 };
 
-export function SharedPostPage({ postId }: { postId: number }) {
+export function SharedPostPage({
+  postId,
+  type,
+}: {
+  postId: number;
+  type: 'hasRoom' | 'dormitory';
+}) {
   const auth = useAuthValue();
 
   const [, setMap] = useState<naver.maps.Map | null>(null);
@@ -440,7 +446,6 @@ export function SharedPostPage({ postId }: { postId: number }) {
 
   const router = useRouter();
   const { createToast } = useToast();
-  const { setStateWithPost } = useSharedPostProps();
 
   const { mutate: deleteSharedPost } = useDeleteSharedPost();
 
@@ -452,10 +457,16 @@ export function SharedPostPage({ postId }: { postId: number }) {
     | undefined
   >(undefined);
 
-  const { isLoading, data: sharedPost } = useSharedPost({
+  const { isLoading: isSharedPostLoading, data: sharedPost } = useSharedPost({
     postId,
-    enabled: auth?.accessToken !== undefined,
+    enabled: type === 'hasRoom' && auth?.accessToken != null,
   });
+
+  const { isLoading: isDormitorySharedPostLoading, data: dormitorySharedPost } =
+    useDormitorySharedPost({
+      postId,
+      enabled: type === 'dormitory' && auth?.accessToken != null,
+    });
 
   const { data: userData } = useUserData(auth?.accessToken != null);
   const [userId, setUserId] = useState<string>('');
@@ -513,21 +524,32 @@ export function SharedPostPage({ postId }: { postId: number }) {
   const members = [userId];
   const { mutate: chattingMutate } = useCreateChatRoom(roomName, members);
 
-  if (isLoading || sharedPost == null) return <></>;
+  const isLoading = useMemo(
+    () =>
+      type === 'hasRoom' ? isSharedPostLoading : isDormitorySharedPostLoading,
+    [type, isSharedPostLoading, isDormitorySharedPostLoading],
+  );
+
+  const post = useMemo(
+    () => (type === 'hasRoom' ? sharedPost : dormitorySharedPost),
+    [type, sharedPost, dormitorySharedPost],
+  );
+
+  if (isLoading || post == null) return <></>;
 
   return (
     <styles.container>
       <styles.contentContainer>
         <styles.postContainer>
           <styles.ImageGrid
-            images={sharedPost.data.roomImages.map(({ fileName }) => fileName)}
+            images={post.data.roomImages.map(({ fileName }) => fileName)}
           />
           <styles.postInfoContainer>
             <div>
-              <h1>{sharedPost.data.title}</h1>
+              <h1>{post.data.title}</h1>
               <Bookmark
                 hasBorder={false}
-                marked={sharedPost.data.isScrapped}
+                marked={post.data.isScrapped}
                 onToggle={() => {
                   scrapPost(postId);
                 }}
@@ -535,76 +557,83 @@ export function SharedPostPage({ postId }: { postId: number }) {
               />
             </div>
             <styles.postInfoContent>
-              <span>모집 {sharedPost.data.roomInfo.recruitmentCapacity}명</span>
-              <span>
-                {sharedPost.data.roomInfo.roomType} · 방{' '}
-                {sharedPost.data.roomInfo.numberOfRoom} · 화장실{' '}
-                {sharedPost.data.roomInfo.numberOfBathRoom}
-              </span>
+              {'roomInfo' in post.data && (
+                <>
+                  <span>모집 {post.data.roomInfo.recruitmentCapacity}명</span>
+                  <span>
+                    {post.data.roomInfo.roomType} · 방{' '}
+                    {post.data.roomInfo.numberOfRoom} · 화장실{' '}
+                    {post.data.roomInfo.numberOfBathRoom}
+                  </span>
+                </>
+              )}
               <div>
+                {'roomInfo' in post.data && (
+                  <span>
+                    희망 월 분담금 {post.data.roomInfo.expectedPayment}만원
+                  </span>
+                )}
                 <span>
-                  희망 월 분담금 {sharedPost.data.roomInfo.expectedPayment}만원
-                </span>
-                <span>
-                  저장 {sharedPost.data.scrapCount} · 조회{' '}
-                  {sharedPost.data.viewCount}
+                  저장 {post.data.scrapCount} · 조회 {post.data.viewCount}
                 </span>
               </div>
             </styles.postInfoContent>
           </styles.postInfoContainer>
           <styles.postContentContainer>
             <h2>상세 정보</h2>
-            <p>{sharedPost.data.content}</p>
+            <p>{post.data.content}</p>
           </styles.postContentContainer>
           <styles.divider />
-          <styles.dealInfoContainer>
-            <h2>거래 정보</h2>
-            <div>
-              <span>거래 방식</span>
-              <span>{sharedPost.data.roomInfo.rentalType}</span>
-            </div>
-            <div>
-              <span>희망 월 분담금</span>
-              <span>{sharedPost.data.roomInfo.expectedPayment}만원</span>
-            </div>
-          </styles.dealInfoContainer>
-          <styles.roomInfoContainer>
-            <h2>방 정보</h2>
-            <div>
-              <span>방 종류</span>
-              <span>{sharedPost.data.roomInfo.roomType}</span>
-            </div>
-            <div>
-              <span>거실 보유</span>
-              <span>
-                {sharedPost.data.roomInfo.hasLivingRoom ? '유' : '무'}
-              </span>
-            </div>
-            <div>
-              <span>방 개수</span>
-              <span>{sharedPost.data.roomInfo.numberOfRoom}개</span>
-            </div>
-            <div>
-              <span>화장실 개수</span>
-              <span>{sharedPost.data.roomInfo.numberOfBathRoom}개</span>
-            </div>
-            <div>
-              <span>평수</span>
-              <span>{sharedPost.data.roomInfo.size}평</span>
-            </div>
-          </styles.roomInfoContainer>
+          {'roomInfo' in post.data && (
+            <>
+              <styles.dealInfoContainer>
+                <h2>거래 정보</h2>
+                <div>
+                  <span>거래 방식</span>
+                  <span>{post.data.roomInfo.rentalType}</span>
+                </div>
+                <div>
+                  <span>희망 월 분담금</span>
+                  <span>{post.data.roomInfo.expectedPayment}만원</span>
+                </div>
+              </styles.dealInfoContainer>
+              <styles.roomInfoContainer>
+                <h2>방 정보</h2>
+                <div>
+                  <span>방 종류</span>
+                  <span>{post.data.roomInfo.roomType}</span>
+                </div>
+                <div>
+                  <span>거실 보유</span>
+                  <span>{post.data.roomInfo.hasLivingRoom ? '유' : '무'}</span>
+                </div>
+                <div>
+                  <span>방 개수</span>
+                  <span>{post.data.roomInfo.numberOfRoom}개</span>
+                </div>
+                <div>
+                  <span>화장실 개수</span>
+                  <span>{post.data.roomInfo.numberOfBathRoom}개</span>
+                </div>
+                <div>
+                  <span>평수</span>
+                  <span>{post.data.roomInfo.size}평</span>
+                </div>
+              </styles.roomInfoContainer>
+            </>
+          )}
           <styles.locationInfoContainer>
             <h2>위치 정보</h2>
-            <p>{sharedPost.data.address.roadAddress}</p>
+            <p>{post.data.address.roadAddress}</p>
             <div ref={mapRef} id="map" />
           </styles.locationInfoContainer>
-          {sharedPost.data.publisherAccount.memberId ===
-            auth?.user?.memberId && (
+          {post.data.publisherAccount.memberId === auth?.user?.memberId && (
             <styles.rowForDeleteAndModify>
               <styles.postModifyButton
                 onClick={() => {
-                  setStateWithPost(sharedPost);
-                  router.push('/shared/writing');
+                  router.push(
+                    `/shared/writing/${type === 'hasRoom' ? 'room' : 'dormitory'}/${post.data.id}`,
+                  );
                 }}
               >
                 수정하기
@@ -639,15 +668,18 @@ export function SharedPostPage({ postId }: { postId: number }) {
         </styles.postContainer>
         <styles.mateContainer>
           <styles.mates>
-            {sharedPost.data.participants.map(
-              ({ memberId, profileImage }, index) => (
+            {post.data.participants.map(
+              ({ memberId, profileImageFileName }, index) => (
                 <styles.mate
                   key={memberId}
                   $selected={memberId === selected?.memberId}
                   $zIndex={index}
-                  src={profileImage}
+                  src={profileImageFileName}
                   onClick={() => {
-                    setSelected({ memberId, profileImage });
+                    setSelected({
+                      memberId,
+                      profileImage: profileImageFileName,
+                    });
                   }}
                 />
               ),
@@ -658,19 +690,17 @@ export function SharedPostPage({ postId }: { postId: number }) {
               <CircularProfileImage
                 diameter={110}
                 percentage={50}
-                url="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ou47yOoRJ57c0QqtWD~w0S6BP1UYWpmpCOCgsq9YTqfbNq~TmwfAI2T24-fYxpKSiBDv8y1Tkup68OTc5v2ZHIG~~CLwn6NCBF7QqTu7sQB0oPCvdRFdBm~y4wI8VEIErYhPsCuV2k7L0GVlJss4KkeM1tt1RX0kwfINvh03yzFf8wtjd0xsUJjMaKjNxU3muS2Cj8BZymckjgNGrTvafiGbAfHt0Bw2fTkH8tctfNNXpnZgqrEeDldEuENV~g-fSsLSFbMceZGN5ILEd9gd6fnY2YYeB7qtb9xozvczwTbz6kYIzzHJc7veYTsvxjqx~qTiKF2Yrn45cn5pXvOv1w__"
+                url={post.data.publisherAccount.profileImageFileName}
               />
               <styles.profileInfo>
-                <p className="name">
-                  {sharedPost.data.publisherAccount.nickname}
-                </p>
+                <p className="name">{post.data.publisherAccount.nickname}</p>
                 <div>
                   <p>
-                    {sharedPost.data.publisherAccount.birthYear != null
-                      ? getAge(+sharedPost.data.publisherAccount.birthYear)
+                    {post.data.publisherAccount.birthYear != null
+                      ? getAge(+post.data.publisherAccount.birthYear)
                       : new Date().getFullYear()}
                   </p>
-                  <p>{sharedPost.data.address.roadAddress}</p>
+                  <p>{post.data.address.roadAddress}</p>
                 </div>
               </styles.profileInfo>
             </styles.profile>

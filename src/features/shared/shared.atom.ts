@@ -9,8 +9,6 @@ import {
 import { type NaverAddress } from '@/features/geocoding';
 
 export const sharedPostPropState = atom<{
-  type: 'hasRoom' | 'dormitory';
-  postId?: number;
   title: string;
   content: string;
   images: ImageFile[];
@@ -20,11 +18,23 @@ export const sharedPostPropState = atom<{
   houseSize: number;
   selectedExtraOptions: SelectedExtraOptions;
   selectedOptions: SelectedOptions;
+  mateCard: {
+    gender?: string;
+    birthYear?: number;
+    location?: string;
+    mbti?: string;
+    major?: string;
+    budget?: string;
+    features: {
+      smoking?: string;
+      roomSharingOption?: string;
+      mateAge?: number;
+      options: Set<string>;
+    };
+  };
 }>({
   key: 'sharedPostPropState',
   default: {
-    type: 'hasRoom',
-    postId: undefined,
     title: '',
     content: '',
     images: [],
@@ -34,5 +44,6 @@ export const sharedPostPropState = atom<{
     houseSize: 0,
     selectedExtraOptions: {},
     selectedOptions: {},
+    mateCard: { features: { options: new Set() } },
   },
 });

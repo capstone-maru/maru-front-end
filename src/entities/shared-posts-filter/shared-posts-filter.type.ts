@@ -57,7 +57,7 @@ export interface SharedPostsFilter {
   cardType?: CardType;
   roomInfo: {
     roomType?: Partial<Record<RoomType, boolean>>;
-    hasLivingRoom: boolean;
+    hasLivingRoom?: boolean;
     roomCount?: CountType;
     restRoomCount?: CountType;
     size?: { low: number; high: number };

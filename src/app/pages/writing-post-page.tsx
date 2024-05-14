@@ -25,7 +25,6 @@ import { getImageURL, putImage } from '@/features/image';
 import {
   useCreateDormitorySharedPost,
   useCreateSharedPost,
-  usePostMateCardInputSection,
   useSharedPostProps,
   useUpdateDormitorySharedPost,
   useUpdateSharedPost,
@@ -415,7 +414,13 @@ interface ButtonActiveProps {
   $isSelected: boolean;
 }
 
-export function WritingPostPage() {
+export function WritingPostPage({
+  postId,
+  type,
+}: {
+  postId?: number;
+  type: 'hasRoom' | 'dormitory';
+}) {
   const router = useRouter();
 
   const imageInputRef = useRef<HTMLInputElement | null>(null);
@@ -425,38 +430,25 @@ export function WritingPostPage() {
     useState<boolean>(false);
 
   const {
-    type,
-    postId,
     title,
     content,
     images,
     mateLimit,
     houseSize,
     address,
+    mateCard,
     selectedOptions,
     selectedExtraOptions,
     expectedMonthlyFee,
+    derivedMateCardFeatures,
     setSharedPostProps,
     handleOptionClick,
     handleExtraOptionClick,
+    handleMateCardOptionalFeatureChange,
+    handleMateCardEssentialFeatureChange,
     isOptionSelected,
     isExtraOptionSelected,
-  } = useSharedPostProps();
-
-  const {
-    gender,
-    birthYear,
-    mbti,
-    major,
-    budget,
-    derivedFeatures,
-    setBirthYear,
-    setMbti,
-    setMajor,
-    setBudget,
-    handleEssentialFeatureChange,
-    handleOptionalFeatureChange,
-  } = usePostMateCardInputSection();
+  } = useSharedPostProps({ postId, type });
 
   const { mutate: createSharedPost } = useCreateSharedPost();
   const { mutate: updateSharedPost } = useUpdateSharedPost();
@@ -533,23 +525,30 @@ export function WritingPostPage() {
   };
 
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // if (!isPostCreatable || !isMateCardCreatable) return;
+    const extractFileName = (url: string): string => {
+      const regex =
+        /\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.\w+)/;
+      const match = url.match(regex);
+      return match != null ? match[1] : '';
+    };
 
     const dealType = selectedOptions.budget;
     const { roomType } = selectedOptions;
     const { floorType } = selectedOptions;
 
     if (
-      dealType == null ||
-      roomType == null ||
-      floorType == null ||
-      address == null ||
-      selectedOptions.roomCount == null ||
-      !(selectedOptions.roomCount in CountTypeValue) ||
-      selectedOptions.restRoomCount == null ||
-      !(selectedOptions.restRoomCount in CountTypeValue)
+      type === 'hasRoom' &&
+      (dealType == null ||
+        roomType == null ||
+        floorType == null ||
+        selectedOptions.roomCount == null ||
+        !(selectedOptions.roomCount in CountTypeValue) ||
+        selectedOptions.restRoomCount == null ||
+        !(selectedOptions.restRoomCount in CountTypeValue))
     )
       return;
+
+    if (address == null || images.length < 2) return;
 
     const numberOfRoomOption = selectedOptions.roomCount as
       | '1개'
@@ -595,10 +594,10 @@ export function WritingPostPage() {
 
         const putResults = await Promise.allSettled(
           urls.map(async ({ url, fileName, file, uploaded }) => {
-            if (uploaded) return { fileName: url };
+            if (uploaded) return { uploaded, fileName: url };
 
             if (file != null) await putImage(url, file);
-            return { fileName };
+            return { uploaded, fileName };
           }),
         );
 
@@ -607,8 +606,11 @@ export function WritingPostPage() {
         >((prev, result) => {
           if (result.status === 'rejected' || result.value.fileName == null)
             return prev;
+          const { uploaded, fileName } = result.value;
           return prev.concat({
-            fileName: result.value.fileName,
+            fileName: uploaded
+              ? `images/${extractFileName(fileName)}`
+              : fileName,
             isThumbNail: prev.length === 0,
             order: prev.length + 1,
           });
@@ -643,12 +645,12 @@ export function WritingPostPage() {
                   },
                 },
                 locationData: {
-                  oldAddress: address?.jibunAddress,
-                  roadAddress: address?.roadAddress,
+                  oldAddress: address.jibunAddress,
+                  roadAddress: address.roadAddress,
                 },
                 roomMateCardData: {
-                  location: address?.roadAddress,
-                  features: derivedFeatures,
+                  location: address.roadAddress,
+                  features: derivedMateCardFeatures,
                 },
                 participationData: {
                   recruitmentCapacity: mateLimit,
@@ -706,12 +708,12 @@ export function WritingPostPage() {
                     },
                   },
                   locationData: {
-                    oldAddress: address?.jibunAddress,
-                    roadAddress: address?.roadAddress,
+                    oldAddress: address.jibunAddress,
+                    roadAddress: address.roadAddress,
                   },
                   roomMateCardData: {
-                    location: address?.roadAddress,
-                    features: derivedFeatures,
+                    location: address.roadAddress,
+                    features: derivedMateCardFeatures,
                   },
                   participationData: {
                     recruitmentCapacity: mateLimit,
@@ -743,36 +745,17 @@ export function WritingPostPage() {
           }
         } else if (type === 'dormitory') {
           if (postId == null) {
-            createDormitorySharedPost({
-              imageFilesData: uploadedImages,
-              postData: { title, content },
-              locationData: {
-                oldAddress: address?.jibunAddress,
-                roadAddress: address?.roadAddress,
-              },
-              roomMateCardData: {
-                location: address?.roadAddress,
-                features: derivedFeatures,
-              },
-              participationData: {
-                recruitmentCapacity: mateLimit,
-                participationMemberIds:
-                  auth?.user != null ? [auth.user.memberId] : [],
-              },
-            });
-          } else if (postId != null) {
-            updateDormitorySharedPost({
-              postId,
-              postData: {
+            createDormitorySharedPost(
+              {
                 imageFilesData: uploadedImages,
                 postData: { title, content },
                 locationData: {
-                  oldAddress: address?.jibunAddress,
-                  roadAddress: address?.roadAddress,
+                  oldAddress: address.jibunAddress,
+                  roadAddress: address.roadAddress,
                 },
                 roomMateCardData: {
-                  location: address?.roadAddress,
-                  features: derivedFeatures,
+                  location: address.roadAddress,
+                  features: derivedMateCardFeatures,
                 },
                 participationData: {
                   recruitmentCapacity: mateLimit,
@@ -780,7 +763,68 @@ export function WritingPostPage() {
                     auth?.user != null ? [auth.user.memberId] : [],
                 },
               },
-            });
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 업로드되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
+                },
+                onError: () => {
+                  createToast({
+                    message: '게시글 업로드에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                },
+              },
+            );
+          } else if (postId != null) {
+            updateDormitorySharedPost(
+              {
+                postId,
+                postData: {
+                  imageFilesData: uploadedImages,
+                  postData: { title, content },
+                  locationData: {
+                    oldAddress: address.jibunAddress,
+                    roadAddress: address.roadAddress,
+                  },
+                  roomMateCardData: {
+                    location: address.roadAddress,
+                    features: derivedMateCardFeatures,
+                  },
+                  participationData: {
+                    recruitmentCapacity: mateLimit,
+                    participationMemberIds:
+                      auth?.user != null ? [auth.user.memberId] : [],
+                  },
+                },
+              },
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 수정되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
+                },
+                onError: () => {
+                  createToast({
+                    message: '게시글 수정에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                },
+              },
+            );
           }
         }
       } catch (error) {
@@ -942,22 +986,22 @@ export function WritingPostPage() {
             </button>
             {showMateCardForm && (
               <UserInputSection
-                gender={gender}
-                birthYear={birthYear?.toString()}
+                gender={mateCard.gender}
+                birthYear={mateCard.birthYear?.toString()}
                 location={address?.roadAddress ?? '주소를 입력해주세요.'}
-                mbti={mbti}
-                major={major}
-                budget={budget}
-                features={undefined}
+                mbti={mateCard.mbti}
+                major={mateCard.major}
+                budget={mateCard.budget}
+                features={mateCard.features}
                 isMySelf
                 type="mateCard"
-                onVitalChange={handleEssentialFeatureChange}
-                onOptionChange={handleOptionalFeatureChange}
+                onVitalChange={handleMateCardEssentialFeatureChange}
+                onOptionChange={handleMateCardOptionalFeatureChange}
                 onLocationChange={() => {}}
-                onMateAgeChange={setBirthYear}
-                onMbtiChange={setMbti}
-                onMajorChange={setMajor}
-                onBudgetChange={setBudget}
+                onMateAgeChange={() => {}}
+                onMbtiChange={() => {}}
+                onMajorChange={() => {}}
+                onBudgetChange={() => {}}
               />
             )}
           </styles.mateCardContainer>
