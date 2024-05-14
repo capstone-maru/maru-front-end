@@ -444,7 +444,6 @@ export function WritingPostPage() {
     birthYear,
     mbti,
     major,
-    budget,
     derivedFeatures,
     setBirthYear,
     setMbti,
@@ -796,7 +795,7 @@ export function WritingPostPage() {
                 location={address?.roadAddress ?? '주소를 입력해주세요.'}
                 mbti={mbti}
                 major={major}
-                budget={budget}
+                budget={undefined}
                 features={undefined}
                 isMySelf
                 type="mateCard"
