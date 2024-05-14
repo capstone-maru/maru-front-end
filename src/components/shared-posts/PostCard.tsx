@@ -131,7 +131,7 @@ export function PostCard({
 }) {
   const recruitmentCapacity =
     'roomInfo' in post
-      ? post.roomInfo.expectedPayment
+      ? post.roomInfo.recruitmentCapacity
       : post.recruitmentCapacity;
 
   return (
