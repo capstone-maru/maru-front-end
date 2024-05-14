@@ -8,6 +8,8 @@ import {
   postUnfollowUser,
   postFollowUser,
   postUserProfile,
+  postEmail,
+  postCertificate,
 } from './profile.api';
 
 export const useUserProfile = (memberId: string) =>
@@ -60,5 +62,20 @@ export const useUnfollowUser = (memberId: string) =>
 export const useSearchUser = (email: string) =>
   useMutation({
     mutationFn: async () => await postSearchUser(email),
+    onSuccess: data => data.data,
+  });
+
+export const useGetCode = (email: string, univName: string) =>
+  useMutation({
+    mutationFn: async () => await postEmail(email, univName),
+  });
+
+export const useCertification = (
+  email: string,
+  univName: string,
+  code: number,
+) =>
+  useMutation({
+    mutationFn: async () => await postCertificate(email, univName, code),
     onSuccess: data => data.data,
   });
