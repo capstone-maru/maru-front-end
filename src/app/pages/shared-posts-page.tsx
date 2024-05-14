@@ -16,7 +16,7 @@ import {
   useSharedPostsFilter,
   type SharedPostsType,
 } from '@/entities/shared-posts-filter';
-import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
+import { useAuthValue } from '@/features/auth';
 import { useRecommendationMate } from '@/features/recommendation';
 import {
   useDormitorySharedPosts,
@@ -124,10 +124,8 @@ export function SharedPostsPage() {
   const [prevSharedPosts, setPrevSharedPosts] = useState<
     GetSharedPostsDTO | GetDormitorySharedPostsDTO | null
   >(null);
-  const { setAuthUserData } = useAuthActions();
 
   const { filter, derivedFilter, reset: resetFilter } = useSharedPostsFilter();
-  const { data: userData } = useUserData(auth?.accessToken != null);
 
   const {
     page,
@@ -182,15 +180,6 @@ export function SharedPostsPage() {
       setPrevSharedPosts(null);
     }
   }, [selected, dormitorySharedPosts, sharedPosts]);
-
-  useEffect(() => {
-    if (userData != null) {
-      setAuthUserData(userData);
-      if (userData.initialized) {
-        // router.replace('/profile');
-      }
-    }
-  }, [userData, router, setAuthUserData]);
 
   return (
     <styles.container>
