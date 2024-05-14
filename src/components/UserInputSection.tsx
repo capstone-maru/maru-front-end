@@ -20,11 +20,21 @@ const styles = {
       border-radius: 0 0 30px 30px;
       width: 100%;
     }
+
+    @media (max-width: 400px) {
+      border-radius: 0 0 30px 30px;
+      width: 100%;
+      height: 80rem;
+    }
   `,
   horizontalLine: styled.div`
     width: 43.75rem;
     height: 0.0625rem;
     background: var(--Gray-9, #d3d0d7);
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
   `,
 };
 
