@@ -3,3 +3,4 @@ export * from './mobile-main-page';
 export * from './mobile-profile-page';
 export * from './mobile-user-input-page';
 export * from './mobile-setting-page';
+export * from './mobile-shared-posts-page';

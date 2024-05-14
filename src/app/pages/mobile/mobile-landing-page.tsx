@@ -23,7 +23,7 @@ const styles = {
     flex-direction: column;
     align-items: center;
     gap: 1.75rem;
-    width: 27.8125rem;
+    width: 100%;
     flex-shrink: 0;
 
     h1 {
