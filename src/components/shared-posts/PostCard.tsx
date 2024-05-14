@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 
 import { HorizontalDivider } from '@/components';
@@ -24,6 +25,8 @@ const styles = {
     border-radius: 16px;
 
     object-fit: cover;
+
+    cursor: pointer;
   `,
   content: styled.div`
     flex-grow: 1;
@@ -44,6 +47,8 @@ const styles = {
         font-style: normal;
         font-weight: 700;
         line-height: normal;
+
+        cursor: pointer;
       }
 
       h2 {
@@ -67,6 +72,8 @@ const styles = {
   `,
   writer: styled.div`
     position: relative;
+
+    cursor: pointer;
 
     display: flex;
     flex-shrink: 0;
@@ -129,6 +136,8 @@ export function PostCard({
   post: SharedPostListItem | DormitorySharedPostListItem;
   onClick: () => void;
 }) {
+  const router = useRouter();
+
   const recruitmentCapacity =
     'roomInfo' in post
       ? post.roomInfo.recruitmentCapacity
@@ -136,9 +145,13 @@ export function PostCard({
 
   return (
     <div>
-      <styles.container onClick={onClick}>
-        <styles.thumbnail alt="" src={post.thumbnail.fileName} />
-        <styles.content>
+      <styles.container>
+        <styles.thumbnail
+          onClick={onClick}
+          alt=""
+          src={post.thumbnail.fileName}
+        />
+        <styles.content onClick={onClick}>
           <div>
             <h1>{post.title}</h1>
             <h2>{post.address.roadAddress}</h2>
@@ -156,7 +169,11 @@ export function PostCard({
             )}
           </div>
         </styles.content>
-        <styles.writer>
+        <styles.writer
+          onClick={() => {
+            router.push(`/profile/${post.publisherAccount.memberId}`);
+          }}
+        >
           <img alt="" src={post.publisherAccount.profileImageFileName} />
           <styles.percentage>
             <p>50%</p>

@@ -449,14 +449,6 @@ export function SharedPostPage({
 
   const { mutate: deleteSharedPost } = useDeleteSharedPost();
 
-  const [selected, setSelected] = useState<
-    | {
-        memberId: string;
-        profileImage: string;
-      }
-    | undefined
-  >(undefined);
-
   const { isLoading: isSharedPostLoading, data: sharedPost } = useSharedPost({
     postId,
     enabled: type === 'hasRoom' && auth?.accessToken != null,
@@ -467,6 +459,21 @@ export function SharedPostPage({
       postId,
       enabled: type === 'dormitory' && auth?.accessToken != null,
     });
+
+  const [selected, setSelected] = useState<
+    | {
+        memberId: string;
+        profileImage: string;
+      }
+    | undefined
+  >(
+    sharedPost != null
+      ? {
+          memberId: sharedPost.data.publisherAccount.memberId,
+          profileImage: sharedPost.data.publisherAccount.profileImageFileName,
+        }
+      : undefined,
+  );
 
   const { data: userData } = useUserData(auth?.accessToken != null);
   const [userId, setUserId] = useState<string>('');
@@ -492,6 +499,15 @@ export function SharedPostPage({
   const { mutate: unfollow } = useUnfollowUser(
     sharedPost?.data.publisherAccount.memberId ?? '',
   );
+
+  useEffect(() => {
+    if (selected != null || sharedPost == null) return;
+
+    setSelected({
+      memberId: sharedPost.data.publisherAccount.memberId,
+      profileImage: sharedPost.data.publisherAccount.profileImageFileName,
+    });
+  }, [selected, sharedPost]);
 
   useEffect(() => {
     if (sharedPost?.data.address.roadAddress != null) {
