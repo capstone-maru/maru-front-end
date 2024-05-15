@@ -2,7 +2,7 @@
 
 import { isAxiosError } from 'axios';
 import { usePathname, useRouter } from 'next/navigation';
-import { useLayoutEffect, useState, useCallback } from 'react';
+import { useCallback, useLayoutEffect, useState } from 'react';
 
 import {
   getUserData,
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useLayoutEffect(() => {
     checkAndRefreshToken();
-  }, [checkAndRefreshToken]);
+  });
 
   if (pathName !== '/' && pathName !== '/login' && (isLoading || auth == null))
     return <></>;
