@@ -161,7 +161,7 @@ export function SharedPostsPage() {
   const { data: recommendationMates } = useRecommendationMate({
     memberId: auth?.user?.memberId ?? 'undefined',
     cardType: filter.cardType ?? 'mate',
-    enabled: auth?.accessToken != null && selected === 'homeless',
+    enabled: auth?.accessToken != null && selected === 'homeless' && false,
   });
 
   useEffect(() => {

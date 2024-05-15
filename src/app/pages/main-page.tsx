@@ -91,7 +91,7 @@ export function MainPage() {
   const { data: recommendationMates } = useRecommendationMate({
     memberId: auth?.user?.memberId ?? 'undefined',
     cardType: 'mate',
-    enabled: auth?.accessToken != null,
+    enabled: auth?.accessToken != null && false,
   });
 
   const [map, setMap] = useState<naver.maps.Map | null>(null);
