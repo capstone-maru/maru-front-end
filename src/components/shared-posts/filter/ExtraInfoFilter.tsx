@@ -15,6 +15,12 @@ const styles = {
     align-items: flex-start;
     gap: 1rem;
 
+    @media (max-width: 768px) {
+      width: 12rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
     h1 {
       color: #000;
       font-family: 'Noto Sans KR';
@@ -22,6 +28,10 @@ const styles = {
       font-style: normal;
       font-weight: 500;
       line-height: normal;
+
+      @media (max-width: 768px) {
+        font-size: 1rem;
+      }
     }
 
     div {
@@ -51,6 +61,11 @@ const styles = {
         font-style: normal;
         font-weight: 400;
         line-height: normal;
+
+        @media (max-width: 768px) {
+          font-size: 0.75rem;
+          padding: 0.5rem 1rem;
+        }
 
         transition:
           150ms border ease-in-out,

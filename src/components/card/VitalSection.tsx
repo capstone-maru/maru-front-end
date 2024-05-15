@@ -3,6 +3,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+import { fromAddrToCoord, type NaverAddress } from '@/features/geocoding';
+import { useIsMobile } from '@/shared/mobile';
+
 const styles = {
   vitalContainer: styled.div`
     display: flex;
@@ -31,6 +34,7 @@ const styles = {
   `,
   vitalListContainer: styled.ul`
     display: flex;
+    width: 100%;
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
@@ -38,6 +42,7 @@ const styles = {
   `,
   vitalList: styled.li`
     display: flex;
+    width: 100%;
     align-items: center;
     gap: 2rem;
     align-self: stretch;
@@ -209,6 +214,43 @@ const styles = {
       }
     }
   `,
+
+  searchAddrContainer: styled.div`
+    min-width: 25rem;
+    min-height: 10rem;
+    display: flex;
+    position: absolute;
+    left: 15dvw;
+    top: 30dvh;
+    flex-direction: column;
+    z-index: 200;
+    background-color: white;
+    padding: 2rem;
+    gap: 1rem;
+    border-radius: 20px;
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
+
+    @media (max-width: 768px) {
+      top: 10.5rem;
+      left: 5.5rem;
+      padding: 1rem;
+      gap: 0.5rem;
+      min-width: 15rem;
+    }
+  `,
+  searchResults: styled.p`
+    color: var(--Main-2, #767d86);
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    width: 100%;
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+    }
+  `,
 };
 
 interface CheckItemProps {
@@ -321,7 +363,11 @@ export function VitalSection({
     [onFeatureChange],
   );
 
+  const [searchText, setSearchText] = useState<string>('');
+  const [addresses, setAddresses] = useState<NaverAddress[]>([]);
   const [initialLocation, setInitialLocation] = useState('');
+  const [locationBoxClick, setLocationBoxClick] = useState(false);
+
   useEffect(() => {
     if (location !== undefined && type === 'myCard') {
       setInitialLocation(location);
@@ -332,10 +378,6 @@ export function VitalSection({
   useEffect(() => {
     setLocation(initialLocation);
   }, [initialLocation]);
-
-  const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLocation(event.target.value);
-  };
 
   useEffect(() => {
     onLocationChange(locationInput);
@@ -372,6 +414,8 @@ export function VitalSection({
       ageValueString = `±${ageValue}년생`;
   }
 
+  const isMobile = useIsMobile();
+
   return (
     <styles.vitalContainer>
       <styles.vitalDescription>필수</styles.vitalDescription>
@@ -404,29 +448,76 @@ export function VitalSection({
           </styles.vitalCheckListContainer>
         </styles.vitalList>
         <styles.vitalList>
-          <styles.vitalListItemDescription>
-            희망 지역
-          </styles.vitalListItemDescription>
-          {type === 'myCard' ? (
-            <styles.searchBox>
-              <styles.mapInput
-                placeholder="ex) 한국동,한국역,한국대학교"
-                readOnly={!isMySelf}
-                value={locationInput ?? ''}
-                onChange={handleLocationChange}
-              />
-            </styles.searchBox>
-          ) : (
-            <CheckItem
-              $isSelected
-              style={{
-                border: 'none',
-                background: 'var(--Gray-5, #828282)',
-                color: '#fff',
-              }}
-            >
-              {location}
-            </CheckItem>
+          <form
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: isMobile ? '0.1rem' : '2rem',
+            }}
+            onSubmit={event => {
+              event.preventDefault();
+              fromAddrToCoord({ query: searchText })
+                .then(response => {
+                  setAddresses(response.data.addresses);
+                })
+                .catch((error: Error) => {
+                  console.log(error);
+                });
+            }}
+          >
+            <styles.vitalListItemDescription>
+              희망 지역
+            </styles.vitalListItemDescription>
+            {type === 'myCard' ? (
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <styles.searchBox>
+                  <styles.mapInput
+                    readOnly={!isMySelf}
+                    placeholder="주소 입력"
+                    value={searchText}
+                    onChange={event => {
+                      setSearchText(event.target.value);
+                    }}
+                    onClick={() => {
+                      setLocationBoxClick(prev => !prev);
+                    }}
+                  />
+                </styles.searchBox>
+                {isMobile && locationInput != null ? (
+                  <styles.vitalListItemDescription
+                    style={{ width: '100%', padding: '0 0.5rem' }}
+                  >
+                    {locationInput}
+                  </styles.vitalListItemDescription>
+                ) : null}
+              </div>
+            ) : (
+              <CheckItem
+                $isSelected
+                style={{
+                  border: 'none',
+                  background: 'var(--Gray-5, #828282)',
+                  color: '#fff',
+                }}
+              >
+                {location}
+              </CheckItem>
+            )}
+          </form>
+          {locationBoxClick && (
+            <styles.searchAddrContainer>
+              {addresses.map(address => (
+                <styles.searchResults
+                  key={address.roadAddress}
+                  onClick={() => {
+                    setLocationBoxClick(false);
+                    setLocation(address.roadAddress);
+                  }}
+                >
+                  {address.roadAddress}
+                </styles.searchResults>
+              ))}
+            </styles.searchAddrContainer>
           )}
         </styles.vitalList>
         <styles.vitalList>

@@ -58,6 +58,10 @@ const styles = {
     z-index: 10;
 
     padding: 2.31rem;
+
+    @media (max-width: 768px) {
+      padding: 1.8rem;
+    }
   `,
 };
 

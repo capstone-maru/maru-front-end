@@ -93,11 +93,12 @@ const styles = {
     width: 18.375rem;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 1.2rem;
   `,
   miniCardList: styled.li`
     display: flex;
-    align-items: flex-start;
+    height: 2rem;
+    align-items: center;
     gap: 2rem;
     align-self: stretch;
   `,
@@ -143,7 +144,9 @@ const styles = {
   `,
   miniCardText: styled.p<CardActiveProps>`
     flex: 1 0 0;
-    height: 1.5rem;
+    display: flex;
+    height: 3rem;
+    align-items: center;
     font-family: 'Noto Sans KR';
     font-size: 1rem;
     font-style: normal;

@@ -8,6 +8,8 @@ import { MajorSelector } from './MajorSelector';
 import { MbtiToggle } from './MbtiToggle';
 import { Slider } from './Slider';
 
+import { useIsMobile } from '@/shared/mobile';
+
 const styles = {
   container: styled.div`
     width: 46rem;
@@ -363,6 +365,8 @@ export function OptionSection({
     setIsMbtiSelected(!isMbtiSelected);
   };
 
+  const isMobile = useIsMobile();
+
   return (
     <styles.container>
       <styles.optionDescription>선택</styles.optionDescription>
@@ -582,7 +586,7 @@ export function OptionSection({
                 style={{
                   color: '#888',
                   fontFamily: 'Noto Sans KR',
-                  fontSize: '0.475rem',
+                  fontSize: isMobile ? '0.475rem' : '1rem',
                   fontStyle: 'normal',
                   fontWeight: '500',
                   lineHeight: 'normal',

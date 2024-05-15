@@ -8,6 +8,7 @@ import { VitalSection } from './card/VitalSection';
 const styles = {
   checkContainer: styled.div`
     display: flex;
+    position: relative;
     width: 50rem;
     padding: 2rem;
     flex-direction: column;

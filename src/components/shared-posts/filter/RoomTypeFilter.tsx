@@ -20,6 +20,11 @@ const styles = {
 
     width: 30rem;
 
+    @media (max-width: 768px) {
+      gap: 1rem;
+      width: 18rem;
+    }
+
     h1 {
       color: #000;
       font-family: 'Noto Sans KR';
@@ -27,6 +32,10 @@ const styles = {
       font-style: normal;
       font-weight: 500;
       line-height: normal;
+
+      @media (max-width: 768px) {
+        font-size: 1rem;
+      }
     }
 
     button {
@@ -41,6 +50,11 @@ const styles = {
 
       border-radius: 8px;
       border: 1px solid #000;
+
+      @media (max-width: 768px) {
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+      }
 
       transition:
         150ms border ease-in-out,
@@ -66,6 +80,7 @@ const styles = {
       display: flex;
       align-items: flex-start;
       gap: 0.5rem;
+      flex-wrap: wrap;
     }
   `,
   livingRoom: styled.div`
