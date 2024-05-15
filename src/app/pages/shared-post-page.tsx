@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { Bookmark, CircularProfileImage } from '@/components';
-import { ImageGrid } from '@/components/shared-post-page';
+import { CardToggleButton, ImageGrid } from '@/components/shared-post-page';
 import { useAuthValue, useUserData } from '@/features/auth';
 import { useCreateChatRoom } from '@/features/chat';
 import { fromAddrToCoord } from '@/features/geocoding';
@@ -430,6 +430,45 @@ const styles = {
     font-weight: 600;
     line-height: 1.5rem;
   `,
+  mateCardContainer: styled.div`
+    display: flex;
+    padding: 1rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1rem;
+    align-self: stretch;
+
+    border-radius: 1rem;
+    background: #fff;
+
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    line-height: normal;
+
+    .content {
+      display: flex;
+      width: 100%;
+      flex-direction: column;
+      padding-inline: calc(24px + 0.75rem);
+      gap: 1rem;
+
+      font-size: 0.9rem;
+
+      div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        h3 {
+          font-size: 1rem;
+          font-weight: bold;
+        }
+      }
+    }
+  `,
 };
 
 export function SharedPostPage({
@@ -550,6 +589,13 @@ export function SharedPostPage({
     () => (type === 'hasRoom' ? sharedPost : dormitorySharedPost),
     [type, sharedPost, dormitorySharedPost],
   );
+
+  const [showMateCard, setShowMateCard] = useState(false);
+
+  let mateAge: string;
+  if (post?.data.roomMateFeatures.mateAge == null) mateAge = '상관없어요';
+  else if (post?.data.roomMateFeatures.mateAge === '0') mateAge = '동갑';
+  else mateAge = `±${post.data.roomMateFeatures.mateAge}`;
 
   if (isLoading || post == null) return <></>;
 
@@ -713,10 +759,9 @@ export function SharedPostPage({
                 <div>
                   <p>
                     {post.data.publisherAccount.birthYear != null
-                      ? getAge(+post.data.publisherAccount.birthYear)
+                      ? `${getAge(+post.data.publisherAccount.birthYear)}세`
                       : new Date().getFullYear()}
                   </p>
-                  <p>{post.data.address.roadAddress}</p>
                 </div>
               </styles.profileInfo>
             </styles.profile>
@@ -743,6 +788,39 @@ export function SharedPostPage({
               </div>
             </styles.buttons>
           </styles.selectedMateContainer>
+          <styles.mateCardContainer>
+            <CardToggleButton
+              label="메이트카드"
+              isOpen={showMateCard}
+              onClick={() => {
+                setShowMateCard(prev => !prev);
+              }}
+            />
+            {showMateCard && (
+              <div className="content">
+                <div>
+                  <h3>흡연 여부</h3>
+                  <p>{post.data.roomMateFeatures.smoking}</p>
+                </div>
+                <div>
+                  <h3>메이트와 방 공유 여부</h3>
+                  <p>{post.data.roomMateFeatures.roomSharingOption}</p>
+                </div>
+                <div>
+                  <h3>나이</h3>
+                  <p>{mateAge}</p>
+                </div>
+                <div>
+                  <h3>선택 옵션</h3>
+                  <p>
+                    {(
+                      JSON.parse(post.data.roomMateFeatures.options) as string[]
+                    ).join(', ')}
+                  </p>
+                </div>
+              </div>
+            )}
+          </styles.mateCardContainer>
         </styles.mateContainer>
       </styles.contentContainer>
     </styles.container>
