@@ -224,15 +224,18 @@ export function RoomTypeFilter() {
       <styles.livingRoom>
         <h1>거실 유무</h1>
         <ToggleSwitch
-          isChecked={filter.roomInfo.hasLivingRoom}
+          isChecked={filter.roomInfo.hasLivingRoom ?? false}
           onToggle={() => {
-            setFilter(prev => ({
-              ...prev,
-              roomInfo: {
-                ...prev.roomInfo,
-                hasLivingRoom: !prev.roomInfo.hasLivingRoom,
-              },
-            }));
+            setFilter(prev => {
+              const value = prev.roomInfo.hasLivingRoom ?? false;
+              return {
+                ...prev,
+                roomInfo: {
+                  ...prev.roomInfo,
+                  hasLivingRoom: !value,
+                },
+              };
+            });
           }}
         />
       </styles.livingRoom>

@@ -1,10 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 
-import { HorizontalDivider } from '..';
-
-import { type SharedPostListItem } from '@/entities/shared-post';
+import { HorizontalDivider } from '@/components';
+import {
+  type DormitorySharedPostListItem,
+  type SharedPostListItem,
+} from '@/entities/shared-post';
 
 const styles = {
   container: styled.div`
@@ -22,6 +25,8 @@ const styles = {
     border-radius: 16px;
 
     object-fit: cover;
+
+    cursor: pointer;
   `,
   content: styled.div`
     flex-grow: 1;
@@ -42,6 +47,8 @@ const styles = {
         font-style: normal;
         font-weight: 700;
         line-height: normal;
+
+        cursor: pointer;
       }
 
       h2 {
@@ -65,6 +72,8 @@ const styles = {
   `,
   writer: styled.div`
     position: relative;
+
+    cursor: pointer;
 
     display: flex;
     flex-shrink: 0;
@@ -120,26 +129,51 @@ const styles = {
   `,
 };
 
-export function PostCard({ post }: { post: SharedPostListItem }) {
+export function PostCard({
+  post,
+  onClick,
+}: {
+  post: SharedPostListItem | DormitorySharedPostListItem;
+  onClick: () => void;
+}) {
+  const router = useRouter();
+
+  const recruitmentCapacity =
+    'roomInfo' in post
+      ? post.roomInfo.recruitmentCapacity
+      : post.recruitmentCapacity;
+
   return (
     <div>
       <styles.container>
-        <styles.thumbnail alt="" src={post.thumbnail.fileName} />
-        <styles.content>
+        <styles.thumbnail
+          onClick={onClick}
+          alt=""
+          src={post.thumbnail.fileName}
+        />
+        <styles.content onClick={onClick}>
           <div>
             <h1>{post.title}</h1>
             <h2>{post.address.roadAddress}</h2>
           </div>
           <div>
-            <p>모집 {post.roomInfo.recruitmentCapacity}명</p>
-            <p>
-              {post.roomInfo.roomType} · 방 {post.roomInfo.numberOfRoom} ·
-              화장실 {post.roomInfo.numberOfBathRoom}
-            </p>
-            <p>희망 월 분담금 {post.roomInfo.expectedPayment}</p>
+            <p>모집 {recruitmentCapacity}명</p>
+            {'roomInfo' in post && (
+              <>
+                <p>
+                  {post.roomInfo.roomType} · 방 {post.roomInfo.numberOfRoom} ·
+                  화장실 {post.roomInfo.numberOfBathRoom}
+                </p>
+                <p>희망 월 분담금 {post.roomInfo.expectedPayment}만원</p>
+              </>
+            )}
           </div>
         </styles.content>
-        <styles.writer>
+        <styles.writer
+          onClick={() => {
+            router.push(`/profile/${post.publisherAccount.memberId}`);
+          }}
+        >
           <img alt="" src={post.publisherAccount.profileImageFileName} />
           <styles.percentage>
             <p>50%</p>

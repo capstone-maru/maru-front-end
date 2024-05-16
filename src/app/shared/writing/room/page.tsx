@@ -1,5 +1,5 @@
 import { WritingPostPage } from '@/app/pages';
 
 export default function Page() {
-  return <WritingPostPage />;
+  return <WritingPostPage type="hasRoom" />;
 }

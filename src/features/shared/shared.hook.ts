@@ -1,8 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { type AxiosResponse } from 'axios';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRecoilState, useResetRecoilState } from 'recoil';
 
 import {
+  createDormitorySharedPost,
   createSharedPost,
   deleteDormitorySharedPost,
   deleteSharedPost,
@@ -12,19 +14,22 @@ import {
   getSharedPosts,
   scrapDormitoryPost,
   scrapPost,
+  updateSharedPost,
 } from './shared.api';
+import { sharedPostPropState } from './shared.atom';
 import {
-  type CreateSharedPostProps,
+  type GetDormitorySharedPostDTO,
+  type GetSharedPostDTO,
+} from './shared.dto';
+import {
   type GetSharedPostsProps,
-  type ImageFile,
   type SelectedExtraOptions,
   type SelectedOptions,
+  type SharedPostProps,
 } from './shared.type';
-import { postUserProfile } from '../profile/profile.api';
-import { type PostUserProfileDTO } from '../profile/profile.dto';
+import { fromAddrToCoord } from '../geocoding';
 
-import { useAuthValue } from '@/features/auth';
-import { type NaverAddress } from '@/features/geocoding';
+import { useAuthValue, useUserData } from '@/features/auth';
 import { useDebounce } from '@/shared/debounce';
 import { type FailureDTO, type SuccessBaseDTO } from '@/shared/types';
 
@@ -95,243 +100,248 @@ export const usePaging = ({
   );
 };
 
-export const useCreateSharedPostProps = () => {
-  const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
-  const [images, setImages] = useState<ImageFile[]>([]);
-  const [address, setAddress] = useState<NaverAddress | null>(null);
+export const useSharedPostProps = ({
+  postId,
+  type,
+}: {
+  postId?: number;
+  type?: 'hasRoom' | 'dormitory';
+}) => {
+  const [state, setState] = useRecoilState(sharedPostPropState);
+  const reset = useResetRecoilState(sharedPostPropState);
 
-  const [mateLimit, setMateLimit] = useState(0);
-  const [expectedMonthlyFee, setExpectedMonthlyFee] = useState<number>(0);
+  useEffect(() => {
+    reset();
 
-  const [houseSize, setHouseSize] = useState<number>(0);
-  const [selectedExtraOptions, setSelectedExtraOptions] =
-    useState<SelectedExtraOptions>({});
-  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+    if (postId == null) return;
 
-  const handleExtraOptionClick = useCallback((option: string) => {
-    setSelectedExtraOptions(prevSelectedOptions => ({
-      ...prevSelectedOptions,
-      [option]: !prevSelectedOptions[option],
-    }));
+    const setStateWithPost = ({
+      data,
+    }: GetSharedPostDTO | GetDormitorySharedPostDTO) => {
+      fromAddrToCoord({ query: data.address.roadAddress })
+        .then(res => {
+          const address = res.data.addresses.shift();
+          if (address != null) setState(prev => ({ ...prev, address }));
+        })
+        .catch(err => {
+          console.error(err);
+        });
+
+      let roomCount = '1개';
+      let restRoomCount = '1개';
+      if ('roomInfo' in data) {
+        if (data.roomInfo.numberOfRoom === 2) roomCount = '2개';
+        else if (data.roomInfo.numberOfRoom === 3) roomCount = '3개 이상';
+
+        if (data.roomInfo.numberOfBathRoom === 2) restRoomCount = '2개';
+        else if (data.roomInfo.numberOfBathRoom === 3) restRoomCount = '3개';
+      }
+
+      if ('roomInfo' in data) {
+        setState({
+          ...state,
+          title: data.title,
+          content: data.content,
+          images: data.roomImages.map(({ fileName }) => ({
+            url: fileName,
+            uploaded: true,
+          })),
+          mateLimit: data.roomInfo.recruitmentCapacity,
+          expectedMonthlyFee: data.roomInfo.expectedPayment,
+          houseSize: data.roomInfo.size,
+          selectedOptions: {
+            roomType: data.roomInfo.roomType,
+            roomCount,
+            budget: data.roomInfo.rentalType,
+            floorType: data.roomInfo.floorType,
+            livingRoom: data.roomInfo.hasLivingRoom ? '유' : '무',
+            restRoomCount,
+          },
+          selectedExtraOptions: {
+            canPark: data.roomInfo.extraOption.canPark,
+            hasAirConditioner: data.roomInfo.extraOption.hasAirConditioner,
+            hasRefrigerator: data.roomInfo.extraOption.hasRefrigerator,
+            hasWasher: data.roomInfo.extraOption.hasWasher,
+            hasTerrace: data.roomInfo.extraOption.hasTerrace,
+          },
+          mateCard: {
+            ...state.mateCard,
+            location: data.address.roadAddress,
+            features: {
+              smoking: data.roomMateFeatures.smoking,
+              roomSharingOption: data.roomMateFeatures.roomSharingOption,
+              mateAge:
+                data.roomMateFeatures.mateAge != null
+                  ? +data.roomMateFeatures.mateAge
+                  : undefined,
+              options: new Set(
+                JSON.parse(data.roomMateFeatures.options) as string[],
+              ),
+            },
+          },
+        });
+      } else {
+        setState({
+          ...state,
+          title: data.title,
+          content: data.content,
+          images: data.roomImages.map(({ fileName }) => ({
+            url: fileName,
+            uploaded: true,
+          })),
+          mateLimit: data.recruitmentCapacity,
+          expectedMonthlyFee: 0,
+          houseSize: 0,
+          selectedOptions: {},
+          selectedExtraOptions: {},
+          mateCard: {
+            ...state.mateCard,
+            location: data.address.roadAddress,
+            features: {
+              smoking: data.roomMateFeatures.smoking,
+              roomSharingOption: data.roomMateFeatures.roomSharingOption,
+              mateAge:
+                data.roomMateFeatures.mateAge != null
+                  ? +data.roomMateFeatures.mateAge
+                  : undefined,
+              options: new Set(
+                JSON.parse(data.roomMateFeatures.options) as string[],
+              ),
+            },
+          },
+        });
+      }
+    };
+
+    (async () => {
+      const post =
+        type === 'hasRoom'
+          ? await getSharedPost(postId)
+          : await getDormitorySharedPost(postId);
+
+      setStateWithPost(post.data);
+    })();
   }, []);
 
-  const handleOptionClick = useCallback(
-    (optionName: keyof SelectedOptions, item: string) => {
-      setSelectedOptions(prevState => ({
-        ...prevState,
-        [optionName]: prevState[optionName] === item ? null : item,
-      }));
-    },
-    [],
-  );
+  const handleOptionClick = (
+    optionName: keyof SelectedOptions,
+    item: string,
+  ) => {
+    setState(prev => ({
+      ...prev,
+      selectedOptions: {
+        ...prev.selectedOptions,
+        [optionName]: prev.selectedOptions[optionName] === item ? null : item,
+      },
+    }));
+  };
 
-  const isOptionSelected = useCallback(
-    (optionName: keyof SelectedOptions, item: string) =>
-      selectedOptions[optionName] === item,
-    [selectedOptions],
-  );
+  const handleExtraOptionClick = (option: keyof SelectedExtraOptions) => {
+    setState(prev => {
+      const value = prev.selectedExtraOptions[option] ?? false;
+      return {
+        ...prev,
+        selectedExtraOptions: {
+          ...prev.selectedExtraOptions,
+          [option]: !value,
+        },
+      };
+    });
+  };
 
-  const isExtraOptionSelected = useCallback(
-    (item: string) => selectedExtraOptions[item],
-    [selectedExtraOptions],
-  );
+  const isOptionSelected = (optionName: keyof SelectedOptions, item: string) =>
+    state.selectedOptions[optionName] === item;
 
-  const isPostCreatable = useMemo(
-    () =>
-      images.length > 0 &&
-      title.trim().length > 0 &&
-      content.trim().length > 0 &&
-      selectedOptions.budget != null &&
-      expectedMonthlyFee > 0 &&
-      selectedOptions.roomType != null &&
-      houseSize > 0 &&
-      selectedOptions.roomCount != null &&
-      selectedOptions.restRoomCount != null &&
-      selectedOptions.livingRoom != null &&
-      mateLimit > 0 &&
-      address != null,
-    [
-      images,
-      title,
-      content,
-      selectedOptions,
-      expectedMonthlyFee,
-      houseSize,
-      mateLimit,
-      address,
-    ],
-  );
+  const isExtraOptionSelected = (item: keyof SelectedExtraOptions) =>
+    state.selectedExtraOptions[item] === true;
 
-  return useMemo(
-    () => ({
-      title,
-      setTitle,
-      content,
-      setContent,
-      images,
-      setImages,
-      address,
-      setAddress,
-      mateLimit,
-      setMateLimit,
-      expectedMonthlyFee,
-      setExpectedMonthlyFee,
-      houseSize,
-      setHouseSize,
-      selectedExtraOptions,
-      setSelectedExtraOptions,
-      selectedOptions,
-      setSelectedOptions,
-      handleOptionClick,
-      handleExtraOptionClick,
-      isOptionSelected,
-      isExtraOptionSelected,
-      isPostCreatable,
-    }),
-    [
-      title,
-      setTitle,
-      content,
-      setContent,
-      images,
-      setImages,
-      address,
-      setAddress,
-      mateLimit,
-      setMateLimit,
-      expectedMonthlyFee,
-      setExpectedMonthlyFee,
-      houseSize,
-      setHouseSize,
-      selectedExtraOptions,
-      setSelectedExtraOptions,
-      selectedOptions,
-      setSelectedOptions,
-      handleOptionClick,
-      handleExtraOptionClick,
-      isOptionSelected,
-      isExtraOptionSelected,
-      isPostCreatable,
-    ],
-  );
-};
+  const handleMateCardEssentialFeatureChange = (
+    key: 'smoking' | 'roomSharingOption' | 'mateAge',
+    value: string | number | undefined,
+  ) => {
+    setState(prev => {
+      if (prev.mateCard.features[key] === value) {
+        const newFeatures = { ...prev.mateCard.features };
+        newFeatures[key] = undefined;
+        return {
+          ...prev,
+          mateCard: { ...prev.mateCard, features: newFeatures },
+        };
+      }
+      return {
+        ...prev,
+        mateCard: {
+          ...prev.mateCard,
+          features: { ...prev.mateCard.features, [key]: value },
+        },
+      };
+    });
+  };
 
-export const usePostMateCardInputSection = () => {
-  const [gender, setGender] = useState<string | undefined>(undefined);
-  const [birthYear, setBirthYear] = useState<number | undefined>(undefined);
-  const [location, setLocation] = useState<string | undefined>(undefined);
-  const [mbti, setMbti] = useState<string | undefined>(undefined);
-  const [major, setMajor] = useState<string | undefined>(undefined);
-  const [budget, setBudget] = useState<string | undefined>(undefined);
-
-  const [features, setFeatures] = useState<{
-    smoking?: string;
-    roomSharingOption?: string;
-    mateAge?: number;
-    options: Set<string>;
-  }>({ options: new Set() });
-
-  const handleEssentialFeatureChange = useCallback(
-    (
-      key: 'smoking' | 'roomSharingOption' | 'mateAge',
-      value: string | number | undefined,
-    ) => {
-      setFeatures(prev => {
-        if (prev[key] === value) {
-          const newFeatures = { ...prev };
-          newFeatures[key] = undefined;
-          return newFeatures;
-        }
-        return { ...prev, [key]: value };
-      });
-    },
-    [],
-  );
-
-  const handleOptionalFeatureChange = useCallback((option: string) => {
-    setFeatures(prev => {
-      const { options } = prev;
+  const handleMateCardOptionalFeatureChange = (option: string) => {
+    setState(prev => {
+      const { options } = prev.mateCard.features;
       const newOptions = new Set(options);
 
       if (options.has(option)) newOptions.delete(option);
       else newOptions.add(option);
 
-      return { ...prev, options: newOptions };
+      return {
+        ...prev,
+        mateCard: {
+          ...prev.mateCard,
+          features: { ...prev.mateCard.features, options: newOptions },
+        },
+      };
     });
-  }, []);
+  };
 
-  const derivedFeatures = useMemo(() => {
+  const derivedMateCardFeatures = useMemo(() => {
     const options: string[] = [];
+    const { features } = state.mateCard;
     features.options.forEach(option => options.push(option));
 
     return {
       smoking: features?.smoking ?? '상관없어요',
       roomSharingOption: features?.roomSharingOption ?? '상관없어요',
-      mateAge: birthYear,
+      mateAge: state.mateCard.birthYear,
       options: JSON.stringify(options),
     };
-  }, [features, birthYear]);
+  }, [state.mateCard]);
 
   const auth = useAuthValue();
+  const { data: user } = useUserData(auth?.accessToken != null);
+
   useEffect(() => {
-    if (auth?.user != null) {
-      setGender(auth.user.gender);
+    if (user?.gender != null) {
+      setState(prev => ({
+        ...prev,
+        mateCard: {
+          ...prev.mateCard,
+          gender: user.gender,
+        },
+      }));
     }
-  }, [auth?.user]);
+  }, [user, setState]);
 
-  const isMateCardCreatable = useMemo(
-    () =>
-      gender != null && birthYear != null && location != null && budget != null,
-    [gender, birthYear, location, budget],
-  );
-
-  return useMemo(
-    () => ({
-      gender,
-      setGender,
-      birthYear,
-      setBirthYear,
-      location,
-      setLocation,
-      mbti,
-      setMbti,
-      major,
-      setMajor,
-      budget,
-      setBudget,
-      derivedFeatures,
-      handleEssentialFeatureChange,
-      handleOptionalFeatureChange,
-      isMateCardCreatable,
-    }),
-    [
-      gender,
-      setGender,
-      birthYear,
-      setBirthYear,
-      location,
-      setLocation,
-      mbti,
-      setMbti,
-      major,
-      setMajor,
-      budget,
-      setBudget,
-      derivedFeatures,
-      handleEssentialFeatureChange,
-      handleOptionalFeatureChange,
-      isMateCardCreatable,
-    ],
-  );
+  return {
+    ...state,
+    derivedMateCardFeatures,
+    setSharedPostProps: setState,
+    reset,
+    handleOptionClick,
+    handleExtraOptionClick,
+    isOptionSelected,
+    isExtraOptionSelected,
+    handleMateCardOptionalFeatureChange,
+    handleMateCardEssentialFeatureChange,
+  };
 };
 
 export const useCreateSharedPost = () =>
-  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, CreateSharedPostProps>(
-    {
-      mutationFn: createSharedPost,
-    },
-  );
+  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, SharedPostProps>({
+    mutationFn: createSharedPost,
+  });
 
 export const useSharedPosts = ({
   filter,
@@ -347,7 +357,6 @@ export const useSharedPosts = ({
       await getSharedPosts({ filter: debounceFilter, search, page }).then(
         response => response.data,
       ),
-    staleTime: 60000,
     enabled,
   });
 };
@@ -366,20 +375,18 @@ export const useSharedPost = ({
     enabled,
   });
 
-export const useDeleteSharedPost = ({
-  postId,
-  onSuccess,
-  onError,
-}: {
-  postId: number;
-  onSuccess: (data: SuccessBaseDTO) => void;
-  onError: (error: Error) => void;
-}) =>
-  useMutation({
-    mutationFn: async () =>
-      await deleteSharedPost(postId).then(response => response.data),
-    onSuccess,
-    onError,
+export const useUpdateSharedPost = () =>
+  useMutation<
+    AxiosResponse<SuccessBaseDTO>,
+    FailureDTO,
+    { postId: number; postData: SharedPostProps }
+  >({
+    mutationFn: updateSharedPost,
+  });
+
+export const useDeleteSharedPost = () =>
+  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, number>({
+    mutationFn: deleteSharedPost,
   });
 
 export const useScrapSharedPost = () =>
@@ -387,21 +394,30 @@ export const useScrapSharedPost = () =>
     mutationFn: scrapPost,
   });
 
+export const useCreateDormitorySharedPost = () =>
+  useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, SharedPostProps>({
+    mutationFn: createDormitorySharedPost,
+  });
+
 export const useDormitorySharedPosts = ({
   filter,
   search,
   page,
   enabled,
-}: GetSharedPostsProps & { enabled: boolean }) =>
-  useQuery({
-    queryKey: ['/api/shared/posts/dormitory', { filter, search, page }],
+}: GetSharedPostsProps & { enabled: boolean }) => {
+  const debounceFilter = useDebounce(filter, 1000);
+
+  return useQuery({
+    queryKey: ['/api/shared/posts/dormitory', { debounceFilter, search, page }],
     queryFn: async () =>
-      await getDormitorySharedPosts({ filter, search, page }).then(
-        response => response.data,
-      ),
-    staleTime: 60000,
+      await getDormitorySharedPosts({
+        filter: debounceFilter,
+        search,
+        page,
+      }).then(response => response.data),
     enabled,
   });
+};
 
 export const useDormitorySharedPost = ({
   postId,
@@ -415,6 +431,15 @@ export const useDormitorySharedPost = ({
     queryFn: async () =>
       await getDormitorySharedPost(postId).then(response => response.data),
     enabled,
+  });
+
+export const useUpdateDormitorySharedPost = () =>
+  useMutation<
+    AxiosResponse<SuccessBaseDTO>,
+    FailureDTO,
+    { postId: number; postData: SharedPostProps }
+  >({
+    mutationFn: updateSharedPost,
   });
 
 export const useDeleteDormitorySharedPost = ({
@@ -437,56 +462,3 @@ export const useScrapDormitorySharedPost = () =>
   useMutation<AxiosResponse<SuccessBaseDTO>, FailureDTO, number>({
     mutationFn: scrapDormitoryPost,
   });
-
-const userIds = [
-  'naver_0',
-  'kakao_1',
-  'kakao_2',
-  'naver_3',
-  'kakao_4',
-  'naver_5',
-  'kakao_6',
-  'kakao_7',
-  'kakao_8',
-  'naver_9',
-  'naver_10',
-  'naver_11',
-  'naver_12',
-  'naver_13',
-  'kakao_14',
-  'naver_15',
-  'kakao_16',
-  'naver_17',
-  'naver_18',
-  'kakao_19',
-];
-
-export const useDummyUsers = () => {
-  const [users, setUsers] =
-    useState<Array<PostUserProfileDTO & { userId: string }>>();
-
-  useEffect(() => {
-    (async () => {
-      const userData = await Promise.allSettled(
-        userIds.map(async userId => {
-          const result = await postUserProfile(userId);
-          return { ...result, userId };
-        }),
-      );
-
-      setUsers(
-        userData.reduce<Array<PostUserProfileDTO & { userId: string }>>(
-          (prev, curr) => {
-            if (curr.status === 'fulfilled') {
-              prev.push({ ...curr.value, userId: curr.value.userId });
-            }
-            return prev;
-          },
-          [],
-        ),
-      );
-    })();
-  }, []);
-
-  return users;
-};

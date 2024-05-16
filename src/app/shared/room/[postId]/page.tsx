@@ -5,5 +5,5 @@ export default function Page({
 }: {
   params: { postId: string };
 }) {
-  return <SharedPostPage postId={+postId} />;
+  return <SharedPostPage postId={+postId} type="hasRoom" />;
 }
