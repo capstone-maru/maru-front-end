@@ -16,6 +16,14 @@ const styles = {
     background: #fff;
     z-index: 5;
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
+
+    @media (max-width: 768px) {
+      gap: 1rem;
+      padding: 1rem;
+      width: 12.5rem;
+      flex-wrap: wrap;
+      bottom: -8rem;
+    }
   `,
   mbtiToggleContainer: styled.div`
     display: inline-flex;
@@ -29,6 +37,10 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+    }
   `,
 
   switchContainer: styled.div`
@@ -42,6 +54,11 @@ const styles = {
     display: inline-block;
     width: 2.5rem;
     height: 1.5rem;
+
+    @media (max-width: 768px) {
+      width: 2rem;
+      height: 1rem;
+    }
   `,
   switchInput: styled.input`
     opacity: 0;
@@ -65,13 +82,19 @@ const styles = {
     cursor: pointer;
     top: 0.25rem;
     left: 0.25rem;
-    bottom: 0.25rem;
     background-color: white;
     -webkit-transition: 0.4s;
     transition: 0.4s;
     border-radius: 50%;
     width: 1rem;
     height: 1rem;
+
+    @media (max-width: 768px) {
+      width: 0.8rem;
+      height: 0.8rem;
+      top: 0.13rem;
+      left: 0.13rem;
+    }
   `,
   value: styled.p`
     color: #000;
@@ -82,6 +105,11 @@ const styles = {
     font-weight: 500;
     line-height: normal;
     align-self: stretch;
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+      width: 100%;
+    }
   `,
 };
 

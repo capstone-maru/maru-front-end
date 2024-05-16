@@ -12,6 +12,10 @@ const styles = {
 
     display: flex;
     justify-content: space-evenly;
+
+    @media (max-width: 768px) {
+      padding: 0 0.8rem;
+    }
   `,
   item: styled.div`
     -webkit-user-select: none;
@@ -42,6 +46,15 @@ const styles = {
       line-height: 1.5rem;
 
       border-bottom: 2px solid #e15637;
+
+      @media (max-width: 768px) {
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      font-size: 1rem;
+      padding: 0.25rem 0.5rem;
     }
   `,
 };

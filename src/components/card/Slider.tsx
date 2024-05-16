@@ -6,12 +6,18 @@ import styled from 'styled-components';
 const styles = {
   container: styled.div`
     display: inline-flex;
+    width: 50%;
     align-items: center;
   `,
   sliderContainer: styled.div`
     width: 22rem;
     height: 1.875rem;
     position: relative;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      height: 1.5rem;
+    }
   `,
   sliderTrack: styled.div`
     width: 100%;
@@ -58,6 +64,11 @@ const styles = {
       position: relative;
       z-index: 1;
       box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+
+      @media (max-width: 768px) {
+        width: 1.2rem;
+        height: 1.2rem;
+      }
     }
   `,
 };

@@ -8,6 +8,7 @@ import {
   type DormitorySharedPostListItem,
   type SharedPostListItem,
 } from '@/entities/shared-post';
+import { useIsMobile } from '@/shared/mobile';
 
 const styles = {
   container: styled.div`
@@ -16,6 +17,10 @@ const styles = {
 
     display: flex;
     gap: 1.56rem;
+
+    @media (max-width: 768px) {
+      height: 11rem;
+    }
   `,
   thumbnail: styled.img`
     width: 16.125rem;
@@ -25,6 +30,11 @@ const styles = {
     border-radius: 16px;
 
     object-fit: cover;
+
+    @media (max-width: 768px) {
+      width: 8.5625rem;
+      height: 8.625rem;
+    }
 
     cursor: pointer;
   `,
@@ -49,6 +59,10 @@ const styles = {
         line-height: normal;
 
         cursor: pointer;
+
+        @media (max-width: 768px) {
+          font-size: 0.875rem;
+        }
       }
 
       h2 {
@@ -58,6 +72,10 @@ const styles = {
         font-style: normal;
         font-weight: 400;
         line-height: normal;
+
+        @media (max-width: 768px) {
+          font-size: 0.75rem;
+        }
       }
 
       p {
@@ -67,6 +85,10 @@ const styles = {
         font-style: normal;
         font-weight: 500;
         line-height: normal;
+
+        @media (max-width: 768px) {
+          font-size: 0.75rem;
+        }
       }
     }
   `,
@@ -92,6 +114,11 @@ const styles = {
       border-radius: 50%;
 
       object-fit: cover;
+
+      @media (max-width: 768px) {
+        width: 3.375rem;
+        height: 3.375rem;
+      }
     }
 
     p {
@@ -118,6 +145,11 @@ const styles = {
     background: #fff;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.04);
 
+    @media (max-width: 768px) {
+      padding: 0.5rem 0.2rem;
+      top: 40%;
+    }
+
     p {
       color: #e15637;
       font-family: Pretendard;
@@ -125,6 +157,10 @@ const styles = {
       font-style: normal;
       font-weight: 600;
       line-height: 1.5rem;
+
+      @media (max-width) {
+        font-size: 0.625rem;
+      }
     }
   `,
 };
@@ -143,6 +179,7 @@ export function PostCard({
       ? post.roomInfo.recruitmentCapacity
       : post.recruitmentCapacity;
 
+  const isMobile = useIsMobile();
   return (
     <div>
       <styles.container>
@@ -156,30 +193,52 @@ export function PostCard({
             <h1>{post.title}</h1>
             <h2>{post.address.roadAddress}</h2>
           </div>
-          <div>
-            <p>모집 {recruitmentCapacity}명</p>
-            {'roomInfo' in post && (
-              <>
-                <p>
-                  {post.roomInfo.roomType} · 방 {post.roomInfo.numberOfRoom} ·
-                  화장실 {post.roomInfo.numberOfBathRoom}
-                </p>
-                <p>희망 월 분담금 {post.roomInfo.expectedPayment}만원</p>
-              </>
-            )}
+          <div
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'flex-end',
+            }}
+          >
+            <div>
+              <p>모집 {recruitmentCapacity}명</p>
+              {'roomInfo' in post && (
+                <>
+                  <p>
+                    {post.roomInfo.roomType} · 방 {post.roomInfo.numberOfRoom} ·
+                    화장실 {post.roomInfo.numberOfBathRoom}
+                  </p>
+                  <p>희망 월 분담금 {post.roomInfo.expectedPayment}만원</p>
+                </>
+              )}
+            </div>
+            {isMobile ? (
+              <styles.writer
+                onClick={() => {
+                  router.push(`/profile/${post.publisherAccount.memberId}`);
+                }}
+              >
+                <img alt="" src={post.publisherAccount.profileImageFileName} />
+                <styles.percentage>
+                  <p>50%</p>
+                </styles.percentage>
+              </styles.writer>
+            ) : null}
           </div>
         </styles.content>
-        <styles.writer
-          onClick={() => {
-            router.push(`/profile/${post.publisherAccount.memberId}`);
-          }}
-        >
-          <img alt="" src={post.publisherAccount.profileImageFileName} />
-          <styles.percentage>
-            <p>50%</p>
-          </styles.percentage>
-          <p>{post.publisherAccount.nickname}</p>
-        </styles.writer>
+        {!isMobile ? (
+          <styles.writer
+            onClick={() => {
+              router.push(`/profile/${post.publisherAccount.memberId}`);
+            }}
+          >
+            <img alt="" src={post.publisherAccount.profileImageFileName} />
+            <styles.percentage>
+              <p>50%</p>
+            </styles.percentage>
+            <p>{post.publisherAccount.nickname}</p>
+          </styles.writer>
+        ) : null}
       </styles.container>
       <HorizontalDivider />
     </div>

@@ -5,7 +5,6 @@ import './globals.scss';
 
 import {
   AuthProvider,
-  InitialzationProvider,
   RecoilRootProvider,
   StyledComponentsRegistry,
   TanstackQueryProvider,
@@ -40,10 +39,10 @@ export default function RootLayout({
             <StyledComponentsRegistry>
               <NavigationBar />
               <AuthProvider>
-                <InitialzationProvider>
-                  <main>{children}</main>
+                <main>
+                  {children}
                   <FloatingChatting />
-                </InitialzationProvider>
+                </main>
                 <ToastProvider />
               </AuthProvider>
             </StyledComponentsRegistry>

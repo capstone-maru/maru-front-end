@@ -19,6 +19,11 @@ const styles = {
     font-weight: 400;
     line-height: normal;
 
+    @media (max-width: 768px) {
+      font-size: 0.875rem;
+      gap: 0.5rem;
+    }
+
     button {
       all: unset;
 
@@ -27,6 +32,11 @@ const styles = {
       transition: 200ms background-color ease-in-out;
       border-radius: 8px;
       min-width: 15rem;
+
+      @media (max-width: 768px) {
+        min-width: 10rem;
+        padding: 0.5rem;
+      }
     }
 
     button:hover {

@@ -2,63 +2,27 @@
 
 import { Client } from '@stomp/stompjs';
 import axios from 'axios';
-import React, { type ReactElement, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { ChattingList } from './chat/ChattingList';
-import { ChattingRoom } from './chat/ChattingRoom';
-import { MobileChattingBox } from './chat/MobileChattingBox';
+import { ChattingList } from './ChattingList';
+import { MobileChattingRoom } from './MobileChattingRoom';
 
 import { useAuthValue, useUserData } from '@/features/auth';
 import { type GetChatRoomDTO } from '@/features/chat';
-import { useIsMobile } from '@/shared/mobile';
 
 const styles = {
-  chattingButton: styled.div`
-    position: fixed;
-    bottom: 1.5rem;
-    right: 3rem;
-    display: inline-flex;
-    padding: 1rem;
-    align-items: flex-start;
-    gap: 0.5rem;
-    border-radius: 100px;
-    background: #e15637;
-    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
-    z-index: 3147483800;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-
-    &:hover {
-      transform: scale(1.1);
-    }
-  `,
-  buttonIcon: styled.img`
-    width: 2rem;
-    height: 2rem;
-
-    @media (max-width: 768px) {
-      width: 1.5rem;
-      height: 1.5rem;
-    }
-  `,
   container: styled.div`
-    position: fixed;
-    bottom: 6rem;
-    right: 6.5rem;
     display: flex;
-    width: 25rem;
-    height: 35rem;
+    width: 100vw;
+    height: 100vh;
+    min-width: 390px;
+    padding-bottom: 2rem;
     flex-direction: column;
-    align-items: flex-start;
-    flex-shrink: 0;
-    border-radius: 20px;
-    background: #fff;
-    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    -webkit-transition: 0.4s;
-    transition: 0.4s;
-    overflow: hidden;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    z-index: 20000;
   `,
   chattingHeader: styled.div`
     display: inline-flex;
@@ -69,7 +33,6 @@ const styles = {
     width: 100%;
     height: 3.25rem;
     flex-shrink: 0;
-    border-radius: 20px 20px 0 0;
     background: var(--background, #f7f6f9);
   `,
   title: styled.span`
@@ -81,10 +44,11 @@ const styles = {
   `,
   chattingSection: styled.div`
     width: 100%;
-    height: calc(100% - 3.25rem);
+    height: 100%;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
+    background-color: white;
 
     &::-webkit-scrollbar {
       width: 0.5rem;
@@ -138,7 +102,7 @@ interface Message {
   sender: string;
 }
 
-function FloatingChattingBox() {
+export function MobileChattingBox() {
   const [isChatRoomOpen, setIsChatRoomOpen] = useState<boolean>(false);
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [message, setMessage] = useState<Message>();
@@ -266,7 +230,6 @@ function FloatingChattingBox() {
             <styles.searchButton src="/icon-search.svg" />
           </div>
         </styles.chattingHeader>
-
         <styles.chattingSection>
           {/* <button
           onClick={() => {
@@ -292,7 +255,7 @@ function FloatingChattingBox() {
         </styles.chattingSection>
       </styles.container>
       {isChatRoomOpen && (
-        <ChattingRoom
+        <MobileChattingRoom
           userId={userId}
           userName={userName}
           roomId={selectedRoomId}
@@ -301,35 +264,6 @@ function FloatingChattingBox() {
           onRoomClick={setIsChatRoomOpen}
         />
       )}
-    </>
-  );
-}
-
-export function FloatingChatting() {
-  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
-
-  const toggleChat = () => {
-    setIsChatOpen(prevState => !prevState);
-  };
-
-  const isMobile = useIsMobile();
-  const [chatBox, setChatBox] = useState<ReactElement | undefined>();
-  useEffect(() => {
-    if (isChatOpen) {
-      if (!isMobile) {
-        setChatBox((<FloatingChattingBox />) as ReactElement);
-      } else {
-        setChatBox((<MobileChattingBox />) as ReactElement);
-      }
-    } else setChatBox(undefined);
-  }, [isChatOpen, isMobile]);
-
-  return (
-    <>
-      <styles.chattingButton onClick={toggleChat}>
-        <styles.buttonIcon src="/chatting.svg" />
-      </styles.chattingButton>
-      {chatBox}
     </>
   );
 }
