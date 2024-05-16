@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
 import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
 import { getGeolocation } from '@/features/geocoding';
@@ -16,7 +15,6 @@ const styles = {
     display: flex;
     width: 100vw;
     min-width: 390px;
-    height: 47.8125rem;
     padding-bottom: 2rem;
     flex-direction: column;
     align-items: center;
@@ -83,18 +81,13 @@ const styles = {
   `,
   mateRecommendation: styled.div`
     display: flex;
-    width: 69%;
-    padding: 0.5rem 0rem;
+    width: 100%;
+    padding: 0.5rem 1rem;
     align-items: center;
-    gap: 0.25rem;
+    gap: 1rem 0.5rem;
     flex-shrink: 0;
     overflow-x: auto;
-
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    scrollbar ::-webkit-scrollbar {
-      display: none;
-    }
+    flex-wrap: wrap;
   `,
 };
 
@@ -115,18 +108,6 @@ export function MobileMainPage() {
   const [map, setMap] = useState<naver.maps.Map | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  const handleScrollRight = () => {
-    if (scrollRef.current !== null) {
-      scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
-    }
-  };
-
-  const handleScrollLeft = () => {
-    if (scrollRef.current !== null) {
-      scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
-    }
-  };
 
   useEffect(() => {
     getGeolocation({
@@ -173,28 +154,13 @@ export function MobileMainPage() {
         <styles.mateRecommendationTitle>
           <h1>{auth?.user?.name}님의 추천 메이트</h1>
         </styles.mateRecommendationTitle>
-        <styles.mateRecommendationRow>
-          <CircularButton
-            direction="left"
-            disabled={false}
-            onClick={handleScrollLeft}
-          />
-          <styles.mateRecommendation ref={scrollRef}>
-            {recommendationMates?.map(({ name, similarity, userId }) => (
-              <Link key={userId} href={`/profile/${userId}`}>
-                <UserCard
-                  name={name}
-                  percentage={Math.floor(similarity * 100)}
-                />
-              </Link>
-            ))}
-          </styles.mateRecommendation>
-          <CircularButton
-            direction="right"
-            disabled={false}
-            onClick={handleScrollRight}
-          />
-        </styles.mateRecommendationRow>
+        <styles.mateRecommendation ref={scrollRef}>
+          {recommendationMates?.map(({ name, similarity, userId }) => (
+            <Link key={userId} href={`/profile/${userId}`}>
+              <UserCard name={name} percentage={Math.floor(similarity * 100)} />
+            </Link>
+          ))}
+        </styles.mateRecommendation>
       </styles.mateRecommendationContainer>
     </styles.container>
   );

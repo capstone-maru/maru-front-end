@@ -25,7 +25,7 @@ const styles = {
     border-radius: 100px;
     background: #e15637;
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
-    z-index: 20000;
+    z-index: 3147483800;
     transition: transform 0.3s ease;
     cursor: pointer;
 
@@ -55,7 +55,7 @@ const styles = {
     border-radius: 20px;
     background: #fff;
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
-    z-index: 100;
+    z-index: 1000;
     -webkit-transition: 0.4s;
     transition: 0.4s;
     overflow: hidden;

@@ -21,8 +21,26 @@ const styles = {
     flex-direction: column;
     align-items: center;
     position: absolute;
-    top: 4.5rem;
-    z-index: 100;
+    top: 0;
+    z-index: 20000;
+  `,
+  chattingHeader: styled.div`
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    gap: 1rem;
+    width: 100%;
+    height: 3.25rem;
+    flex-shrink: 0;
+    background: var(--background, #f7f6f9);
+  `,
+  title: styled.span`
+    font-family: 'Baloo 2';
+    font-size: 1.575rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
   `,
   chattingSection: styled.div`
     width: 100%;
@@ -198,6 +216,20 @@ export function MobileChattingBox() {
   return (
     <>
       <styles.container>
+        <styles.chattingHeader>
+          <div>
+            <styles.title style={{ color: 'var(--Main-1, #E15637)' }}>
+              maru{' '}
+            </styles.title>
+            <styles.title style={{ color: 'var(--Gray, #8C95A8)' }}>
+              chat
+            </styles.title>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <styles.searchInput />
+            <styles.searchButton src="/icon-search.svg" />
+          </div>
+        </styles.chattingHeader>
         <styles.chattingSection>
           {/* <button
           onClick={() => {

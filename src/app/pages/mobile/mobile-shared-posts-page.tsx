@@ -127,6 +127,7 @@ const styles = {
     @media (max-width: 768px) {
       gap: 1rem 1rem;
       padding-left: 0;
+      justify-content: flex-start;
     }
   `,
 };

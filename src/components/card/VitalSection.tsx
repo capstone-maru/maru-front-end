@@ -220,8 +220,8 @@ const styles = {
     min-height: 10rem;
     display: flex;
     position: absolute;
-    left: 15dvw;
-    top: 30dvh;
+    left: 9rem;
+    top: 12rem;
     flex-direction: column;
     z-index: 200;
     background-color: white;

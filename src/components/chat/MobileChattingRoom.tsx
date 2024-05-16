@@ -15,15 +15,15 @@ const styles = {
   container: styled.div`
     display: flex;
     width: 100vw;
-    height: calc(100% - 2rem);
+    height: 100%;
     min-width: 390px;
     padding-bottom: 2rem;
     flex-direction: column;
     align-items: center;
     position: absolute;
-    top: 4.5rem;
+    top: 0;
     background-color: white;
-    z-index: 200;
+    z-index: 30000;
   `,
   header: styled.div`
     width: 100%;
@@ -59,7 +59,7 @@ const styles = {
     width: 1rem;
     height: 1rem;
     flex-shrink: 0;
-    background: url('kebab-horizontal.svg') no-repeat;
+    background: url('/kebab-horizontal.svg') no-repeat;
     cursor: pointer;
   `,
   messageContainer: styled.div`
@@ -68,7 +68,7 @@ const styles = {
     flex-direction: column;
     overflow-y: auto;
     width: 100%;
-    height: calc(100% - 7.5rem);
+    height: 100%;
     box-shadow: 0px -1px 0px 0px #e5e5ea inset;
     position: relative;
 
@@ -108,6 +108,7 @@ const styles = {
     font-style: normal;
     font-weight: 400;
     line-height: 1.125rem;
+    /* box-shadow: 0px -1px 0px 0px #e5e5ea inset; */
 
     &:focus {
       outline: none;

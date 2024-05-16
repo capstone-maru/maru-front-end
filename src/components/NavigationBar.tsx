@@ -38,6 +38,7 @@ const styles = {
       min-width: 390px;
       width: 100vw;
       padding: 1rem 2rem;
+      z-index: 10000;
     }
   `,
   mobileMenuIcon: styled.div`

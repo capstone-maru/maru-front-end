@@ -16,8 +16,8 @@ const styles = {
     padding: 1.88rem 1.25rem;
 
     @media (max-width: 768px) {
-      width: 11.125rem;
-      height: 12.5625rem;
+      width: 9.8125rem;
+      height: 11.3125rem;
       padding: 1.5rem 0.75rem 1.0625rem 1rem;
     }
   `,
@@ -44,6 +44,10 @@ const styles = {
         font-weight: 500;
         line-height: normal;
         margin-bottom: 0.5rem;
+
+        @media (max-width: 768px) {
+          font-size: 0.75rem;
+        }
       }
 
       p {
@@ -54,6 +58,10 @@ const styles = {
         font-weight: 500;
         line-height: normal;
         margin-bottom: 0.25rem;
+
+        @media (max-width: 768px) {
+          font-size: 0.625rem;
+        }
       }
     }
   `,
@@ -74,6 +82,10 @@ const styles = {
     .selected {
       color: #e15637;
     }
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+    }
   `,
 };
 
@@ -90,7 +102,7 @@ export function UserCard({
       <styles.profileInfo>
         {isMobile ? (
           <CircularProfileImage
-            diameter={74}
+            diameter={65}
             percentage={percentage}
             url="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1712534400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=otR4I8Y0NumUlQW6NsUkXOvTzPqQhjjq1BLNd~EcweuN0Q0vRcVUvMuhlAx2vlsr2lOiqAgoyuXkYlVrK2qknRxQffQDRjGbRsK6CyebC76kXWw5Zu0SxlwtUdiYVV8VI0lWwoRsKqnoI4DXOqChcEMKPQamtpUmTx~NHx8t5cKSdvAMu0tqlPPdF7Sa51Vcuzrryfj~mcZXXEdEltEACAxPsFxhCelyDPB2Se7ZihPK1RGrtvovJZkc-64whNnji8Z0AOm-~irZhl0WQh0jhsaUpp2T5h9drq8-UwVdco3GBNXLSk3ygioYruN0j4U7SkqKVt7~ng1G7IH7395B4A__"
           />
