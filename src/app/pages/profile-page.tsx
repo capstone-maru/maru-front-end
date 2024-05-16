@@ -533,6 +533,10 @@ function Auth({ certification }: { certification?: boolean }) {
   const [code, setCode] = useState<number>();
   const [isCertification, setIsCertification] = useState(certification);
 
+  useEffect(() => {
+    setIsCertification(certification);
+  }, [certification]);
+
   const { mutate: getCode } = useGetCode(email ?? '', univName ?? '');
   const { mutate: postCertification, data: success } = useCertification(
     email ?? '',
