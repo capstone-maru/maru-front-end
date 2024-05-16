@@ -52,7 +52,13 @@ export interface SharedPost {
     mateAge?: string;
     options: string; // 프런트에서 파싱 필요.
   };
-  participants: Array<{ memberId: string; profileImageFileName: string }>;
+  participants: Array<{
+    memberId: string;
+    nickname: string;
+    profileImageFileName: string;
+    birthYear: string;
+    isScrapped: boolean;
+  }>;
   roomImages: Array<{
     fileName: string;
     isThumbnail: boolean;
@@ -149,7 +155,10 @@ export interface DormitorySharedPost {
   };
   participants: Array<{
     memberId: string;
+    nickname: string;
     profileImageFileName: string;
+    birthYear: string;
+    isScrapped: boolean;
   }>;
   roomImages: Array<{
     fileName: string;

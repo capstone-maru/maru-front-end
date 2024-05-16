@@ -9,11 +9,7 @@ import { CardToggleButton, ImageGrid } from '@/components/shared-post-page';
 import { useAuthValue, useUserData } from '@/features/auth';
 import { useCreateChatRoom } from '@/features/chat';
 import { fromAddrToCoord } from '@/features/geocoding';
-import {
-  useFollowUser,
-  useFollowingListData,
-  useUnfollowUser,
-} from '@/features/profile';
+import { useFollowUser, useUnfollowUser } from '@/features/profile';
 import {
   useDeleteSharedPost,
   useDormitorySharedPost,
@@ -365,6 +361,7 @@ const styles = {
     padding: 0.5rem 1.5rem;
     justify-content: center;
     align-items: center;
+    align-self: stretch;
     gap: 0.25rem;
     flex: 1 0 0;
 
@@ -499,21 +496,6 @@ export function SharedPostPage({
       enabled: type === 'dormitory' && auth?.accessToken != null,
     });
 
-  const [selected, setSelected] = useState<
-    | {
-        memberId: string;
-        profileImage: string;
-      }
-    | undefined
-  >(
-    sharedPost != null
-      ? {
-          memberId: sharedPost.data.publisherAccount.memberId,
-          profileImage: sharedPost.data.publisherAccount.profileImageFileName,
-        }
-      : undefined,
-  );
-
   const { data: userData } = useUserData(auth?.accessToken != null);
   const [userId, setUserId] = useState<string>('');
 
@@ -522,31 +504,6 @@ export function SharedPostPage({
       setUserId(userData.memberId);
     }
   }, [userData]);
-
-  const { mutate: scrapPost } = useScrapSharedPost();
-
-  const followList = useFollowingListData();
-  const [isFollowed, setIsFollowed] = useState(
-    followList.data?.data.followingList[
-      sharedPost?.data.publisherAccount.memberId ?? ''
-    ] != null,
-  );
-
-  const { mutate: follow } = useFollowUser(
-    sharedPost?.data.publisherAccount.memberId ?? '',
-  );
-  const { mutate: unfollow } = useUnfollowUser(
-    sharedPost?.data.publisherAccount.memberId ?? '',
-  );
-
-  useEffect(() => {
-    if (selected != null || sharedPost == null) return;
-
-    setSelected({
-      memberId: sharedPost.data.publisherAccount.memberId,
-      profileImage: sharedPost.data.publisherAccount.profileImageFileName,
-    });
-  }, [selected, sharedPost]);
 
   useEffect(() => {
     if (sharedPost?.data.address.roadAddress != null) {
@@ -596,6 +553,41 @@ export function SharedPostPage({
   if (post?.data.roomMateFeatures.mateAge == null) mateAge = '상관없어요';
   else if (post?.data.roomMateFeatures.mateAge === '0') mateAge = '동갑';
   else mateAge = `±${post.data.roomMateFeatures.mateAge}`;
+
+  const [selected, setSelected] = useState<
+    | {
+        memberId: string;
+        nickname: string;
+        profileImageFileName: string;
+        birthYear: string;
+        isScrapped: boolean;
+      }
+    | undefined
+  >(post != null ? post.data.participants[0] : undefined);
+
+  useEffect(() => {
+    if (post == null || selected != null) return;
+
+    setSelected(post.data.participants[0]);
+  }, [selected, post]);
+
+  const { mutate: scrapPost } = useScrapSharedPost();
+
+  const { mutate: follow } = useFollowUser(selected?.memberId ?? '');
+  const { mutate: unfollow } = useUnfollowUser(selected?.memberId ?? '');
+
+  const [followList, setFollowList] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (post == null) return;
+
+    const { participants } = post.data;
+    const newFollowList: Record<string, boolean> = {};
+    participants.forEach(({ memberId, isScrapped }) => {
+      newFollowList[memberId] = isScrapped;
+    });
+    setFollowList(newFollowList);
+  }, [post]);
 
   if (isLoading || post == null) return <></>;
 
@@ -730,36 +722,31 @@ export function SharedPostPage({
         </styles.postContainer>
         <styles.mateContainer>
           <styles.mates>
-            {post.data.participants.map(
-              ({ memberId, profileImageFileName }, index) => (
-                <styles.mate
-                  key={memberId}
-                  $selected={memberId === selected?.memberId}
-                  $zIndex={index}
-                  src={profileImageFileName}
-                  onClick={() => {
-                    setSelected({
-                      memberId,
-                      profileImage: profileImageFileName,
-                    });
-                  }}
-                />
-              ),
-            )}
+            {post.data.participants.map((participant, index) => (
+              <styles.mate
+                key={participant.memberId}
+                $selected={participant.memberId === selected?.memberId}
+                $zIndex={index}
+                src={participant.profileImageFileName}
+                onClick={() => {
+                  setSelected(participant);
+                }}
+              />
+            ))}
           </styles.mates>
           <styles.selectedMateContainer>
             <styles.profile>
               <CircularProfileImage
                 diameter={110}
                 percentage={50}
-                url={post.data.publisherAccount.profileImageFileName}
+                url={selected?.profileImageFileName ?? ''}
               />
               <styles.profileInfo>
-                <p className="name">{post.data.publisherAccount.nickname}</p>
+                <p className="name">{selected?.nickname}</p>
                 <div>
                   <p>
-                    {post.data.publisherAccount.birthYear != null
-                      ? `${getAge(+post.data.publisherAccount.birthYear)}세`
+                    {selected?.birthYear != null
+                      ? `${getAge(+selected.birthYear)}세`
                       : new Date().getFullYear()}
                   </p>
                 </div>
@@ -776,11 +763,15 @@ export function SharedPostPage({
               <div>
                 <styles.showProfileButton>프로필 보기</styles.showProfileButton>
                 <Bookmark
-                  marked={isFollowed}
+                  marked={followList[selected?.memberId ?? ''] ?? false}
                   onToggle={() => {
-                    if (isFollowed) unfollow();
+                    if (
+                      selected == null ||
+                      followList[selected.memberId] == null
+                    )
+                      return;
+                    if (followList[selected.memberId]) unfollow();
                     else follow();
-                    setIsFollowed(prev => !prev);
                   }}
                   hasBorder
                   color="#888"
