@@ -6,5 +6,13 @@ import { useIsMobile } from '@/shared/mobile';
 
 export default function Page() {
   const isMobile = useIsMobile();
-  return <>{isMobile ? <MobileWritingPostPage /> : <WritingPostPage />}</>;
+  return (
+    <>
+      {isMobile ? (
+        <MobileWritingPostPage type="dormitory" />
+      ) : (
+        <WritingPostPage type="dormitory" />
+      )}
+    </>
+  );
 }

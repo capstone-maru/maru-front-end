@@ -69,3 +69,26 @@ export const postSearchUser = async (email: string) => {
 
   return res.data;
 };
+
+export const postEmail = async (email: string, univName: string) => {
+  const res = await axios.post(`/maru-api/profile/certificate`, {
+    email: email,
+    univName: univName,
+  });
+
+  return res.data;
+};
+
+export const postCertificate = async (
+  email: string,
+  univName: string,
+  code: number,
+) => {
+  const res = await axios.post(`/maru-api/profile/certificate`, {
+    email: email,
+    univName: univName,
+    code: code,
+  });
+
+  return res.data;
+};

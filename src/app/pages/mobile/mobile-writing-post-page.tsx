@@ -10,22 +10,24 @@ import {
   MateSearchBox,
 } from '@/components/writing-post-page';
 import {
-  CountTypeValue,
-  type DealType,
-  DealTypeValue,
-  RoomTypeValue,
-  type RoomType,
-  FloorTypeValue,
-  type FloorType,
   AdditionalInfoTypeValue,
+  CountTypeValue,
+  DealTypeValue,
+  FloorTypeValue,
   LivingRoomTypeValue,
+  RoomTypeValue,
+  type DealType,
+  type FloorType,
+  type RoomType,
 } from '@/entities/shared-posts-filter';
 import { useAuthValue } from '@/features/auth';
 import { getImageURL, putImage } from '@/features/image';
 import {
+  useCreateDormitorySharedPost,
   useCreateSharedPost,
-  useCreateSharedPostProps,
-  usePostMateCardInputSection,
+  useSharedPostProps,
+  useUpdateDormitorySharedPost,
+  useUpdateSharedPost,
   type ImageFile,
 } from '@/features/shared';
 import { useToast } from '@/features/toast';
@@ -420,7 +422,13 @@ interface ButtonActiveProps {
   $isSelected: boolean;
 }
 
-export function MobileWritingPostPage() {
+export function MobileWritingPostPage({
+  postId,
+  type,
+}: {
+  postId?: number;
+  type: 'hasRoom' | 'dormitory';
+}) {
   const router = useRouter();
 
   const imageInputRef = useRef<HTMLInputElement | null>(null);
@@ -436,37 +444,25 @@ export function MobileWritingPostPage() {
     mateLimit,
     houseSize,
     address,
+    mateCard,
     selectedOptions,
     selectedExtraOptions,
     expectedMonthlyFee,
-    setTitle,
-    setContent,
-    setImages,
-    setMateLimit,
-    setHouseSize,
-    setAddress,
-    setExpectedMonthlyFee,
+    derivedMateCardFeatures,
+    setSharedPostProps,
     handleOptionClick,
     handleExtraOptionClick,
+    handleMateCardOptionalFeatureChange,
+    handleMateCardEssentialFeatureChange,
     isOptionSelected,
     isExtraOptionSelected,
-  } = useCreateSharedPostProps();
+  } = useSharedPostProps({ postId, type });
 
-  const {
-    gender,
-    birthYear,
-    mbti,
-    major,
-    derivedFeatures,
-    setBirthYear,
-    setMbti,
-    setMajor,
-    setBudget,
-    handleEssentialFeatureChange,
-    handleOptionalFeatureChange,
-  } = usePostMateCardInputSection();
+  const { mutate: createSharedPost } = useCreateSharedPost();
+  const { mutate: updateSharedPost } = useUpdateSharedPost();
+  const { mutate: createDormitorySharedPost } = useCreateDormitorySharedPost();
+  const { mutate: updateDormitorySharedPost } = useUpdateDormitorySharedPost();
 
-  const { mutate } = useCreateSharedPost();
   const { createToast } = useToast();
 
   const auth = useAuthValue();
@@ -474,13 +470,19 @@ export function MobileWritingPostPage() {
   const handleTitleInputChanged = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setTitle(event.target.value);
+    setSharedPostProps(prev => ({
+      ...prev,
+      title: event.target.value,
+    }));
   };
 
   const handleContentInputChanged = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    setContent(event.target.value);
+    setSharedPostProps(prev => ({
+      ...prev,
+      content: event.target.value,
+    }));
   };
 
   const handleImageInputClicked = () => {
@@ -494,13 +496,21 @@ export function MobileWritingPostPage() {
         file,
         url: URL.createObjectURL(file),
         extension: `.${file.type.split('/')[1]}`,
+        uploaded: false,
       }));
-      setImages(prevImages => [...prevImages, ...imagesArray]);
+
+      setSharedPostProps(prev => ({
+        ...prev,
+        images: [...prev.images, ...imagesArray],
+      }));
     }
   };
 
   const handleRemoveImage = (removeImage: ImageFile) => {
-    setImages(prev => prev.filter(image => image.url !== removeImage.url));
+    setSharedPostProps(prev => ({
+      ...prev,
+      images: prev.images.filter(image => image.url !== removeImage.url),
+    }));
   };
 
   const convertToNumber = (value: string) => {
@@ -523,23 +533,30 @@ export function MobileWritingPostPage() {
   };
 
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // if (!isPostCreatable || !isMateCardCreatable) return;
+    const extractFileName = (url: string): string => {
+      const regex =
+        /\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.\w+)/;
+      const match = url.match(regex);
+      return match != null ? match[1] : '';
+    };
 
     const dealType = selectedOptions.budget;
     const { roomType } = selectedOptions;
     const { floorType } = selectedOptions;
 
     if (
-      dealType == null ||
-      roomType == null ||
-      floorType == null ||
-      address == null ||
-      selectedOptions.roomCount == null ||
-      !(selectedOptions.roomCount in CountTypeValue) ||
-      selectedOptions.restRoomCount == null ||
-      !(selectedOptions.restRoomCount in CountTypeValue)
+      type === 'hasRoom' &&
+      (dealType == null ||
+        roomType == null ||
+        floorType == null ||
+        selectedOptions.roomCount == null ||
+        !(selectedOptions.roomCount in CountTypeValue) ||
+        selectedOptions.restRoomCount == null ||
+        !(selectedOptions.restRoomCount in CountTypeValue))
     )
       return;
+
+    if (address == null || images.length < 2) return;
 
     const numberOfRoomOption = selectedOptions.roomCount as
       | '1개'
@@ -560,96 +577,264 @@ export function MobileWritingPostPage() {
     (async () => {
       try {
         const getResults = await Promise.allSettled(
-          images.map(async ({ extension, file }) => {
+          images.map(async ({ url, extension, file, uploaded }) => {
+            if (uploaded || extension == null) return { url, uploaded };
             const result = await getImageURL(extension);
             return {
               ...result.data.data,
+              uploaded,
               file,
             };
           }),
         );
 
         const urls = getResults.reduce<
-          Array<{ file: File; fileName: string; url: string }>
+          Array<{
+            file?: File;
+            fileName?: string;
+            url: string;
+            uploaded: boolean;
+          }>
         >((prev, result) => {
           if (result.status === 'rejected') return prev;
           return prev.concat(result.value);
         }, []);
 
         const putResults = await Promise.allSettled(
-          urls.map(async url => {
-            await putImage(url.url, url.file);
-            return { fileName: url.fileName };
+          urls.map(async ({ url, fileName, file, uploaded }) => {
+            if (uploaded) return { uploaded, fileName: url };
+
+            if (file != null) await putImage(url, file);
+            return { uploaded, fileName };
           }),
         );
 
         const uploadedImages = putResults.reduce<
           Array<{ fileName: string; isThumbNail: boolean; order: number }>
         >((prev, result) => {
-          if (result.status === 'rejected') return prev;
+          if (result.status === 'rejected' || result.value.fileName == null)
+            return prev;
+          const { uploaded, fileName } = result.value;
           return prev.concat({
-            fileName: result.value.fileName,
+            fileName: uploaded
+              ? `images/${extractFileName(fileName)}`
+              : fileName,
             isThumbNail: prev.length === 0,
             order: prev.length + 1,
           });
         }, []);
 
-        mutate(
-          {
-            imageFilesData: uploadedImages,
-            postData: { title, content },
-            transactionData: {
-              rentalType: dealTypeValue,
-              expectedPayment: expectedMonthlyFee,
-            },
-            roomDetailData: {
-              roomType: roomTypeValue,
-              floorType: floorTypeValue,
-              size: houseSize,
-              numberOfRoom,
-              numberOfBathRoom,
-              hasLivingRoom: selectedOptions.livingRoom === '유',
-              recruitmentCapacity: mateLimit,
-              extraOption: {
-                canPark: selectedExtraOptions.canPark ?? false,
-                hasAirConditioner:
-                  selectedExtraOptions.hasAirConditioner ?? false,
-                hasRefrigerator: selectedExtraOptions.hasRefrigerator ?? false,
-                hasWasher: selectedExtraOptions.hasWasher ?? false,
-                hasTerrace: selectedExtraOptions.hasTerrace ?? false,
+        if (type === 'hasRoom') {
+          if (postId == null) {
+            createSharedPost(
+              {
+                imageFilesData: uploadedImages,
+                postData: { title, content },
+                transactionData: {
+                  rentalType: dealTypeValue,
+                  expectedPayment: expectedMonthlyFee,
+                },
+                roomDetailData: {
+                  roomType: roomTypeValue,
+                  floorType: floorTypeValue,
+                  size: houseSize,
+                  numberOfRoom,
+                  numberOfBathRoom,
+                  hasLivingRoom: selectedOptions.livingRoom === '유',
+                  recruitmentCapacity: mateLimit,
+                  extraOption: {
+                    canPark: selectedExtraOptions.canPark ?? false,
+                    hasAirConditioner:
+                      selectedExtraOptions.hasAirConditioner ?? false,
+                    hasRefrigerator:
+                      selectedExtraOptions.hasRefrigerator ?? false,
+                    hasWasher: selectedExtraOptions.hasWasher ?? false,
+                    hasTerrace: selectedExtraOptions.hasTerrace ?? false,
+                  },
+                },
+                locationData: {
+                  oldAddress: address.jibunAddress,
+                  roadAddress: address.roadAddress,
+                },
+                roomMateCardData: {
+                  location: address.roadAddress,
+                  features: derivedMateCardFeatures,
+                },
+                participationData: {
+                  recruitmentCapacity: mateLimit,
+                  participationMemberIds:
+                    auth?.user != null ? [auth.user.memberId] : [],
+                },
               },
-            },
-            locationData: {
-              oldAddress: address?.jibunAddress,
-              roadAddress: address?.roadAddress,
-            },
-            roomMateCardData: {
-              location: address?.roadAddress,
-              features: derivedFeatures,
-            },
-            participationMemberIds:
-              auth?.user != null ? [auth.user.memberId] : [],
-          },
-          {
-            onSuccess: () => {
-              createToast({
-                message: '게시글이 정상적으로 업로드되었습니다.',
-                option: {
-                  duration: 3000,
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 업로드되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
                 },
-              });
-              router.back();
-            },
-            onError: () => {
-              createToast({
-                message: '게시글 업로드에 실패했습니다.',
-                option: {
-                  duration: 3000,
+                onError: () => {
+                  createToast({
+                    message: '게시글 업로드에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
                 },
-              });
-            },
-          },
-        );
+              },
+            );
+          } else if (postId != null) {
+            updateSharedPost(
+              {
+                postId,
+                postData: {
+                  imageFilesData: uploadedImages,
+                  postData: { title, content },
+                  transactionData: {
+                    rentalType: dealTypeValue,
+                    expectedPayment: expectedMonthlyFee,
+                  },
+                  roomDetailData: {
+                    roomType: roomTypeValue,
+                    floorType: floorTypeValue,
+                    size: houseSize,
+                    numberOfRoom,
+                    numberOfBathRoom,
+                    hasLivingRoom: selectedOptions.livingRoom === '유',
+                    recruitmentCapacity: mateLimit,
+                    extraOption: {
+                      canPark: selectedExtraOptions.canPark ?? false,
+                      hasAirConditioner:
+                        selectedExtraOptions.hasAirConditioner ?? false,
+                      hasRefrigerator:
+                        selectedExtraOptions.hasRefrigerator ?? false,
+                      hasWasher: selectedExtraOptions.hasWasher ?? false,
+                      hasTerrace: selectedExtraOptions.hasTerrace ?? false,
+                    },
+                  },
+                  locationData: {
+                    oldAddress: address.jibunAddress,
+                    roadAddress: address.roadAddress,
+                  },
+                  roomMateCardData: {
+                    location: address.roadAddress,
+                    features: derivedMateCardFeatures,
+                  },
+                  participationData: {
+                    recruitmentCapacity: mateLimit,
+                    participationMemberIds:
+                      auth?.user != null ? [auth.user.memberId] : [],
+                  },
+                },
+              },
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 수정되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
+                },
+                onError: () => {
+                  createToast({
+                    message: '게시글 수정에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                },
+              },
+            );
+          }
+        } else if (type === 'dormitory') {
+          if (postId == null) {
+            createDormitorySharedPost(
+              {
+                imageFilesData: uploadedImages,
+                postData: { title, content },
+                locationData: {
+                  oldAddress: address.jibunAddress,
+                  roadAddress: address.roadAddress,
+                },
+                roomMateCardData: {
+                  location: address.roadAddress,
+                  features: derivedMateCardFeatures,
+                },
+                participationData: {
+                  recruitmentCapacity: mateLimit,
+                  participationMemberIds:
+                    auth?.user != null ? [auth.user.memberId] : [],
+                },
+              },
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 업로드되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
+                },
+                onError: () => {
+                  createToast({
+                    message: '게시글 업로드에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                },
+              },
+            );
+          } else if (postId != null) {
+            updateDormitorySharedPost(
+              {
+                postId,
+                postData: {
+                  imageFilesData: uploadedImages,
+                  postData: { title, content },
+                  locationData: {
+                    oldAddress: address.jibunAddress,
+                    roadAddress: address.roadAddress,
+                  },
+                  roomMateCardData: {
+                    location: address.roadAddress,
+                    features: derivedMateCardFeatures,
+                  },
+                  participationData: {
+                    recruitmentCapacity: mateLimit,
+                    participationMemberIds:
+                      auth?.user != null ? [auth.user.memberId] : [],
+                  },
+                },
+              },
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 수정되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
+                },
+                onError: () => {
+                  createToast({
+                    message: '게시글 수정에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                },
+              },
+            );
+          }
+        }
       } catch (error) {
         createToast({
           message: '게시글 업로드에 실패했습니다.',
@@ -677,7 +862,7 @@ export function MobileWritingPostPage() {
           <styles.row>
             <styles.optionCategory>기본 정보</styles.optionCategory>
             <styles.createButton onClick={handleCreatePost}>
-              작성하기
+              {postId == null ? '작성하기' : '수정하기'}
             </styles.createButton>
           </styles.row>
           <styles.optionCategory>제목</styles.optionCategory>
@@ -706,7 +891,10 @@ export function MobileWritingPostPage() {
           {showLocationSearchBox && (
             <LocationSearchBox
               onSelect={selectedAddress => {
-                setAddress(selectedAddress);
+                setSharedPostProps(prev => ({
+                  ...prev,
+                  address: selectedAddress,
+                }));
                 setShowLocationSearchBox(false);
               }}
               setHidden={() => {
@@ -758,7 +946,10 @@ export function MobileWritingPostPage() {
                   value={mateLimit}
                   onChange={event => {
                     handleNumberInput(event.target.value, value => {
-                      setMateLimit(value);
+                      setSharedPostProps(prev => ({
+                        ...prev,
+                        mateLimit: value,
+                      }));
                     });
                   }}
                   $width={3}
@@ -809,22 +1000,22 @@ export function MobileWritingPostPage() {
                 }}
               >
                 <UserInputSection
-                  gender={gender}
-                  birthYear={birthYear?.toString()}
+                  gender={mateCard.gender}
+                  birthYear={mateCard.birthYear?.toString()}
                   location={address?.roadAddress ?? '주소를 입력해주세요.'}
-                  mbti={mbti}
-                  major={major}
-                  budget={undefined}
-                  features={undefined}
+                  mbti={mateCard.mbti}
+                  major={mateCard.major}
+                  budget={mateCard.budget}
+                  features={mateCard.features}
                   isMySelf
                   type="mateCard"
-                  onVitalChange={handleEssentialFeatureChange}
-                  onOptionChange={handleOptionalFeatureChange}
+                  onVitalChange={handleMateCardEssentialFeatureChange}
+                  onOptionChange={handleMateCardOptionalFeatureChange}
                   onLocationChange={() => {}}
-                  onMateAgeChange={setBirthYear}
-                  onMbtiChange={setMbti}
-                  onMajorChange={setMajor}
-                  onBudgetChange={setBudget}
+                  onMateAgeChange={() => {}}
+                  onMbtiChange={() => {}}
+                  onMajorChange={() => {}}
+                  onBudgetChange={() => {}}
                 />
               </div>
             )}
@@ -852,7 +1043,10 @@ export function MobileWritingPostPage() {
               value={expectedMonthlyFee}
               onChange={event => {
                 handleNumberInput(event.target.value, value => {
-                  setExpectedMonthlyFee(value);
+                  setSharedPostProps(prev => ({
+                    ...prev,
+                    expectedMonthlyFee: value,
+                  }));
                 });
               }}
               $width={3}
@@ -878,12 +1072,12 @@ export function MobileWritingPostPage() {
           </styles.optionRow>
           <styles.option>추가 옵션</styles.option>
           <styles.optionRow>
-            {Object.keys(AdditionalInfoTypeValue).map(option => (
+            {Object.entries(AdditionalInfoTypeValue).map(([option, value]) => (
               <styles.optionButtonContainer key={option}>
                 <styles.customCheckBox
-                  $isSelected={isExtraOptionSelected(option)}
+                  $isSelected={isExtraOptionSelected(value)}
                   onClick={() => {
-                    handleExtraOptionClick(option);
+                    handleExtraOptionClick(value);
                   }}
                 />
                 <span>{option}</span>
@@ -952,7 +1146,10 @@ export function MobileWritingPostPage() {
               value={houseSize}
               onChange={event => {
                 handleNumberInput(event.target.value, value => {
-                  setHouseSize(value);
+                  setSharedPostProps(prev => ({
+                    ...prev,
+                    houseSize: value,
+                  }));
                 });
               }}
               $width={2}

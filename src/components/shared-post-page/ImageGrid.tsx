@@ -107,7 +107,7 @@ export function ImageGrid({ images: imagesParam, className }: Props) {
           image !== 'none' ? (
             <img
               key={image}
-              alt={image}
+              alt=""
               src={image}
               className={index % 2 === 0 ? 'left' : 'right'}
             />

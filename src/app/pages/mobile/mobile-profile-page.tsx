@@ -7,8 +7,10 @@ import styled from 'styled-components';
 import { Bookmark } from '@/components';
 import { useAuthValue, useUserData } from '@/features/auth';
 import {
+  useCertification,
   useFollowUser,
   useFollowingListData,
+  useGetCode,
   useUnfollowUser,
   useUserProfile,
 } from '@/features/profile';
@@ -204,6 +206,89 @@ const styles = {
     font-weight: 700;
     line-height: normal;
   `,
+
+  certificationContainer: styled.div`
+    display: inline-flex;
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 22rem;
+    height: 15rem;
+    gap: 1.5rem;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
+    z-index: 20000;
+    position: absolute;
+    top: 18rem;
+    left: 0.5rem;
+
+    p {
+      color: #494949;
+      font-family: 'Noto Sans KR';
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+    }
+  `,
+  userInputList: styled.ul`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.4rem;
+  `,
+  userInputListItem: styled.li`
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    div {
+      display: flex;
+      width: 12rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    p {
+      color: #494949;
+      font-family: 'Noto Sans KR';
+      font-size: 0.875rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    input {
+      width: 8rem;
+      height: 2rem;
+      flex-shrink: 0;
+      border-radius: 12px;
+      border: 1px solid #494949;
+      padding: 0.5rem 1rem;
+    }
+  `,
+
+  certificationButton: styled.button`
+    display: flex;
+    width: 7rem;
+    padding: 0.3rem 0.8rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 8px;
+    background-color: white;
+    border: 1px solid #494949;
+
+    color: #494949;
+    font-family: 'Noto Sans KR';
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  `,
 };
 
 interface UserProfileInfoProps {
@@ -213,6 +298,7 @@ interface UserProfileInfoProps {
   src: string | undefined;
   memberId: string;
   isMySelf: boolean;
+  certification?: boolean;
 }
 
 function UserInfo({
@@ -222,6 +308,7 @@ function UserInfo({
   src,
   memberId,
   isMySelf,
+  certification,
 }: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(false);
 
@@ -243,10 +330,11 @@ function UserInfo({
         <styles.userPicContainer>
           <styles.userPic src={src} alt="User Profile Pic" />
         </styles.userPicContainer>
-        <Auth />
+        <Auth certification={certification} />
       </styles.userProfileWithoutInfo>
       <styles.userInfoContainer>
         <styles.userName>{name}</styles.userName>
+        <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
         <styles.userDetailedContainer>
           <div
             style={{
@@ -271,7 +359,6 @@ function UserInfo({
             />
           )}
         </styles.userDetailedContainer>
-        <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
       </styles.userInfoContainer>
     </styles.userProfileContainer>
   );
@@ -298,7 +385,7 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
         >
           <styles.sliderDot
             style={{
-              transform: isChecked ? 'translateX(0.9rem)' : 'translateX(0)',
+              transform: isChecked ? 'translateX(1rem)' : 'translateX(0)',
             }}
           />
         </styles.slider>
@@ -308,12 +395,97 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
   );
 }
 
-function Auth() {
+function Auth({ certification }: { certification?: boolean }) {
+  const [univName, setUnivName] = useState<string>();
+  const [email, setEmail] = useState<string>();
+  const [code, setCode] = useState<number>();
+  const [isCertification, setIsCertification] = useState(certification);
+
+  const { mutate: getCode } = useGetCode(email ?? '', univName ?? '');
+  const { mutate: postCertification, data: success } = useCertification(
+    email ?? '',
+    univName ?? '',
+    code ?? 0,
+  );
+
+  useEffect(() => {
+    setIsCertification(true);
+  }, [success]);
+
+  const [isCertificationClick, setIsCertificationClick] = useState(false);
   return (
-    <styles.authContainer>
-      <styles.authCheckImg src="/check_circle_24px copy.svg" />
-      <styles.authDescription>학교인증</styles.authDescription>
-    </styles.authContainer>
+    <>
+      <styles.authContainer
+        onClick={() => {
+          setIsCertificationClick(prev => !prev);
+        }}
+      >
+        <styles.authCheckImg
+          src={
+            isCertification != null && isCertification
+              ? '/check_circle_24px copy.svg'
+              : '/Close_white.svg'
+          }
+        />
+        <styles.authDescription>학교인증</styles.authDescription>
+      </styles.authContainer>
+      {isCertificationClick && (
+        <styles.certificationContainer>
+          <p>학교 인증하기</p>
+          <styles.userInputList>
+            <styles.userInputListItem>
+              <div>
+                <p>대학교 명</p>
+                <input
+                  onChange={e => {
+                    setUnivName(e.target.value);
+                  }}
+                />
+              </div>
+            </styles.userInputListItem>
+            <styles.userInputListItem>
+              <div>
+                <p>이메일</p>
+                <input
+                  onChange={e => {
+                    setEmail(e.target.value);
+                  }}
+                />
+              </div>
+              <styles.certificationButton
+                onClick={() => {
+                  getCode();
+                }}
+              >
+                인증코드 받기
+              </styles.certificationButton>
+            </styles.userInputListItem>
+            <styles.userInputListItem>
+              <div>
+                <p>인증코드</p>
+                <input
+                  onChange={e => {
+                    setCode(Number(e.target.value));
+                  }}
+                />
+              </div>
+              <styles.certificationButton
+                style={{
+                  color: '#fff',
+                  backgroundColor: ' #E15637',
+                  border: 'none',
+                }}
+                onClick={() => {
+                  postCertification();
+                }}
+              >
+                인증하기
+              </styles.certificationButton>
+            </styles.userInputListItem>
+          </styles.userInputList>
+        </styles.certificationContainer>
+      )}
+    </>
   );
 }
 
@@ -366,6 +538,7 @@ interface UserProps {
   initialized: boolean;
   myCardId: number;
   mateCardId: number;
+  univCertified: boolean;
 }
 
 export function MobileProfilePage({ memberId }: { memberId: string }) {
@@ -394,8 +567,9 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
         gender,
         phoneNumber,
         initialized,
-        myCardId,
+        univCertified,
         mateCardId,
+        myCardId,
       } = userProfileData;
       setUserData({
         memberId,
@@ -407,6 +581,7 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
         initialized,
         myCardId,
         mateCardId,
+        univCertified,
       });
       setProfileImg(profileData.data.profileImage);
       if (authId === memberId) {
@@ -424,6 +599,7 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
         src={profileImg}
         memberId={memberId}
         isMySelf={isMySelf}
+        certification={userData?.univCertified}
       />
       <Card
         name={userData?.name}

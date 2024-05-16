@@ -78,6 +78,11 @@ const styles = {
     border-bottom: 0.5px solid #19191980;
 
     cursor: pointer;
+
+    @media (max-width: 768px) {
+      padding: 0.5rem;
+      font-size: 0.75rem;
+    }
   `,
 };
 

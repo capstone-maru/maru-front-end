@@ -1,10 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 
-import { HorizontalDivider } from '..';
-
-import { type SharedPostListItem } from '@/entities/shared-post';
+import { HorizontalDivider } from '@/components';
+import {
+  type DormitorySharedPostListItem,
+  type SharedPostListItem,
+} from '@/entities/shared-post';
 import { useIsMobile } from '@/shared/mobile';
 
 const styles = {
@@ -32,6 +35,8 @@ const styles = {
       width: 8.5625rem;
       height: 8.625rem;
     }
+
+    cursor: pointer;
   `,
   content: styled.div`
     flex-grow: 1;
@@ -52,6 +57,8 @@ const styles = {
         font-style: normal;
         font-weight: 700;
         line-height: normal;
+
+        cursor: pointer;
 
         @media (max-width: 768px) {
           font-size: 0.875rem;
@@ -87,6 +94,8 @@ const styles = {
   `,
   writer: styled.div`
     position: relative;
+
+    cursor: pointer;
 
     display: flex;
     flex-shrink: 0;
@@ -136,6 +145,11 @@ const styles = {
     background: #fff;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.04);
 
+    @media (max-width: 768px) {
+      padding: 0.5rem 0.2rem;
+      top: 40%;
+    }
+
     p {
       color: #e15637;
       font-family: Pretendard;
@@ -151,36 +165,59 @@ const styles = {
   `,
 };
 
-export function PostCard({ post }: { post: SharedPostListItem }) {
+export function PostCard({
+  post,
+  onClick,
+}: {
+  post: SharedPostListItem | DormitorySharedPostListItem;
+  onClick: () => void;
+}) {
+  const router = useRouter();
+
+  const recruitmentCapacity =
+    'roomInfo' in post
+      ? post.roomInfo.recruitmentCapacity
+      : post.recruitmentCapacity;
+
   const isMobile = useIsMobile();
   return (
     <div>
       <styles.container>
-        <styles.thumbnail alt="" src={post.thumbnail.fileName} />
-        <styles.content>
+        <styles.thumbnail
+          onClick={onClick}
+          alt=""
+          src={post.thumbnail.fileName}
+        />
+        <styles.content onClick={onClick}>
           <div>
             <h1>{post.title}</h1>
             <h2>{post.address.roadAddress}</h2>
           </div>
           <div
             style={{
-              display: 'flex',
               flexDirection: 'row',
-              alignItems: 'flex-end',
               justifyContent: 'space-between',
-              paddingRight: '2rem',
+              alignItems: 'flex-end',
             }}
           >
             <div>
-              <p>모집 {post.roomInfo.recruitmentCapacity}명</p>
-              <p>
-                {post.roomInfo.roomType} · 방 {post.roomInfo.numberOfRoom} ·
-                화장실 {post.roomInfo.numberOfBathRoom}
-              </p>
-              <p>희망 월 분담금 {post.roomInfo.expectedPayment}</p>
+              <p>모집 {recruitmentCapacity}명</p>
+              {'roomInfo' in post && (
+                <>
+                  <p>
+                    {post.roomInfo.roomType} · 방 {post.roomInfo.numberOfRoom} ·
+                    화장실 {post.roomInfo.numberOfBathRoom}
+                  </p>
+                  <p>희망 월 분담금 {post.roomInfo.expectedPayment}만원</p>
+                </>
+              )}
             </div>
             {isMobile ? (
-              <styles.writer>
+              <styles.writer
+                onClick={() => {
+                  router.push(`/profile/${post.publisherAccount.memberId}`);
+                }}
+              >
                 <img alt="" src={post.publisherAccount.profileImageFileName} />
                 <styles.percentage>
                   <p>50%</p>
@@ -190,7 +227,11 @@ export function PostCard({ post }: { post: SharedPostListItem }) {
           </div>
         </styles.content>
         {!isMobile ? (
-          <styles.writer>
+          <styles.writer
+            onClick={() => {
+              router.push(`/profile/${post.publisherAccount.memberId}`);
+            }}
+          >
             <img alt="" src={post.publisherAccount.profileImageFileName} />
             <styles.percentage>
               <p>50%</p>

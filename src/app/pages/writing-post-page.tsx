@@ -10,22 +10,24 @@ import {
   MateSearchBox,
 } from '@/components/writing-post-page';
 import {
-  CountTypeValue,
-  type DealType,
-  DealTypeValue,
-  RoomTypeValue,
-  type RoomType,
-  FloorTypeValue,
-  type FloorType,
   AdditionalInfoTypeValue,
+  CountTypeValue,
+  DealTypeValue,
+  FloorTypeValue,
   LivingRoomTypeValue,
+  RoomTypeValue,
+  type DealType,
+  type FloorType,
+  type RoomType,
 } from '@/entities/shared-posts-filter';
 import { useAuthValue } from '@/features/auth';
 import { getImageURL, putImage } from '@/features/image';
 import {
+  useCreateDormitorySharedPost,
   useCreateSharedPost,
-  useCreateSharedPostProps,
-  usePostMateCardInputSection,
+  useSharedPostProps,
+  useUpdateDormitorySharedPost,
+  useUpdateSharedPost,
   type ImageFile,
 } from '@/features/shared';
 import { useToast } from '@/features/toast';
@@ -37,6 +39,7 @@ const styles = {
     padding: 2rem 10rem;
     width: 100%;
 
+    min-height: 100dvh;
     max-height: fit-content;
 
     background: var(--background, #f7f6f9);
@@ -68,9 +71,11 @@ const styles = {
 
     .column {
       display: flex;
+      width: 100%;
       flex-direction: column;
       gap: 1rem;
-      flex: 1 0 0;
+
+      overflow-x: auto;
     }
   `,
   mateCardContainer: styled.div`
@@ -284,19 +289,21 @@ const styles = {
   `,
   images: styled.div`
     display: flex;
+    width: fit-content;
     align-items: center;
     align-self: stretch;
     gap: 1rem;
 
     overflow-x: auto;
   `,
-  image: styled.img`
+  image: styled.div<{ $url: string }>`
     width: 14.4375rem;
     height: 9.875rem;
     background: #ededed;
 
-    object-fit: cover;
-    object-position: center;
+    background-image: ${({ $url }) => `url("${$url}")`};
+    background-position: center;
+    background-size: cover;
 
     cursor: pointer;
   `,
@@ -407,7 +414,13 @@ interface ButtonActiveProps {
   $isSelected: boolean;
 }
 
-export function WritingPostPage() {
+export function WritingPostPage({
+  postId,
+  type,
+}: {
+  postId?: number;
+  type: 'hasRoom' | 'dormitory';
+}) {
   const router = useRouter();
 
   const imageInputRef = useRef<HTMLInputElement | null>(null);
@@ -423,37 +436,25 @@ export function WritingPostPage() {
     mateLimit,
     houseSize,
     address,
+    mateCard,
     selectedOptions,
     selectedExtraOptions,
     expectedMonthlyFee,
-    setTitle,
-    setContent,
-    setImages,
-    setMateLimit,
-    setHouseSize,
-    setAddress,
-    setExpectedMonthlyFee,
+    derivedMateCardFeatures,
+    setSharedPostProps,
     handleOptionClick,
     handleExtraOptionClick,
+    handleMateCardOptionalFeatureChange,
+    handleMateCardEssentialFeatureChange,
     isOptionSelected,
     isExtraOptionSelected,
-  } = useCreateSharedPostProps();
+  } = useSharedPostProps({ postId, type });
 
-  const {
-    gender,
-    birthYear,
-    mbti,
-    major,
-    derivedFeatures,
-    setBirthYear,
-    setMbti,
-    setMajor,
-    setBudget,
-    handleEssentialFeatureChange,
-    handleOptionalFeatureChange,
-  } = usePostMateCardInputSection();
+  const { mutate: createSharedPost } = useCreateSharedPost();
+  const { mutate: updateSharedPost } = useUpdateSharedPost();
+  const { mutate: createDormitorySharedPost } = useCreateDormitorySharedPost();
+  const { mutate: updateDormitorySharedPost } = useUpdateDormitorySharedPost();
 
-  const { mutate } = useCreateSharedPost();
   const { createToast } = useToast();
 
   const auth = useAuthValue();
@@ -461,13 +462,19 @@ export function WritingPostPage() {
   const handleTitleInputChanged = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setTitle(event.target.value);
+    setSharedPostProps(prev => ({
+      ...prev,
+      title: event.target.value,
+    }));
   };
 
   const handleContentInputChanged = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    setContent(event.target.value);
+    setSharedPostProps(prev => ({
+      ...prev,
+      content: event.target.value,
+    }));
   };
 
   const handleImageInputClicked = () => {
@@ -481,13 +488,21 @@ export function WritingPostPage() {
         file,
         url: URL.createObjectURL(file),
         extension: `.${file.type.split('/')[1]}`,
+        uploaded: false,
       }));
-      setImages(prevImages => [...prevImages, ...imagesArray]);
+
+      setSharedPostProps(prev => ({
+        ...prev,
+        images: [...prev.images, ...imagesArray],
+      }));
     }
   };
 
   const handleRemoveImage = (removeImage: ImageFile) => {
-    setImages(prev => prev.filter(image => image.url !== removeImage.url));
+    setSharedPostProps(prev => ({
+      ...prev,
+      images: prev.images.filter(image => image.url !== removeImage.url),
+    }));
   };
 
   const convertToNumber = (value: string) => {
@@ -510,23 +525,30 @@ export function WritingPostPage() {
   };
 
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // if (!isPostCreatable || !isMateCardCreatable) return;
+    const extractFileName = (url: string): string => {
+      const regex =
+        /\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.\w+)/;
+      const match = url.match(regex);
+      return match != null ? match[1] : '';
+    };
 
     const dealType = selectedOptions.budget;
     const { roomType } = selectedOptions;
     const { floorType } = selectedOptions;
 
     if (
-      dealType == null ||
-      roomType == null ||
-      floorType == null ||
-      address == null ||
-      selectedOptions.roomCount == null ||
-      !(selectedOptions.roomCount in CountTypeValue) ||
-      selectedOptions.restRoomCount == null ||
-      !(selectedOptions.restRoomCount in CountTypeValue)
+      type === 'hasRoom' &&
+      (dealType == null ||
+        roomType == null ||
+        floorType == null ||
+        selectedOptions.roomCount == null ||
+        !(selectedOptions.roomCount in CountTypeValue) ||
+        selectedOptions.restRoomCount == null ||
+        !(selectedOptions.restRoomCount in CountTypeValue))
     )
       return;
+
+    if (address == null || images.length < 2) return;
 
     const numberOfRoomOption = selectedOptions.roomCount as
       | '1개'
@@ -547,96 +569,264 @@ export function WritingPostPage() {
     (async () => {
       try {
         const getResults = await Promise.allSettled(
-          images.map(async ({ extension, file }) => {
+          images.map(async ({ url, extension, file, uploaded }) => {
+            if (uploaded || extension == null) return { url, uploaded };
             const result = await getImageURL(extension);
             return {
               ...result.data.data,
+              uploaded,
               file,
             };
           }),
         );
 
         const urls = getResults.reduce<
-          Array<{ file: File; fileName: string; url: string }>
+          Array<{
+            file?: File;
+            fileName?: string;
+            url: string;
+            uploaded: boolean;
+          }>
         >((prev, result) => {
           if (result.status === 'rejected') return prev;
           return prev.concat(result.value);
         }, []);
 
         const putResults = await Promise.allSettled(
-          urls.map(async url => {
-            await putImage(url.url, url.file);
-            return { fileName: url.fileName };
+          urls.map(async ({ url, fileName, file, uploaded }) => {
+            if (uploaded) return { uploaded, fileName: url };
+
+            if (file != null) await putImage(url, file);
+            return { uploaded, fileName };
           }),
         );
 
         const uploadedImages = putResults.reduce<
           Array<{ fileName: string; isThumbNail: boolean; order: number }>
         >((prev, result) => {
-          if (result.status === 'rejected') return prev;
+          if (result.status === 'rejected' || result.value.fileName == null)
+            return prev;
+          const { uploaded, fileName } = result.value;
           return prev.concat({
-            fileName: result.value.fileName,
+            fileName: uploaded
+              ? `images/${extractFileName(fileName)}`
+              : fileName,
             isThumbNail: prev.length === 0,
             order: prev.length + 1,
           });
         }, []);
 
-        mutate(
-          {
-            imageFilesData: uploadedImages,
-            postData: { title, content },
-            transactionData: {
-              rentalType: dealTypeValue,
-              expectedPayment: expectedMonthlyFee,
-            },
-            roomDetailData: {
-              roomType: roomTypeValue,
-              floorType: floorTypeValue,
-              size: houseSize,
-              numberOfRoom,
-              numberOfBathRoom,
-              hasLivingRoom: selectedOptions.livingRoom === '유',
-              recruitmentCapacity: mateLimit,
-              extraOption: {
-                canPark: selectedExtraOptions.canPark ?? false,
-                hasAirConditioner:
-                  selectedExtraOptions.hasAirConditioner ?? false,
-                hasRefrigerator: selectedExtraOptions.hasRefrigerator ?? false,
-                hasWasher: selectedExtraOptions.hasWasher ?? false,
-                hasTerrace: selectedExtraOptions.hasTerrace ?? false,
+        if (type === 'hasRoom') {
+          if (postId == null) {
+            createSharedPost(
+              {
+                imageFilesData: uploadedImages,
+                postData: { title, content },
+                transactionData: {
+                  rentalType: dealTypeValue,
+                  expectedPayment: expectedMonthlyFee,
+                },
+                roomDetailData: {
+                  roomType: roomTypeValue,
+                  floorType: floorTypeValue,
+                  size: houseSize,
+                  numberOfRoom,
+                  numberOfBathRoom,
+                  hasLivingRoom: selectedOptions.livingRoom === '유',
+                  recruitmentCapacity: mateLimit,
+                  extraOption: {
+                    canPark: selectedExtraOptions.canPark ?? false,
+                    hasAirConditioner:
+                      selectedExtraOptions.hasAirConditioner ?? false,
+                    hasRefrigerator:
+                      selectedExtraOptions.hasRefrigerator ?? false,
+                    hasWasher: selectedExtraOptions.hasWasher ?? false,
+                    hasTerrace: selectedExtraOptions.hasTerrace ?? false,
+                  },
+                },
+                locationData: {
+                  oldAddress: address.jibunAddress,
+                  roadAddress: address.roadAddress,
+                },
+                roomMateCardData: {
+                  location: address.roadAddress,
+                  features: derivedMateCardFeatures,
+                },
+                participationData: {
+                  recruitmentCapacity: mateLimit,
+                  participationMemberIds:
+                    auth?.user != null ? [auth.user.memberId] : [],
+                },
               },
-            },
-            locationData: {
-              oldAddress: address?.jibunAddress,
-              roadAddress: address?.roadAddress,
-            },
-            roomMateCardData: {
-              location: address?.roadAddress,
-              features: derivedFeatures,
-            },
-            participationMemberIds:
-              auth?.user != null ? [auth.user.memberId] : [],
-          },
-          {
-            onSuccess: () => {
-              createToast({
-                message: '게시글이 정상적으로 업로드되었습니다.',
-                option: {
-                  duration: 3000,
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 업로드되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
                 },
-              });
-              router.back();
-            },
-            onError: () => {
-              createToast({
-                message: '게시글 업로드에 실패했습니다.',
-                option: {
-                  duration: 3000,
+                onError: () => {
+                  createToast({
+                    message: '게시글 업로드에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
                 },
-              });
-            },
-          },
-        );
+              },
+            );
+          } else if (postId != null) {
+            updateSharedPost(
+              {
+                postId,
+                postData: {
+                  imageFilesData: uploadedImages,
+                  postData: { title, content },
+                  transactionData: {
+                    rentalType: dealTypeValue,
+                    expectedPayment: expectedMonthlyFee,
+                  },
+                  roomDetailData: {
+                    roomType: roomTypeValue,
+                    floorType: floorTypeValue,
+                    size: houseSize,
+                    numberOfRoom,
+                    numberOfBathRoom,
+                    hasLivingRoom: selectedOptions.livingRoom === '유',
+                    recruitmentCapacity: mateLimit,
+                    extraOption: {
+                      canPark: selectedExtraOptions.canPark ?? false,
+                      hasAirConditioner:
+                        selectedExtraOptions.hasAirConditioner ?? false,
+                      hasRefrigerator:
+                        selectedExtraOptions.hasRefrigerator ?? false,
+                      hasWasher: selectedExtraOptions.hasWasher ?? false,
+                      hasTerrace: selectedExtraOptions.hasTerrace ?? false,
+                    },
+                  },
+                  locationData: {
+                    oldAddress: address.jibunAddress,
+                    roadAddress: address.roadAddress,
+                  },
+                  roomMateCardData: {
+                    location: address.roadAddress,
+                    features: derivedMateCardFeatures,
+                  },
+                  participationData: {
+                    recruitmentCapacity: mateLimit,
+                    participationMemberIds:
+                      auth?.user != null ? [auth.user.memberId] : [],
+                  },
+                },
+              },
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 수정되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
+                },
+                onError: () => {
+                  createToast({
+                    message: '게시글 수정에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                },
+              },
+            );
+          }
+        } else if (type === 'dormitory') {
+          if (postId == null) {
+            createDormitorySharedPost(
+              {
+                imageFilesData: uploadedImages,
+                postData: { title, content },
+                locationData: {
+                  oldAddress: address.jibunAddress,
+                  roadAddress: address.roadAddress,
+                },
+                roomMateCardData: {
+                  location: address.roadAddress,
+                  features: derivedMateCardFeatures,
+                },
+                participationData: {
+                  recruitmentCapacity: mateLimit,
+                  participationMemberIds:
+                    auth?.user != null ? [auth.user.memberId] : [],
+                },
+              },
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 업로드되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
+                },
+                onError: () => {
+                  createToast({
+                    message: '게시글 업로드에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                },
+              },
+            );
+          } else if (postId != null) {
+            updateDormitorySharedPost(
+              {
+                postId,
+                postData: {
+                  imageFilesData: uploadedImages,
+                  postData: { title, content },
+                  locationData: {
+                    oldAddress: address.jibunAddress,
+                    roadAddress: address.roadAddress,
+                  },
+                  roomMateCardData: {
+                    location: address.roadAddress,
+                    features: derivedMateCardFeatures,
+                  },
+                  participationData: {
+                    recruitmentCapacity: mateLimit,
+                    participationMemberIds:
+                      auth?.user != null ? [auth.user.memberId] : [],
+                  },
+                },
+              },
+              {
+                onSuccess: () => {
+                  createToast({
+                    message: '게시글이 정상적으로 수정되었습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                  router.back();
+                },
+                onError: () => {
+                  createToast({
+                    message: '게시글 수정에 실패했습니다.',
+                    option: {
+                      duration: 3000,
+                    },
+                  });
+                },
+              },
+            );
+          }
+        }
       } catch (error) {
         createToast({
           message: '게시글 업로드에 실패했습니다.',
@@ -664,7 +854,7 @@ export function WritingPostPage() {
           <styles.row>
             <styles.optionCategory>기본 정보</styles.optionCategory>
             <styles.createButton onClick={handleCreatePost}>
-              작성하기
+              {postId == null ? '작성하기' : '수정하기'}
             </styles.createButton>
           </styles.row>
           <styles.optionCategory>제목</styles.optionCategory>
@@ -693,7 +883,10 @@ export function WritingPostPage() {
           {showLocationSearchBox && (
             <LocationSearchBox
               onSelect={selectedAddress => {
-                setAddress(selectedAddress);
+                setSharedPostProps(prev => ({
+                  ...prev,
+                  address: selectedAddress,
+                }));
                 setShowLocationSearchBox(false);
               }}
               setHidden={() => {
@@ -719,7 +912,7 @@ export function WritingPostPage() {
                 {images.map(image => (
                   <styles.image
                     key={image.url}
-                    src={image.url}
+                    $url={image.url}
                     onClick={() => {
                       handleRemoveImage(image);
                     }}
@@ -745,7 +938,10 @@ export function WritingPostPage() {
                   value={mateLimit}
                   onChange={event => {
                     handleNumberInput(event.target.value, value => {
-                      setMateLimit(value);
+                      setSharedPostProps(prev => ({
+                        ...prev,
+                        mateLimit: value,
+                      }));
                     });
                   }}
                   $width={3}
@@ -790,156 +986,168 @@ export function WritingPostPage() {
             </button>
             {showMateCardForm && (
               <UserInputSection
-                gender={gender}
-                birthYear={birthYear?.toString()}
+                gender={mateCard.gender}
+                birthYear={mateCard.birthYear?.toString()}
                 location={address?.roadAddress ?? '주소를 입력해주세요.'}
-                mbti={mbti}
-                major={major}
-                budget={undefined}
-                features={undefined}
+                mbti={mateCard.mbti}
+                major={mateCard.major}
+                budget={mateCard.budget}
+                features={mateCard.features}
                 isMySelf
                 type="mateCard"
-                onVitalChange={handleEssentialFeatureChange}
-                onOptionChange={handleOptionalFeatureChange}
+                onVitalChange={handleMateCardEssentialFeatureChange}
+                onOptionChange={handleMateCardOptionalFeatureChange}
                 onLocationChange={() => {}}
-                onMateAgeChange={setBirthYear}
-                onMbtiChange={setMbti}
-                onMajorChange={setMajor}
-                onBudgetChange={setBudget}
+                onMateAgeChange={() => {}}
+                onMbtiChange={() => {}}
+                onMajorChange={() => {}}
+                onBudgetChange={() => {}}
               />
             )}
           </styles.mateCardContainer>
         </styles.essentialInfoContainer>
-        <styles.dealInfoContainer>
-          <styles.optionCategory>거래 정보</styles.optionCategory>
-          <styles.option>거래 방식</styles.option>
-          <styles.optionRow>
-            {Object.keys(DealTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('budget', option)}
-                  onClick={() => {
-                    handleOptionClick('budget', option);
+        {type === 'hasRoom' && (
+          <>
+            <styles.dealInfoContainer>
+              <styles.optionCategory>거래 정보</styles.optionCategory>
+              <styles.option>거래 방식</styles.option>
+              <styles.optionRow>
+                {Object.keys(DealTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('budget', option)}
+                      onClick={() => {
+                        handleOptionClick('budget', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>희망 메이트 월 분담금</styles.option>
+              <styles.inputContainer>
+                <styles.input
+                  value={expectedMonthlyFee}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setSharedPostProps(prev => ({
+                        ...prev,
+                        expectedMonthlyFee: value,
+                      }));
+                    });
                   }}
+                  $width={3}
                 />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>희망 메이트 월 분담금</styles.option>
-          <styles.inputContainer>
-            <styles.input
-              value={expectedMonthlyFee}
-              onChange={event => {
-                handleNumberInput(event.target.value, value => {
-                  setExpectedMonthlyFee(value);
-                });
-              }}
-              $width={3}
-            />
-            <styles.inputPlaceholder>만원</styles.inputPlaceholder>
-          </styles.inputContainer>
-        </styles.dealInfoContainer>
-        <styles.roomInfoContainer>
-          <styles.optionCategory>방 정보</styles.optionCategory>
-          <styles.option>층</styles.option>
-          <styles.optionRow>
-            {Object.keys(FloorTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('floorType', option)}
-                  onClick={() => {
-                    handleOptionClick('floorType', option);
+                <styles.inputPlaceholder>만원</styles.inputPlaceholder>
+              </styles.inputContainer>
+            </styles.dealInfoContainer>
+            <styles.roomInfoContainer>
+              <styles.optionCategory>방 정보</styles.optionCategory>
+              <styles.option>층</styles.option>
+              <styles.optionRow>
+                {Object.keys(FloorTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('floorType', option)}
+                      onClick={() => {
+                        handleOptionClick('floorType', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>추가 옵션</styles.option>
+              <styles.optionRow>
+                {Object.entries(AdditionalInfoTypeValue).map(
+                  ([option, value]) => (
+                    <styles.optionButtonContainer key={option}>
+                      <styles.customCheckBox
+                        $isSelected={isExtraOptionSelected(value)}
+                        onClick={() => {
+                          handleExtraOptionClick(value);
+                        }}
+                      />
+                      <span>{option}</span>
+                    </styles.optionButtonContainer>
+                  ),
+                )}
+              </styles.optionRow>
+              <styles.option>방 종류</styles.option>
+              <styles.optionRow>
+                {Object.keys(RoomTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('roomType', option)}
+                      onClick={() => {
+                        handleOptionClick('roomType', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>거실</styles.option>
+              <styles.optionRow>
+                {Object.keys(LivingRoomTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('livingRoom', option)}
+                      onClick={() => {
+                        handleOptionClick('livingRoom', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>방 개수</styles.option>
+              <styles.optionRow>
+                {Object.keys(CountTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('roomCount', option)}
+                      onClick={() => {
+                        handleOptionClick('roomCount', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>화장실 개수</styles.option>
+              <styles.optionRow>
+                {Object.keys(CountTypeValue).map(option => (
+                  <styles.optionButtonContainer key={option}>
+                    <styles.customRadioButton
+                      $isSelected={isOptionSelected('restRoomCount', option)}
+                      onClick={() => {
+                        handleOptionClick('restRoomCount', option);
+                      }}
+                    />
+                    <span>{option}</span>
+                  </styles.optionButtonContainer>
+                ))}
+              </styles.optionRow>
+              <styles.option>전체 면적</styles.option>
+              <styles.inputContainer>
+                <styles.input
+                  value={houseSize}
+                  onChange={event => {
+                    handleNumberInput(event.target.value, value => {
+                      setSharedPostProps(prev => ({
+                        ...prev,
+                        houseSize: value,
+                      }));
+                    });
                   }}
+                  $width={2}
                 />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>추가 옵션</styles.option>
-          <styles.optionRow>
-            {Object.keys(AdditionalInfoTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customCheckBox
-                  $isSelected={isExtraOptionSelected(option)}
-                  onClick={() => {
-                    handleExtraOptionClick(option);
-                  }}
-                />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>방 종류</styles.option>
-          <styles.optionRow>
-            {Object.keys(RoomTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('roomType', option)}
-                  onClick={() => {
-                    handleOptionClick('roomType', option);
-                  }}
-                />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>거실</styles.option>
-          <styles.optionRow>
-            {Object.keys(LivingRoomTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('livingRoom', option)}
-                  onClick={() => {
-                    handleOptionClick('livingRoom', option);
-                  }}
-                />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>방 개수</styles.option>
-          <styles.optionRow>
-            {Object.keys(CountTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('roomCount', option)}
-                  onClick={() => {
-                    handleOptionClick('roomCount', option);
-                  }}
-                />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>화장실 개수</styles.option>
-          <styles.optionRow>
-            {Object.keys(CountTypeValue).map(option => (
-              <styles.optionButtonContainer key={option}>
-                <styles.customRadioButton
-                  $isSelected={isOptionSelected('restRoomCount', option)}
-                  onClick={() => {
-                    handleOptionClick('restRoomCount', option);
-                  }}
-                />
-                <span>{option}</span>
-              </styles.optionButtonContainer>
-            ))}
-          </styles.optionRow>
-          <styles.option>전체 면적</styles.option>
-          <styles.inputContainer>
-            <styles.input
-              value={houseSize}
-              onChange={event => {
-                handleNumberInput(event.target.value, value => {
-                  setHouseSize(value);
-                });
-              }}
-              $width={2}
-            />
-            <styles.inputPlaceholder>평</styles.inputPlaceholder>
-          </styles.inputContainer>
-        </styles.roomInfoContainer>
+                <styles.inputPlaceholder>평</styles.inputPlaceholder>
+              </styles.inputContainer>
+            </styles.roomInfoContainer>
+          </>
+        )}
       </styles.postContainer>
     </styles.pageContainer>
   );

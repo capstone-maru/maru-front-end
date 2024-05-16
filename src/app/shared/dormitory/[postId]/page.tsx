@@ -13,9 +13,9 @@ export default function Page({
   return (
     <>
       {isMobile ? (
-        <MobileSharedPostPage postId={+postId} />
+        <MobileSharedPostPage postId={+postId} type="dormitory" />
       ) : (
-        <SharedPostPage postId={+postId} />
+        <SharedPostPage postId={+postId} type="dormitory" />
       )}
     </>
   );

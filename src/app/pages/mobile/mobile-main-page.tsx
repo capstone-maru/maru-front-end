@@ -1,12 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { UserCard } from '@/components/main-page';
-import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
+import { useAuthValue } from '@/features/auth';
 import { getGeolocation } from '@/features/geocoding';
 import { useRecommendationMate } from '@/features/recommendation';
 
@@ -92,22 +91,15 @@ const styles = {
 };
 
 export function MobileMainPage() {
-  const router = useRouter();
-
   const auth = useAuthValue();
-  const { setAuthUserData } = useAuthActions();
-
-  const { data: userData } = useUserData(auth?.accessToken !== undefined);
 
   const { data: recommendationMates } = useRecommendationMate({
     memberId: auth?.user?.memberId ?? 'undefined',
     cardType: 'mate',
-    enabled: auth?.accessToken != null,
+    enabled: auth?.accessToken != null && false,
   });
 
   const [map, setMap] = useState<naver.maps.Map | null>(null);
-
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getGeolocation({
@@ -131,15 +123,6 @@ export function MobileMainPage() {
     });
   }, []);
 
-  useEffect(() => {
-    if (userData !== undefined) {
-      setAuthUserData(userData);
-      if (userData.initialized) {
-        // router.replace('/profile');
-      }
-    }
-  }, [userData, router, setAuthUserData]);
-
   return (
     <styles.container>
       <styles.map id="map">
@@ -154,7 +137,7 @@ export function MobileMainPage() {
         <styles.mateRecommendationTitle>
           <h1>{auth?.user?.name}님의 추천 메이트</h1>
         </styles.mateRecommendationTitle>
-        <styles.mateRecommendation ref={scrollRef}>
+        <styles.mateRecommendation>
           {recommendationMates?.map(({ name, similarity, userId }) => (
             <Link key={userId} href={`/profile/${userId}`}>
               <UserCard name={name} percentage={Math.floor(similarity * 100)} />

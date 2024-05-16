@@ -47,15 +47,18 @@ export interface SharedPost {
   title: string;
   content: string;
   roomMateFeatures: {
-    location: string;
-    features: {
-      smoking: string;
-      roomSharingOption: string;
-      mateAge: string;
-      options: string; // 프런트에서 파싱 필요.
-    };
+    smoking?: string;
+    roomSharingOption?: string;
+    mateAge?: string;
+    options: string; // 프런트에서 파싱 필요.
   };
-  participants: Array<{ memberId: string; profileImage: string }>;
+  participants: Array<{
+    memberId: string;
+    nickname: string;
+    profileImageFileName: string;
+    birthYear: string;
+    isScrapped: boolean;
+  }>;
   roomImages: Array<{
     fileName: string;
     isThumbnail: boolean;
@@ -145,17 +148,17 @@ export interface DormitorySharedPost {
   title: string;
   content: string;
   roomMateFeatures: {
-    location: string;
-    features: {
-      smoking: string;
-      roomSharingOption: string;
-      mateAge: string;
-      options: string;
-    };
+    smoking?: string;
+    roomSharingOption?: string;
+    mateAge?: string;
+    options: string;
   };
   participants: Array<{
     memberId: string;
+    nickname: string;
     profileImageFileName: string;
+    birthYear: string;
+    isScrapped: boolean;
   }>;
   roomImages: Array<{
     fileName: string;

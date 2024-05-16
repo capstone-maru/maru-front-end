@@ -81,12 +81,6 @@ export function CircularProfileImage({
   return (
     <styles.container $diameter={diameter}>
       <styles.backgroundContainer $url={url} />
-      <styles.CircularProgressBar
-        diameter={diameter}
-        percentage={percentage}
-        strokeWidth={10}
-      />
-      <styles.percentage>{percentage}%</styles.percentage>
     </styles.container>
   );
 }
