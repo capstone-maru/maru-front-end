@@ -20,6 +20,11 @@ const styles = {
     background: #fff;
 
     width: 20rem;
+
+    @media (max-width: 768px) {
+      width: 10rem;
+      gap: 1rem;
+    }
   `,
   item: styled.div`
     width: 100%;
@@ -35,6 +40,10 @@ const styles = {
       font-style: normal;
       font-weight: 500;
       line-height: normal;
+
+      @media (max-width: 768px) {
+        font-size: 1rem;
+      }
     }
 
     div {
@@ -61,6 +70,11 @@ const styles = {
         font-style: normal;
         font-weight: 400;
         line-height: normal;
+
+        @media (max-width: 768px) {
+          font-size: 0.75rem;
+          padding: 0.5rem 1rem;
+        }
 
         transition:
           150ms border ease-in-out,

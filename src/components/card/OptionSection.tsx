@@ -8,13 +8,19 @@ import { MajorSelector } from './MajorSelector';
 import { MbtiToggle } from './MbtiToggle';
 import { Slider } from './Slider';
 
+import { useIsMobile } from '@/shared/mobile';
+
 const styles = {
   container: styled.div`
     width: 46rem;
-    height: 43.875rem;
+    /* height: 43.875rem; */
     display: flex;
     flex-direction: column;
     gap: 1rem;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
   `,
   optionContainer: styled.div`
     display: flex;
@@ -25,6 +31,10 @@ const styles = {
     align-items: flex-start;
     gap: 1rem;
     flex-shrink: 0;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
   `,
   optionDescription: styled.p`
     color: #9a95a3;
@@ -34,20 +44,37 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+
+    @media (max-width: 768px) {
+      font-size: 0.75rem;
+    }
   `,
   optionList: styled.ul`
     position: relative;
     width: 100%;
+
+    @media (max-width: 768px) {
+      gap: 1srem;
+    }
   `,
   optionListItem: styled.li`
     display: flex;
     align-items: center;
     gap: 4rem;
     margin-bottom: 1.25rem;
+
+    @media (max-width: 768px) {
+      gap: 2rem;
+    }
   `,
   optionListImg: styled.img`
     width: 3.125rem;
     height: 3.125rem;
+
+    @media (max-width: 768px) {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
   `,
   optionListCheckItemContainer: styled.div`
     width: 100%;
@@ -68,8 +95,6 @@ const styles = {
     flex-wrap: wrap;
   `,
   cleanTestContainer: styled.div`
-    position: absolute;
-    left: 22.19rem;
     height: 2.44rem;
     display: flex;
     align-items: center;
@@ -87,6 +112,10 @@ const styles = {
     font-weight: 500;
     cursor: pointer;
     margin-left: 2rem;
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+    }
   `,
   budgetContainer: styled.div`
     display: flex;
@@ -112,6 +141,12 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+
+    @media (max-width: 768px) {
+      padding: 0.5rem 0.8rem;
+      font-size: 0.625rem;
+      width: 3.8rem;
+    }
   `,
 };
 
@@ -137,6 +172,11 @@ const CheckItem = styled.div<CheckItemProps>`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.625rem;
+  }
 
   ${props =>
     props.$isSelected
@@ -325,6 +365,8 @@ export function OptionSection({
     setIsMbtiSelected(!isMbtiSelected);
   };
 
+  const isMobile = useIsMobile();
+
   return (
     <styles.container>
       <styles.optionDescription>선택</styles.optionDescription>
@@ -417,15 +459,6 @@ export function OptionSection({
             <styles.optionListImg src="/option-img/mop.svg" />
             {type === 'myCard' ? (
               <styles.optionListCheckItemContainer>
-                <styles.cleanTestContainer>
-                  <styles.cleanTestDescription
-                    onClick={() => {
-                      toggleTestVisibility();
-                    }}
-                  >
-                    {isTestVisible ? '결과 확인하기' : '테스트 하기'}
-                  </styles.cleanTestDescription>
-                </styles.cleanTestContainer>
                 <CheckItem $isSelected={features?.has('상') ?? false}>
                   상
                 </CheckItem>
@@ -435,6 +468,15 @@ export function OptionSection({
                 <CheckItem $isSelected={features?.has('천하태평') ?? false}>
                   천하태평
                 </CheckItem>
+                <styles.cleanTestContainer>
+                  <styles.cleanTestDescription
+                    onClick={() => {
+                      toggleTestVisibility();
+                    }}
+                  >
+                    {isTestVisible ? '결과 확인하기' : '테스트 하기'}
+                  </styles.cleanTestDescription>
+                </styles.cleanTestContainer>
               </styles.optionListCheckItemContainer>
             ) : (
               <styles.optionListCheckItemContainer>
@@ -544,7 +586,7 @@ export function OptionSection({
                 style={{
                   color: '#888',
                   fontFamily: 'Noto Sans KR',
-                  fontSize: '1rem',
+                  fontSize: isMobile ? '0.475rem' : '1rem',
                   fontStyle: 'normal',
                   fontWeight: '500',
                   lineHeight: 'normal',

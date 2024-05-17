@@ -59,6 +59,13 @@ const styles = {
     left: 65%;
 
     z-index: 2;
+
+    @media (max-width: 768px) {
+      width: 1.6875rem;
+      height: 1.75rem;
+      padding: 0.75rem 0.375rem;
+      font-size: 0.75rem;
+    }
   `,
 };
 

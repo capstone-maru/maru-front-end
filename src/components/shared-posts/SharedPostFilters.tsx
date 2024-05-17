@@ -22,6 +22,12 @@ const styles = {
   container: styled.div`
     display: flex;
     gap: 1rem;
+
+    @media (max-width: 768px) {
+      width: 70%;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
   `,
 };
 

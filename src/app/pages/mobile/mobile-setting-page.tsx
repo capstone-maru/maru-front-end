@@ -12,28 +12,22 @@ import {
   useUserCard,
   useUserProfile,
 } from '@/features/profile';
-import Location from '@/public/option-img/location_on.svg';
-import Meeting from '@/public/option-img/meeting_room.svg';
-import Person from '@/public/option-img/person.svg';
-import Visibility from '@/public/option-img/visibility.svg';
 
 const styles = {
   pageContainer: styled.div`
     display: flex;
-    width: 90rem;
-    height: 90rem;
-    padding: 2rem 10rem;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    gap: 2rem;
+    width: 100vw;
+    min-width: 390px;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem 1rem;
   `,
-
   cardName: styled.p`
     align-self: stretch;
     color: var(--Black, #35373a);
     font-family: 'Noto Sans KR';
-    font-size: 2rem;
+    font-size: 1.1875rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -43,90 +37,18 @@ const styles = {
     display: flex;
     align-items: flex-start;
     gap: 1rem;
+    width: 100%;
+    border-radius: 30px;
+    overflow: hidden;
   `,
-  miniCard: styled.div`
-    display: flex;
-    width: 22.5rem;
-    padding: 2rem;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    border-radius: 1.875rem;
-    background: #f7f6f9;
 
-    /* button */
-    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
-  `,
-  miniCardName: styled.p`
-    color: var(--Black, #35373a);
-    font-family: 'Noto Sans KR';
-    font-size: 1.5rem;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-  `,
-  miniCardKeywordsContainer: styled.ul`
-    display: flex;
-    width: 18.375rem;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.2rem;
-  `,
-  miniCardList: styled.li`
-    display: flex;
-    height: 2rem;
-    align-items: center;
-    gap: 2rem;
-    align-self: stretch;
-  `,
-  miniCardPerson: styled(Person)`
-    width: 1.5rem;
-    height: 1.5rem;
-    path {
-      fill: var(--Main-1, #e15637);
-    }
-  `,
-  miniCardLocation: styled(Location)`
-    width: 1.5rem;
-    height: 1.5rem;
-    path {
-      fill: var(--Main-1, #e15637);
-    }
-  `,
-  miniCardMeeting: styled(Meeting)`
-    width: 1.5rem;
-    height: 1.5rem;
-    path {
-      fill: var(--Main-1, #e15637);
-    }
-  `,
-  miniCardVisibility: styled(Visibility)`
-    width: 1.5rem;
-    height: 1.5rem;
-    path {
-      fill: var(--Main-1, #e15637);
-    }
-  `,
-  miniCardText: styled.p`
-    flex: 1 0 0;
-    display: flex;
-    height: 3rem;
-    align-items: center;
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    color: var(--Main-1, #e15637);
-  `,
   checkContainer: styled.div`
     display: flex;
-    width: 50rem;
+    width: 100%;
     padding: 2rem;
     flex-direction: column;
     align-items: flex-start;
     gap: 2rem;
-    border-radius: 1.875rem;
     background: var(--background, #f7f6f9);
   `,
   horizontalLine: styled.div`
@@ -142,7 +64,7 @@ interface UserProps {
   birthYear: string;
 }
 
-export function SettingPage({ cardId }: { cardId: number }) {
+export function MobileSettingPage({ cardId }: { cardId: number }) {
   const params = useSearchParams();
   const memberIdParams = params.get('memberId');
   const memberId = memberIdParams ?? '';
@@ -256,7 +178,6 @@ export function SettingPage({ cardId }: { cardId: number }) {
 
       if (options != null && options.has(option)) {
         newOptions.delete(option);
-        console.log(newOptions);
       } else newOptions.add(option);
 
       return { ...prev, options: newOptions };
@@ -323,64 +244,12 @@ export function SettingPage({ cardId }: { cardId: number }) {
     };
   }, [handlePopState]);
 
-  let ageString: string;
-
-  if (type === 'myCard') {
-    ageString = `${userData?.birthYear.slice(2)}년생`;
-  } else {
-    switch (mateAge) {
-      case 0:
-        ageString = '동갑';
-        break;
-      case 11:
-        ageString = '상관없어요';
-        break;
-      default:
-        ageString = `±${mateAge}년생`;
-    }
-  }
-
   return (
     <styles.pageContainer>
       <styles.cardName>
         {type === 'myCard' ? `마이 카드` : '메이트 카드'}
       </styles.cardName>
       <styles.cardContainer>
-        <styles.miniCard>
-          <styles.miniCardName>
-            {type === 'myCard' ? '내카드' : '메이트카드'}
-          </styles.miniCardName>
-          <styles.miniCardKeywordsContainer>
-            <styles.miniCardList>
-              <styles.miniCardPerson />
-              <styles.miniCardText>
-                {userData?.gender === 'MALE' ? '남성' : '여성'} · {ageString} ·{' '}
-                {features?.smoking}
-              </styles.miniCardText>
-            </styles.miniCardList>
-            <styles.miniCardList>
-              <styles.miniCardLocation />
-              <styles.miniCardText>{locationInput}</styles.miniCardText>
-            </styles.miniCardList>
-            <styles.miniCardList>
-              <styles.miniCardMeeting />
-              <styles.miniCardText>
-                메이트와 {features?.roomSharingOption}
-              </styles.miniCardText>
-            </styles.miniCardList>
-            <styles.miniCardList>
-              <styles.miniCardVisibility />
-              <styles.miniCardText>
-                {features?.options != null && features.options.has('아침형')
-                  ? '아침형'
-                  : null}
-                {features?.options != null && features.options.has('올빼미형')
-                  ? '올빼미형'
-                  : null}
-              </styles.miniCardText>
-            </styles.miniCardList>
-          </styles.miniCardKeywordsContainer>
-        </styles.miniCard>
         {type === 'myCard' ? (
           <UserInputSection
             gender={userData?.gender}

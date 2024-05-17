@@ -16,41 +16,37 @@ import {
 } from '@/features/profile';
 
 const styles = {
-  pageContainer: styled.div`
+  container: styled.div`
     display: flex;
-    height: 98rem;
-    padding: 0rem 10rem 10rem 10rem;
+    width: 100vw;
+    min-width: 390px;
+    padding-bottom: 2rem;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    padding: 2rem 1rem;
     gap: 3rem;
-    align-self: stretch;
   `,
 
   userProfileContainer: styled.div`
-    display: inline-flex;
-    width: 100%;
-    align-items: center;
-    flex-shrink: 0;
-    gap: 3rem;
-    margin-top: 5.12rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    align-self: stretch;
   `,
   userProfileWithoutInfo: styled.div`
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
   `,
   userPicContainer: styled.div`
     display: flex;
-    flex-direction: column;
-    width: 8.3125rem;
-    height: 8.3125rem;
+    width: 6.0625rem;
+    height: 6.0625rem;
     justify-content: center;
     align-items: center;
-    border-radius: 100px;
+    border-radius: 50%;
     border: 1px solid #dcddea;
-
     background: #c4c4c4;
   `,
   userPic: styled.img`
@@ -62,9 +58,12 @@ const styles = {
   `,
   userInfoContainer: styled.div`
     display: flex;
-    flex-wrap: wrap;
+    padding: 0.5rem 0rem;
+    flex-direction: column;
+    justify-content: space-between;
     align-items: flex-start;
-    gap: 0.56rem;
+    flex: 1 0 0;
+    align-self: stretch;
   `,
   userDetailedContainer: styled.div`
     display: inline-flex;
@@ -74,18 +73,16 @@ const styles = {
   `,
   userName: styled.div`
     color: #000;
-
     font-family: 'Noto Sans KR';
-    font-size: 1.5rem;
+    font-size: 1.125rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
   `,
   userDetailedInfo: styled.p`
     color: #000;
-
     font-family: 'Noto Sans KR';
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
@@ -94,15 +91,14 @@ const styles = {
   switchContainer: styled.div`
     display: inline-flex;
     justify-content: center;
-    align-items: flex-end;
+    align-items: center;
     gap: 0.375rem;
-    margin-left: 2rem;
   `,
   switchWrapper: styled.label`
     position: relative;
     display: inline-block;
-    width: 2.5rem;
-    height: 1.5rem;
+    width: 2.2rem;
+    height: 1.26rem;
   `,
   switchInput: styled.input`
     opacity: 0;
@@ -119,25 +115,24 @@ const styles = {
     background-color: #bebebe;
     -webkit-transition: 0.4s;
     transition: 0.4s;
-    border-radius: 24px;
+    border-radius: 20px;
   `,
   sliderDot: styled.span`
     position: absolute;
     cursor: pointer;
-    top: 0.25rem;
-    left: 0.25rem;
-    bottom: 0.25rem;
+    top: 0.1624rem;
+    left: 0.2rem;
     background-color: white;
     -webkit-transition: 0.4s;
     transition: 0.4s;
     border-radius: 50%;
-    width: 1rem;
-    height: 1rem;
+    width: 0.9rem;
+    height: 0.9rem;
   `,
   switchDescription: styled.p`
     color: var(--Gray-3, #888);
     font-family: 'Noto Sans KR';
-    font-size: 1.25rem;
+    font-size: 0.875rem;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
@@ -150,7 +145,7 @@ const styles = {
     background: var(--Black, #35373a);
     cursor: pointer;
     display: inline-flex;
-    padding: 0.25rem 0.5rem;
+    padding: 0.125rem 0.5rem;
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
@@ -158,11 +153,11 @@ const styles = {
   authDescription: styled.p`
     color: #fff;
 
-    font-family: Pretendard;
-    font-size: 0.875rem;
+    font-family: 'Noto Sans KR';
+    font-size: 0.75rem;
     font-style: normal;
-    font-weight: 600;
-    line-height: 1.5rem;
+    font-weight: 400;
+    line-height: 1.5rem; /* 200% */
   `,
   authCheckImg: styled.img`
     width: 1rem;
@@ -170,48 +165,32 @@ const styles = {
   `,
 
   cardSection: styled.div`
-    display: inline-flex;
+    display: flex;
     width: 100%;
-    gap: 8rem;
+    align-items: flex-start;
+    gap: 1.5rem;
+    align-self: stretch;
   `,
   cardWrapper: styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: flex-start;
-    gap: 1rem;
-    flex-shrink: 0;
+    gap: 0.5rem;
   `,
   description32px: styled.p`
     color: #000;
     font-family: 'Noto Sans KR';
-    font-size: 2rem;
+    font-size: 1.25rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
-  `,
-  description24px: styled.p`
-    color: #000;
-    font-family: 'Noto Sans KR';
-    font-size: 1.5rem;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-  `,
-  mateCards: styled.div`
-    display: flex;
-    width: 35.6rem;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-    padding: 1.5rem;
-    gap: 2.88rem;
   `,
   cardContainer: styled.div`
-    padding: 0 0 0 1.5rem;
     display: inline-flex;
     align-items: center;
-    width: 15rem;
-    height: 15rem;
+    width: 9.8125rem;
+    height: 9.8125rem;
+    padding: 3.9375rem 5.8125rem 4.4375rem 1.1875rem;
     flex-shrink: 0;
     border-radius: 20px;
     border: 1pxs olid var(--background, #f7f6f9);
@@ -222,144 +201,33 @@ const styles = {
   cardName: styled.p`
     color: var(--grey-900, #494949);
     font-family: 'Noto Sans KR';
-    font-size: 1.375rem;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
   `,
 
-  maruContainer: styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-  `,
-
-  weekContainer: styled.div`
-    display: flex;
-    height: 15.625rem;
-    justify-content: flex-end;
-    align-items: flex-start;
-    gap: 1.5rem;
-    align-self: stretch;
-  `,
-  dayContainer: styled.div`
-    width: 8.75rem;
-    height: 15.625rem;
-    padding: 1.5rem 0;
-    flex-shrink: 0;
-    border-radius: 20px;
-    background: var(--background, #f7f6f9);
-
-    justify-content: center;
-    flex-direction: column;
-  `,
-  day: styled.p`
-    color: #000;
-
-    text-align: center;
-    font-family: 'Noto Sans KR';
-    font-size: 1.5rem;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    margin: 0 3.8125rem 0 3.5rem;
-  `,
-  dayRuleContainer: styled.div`
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    margin-top: 1.5rem;
-    gap: 0.25rem;
-  `,
-  dayRule: styled.p`
-    color: #000;
-    text-align: center;
-    font-family: 'Noto Sans KR';
-    font-size: 1.125rem;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-  `,
-  person: styled.div`
-    display: flex;
-    width: 4.3125rem;
-    padding: 0.375rem 0.75rem;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    border-radius: 26px;
-    color: #fff;
-    text-align: center;
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-
-    background: var(--Purple, #6b5ee1);
-  `,
-
-  rulesContainer: styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 3rem;
-    flex: 1 0 0;
-    align-self: stretch;
-  `,
-  rulesDescriptionContainer: styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    align-self: stretch;
-  `,
-  editButton: styled.button`
-    display: flex;
-    padding: 0.625rem 5.9375rem;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    border-radius: 1rem;
-    border: 1px solid var(--Main-1, #e15637);
-    background: var(--White, #fff);
-    cursor: pointer;
-
-    color: var(--Main-1, #e15637);
-    font-family: 'Noto Sans KR';
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-  `,
-  rulesContent: styled.div`
-    width: 100%;
-    height: 21.625rem;
-    border-radius: 16px;
-    background: #f7f6f9;
-  `,
-
   certificationContainer: styled.div`
     display: inline-flex;
-    padding: 2rem;
+    padding: 1.5rem;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    width: 40rem;
-    height: 20rem;
-    gap: 3rem;
+    width: 22rem;
+    height: 15rem;
+    gap: 1.5rem;
     border-radius: 20px;
     background: #fff;
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
     z-index: 20000;
     position: absolute;
-    top: 21rem;
-    left: 9rem;
+    top: 18rem;
+    left: 0.5rem;
 
     p {
       color: #494949;
       font-family: 'Noto Sans KR';
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-style: normal;
       font-weight: 500;
       line-height: normal;
@@ -370,16 +238,16 @@ const styles = {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    gap: 0.625rem;
+    gap: 0.4rem;
   `,
   userInputListItem: styled.li`
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 0.5rem;
 
     div {
       display: flex;
-      width: 22.1875rem;
+      width: 12rem;
       justify-content: space-between;
       align-items: center;
     }
@@ -387,15 +255,15 @@ const styles = {
     p {
       color: #494949;
       font-family: 'Noto Sans KR';
-      font-size: 1.25rem;
+      font-size: 0.875rem;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
     }
 
     input {
-      width: 15rem;
-      height: 2.125rem;
+      width: 8rem;
+      height: 2rem;
       flex-shrink: 0;
       border-radius: 12px;
       border: 1px solid #494949;
@@ -405,8 +273,8 @@ const styles = {
 
   certificationButton: styled.button`
     display: flex;
-    width: 9.5rem;
-    padding: 0.5rem 1.5rem;
+    width: 7rem;
+    padding: 0.3rem 0.8rem;
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
@@ -416,10 +284,10 @@ const styles = {
 
     color: #494949;
     font-family: 'Noto Sans KR';
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-style: normal;
     font-weight: 400;
-    line-height: 1.5rem;
+    line-height: normal;
   `,
 };
 
@@ -664,76 +532,6 @@ function Card({
   );
 }
 
-function Mon() {
-  return (
-    <styles.dayRuleContainer>
-      <styles.dayRule>분리수거</styles.dayRule>
-      <styles.person>김마루</styles.person>
-    </styles.dayRuleContainer>
-  );
-}
-
-function Wed() {
-  return (
-    <styles.dayRuleContainer>
-      <styles.dayRule>화장실청소</styles.dayRule>
-      <styles.person>김마루</styles.person>
-    </styles.dayRuleContainer>
-  );
-}
-
-function Sun() {
-  return (
-    <styles.dayRuleContainer>
-      <styles.dayRule>방청소</styles.dayRule>
-      <styles.person>김마루</styles.person>
-    </styles.dayRuleContainer>
-  );
-}
-
-function Maru() {
-  return (
-    <>
-      <styles.maruContainer>
-        <styles.description32px>마이 마루</styles.description32px>
-        <styles.weekContainer>
-          <styles.dayContainer>
-            <styles.day>월</styles.day>
-            <Mon />
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>화</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>수</styles.day>
-            <Wed />
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>목</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>금</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>토</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>일</styles.day>
-            <Sun />
-          </styles.dayContainer>
-        </styles.weekContainer>
-      </styles.maruContainer>
-      <styles.rulesContainer>
-        <styles.rulesDescriptionContainer>
-          <styles.description24px>생활 규칙</styles.description24px>
-          <styles.editButton>수정하기</styles.editButton>
-        </styles.rulesDescriptionContainer>
-        <styles.rulesContent />
-      </styles.rulesContainer>
-    </>
-  );
-}
-
 interface UserProps {
   memberId: string;
   email: string;
@@ -747,7 +545,7 @@ interface UserProps {
   univCertified: boolean;
 }
 
-export function ProfilePage({ memberId }: { memberId: string }) {
+export function MobileProfilePage({ memberId }: { memberId: string }) {
   const auth = useAuthValue();
   const { data } = useUserData(auth?.accessToken !== undefined);
 
@@ -797,7 +595,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
   }, [profileData, memberId]);
 
   return (
-    <styles.pageContainer>
+    <styles.container>
       <UserInfo
         name={userData?.name ?? ''}
         email={userData?.email ?? ''}
@@ -814,7 +612,6 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         mateCardId={userData?.mateCardId}
         isMySelf={isMySelf}
       />
-      <Maru />
-    </styles.pageContainer>
+    </styles.container>
   );
 }
