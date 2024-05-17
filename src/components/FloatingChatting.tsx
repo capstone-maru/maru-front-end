@@ -322,6 +322,9 @@ export function FloatingChatting() {
     }
   }, [isChatOpen, isMobile]);
 
+  const auth = useAuthValue();
+  if (auth == null) return <></>;
+
   return (
     <>
       <styles.chattingButton onClick={toggleChat}>
