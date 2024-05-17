@@ -2,12 +2,12 @@
 
 import { Client } from '@stomp/stompjs';
 import axios from 'axios';
-import React, { type ReactElement, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { ChattingList } from './chat/ChattingList';
 import { ChattingRoom } from './chat/ChattingRoom';
-import { MobileChattingBox } from './chat/MobileChattingBox';
 
 import { useAuthValue, useUserData } from '@/features/auth';
 import { type GetChatRoomDTO } from '@/features/chat';
@@ -16,8 +16,8 @@ import { useIsMobile } from '@/shared/mobile';
 const styles = {
   chattingButton: styled.div`
     position: fixed;
-    bottom: 1.5rem;
-    right: 3rem;
+    bottom: 1rem;
+    right: 1rem;
     display: inline-flex;
     padding: 1rem;
     align-items: flex-start;
@@ -307,21 +307,19 @@ function FloatingChattingBox() {
 
 export function FloatingChatting() {
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+  const router = useRouter();
 
   const toggleChat = () => {
     setIsChatOpen(prevState => !prevState);
   };
 
   const isMobile = useIsMobile();
-  const [chatBox, setChatBox] = useState<ReactElement | undefined>();
   useEffect(() => {
     if (isChatOpen) {
-      if (!isMobile) {
-        setChatBox((<FloatingChattingBox />) as ReactElement);
-      } else {
-        setChatBox((<MobileChattingBox />) as ReactElement);
-      }
-    } else setChatBox(undefined);
+      router.replace('/chat');
+    } else {
+      router.replace('/');
+    }
   }, [isChatOpen, isMobile]);
 
   return (
@@ -329,7 +327,7 @@ export function FloatingChatting() {
       <styles.chattingButton onClick={toggleChat}>
         <styles.buttonIcon src="/chatting.svg" />
       </styles.chattingButton>
-      {chatBox}
+      {isChatOpen && !isMobile ? <FloatingChattingBox /> : null}
     </>
   );
 }
