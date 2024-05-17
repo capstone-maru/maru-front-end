@@ -315,6 +315,7 @@ export function FloatingChatting() {
 
   const isMobile = useIsMobile();
   useEffect(() => {
+    if (!isMobile) router.replace('/');
     if (isChatOpen && isMobile) {
       router.replace('/chat');
     }
