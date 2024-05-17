@@ -352,7 +352,7 @@ const styles = {
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
     z-index: 20000;
     position: absolute;
-    top: 21rem;
+    top: 23rem;
     left: 9rem;
 
     p {

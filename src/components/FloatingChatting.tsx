@@ -315,9 +315,10 @@ export function FloatingChatting() {
 
   const isMobile = useIsMobile();
   useEffect(() => {
-    if (isChatOpen) {
+    if (isChatOpen && isMobile) {
       router.replace('/chat');
-    } else {
+    }
+    if (!isChatOpen && isMobile) {
       router.replace('/');
     }
   }, [isChatOpen, isMobile]);
