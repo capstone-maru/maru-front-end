@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { UserCard } from '@/components/main-page';
 import { useAuthValue } from '@/features/auth';
 import { getGeolocation } from '@/features/geocoding';
-import { useRecommendationMate } from '@/features/recommendation';
+import { useRecommendMates } from '@/features/profile';
 
 const styles = {
   container: styled.div`
@@ -93,10 +93,9 @@ const styles = {
 export function MobileMainPage() {
   const auth = useAuthValue();
 
-  const { data: recommendationMates } = useRecommendationMate({
-    memberId: auth?.user?.memberId ?? 'undefined',
-    cardType: 'mate',
-    enabled: auth?.accessToken != null && false,
+  const { data: recommendationMates } = useRecommendMates({
+    cardOption: 'my',
+    enabled: auth?.accessToken != null,
   });
 
   const [map, setMap] = useState<naver.maps.Map | null>(null);
@@ -138,11 +137,18 @@ export function MobileMainPage() {
           <h1>{auth?.user?.name}님의 추천 메이트</h1>
         </styles.mateRecommendationTitle>
         <styles.mateRecommendation>
-          {recommendationMates?.map(({ name, similarity, userId }) => (
-            <Link key={userId} href={`/profile/${userId}`}>
-              <UserCard name={name} percentage={Math.floor(similarity * 100)} />
-            </Link>
-          ))}
+          {recommendationMates?.data?.map(
+            ({ memberId, score, nickname, location, profileImageUrl }) => (
+              <Link href={`/profile/${memberId}`} key={memberId}>
+                <UserCard
+                  name={nickname}
+                  percentage={score}
+                  location={location}
+                  profileImage={profileImageUrl}
+                />
+              </Link>
+            ),
+          )}
         </styles.mateRecommendation>
       </styles.mateRecommendationContainer>
     </styles.container>

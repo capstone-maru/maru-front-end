@@ -12,6 +12,7 @@ import { type SuccessBaseDTO } from '@/shared/types';
 
 export const getSharedPosts = async ({
   filter,
+  cardOption,
   search,
   page,
 }: GetSharedPostsProps) => {
@@ -19,7 +20,11 @@ export const getSharedPosts = async ({
     const baseURL = '/maru-api/shared/posts/studio';
     let query = '';
 
-    if (filter != null && Object.keys(filter).length > 0) {
+    if (
+      filter != null &&
+      Object.keys(filter).length > 0 &&
+      JSON.stringify(filter).length > 2
+    ) {
       query += `filter=${JSON.stringify(filter)}`;
     }
 
@@ -29,7 +34,7 @@ export const getSharedPosts = async ({
 
     query += `&page=${page}`;
 
-    return `${baseURL}?${encodeURI(query)}`;
+    return `${baseURL}?${encodeURIComponent(query)}&cardOption=${cardOption}`;
   };
 
   return await axios.get<GetSharedPostsDTO>(getURI());
@@ -63,6 +68,7 @@ export const scrapPost = async (postId: number) =>
 
 export const getDormitorySharedPosts = async ({
   filter,
+  cardOption,
   search,
   page,
 }: GetSharedPostsProps) => {
@@ -70,7 +76,11 @@ export const getDormitorySharedPosts = async ({
     const baseURL = '/maru-api/shared/posts/dormitory';
     let query = '';
 
-    if (filter != null && Object.keys(filter).length > 0) {
+    if (
+      filter != null &&
+      Object.keys(filter).length > 0 &&
+      JSON.stringify(filter).length > 2
+    ) {
       query += `filter=${JSON.stringify(filter)}`;
     }
 
@@ -80,7 +90,7 @@ export const getDormitorySharedPosts = async ({
 
     query += `&page=${page}`;
 
-    return `${baseURL}?${encodeURI(query)}`;
+    return `${baseURL}?${encodeURIComponent(query)}&cardOption=${cardOption}`;
   };
 
   return await axios.get<GetDormitorySharedPostsDTO>(getURI());

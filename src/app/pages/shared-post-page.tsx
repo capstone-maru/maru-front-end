@@ -533,8 +533,7 @@ export function SharedPostPage({
     }
   }, [sharedPost]);
 
-  const members = [userId];
-  const { mutate: chattingMutate } = useCreateChatRoom(roomName, members);
+  const { mutate: chattingMutate } = useCreateChatRoom(roomName, [userId]);
 
   const isLoading = useMemo(
     () =>

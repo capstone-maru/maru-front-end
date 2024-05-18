@@ -2,6 +2,7 @@ export interface SharedPostListItem {
   id: number;
   title: string;
   content: string;
+  score: number;
   thumbnail: {
     fileName: string;
     isThumbnail: boolean;
@@ -113,6 +114,7 @@ export interface DormitorySharedPostListItem {
   id: number;
   title: string;
   content: string;
+  score: number;
   thumbnail: {
     fileName: string;
     isThumbNail: boolean;
