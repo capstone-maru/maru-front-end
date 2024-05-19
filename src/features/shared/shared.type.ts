@@ -29,15 +29,22 @@ export interface SelectedOptions {
   floorType?: string;
 }
 
-export type SelectedExtraOptions = Record<string, boolean>;
+export interface SelectedExtraOptions {
+  canPark?: boolean;
+  hasAirConditioner?: boolean;
+  hasRefrigerator?: boolean;
+  hasTerrace?: boolean;
+  hasWasher?: boolean;
+}
 
 export interface ImageFile {
   url: string;
-  file: File;
-  extension: string;
+  uploaded: boolean;
+  file?: File;
+  extension?: string;
 }
 
-export interface CreateSharedPostProps {
+export interface SharedPostProps {
   imageFilesData: Array<{
     fileName: string;
     isThumbNail: boolean;
@@ -47,11 +54,11 @@ export interface CreateSharedPostProps {
     title: string;
     content: string;
   };
-  transactionData: {
+  transactionData?: {
     rentalType: number;
     expectedPayment: number;
   };
-  roomDetailData: {
+  roomDetailData?: {
     roomType: number;
     floorType: number;
     size: number;
@@ -76,9 +83,12 @@ export interface CreateSharedPostProps {
     features: {
       smoking: string;
       roomSharingOption: string;
-      mateAge: number | null; // 0 ~ 10: +- 범위 값, null: 상관 없어요.
+      mateAge: number | undefined; // 0 ~ 10: +- 범위 값, null: 상관 없어요.
       options: string;
     };
   };
-  participationMemberIds: string[];
+  participationData: {
+    recruitmentCapacity: number;
+    participationMemberIds: string[];
+  };
 }

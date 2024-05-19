@@ -7,8 +7,10 @@ import styled from 'styled-components';
 import { Bookmark } from '@/components';
 import { useAuthValue, useUserData } from '@/features/auth';
 import {
+  useCertification,
   useFollowUser,
   useFollowingListData,
+  useGetCode,
   useUnfollowUser,
   useUserProfile,
 } from '@/features/profile';
@@ -17,10 +19,9 @@ const styles = {
   pageContainer: styled.div`
     display: flex;
     height: 98rem;
+    width: 100%;
     padding: 0rem 10rem 10rem 10rem;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     gap: 3rem;
     align-self: stretch;
   `,
@@ -336,6 +337,89 @@ const styles = {
     border-radius: 16px;
     background: #f7f6f9;
   `,
+
+  certificationContainer: styled.div`
+    display: inline-flex;
+    padding: 2rem;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 40rem;
+    height: 20rem;
+    gap: 3rem;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
+    z-index: 20000;
+    position: absolute;
+    top: 23rem;
+    left: 9rem;
+
+    p {
+      color: #494949;
+      font-family: 'Noto Sans KR';
+      font-size: 1.25rem;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+    }
+  `,
+  userInputList: styled.ul`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.625rem;
+  `,
+  userInputListItem: styled.li`
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+
+    div {
+      display: flex;
+      width: 22.1875rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    p {
+      color: #494949;
+      font-family: 'Noto Sans KR';
+      font-size: 1.25rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    input {
+      width: 15rem;
+      height: 2.125rem;
+      flex-shrink: 0;
+      border-radius: 12px;
+      border: 1px solid #494949;
+      padding: 0.5rem 1rem;
+    }
+  `,
+
+  certificationButton: styled.button`
+    display: flex;
+    width: 9.5rem;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 8px;
+    background-color: white;
+    border: 1px solid #494949;
+
+    color: #494949;
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5rem;
+  `,
 };
 
 interface UserProfileInfoProps {
@@ -345,6 +429,7 @@ interface UserProfileInfoProps {
   src: string | undefined;
   memberId: string;
   isMySelf: boolean;
+  certification?: boolean;
 }
 
 function UserInfo({
@@ -354,6 +439,7 @@ function UserInfo({
   src,
   memberId,
   isMySelf,
+  certification,
 }: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(false);
 
@@ -375,7 +461,7 @@ function UserInfo({
         <styles.userPicContainer>
           <styles.userPic src={src} alt="User Profile Pic" />
         </styles.userPicContainer>
-        <Auth />
+        <Auth certification={certification} />
       </styles.userProfileWithoutInfo>
       <styles.userInfoContainer>
         <styles.userName>{name}</styles.userName>
@@ -440,12 +526,101 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
   );
 }
 
-function Auth() {
+function Auth({ certification }: { certification?: boolean }) {
+  const [univName, setUnivName] = useState<string>();
+  const [email, setEmail] = useState<string>();
+  const [code, setCode] = useState<number>();
+  const [isCertification, setIsCertification] = useState(certification);
+
+  useEffect(() => {
+    setIsCertification(certification);
+  }, [certification]);
+
+  const { mutate: getCode } = useGetCode(email ?? '', univName ?? '');
+  const { mutate: postCertification, data: success } = useCertification(
+    email ?? '',
+    univName ?? '',
+    code ?? 0,
+  );
+
+  useEffect(() => {
+    setIsCertification(true);
+  }, [success]);
+
+  const [isCertificationClick, setIsCertificationClick] = useState(false);
   return (
-    <styles.authContainer>
-      <styles.authCheckImg src="/check_circle_24px copy.svg" />
-      <styles.authDescription>학교인증</styles.authDescription>
-    </styles.authContainer>
+    <>
+      <styles.authContainer
+        onClick={() => {
+          setIsCertificationClick(prev => !prev);
+        }}
+      >
+        <styles.authCheckImg
+          src={
+            isCertification != null && isCertification
+              ? '/check_circle_24px copy.svg'
+              : '/Close_white.svg'
+          }
+        />
+        <styles.authDescription>학교인증</styles.authDescription>
+      </styles.authContainer>
+      {isCertificationClick && (
+        <styles.certificationContainer>
+          <p>학교 인증하기</p>
+          <styles.userInputList>
+            <styles.userInputListItem>
+              <div>
+                <p>대학교 명</p>
+                <input
+                  onChange={e => {
+                    setUnivName(e.target.value);
+                  }}
+                />
+              </div>
+            </styles.userInputListItem>
+            <styles.userInputListItem>
+              <div>
+                <p>이메일</p>
+                <input
+                  onChange={e => {
+                    setEmail(e.target.value);
+                  }}
+                />
+              </div>
+              <styles.certificationButton
+                onClick={() => {
+                  getCode();
+                }}
+              >
+                인증코드 받기
+              </styles.certificationButton>
+            </styles.userInputListItem>
+            <styles.userInputListItem>
+              <div>
+                <p>인증코드</p>
+                <input
+                  onChange={e => {
+                    setCode(Number(e.target.value));
+                  }}
+                />
+              </div>
+              <styles.certificationButton
+                style={{
+                  color: '#fff',
+                  backgroundColor: ' #E15637',
+                  border: 'none',
+                }}
+                onClick={() => {
+                  postCertification();
+                }}
+              >
+                인증하기
+              </styles.certificationButton>
+            </styles.userInputListItem>
+          </styles.userInputList>
+        </styles.certificationContainer>
+      )}
+    </>
   );
 }
 
@@ -488,76 +663,6 @@ function Card({
   );
 }
 
-function Mon() {
-  return (
-    <styles.dayRuleContainer>
-      <styles.dayRule>분리수거</styles.dayRule>
-      <styles.person>김마루</styles.person>
-    </styles.dayRuleContainer>
-  );
-}
-
-function Wed() {
-  return (
-    <styles.dayRuleContainer>
-      <styles.dayRule>화장실청소</styles.dayRule>
-      <styles.person>김마루</styles.person>
-    </styles.dayRuleContainer>
-  );
-}
-
-function Sun() {
-  return (
-    <styles.dayRuleContainer>
-      <styles.dayRule>방청소</styles.dayRule>
-      <styles.person>김마루</styles.person>
-    </styles.dayRuleContainer>
-  );
-}
-
-function Maru() {
-  return (
-    <>
-      <styles.maruContainer>
-        <styles.description32px>마이 마루</styles.description32px>
-        <styles.weekContainer>
-          <styles.dayContainer>
-            <styles.day>월</styles.day>
-            <Mon />
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>화</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>수</styles.day>
-            <Wed />
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>목</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>금</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>토</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>일</styles.day>
-            <Sun />
-          </styles.dayContainer>
-        </styles.weekContainer>
-      </styles.maruContainer>
-      <styles.rulesContainer>
-        <styles.rulesDescriptionContainer>
-          <styles.description24px>생활 규칙</styles.description24px>
-          <styles.editButton>수정하기</styles.editButton>
-        </styles.rulesDescriptionContainer>
-        <styles.rulesContent />
-      </styles.rulesContainer>
-    </>
-  );
-}
-
 interface UserProps {
   memberId: string;
   email: string;
@@ -568,6 +673,7 @@ interface UserProps {
   initialized: boolean;
   myCardId: number;
   mateCardId: number;
+  univCertified: boolean;
 }
 
 export function ProfilePage({ memberId }: { memberId: string }) {
@@ -596,8 +702,9 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         gender,
         phoneNumber,
         initialized,
-        myCardId,
+        univCertified,
         mateCardId,
+        myCardId,
       } = userProfileData;
       setUserData({
         memberId,
@@ -609,6 +716,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         initialized,
         myCardId,
         mateCardId,
+        univCertified,
       });
       setProfileImg(profileData.data.profileImage);
       if (authId === memberId) {
@@ -626,6 +734,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         src={profileImg}
         memberId={memberId}
         isMySelf={isMySelf}
+        certification={userData?.univCertified}
       />
       <Card
         name={userData?.name}
@@ -634,7 +743,6 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         mateCardId={userData?.mateCardId}
         isMySelf={isMySelf}
       />
-      <Maru />
     </styles.pageContainer>
   );
 }

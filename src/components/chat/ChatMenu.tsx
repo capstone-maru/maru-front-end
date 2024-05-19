@@ -20,6 +20,10 @@ const styles = {
     background: #fff;
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
     z-index: 20;
+
+    @media (max-width: 768px) {
+      border-radius: 0;
+    }
   `,
   header: styled.div`
     width: 100%;

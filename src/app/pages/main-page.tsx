@@ -1,13 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { CircularButton } from '@/components';
 import { UserCard } from '@/components/main-page';
-import { useAuthActions, useAuthValue, useUserData } from '@/features/auth';
+import { useAuthValue } from '@/features/auth';
 import { getGeolocation } from '@/features/geocoding';
 import { useRecommendationMate } from '@/features/recommendation';
 
@@ -87,17 +86,12 @@ const styles = {
 };
 
 export function MainPage() {
-  const router = useRouter();
-
   const auth = useAuthValue();
-  const { setAuthUserData } = useAuthActions();
-
-  const { data: userData } = useUserData(auth?.accessToken !== undefined);
 
   const { data: recommendationMates } = useRecommendationMate({
     memberId: auth?.user?.memberId ?? 'undefined',
     cardType: 'mate',
-    enabled: auth?.accessToken != null,
+    enabled: auth?.accessToken != null && false,
   });
 
   const [map, setMap] = useState<naver.maps.Map | null>(null);
@@ -137,15 +131,6 @@ export function MainPage() {
       },
     });
   }, []);
-
-  useEffect(() => {
-    if (userData !== undefined) {
-      setAuthUserData(userData);
-      if (userData.initialized) {
-        // router.replace('/profile');
-      }
-    }
-  }, [userData, router, setAuthUserData]);
 
   return (
     <styles.container>

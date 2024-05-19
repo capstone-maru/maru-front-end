@@ -81,8 +81,8 @@ export const useSharedPostsFilter = () => {
         : [];
 
     return {
-      roomTypes,
-      rentalTypes,
+      roomTypes: roomTypes.length === 0 ? undefined : roomTypes,
+      rentalTypes: rentalTypes.length === 0 ? undefined : rentalTypes,
       expectedPaymentRange:
         filter.dealInfo?.expectedFee != null
           ? {
@@ -100,7 +100,7 @@ export const useSharedPostsFilter = () => {
               end: filter.roomInfo.size.high,
             }
           : undefined,
-      floorTypes,
+      floorTypes: floorTypes.length === 0 ? undefined : floorTypes,
       canPark: filter.extraInfo.주차가능,
       hasAirConditioner: filter.extraInfo.에어컨,
       hasRefrigerator: filter.extraInfo.냉장고,

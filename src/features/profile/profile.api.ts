@@ -10,7 +10,7 @@ import {
 
 export const postUserProfile = async (memberId: string) => {
   const res = await axios.post<PostUserProfileDTO>(`/maru-api/profile`, {
-    memberId: memberId,
+    memberId,
   });
 
   return res.data;
@@ -49,7 +49,7 @@ export const getFollowingListData = async () =>
 export const postFollowUser = async (memberId: string) => {
   await axios
     .post(`/maru-api/profile/follow`, {
-      memberId: memberId,
+      memberId,
     })
     .then(res => res.data);
 };
@@ -57,14 +57,37 @@ export const postFollowUser = async (memberId: string) => {
 export const postUnfollowUser = async (memberId: string) => {
   await axios
     .post(`/maru-api/profile/unfollow`, {
-      memberId: memberId,
+      memberId,
     })
     .then(res => res.data);
 };
 
 export const postSearchUser = async (email: string) => {
   const res = await axios.post<PostSearchDTO>(`/maru-api/profile/search`, {
+    email,
+  });
+
+  return res.data;
+};
+
+export const postEmail = async (email: string, univName: string) => {
+  const res = await axios.post(`/maru-api/profile/certificate`, {
     email: email,
+    univName: univName,
+  });
+
+  return res.data;
+};
+
+export const postCertificate = async (
+  email: string,
+  univName: string,
+  code: number,
+) => {
+  const res = await axios.post(`/maru-api/profile/certificate`, {
+    email: email,
+    univName: univName,
+    code: code,
   });
 
   return res.data;

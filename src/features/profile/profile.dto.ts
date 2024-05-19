@@ -10,6 +10,7 @@ export interface PostUserProfileDTO extends SuccessBaseDTO {
       gender: string;
       phoneNumber: string;
       initialized: boolean;
+      univCertified: boolean;
       myCardId: number;
       mateCardId: number;
     };

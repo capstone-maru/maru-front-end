@@ -8,18 +8,34 @@ import { VitalSection } from './card/VitalSection';
 const styles = {
   checkContainer: styled.div`
     display: flex;
+    position: relative;
     width: 50rem;
     padding: 2rem;
     flex-direction: column;
     align-items: flex-start;
     gap: 2rem;
-    border-radius: 1.875rem;
+    border-radius: 30px;
     background: var(--background, #f7f6f9);
+
+    @media (max-width: 768px) {
+      border-radius: 0 0 30px 30px;
+      width: 100%;
+    }
+
+    @media (max-width: 400px) {
+      border-radius: 0 0 30px 30px;
+      width: 100%;
+      height: 80rem;
+    }
   `,
   horizontalLine: styled.div`
     width: 43.75rem;
     height: 0.0625rem;
     background: var(--Gray-9, #d3d0d7);
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
   `,
 };
 

@@ -1,6 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
+import { v4 as uuidv4 } from 'uuid';
 
 const styles = {
   container: styled.div`
@@ -201,7 +202,7 @@ export function LandingPage() {
                     <img alt={url} src={url} />
                   </styles.box>
                 ) : (
-                  <styles.box key={crypto.randomUUID()} />
+                  <styles.box key={uuidv4()} />
                 ),
               )}
             </styles.boxColumn>

@@ -2,9 +2,10 @@
 
 import { isAxiosError } from 'axios';
 import { usePathname, useRouter } from 'next/navigation';
-import { useLayoutEffect, useState, useCallback } from 'react';
+import { useCallback, useLayoutEffect, useState } from 'react';
 
 import {
+  getUserData,
   postTokenRefresh,
   useAuthActions,
   useAuthValue,
@@ -13,7 +14,7 @@ import { load, remove } from '@/shared/storage';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const auth = useAuthValue();
-  const { login } = useAuthActions();
+  const { setAuthUserData, login } = useAuthActions();
 
   const router = useRouter();
   const pathName = usePathname();
@@ -57,16 +58,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     postTokenRefresh(refreshToken)
       .then(({ data }) => {
         handleLoginSuccess(data);
+        getUserData()
+          .then(res => {
+            setAuthUserData(res.data);
+          })
+          .catch(err => {
+            console.error(err);
+          });
       })
       .catch(handleLoginError)
       .finally(() => {
         setIsLoading(false);
       });
-  }, [pathName, auth, isLoading, handleLoginSuccess, handleLoginError, router]);
+  }, [
+    pathName,
+    auth,
+    isLoading,
+    handleLoginError,
+    router,
+    handleLoginSuccess,
+    setAuthUserData,
+  ]);
 
   useLayoutEffect(() => {
     checkAndRefreshToken();
-  }, [checkAndRefreshToken]);
+  });
 
   if (pathName !== '/' && pathName !== '/login' && (isLoading || auth == null))
     return <></>;

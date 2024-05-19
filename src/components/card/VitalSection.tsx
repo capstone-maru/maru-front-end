@@ -3,6 +3,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+import { fromAddrToCoord, type NaverAddress } from '@/features/geocoding';
+import { useIsMobile } from '@/shared/mobile';
+
 const styles = {
   vitalContainer: styled.div`
     display: flex;
@@ -10,6 +13,10 @@ const styles = {
     align-items: flex-start;
     gap: 1rem;
     align-self: stretch;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
   `,
   vitalDescription: styled.p`
     width: 2.6875rem;
@@ -19,9 +26,15 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+
+    @media (max-width: 768px) {
+      font-size: 0.75rem;
+      width: 1.5rem;
+    }
   `,
   vitalListContainer: styled.ul`
     display: flex;
+    width: 100%;
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
@@ -29,9 +42,14 @@ const styles = {
   `,
   vitalList: styled.li`
     display: flex;
+    width: 100%;
     align-items: center;
     gap: 2rem;
     align-self: stretch;
+
+    @media (max-width: 768px) {
+      gap: 0.1rem;
+    }
   `,
   vitalListItemDescription: styled.p`
     width: 5rem;
@@ -41,13 +59,22 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-
     list-style-type: none;
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+      width: 3.5rem;
+    }
   `,
   vitalCheckListContainer: styled.div`
     display: inline-flex;
     align-items: flex-start;
     gap: 0.5rem;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      gap: 0.2rem;
+    }
   `,
 
   birthYear: styled.select`
@@ -77,6 +104,12 @@ const styles = {
     background-position: calc(100% - 0.6875rem) center;
 
     padding-right: 2.75rem;
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+      height: 2.8rem;
+      width: 6rem;
+    }
   `,
 
   searchBox: styled.div`
@@ -97,6 +130,10 @@ const styles = {
     &:focus {
       outline: none;
     }
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
+    }
   `,
   value: styled.span`
     display: flex;
@@ -115,10 +152,15 @@ const styles = {
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+
+    @media (max-width: 768px) {
+      padding: 0.5rem 1.25rem;
+      font-size: 0.625rem;
+    }
   `,
 
   sliderContainer: styled.div`
-    width: 22rem;
+    width: 50%;
     height: 1.875rem;
     position: relative;
   `,
@@ -165,6 +207,48 @@ const styles = {
       position: relative;
       z-index: 1;
       box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+
+      @media (max-width: 768px) {
+        width: 1.2rem;
+        height: 1.2rem;
+      }
+    }
+  `,
+
+  searchAddrContainer: styled.div`
+    min-width: 25rem;
+    min-height: 10rem;
+    display: flex;
+    position: absolute;
+    left: 9rem;
+    top: 12rem;
+    flex-direction: column;
+    z-index: 200;
+    background-color: white;
+    padding: 2rem;
+    gap: 1rem;
+    border-radius: 20px;
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
+
+    @media (max-width: 768px) {
+      top: 10.5rem;
+      left: 5.5rem;
+      padding: 1rem;
+      gap: 0.5rem;
+      min-width: 15rem;
+    }
+  `,
+  searchResults: styled.p`
+    color: var(--Main-2, #767d86);
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    width: 100%;
+
+    @media (max-width: 768px) {
+      font-size: 0.625rem;
     }
   `,
 };
@@ -196,6 +280,11 @@ const CheckItem = styled.div<CheckItemProps>`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 1rem;
+    font-size: 0.625rem;
+  }
 
   ${props =>
     props.$isSelected
@@ -271,27 +360,28 @@ export function VitalSection({
       });
       onFeatureChange(key, value);
     },
-    [],
+    [onFeatureChange],
   );
 
+  const [searchText, setSearchText] = useState<string>('');
+  const [addresses, setAddresses] = useState<NaverAddress[]>([]);
   const [initialLocation, setInitialLocation] = useState('');
+  const [locationBoxClick, setLocationBoxClick] = useState(false);
+
   useEffect(() => {
     if (location !== undefined && type === 'myCard') {
       setInitialLocation(location);
     }
-  }, [location]);
+  }, [location, type]);
 
   const [locationInput, setLocation] = useState('');
   useEffect(() => {
     setLocation(initialLocation);
   }, [initialLocation]);
 
-  const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLocation(event.target.value);
-  };
   useEffect(() => {
     onLocationChange(locationInput);
-  }, [locationInput]);
+  }, [onLocationChange, locationInput]);
 
   const [initialAge, setInitialAge] = useState<number>(0);
   const [ageValue, setAgeValue] = useState<number>(0);
@@ -305,8 +395,11 @@ export function VitalSection({
   }, [initialAge]);
 
   const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAgeValue(Number(e.target.value));
-    onMateAgeChange(Number(e.target.value));
+    if (!Number.isNaN(e.target.value)) {
+      const n = Number(e.target.value);
+      setAgeValue(n);
+      onMateAgeChange(n === 11 ? undefined : n);
+    }
   };
 
   let ageValueString;
@@ -320,6 +413,8 @@ export function VitalSection({
     default:
       ageValueString = `±${ageValue}년생`;
   }
+
+  const isMobile = useIsMobile();
 
   return (
     <styles.vitalContainer>
@@ -353,29 +448,76 @@ export function VitalSection({
           </styles.vitalCheckListContainer>
         </styles.vitalList>
         <styles.vitalList>
-          <styles.vitalListItemDescription>
-            희망 지역
-          </styles.vitalListItemDescription>
-          {type === 'myCard' ? (
-            <styles.searchBox>
-              <styles.mapInput
-                placeholder="ex) 한국동,한국역,한국대학교"
-                readOnly={!isMySelf}
-                value={locationInput ?? ''}
-                onChange={handleLocationChange}
-              />
-            </styles.searchBox>
-          ) : (
-            <CheckItem
-              $isSelected
-              style={{
-                border: 'none',
-                background: 'var(--Gray-5, #828282)',
-                color: '#fff',
-              }}
-            >
-              {location}
-            </CheckItem>
+          <form
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: isMobile ? '0.1rem' : '2rem',
+            }}
+            onSubmit={event => {
+              event.preventDefault();
+              fromAddrToCoord({ query: searchText })
+                .then(response => {
+                  setAddresses(response.data.addresses);
+                })
+                .catch((error: Error) => {
+                  console.log(error);
+                });
+            }}
+          >
+            <styles.vitalListItemDescription>
+              희망 지역
+            </styles.vitalListItemDescription>
+            {type === 'myCard' ? (
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <styles.searchBox>
+                  <styles.mapInput
+                    readOnly={!isMySelf}
+                    placeholder="주소 입력"
+                    value={searchText}
+                    onChange={event => {
+                      setSearchText(event.target.value);
+                    }}
+                    onClick={() => {
+                      setLocationBoxClick(prev => !prev);
+                    }}
+                  />
+                </styles.searchBox>
+                {isMobile && locationInput != null ? (
+                  <styles.vitalListItemDescription
+                    style={{ width: '100%', padding: '0 0.5rem' }}
+                  >
+                    {locationInput}
+                  </styles.vitalListItemDescription>
+                ) : null}
+              </div>
+            ) : (
+              <CheckItem
+                $isSelected
+                style={{
+                  border: 'none',
+                  background: 'var(--Gray-5, #828282)',
+                  color: '#fff',
+                }}
+              >
+                {location}
+              </CheckItem>
+            )}
+          </form>
+          {locationBoxClick && (
+            <styles.searchAddrContainer>
+              {addresses.map(address => (
+                <styles.searchResults
+                  key={address.roadAddress}
+                  onClick={() => {
+                    setLocationBoxClick(false);
+                    setLocation(address.roadAddress);
+                  }}
+                >
+                  {address.roadAddress}
+                </styles.searchResults>
+              ))}
+            </styles.searchAddrContainer>
           )}
         </styles.vitalList>
         <styles.vitalList>
@@ -476,6 +618,7 @@ export function VitalSection({
               style={{
                 display: 'flex',
                 gap: '1rem',
+                width: '100%',
                 alignItems: 'center',
               }}
             >

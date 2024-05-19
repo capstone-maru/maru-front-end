@@ -2,6 +2,7 @@
 
 import { Client } from '@stomp/stompjs';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -10,12 +11,13 @@ import { ChattingRoom } from './chat/ChattingRoom';
 
 import { useAuthValue, useUserData } from '@/features/auth';
 import { type GetChatRoomDTO } from '@/features/chat';
+import { useIsMobile } from '@/shared/mobile';
 
 const styles = {
   chattingButton: styled.div`
     position: fixed;
-    bottom: 1.5rem;
-    right: 3rem;
+    bottom: 1rem;
+    right: 1rem;
     display: inline-flex;
     padding: 1rem;
     align-items: flex-start;
@@ -23,7 +25,7 @@ const styles = {
     border-radius: 100px;
     background: #e15637;
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
-    z-index: 100;
+    z-index: 3147483800;
     transition: transform 0.3s ease;
     cursor: pointer;
 
@@ -34,6 +36,11 @@ const styles = {
   buttonIcon: styled.img`
     width: 2rem;
     height: 2rem;
+
+    @media (max-width: 768px) {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
   `,
   container: styled.div`
     position: fixed;
@@ -48,7 +55,7 @@ const styles = {
     border-radius: 20px;
     background: #fff;
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
-    z-index: 100;
+    z-index: 1000;
     -webkit-transition: 0.4s;
     transition: 0.4s;
     overflow: hidden;
@@ -300,17 +307,32 @@ function FloatingChattingBox() {
 
 export function FloatingChatting() {
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+  const router = useRouter();
 
   const toggleChat = () => {
     setIsChatOpen(prevState => !prevState);
   };
+
+  const isMobile = useIsMobile();
+  useEffect(() => {
+    if (!isMobile) router.replace('/');
+    if (isChatOpen && isMobile) {
+      router.replace('/chat');
+    }
+    if (!isChatOpen && isMobile) {
+      router.replace('/');
+    }
+  }, [isChatOpen, isMobile]);
+
+  const auth = useAuthValue();
+  if (auth == null) return <></>;
 
   return (
     <>
       <styles.chattingButton onClick={toggleChat}>
         <styles.buttonIcon src="/chatting.svg" />
       </styles.chattingButton>
-      {isChatOpen && <FloatingChattingBox />}
+      {isChatOpen && !isMobile ? <FloatingChattingBox /> : null}
     </>
   );
 }

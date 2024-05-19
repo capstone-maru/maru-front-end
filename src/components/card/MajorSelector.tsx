@@ -34,6 +34,13 @@ const styles = {
     &:focus {
       outline: none;
     }
+
+    @media (max-width: 768px) {
+      width: 3.5rem;
+      border-radius: 13px;
+      font-size: 0.625rem;
+      left: 9.3rem;
+    }
   `,
 };
 

@@ -39,8 +39,10 @@ export default function RootLayout({
             <StyledComponentsRegistry>
               <NavigationBar />
               <AuthProvider>
-                <main>{children}</main>
-                <FloatingChatting />
+                <main>
+                  {children}
+                  <FloatingChatting />
+                </main>
                 <ToastProvider />
               </AuthProvider>
             </StyledComponentsRegistry>
