@@ -19,10 +19,9 @@ const styles = {
   pageContainer: styled.div`
     display: flex;
     height: 98rem;
+    width: 100%;
     padding: 0rem 10rem 10rem 10rem;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     gap: 3rem;
     align-self: stretch;
   `,
@@ -353,7 +352,7 @@ const styles = {
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
     z-index: 20000;
     position: absolute;
-    top: 21rem;
+    top: 23rem;
     left: 9rem;
 
     p {
@@ -664,76 +663,6 @@ function Card({
   );
 }
 
-function Mon() {
-  return (
-    <styles.dayRuleContainer>
-      <styles.dayRule>분리수거</styles.dayRule>
-      <styles.person>김마루</styles.person>
-    </styles.dayRuleContainer>
-  );
-}
-
-function Wed() {
-  return (
-    <styles.dayRuleContainer>
-      <styles.dayRule>화장실청소</styles.dayRule>
-      <styles.person>김마루</styles.person>
-    </styles.dayRuleContainer>
-  );
-}
-
-function Sun() {
-  return (
-    <styles.dayRuleContainer>
-      <styles.dayRule>방청소</styles.dayRule>
-      <styles.person>김마루</styles.person>
-    </styles.dayRuleContainer>
-  );
-}
-
-function Maru() {
-  return (
-    <>
-      <styles.maruContainer>
-        <styles.description32px>마이 마루</styles.description32px>
-        <styles.weekContainer>
-          <styles.dayContainer>
-            <styles.day>월</styles.day>
-            <Mon />
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>화</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>수</styles.day>
-            <Wed />
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>목</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>금</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>토</styles.day>
-          </styles.dayContainer>
-          <styles.dayContainer>
-            <styles.day>일</styles.day>
-            <Sun />
-          </styles.dayContainer>
-        </styles.weekContainer>
-      </styles.maruContainer>
-      <styles.rulesContainer>
-        <styles.rulesDescriptionContainer>
-          <styles.description24px>생활 규칙</styles.description24px>
-          <styles.editButton>수정하기</styles.editButton>
-        </styles.rulesDescriptionContainer>
-        <styles.rulesContent />
-      </styles.rulesContainer>
-    </>
-  );
-}
-
 interface UserProps {
   memberId: string;
   email: string;
@@ -814,7 +743,6 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         mateCardId={userData?.mateCardId}
         isMySelf={isMySelf}
       />
-      <Maru />
     </styles.pageContainer>
   );
 }
