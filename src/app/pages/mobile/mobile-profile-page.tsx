@@ -1,5 +1,6 @@
 'use client';
 
+import axios from 'axios';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
@@ -7,9 +8,9 @@ import styled from 'styled-components';
 import { Bookmark } from '@/components';
 import { useAuthValue, useUserData } from '@/features/auth';
 import {
+  type GetFollowingListDTO,
   useCertification,
   useFollowUser,
-  useFollowingListData,
   useGetCode,
   useUnfollowUser,
   useUserProfile,
@@ -312,10 +313,30 @@ function UserInfo({
 }: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(false);
 
-  const followList = useFollowingListData();
-  const [isMarked, setIsMarked] = useState(
-    followList.data?.data.followingList[memberId] != null,
-  );
+  const [followList, setFollowList] = useState<Record<string, string[]>>();
+  const [isMarked, setIsMarked] = useState(false);
+
+  useEffect(() => {
+    if (followList?.[memberId] != null) {
+      setIsMarked(true);
+    } else setIsMarked(false);
+  }, [followList]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await axios.get<GetFollowingListDTO>(
+          '/maru-api/profile/follow',
+        );
+        const followListData = res.data.data.followingList;
+        setFollowList(followListData);
+        return true;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+    })();
+  }, [setIsMarked]);
 
   const toggleSwitch = () => {
     setIsChecked(!isChecked);

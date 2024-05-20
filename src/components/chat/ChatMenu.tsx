@@ -169,7 +169,6 @@ const styles = {
   followingUserContainer: styled.div`
     display: flex;
     padding: 0.625rem;
-    justify-content: center;
     align-items: center;
     gap: 0.625rem;
     align-self: stretch;
