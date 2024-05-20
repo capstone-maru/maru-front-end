@@ -17,6 +17,7 @@ export interface GetSharedPostsFilter {
 export interface GetSharedPostsProps {
   filter?: GetSharedPostsFilter;
   search?: string;
+  cardOption: 'my' | 'mate';
   page: number;
 }
 

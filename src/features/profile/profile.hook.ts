@@ -10,7 +10,10 @@ import {
   postUserProfile,
   postEmail,
   postCertificate,
+  getRecommendMates,
 } from './profile.api';
+
+import { type CardType } from '@/entities/shared-posts-filter';
 
 export const useUserProfile = (memberId: string) =>
   useMutation({
@@ -78,4 +81,17 @@ export const useCertification = (
   useMutation({
     mutationFn: async () => await postCertificate(email, univName, code),
     onSuccess: data => data.data,
+  });
+
+export const useRecommendMates = ({
+  enabled,
+  cardOption,
+}: {
+  enabled: boolean;
+  cardOption: CardType;
+}) =>
+  useQuery({
+    queryKey: ['/api/profile/recommend', cardOption],
+    queryFn: async () => await getRecommendMates(cardOption),
+    enabled,
   });

@@ -18,6 +18,7 @@ export function InitialzationProvider({
   const { data: userData } = useUserData(auth?.accessToken != null);
 
   useEffect(() => {
+    console.log(userData);
     if (userData != null) {
       setAuthUserData(userData);
       if (userData.initialized) {

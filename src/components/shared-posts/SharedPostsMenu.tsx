@@ -100,14 +100,6 @@ export function SharedPostsMenu({
           기숙사 메이트
         </styles.item>
       )}
-      <styles.item
-        onClick={() => {
-          handleSelect('dormitory');
-        }}
-        className={selected === 'dormitory' ? 'selected' : ''}
-      >
-        기숙사 메이트
-      </styles.item>
     </styles.container>
   );
 }

@@ -25,7 +25,7 @@ const styles = {
     border-radius: 20px;
     background: #fff;
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
-    z-index: 100;
+    z-index: 2000;
     -webkit-transition: 0.4s;
     transition: 0.4s;
     overflow: hidden;
