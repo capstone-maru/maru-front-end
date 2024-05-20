@@ -14,8 +14,8 @@ import { type GetChatRoomDTO } from '@/features/chat';
 const styles = {
   container: styled.div`
     display: flex;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     min-width: 390px;
     padding-bottom: 2rem;
     flex-direction: column;
