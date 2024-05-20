@@ -36,10 +36,7 @@ export const putUserCard = async (
       location,
       features,
     })
-    .then(res => {
-      console.log(res.data);
-      return res.data;
-    });
+    .then(res => res.data);
 
 export const getFollowingListData = async () =>
   await axios

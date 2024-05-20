@@ -348,7 +348,7 @@ export function VitalSection({
 
       setFeatures(data);
     }
-  }, []);
+  }, [vitalFeatures]);
 
   const handleEssentialFeatureChange = useCallback(
     (key: 'smoking' | 'roomSharingOption' | 'mateAge', value: string) => {
