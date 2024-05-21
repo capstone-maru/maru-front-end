@@ -213,7 +213,7 @@ export function MobileChattingRoom({
     const initializeChat = async () => {
       try {
         const stomp = new Client({
-          brokerURL: `ws://ec2-54-180-133-123.ap-northeast-2.compute.amazonaws.com:8080/ws`,
+          brokerURL: `${process.env.NEXT_PUBLIC_CHAT_API_URL}`,
           connectHeaders: {
             Authorization: `Bearer ${auth?.accessToken}`,
           },
@@ -263,7 +263,7 @@ export function MobileChattingRoom({
       stompClient.publish({
         destination,
         body: JSON.stringify({
-          roomId: roomId,
+          roomId,
           sender: user,
           message: inputMessage,
           nickname: userName,

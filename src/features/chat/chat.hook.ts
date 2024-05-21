@@ -16,11 +16,9 @@ export const useChatRoomList = (token: string | undefined) =>
     enabled: token !== undefined,
   });
 
-export const useCreateChatRoom = (roomName: string, members: string[]) =>
+export const useCreateChatRoom = () =>
   useMutation({
-    mutationFn: async () => {
-      await postChatRoom(roomName, members);
-    },
+    mutationFn: postChatRoom,
   });
 
 export const useInviteUsers = (roomId: number, members: string[]) =>
