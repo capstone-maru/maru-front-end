@@ -17,7 +17,7 @@ import {
   type SharedPostsType,
 } from '@/entities/shared-posts-filter';
 import { useAuthValue } from '@/features/auth';
-import { useRecommendationMate } from '@/features/recommendation';
+import { useRecommendMates } from '@/features/profile';
 import {
   useDormitorySharedPosts,
   usePaging,
@@ -165,12 +165,14 @@ export function MobileSharedPostsPage() {
 
   const { data: sharedPosts } = useSharedPosts({
     filter: derivedFilter,
+    cardOption: filter.cardType ?? 'my',
     enabled: auth?.accessToken != null && selected === 'hasRoom',
     page: page - 1,
   });
 
   const { data: dormitorySharedPosts } = useDormitorySharedPosts({
     filter: derivedFilter,
+    cardOption: filter.cardType ?? 'my',
     enabled: auth?.accessToken != null && selected === 'dormitory',
     page: page - 1,
   });
@@ -180,10 +182,9 @@ export function MobileSharedPostsPage() {
     [selected, sharedPosts, dormitorySharedPosts],
   );
 
-  const { data: recommendationMates } = useRecommendationMate({
-    memberId: auth?.user?.memberId ?? 'undefined',
-    cardType: filter.cardType ?? 'mate',
-    enabled: auth?.accessToken != null && selected === 'homeless' && false,
+  const { data: recommendationMates } = useRecommendMates({
+    enabled: auth?.accessToken != null && selected === 'homeless',
+    cardOption: filter.cardType ?? 'my',
   });
 
   useEffect(() => {
@@ -301,11 +302,18 @@ export function MobileSharedPostsPage() {
         </>
       ) : (
         <styles.cards>
-          {recommendationMates?.map(({ userId, name, similarity }) => (
-            <Link href={`/profile/${userId}`} key={userId}>
-              <UserCard name={name} percentage={Math.floor(similarity * 100)} />
-            </Link>
-          ))}
+          {recommendationMates?.data?.map(
+            ({ memberId, score, nickname, location, profileImageUrl }) => (
+              <Link href={`/profile/${memberId}`} key={memberId}>
+                <UserCard
+                  name={nickname}
+                  percentage={score}
+                  location={location}
+                  profileImage={profileImageUrl}
+                />
+              </Link>
+            ),
+          )}
         </styles.cards>
       )}
     </styles.container>

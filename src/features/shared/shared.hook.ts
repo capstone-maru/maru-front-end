@@ -346,17 +346,24 @@ export const useCreateSharedPost = () =>
 export const useSharedPosts = ({
   filter,
   search,
+  cardOption,
   page,
   enabled,
 }: GetSharedPostsProps & { enabled: boolean }) => {
   const debounceFilter = useDebounce(filter, 1000);
 
   return useQuery({
-    queryKey: ['/api/shared/posts/studio', { debounceFilter, search, page }],
+    queryKey: [
+      '/api/shared/posts/studio',
+      { cardOption, debounceFilter, search, page },
+    ],
     queryFn: async () =>
-      await getSharedPosts({ filter: debounceFilter, search, page }).then(
-        response => response.data,
-      ),
+      await getSharedPosts({
+        cardOption,
+        filter: debounceFilter,
+        search,
+        page,
+      }).then(response => response.data),
     enabled,
   });
 };
@@ -402,15 +409,20 @@ export const useCreateDormitorySharedPost = () =>
 export const useDormitorySharedPosts = ({
   filter,
   search,
+  cardOption,
   page,
   enabled,
 }: GetSharedPostsProps & { enabled: boolean }) => {
   const debounceFilter = useDebounce(filter, 1000);
 
   return useQuery({
-    queryKey: ['/api/shared/posts/dormitory', { debounceFilter, search, page }],
+    queryKey: [
+      '/api/shared/posts/dormitory',
+      { cardOption, debounceFilter, search, page },
+    ],
     queryFn: async () =>
       await getDormitorySharedPosts({
+        cardOption,
         filter: debounceFilter,
         search,
         page,

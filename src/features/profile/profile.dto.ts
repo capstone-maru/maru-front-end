@@ -76,3 +76,19 @@ export interface PostSearchDTO extends SuccessBaseDTO {
     profileImageUrl: string;
   };
 }
+
+export interface GetRecommendMatesDTO extends SuccessBaseDTO {
+  data: Array<{
+    memberId: string;
+    nickname: string;
+    profileImageUrl: string;
+    location: string;
+    options: {
+      smoking: string;
+      roomSharingOption: string;
+      mateAge: number;
+      options: string; // string[] 으로 파싱 필요
+    };
+    score: number;
+  }>;
+}

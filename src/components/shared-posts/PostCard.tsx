@@ -220,7 +220,7 @@ export function PostCard({
               >
                 <img alt="" src={post.publisherAccount.profileImageFileName} />
                 <styles.percentage>
-                  <p>50%</p>
+                  <p>{post.score}</p>
                 </styles.percentage>
               </styles.writer>
             ) : null}
@@ -234,7 +234,7 @@ export function PostCard({
           >
             <img alt="" src={post.publisherAccount.profileImageFileName} />
             <styles.percentage>
-              <p>50%</p>
+              <p>{post.score}%</p>
             </styles.percentage>
             <p>{post.publisherAccount.nickname}</p>
           </styles.writer>

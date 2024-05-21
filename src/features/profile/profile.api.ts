@@ -1,12 +1,15 @@
 import axios from 'axios';
 
 import {
-  type PostUserProfileDTO,
-  type GetUserCardDTO,
-  type PutUserCardDTO,
   type GetFollowingListDTO,
+  type GetRecommendMatesDTO,
+  type GetUserCardDTO,
   type PostSearchDTO,
+  type PostUserProfileDTO,
+  type PutUserCardDTO,
 } from './profile.dto';
+
+import { type CardType } from '@/entities/shared-posts-filter';
 
 export const postUserProfile = async (memberId: string) => {
   const res = await axios.post<PostUserProfileDTO>(`/maru-api/profile`, {
@@ -69,8 +72,8 @@ export const postSearchUser = async (email: string) => {
 
 export const postEmail = async (email: string, univName: string) => {
   const res = await axios.post(`/maru-api/profile/certificate`, {
-    email: email,
-    univName: univName,
+    email,
+    univName,
   });
 
   return res.data;
@@ -82,10 +85,17 @@ export const postCertificate = async (
   code: number,
 ) => {
   const res = await axios.post(`/maru-api/profile/certificate`, {
-    email: email,
-    univName: univName,
-    code: code,
+    email,
+    univName,
+    code,
   });
 
+  return res.data;
+};
+
+export const getRecommendMates = async (cardOption: CardType) => {
+  const res = await axios.get<GetRecommendMatesDTO>(
+    `/maru-api/profile/recommend?cardOption=${cardOption}`,
+  );
   return res.data;
 };
