@@ -445,26 +445,6 @@ export function MobileSharedPostPage({
       enabled: type === 'dormitory' && auth?.accessToken != null,
     });
 
-  useEffect(() => {
-    if (sharedPost?.data.address.roadAddress != null) {
-      fromAddrToCoord({ query: sharedPost?.data.address.roadAddress }).then(
-        res => {
-          const address = res.data.addresses.shift();
-          if (address != null && mapRef.current != null) {
-            const center = new naver.maps.LatLng(+address.y, +address.x);
-            setMap(
-              new naver.maps.Map(mapRef.current, {
-                center,
-                disableKineticPan: false,
-                scrollWheel: false,
-              }),
-            );
-          }
-        },
-      );
-    }
-  }, [sharedPost]);
-
   const { mutate: chattingMutate } = useCreateChatRoom();
 
   const isLoading = useMemo(
@@ -477,6 +457,26 @@ export function MobileSharedPostPage({
     () => (type === 'hasRoom' ? sharedPost : dormitorySharedPost),
     [type, sharedPost, dormitorySharedPost],
   );
+
+  useEffect(() => {
+    if (post == null) return;
+
+    if (post.data.address.roadAddress != null) {
+      fromAddrToCoord({ query: post.data.address.roadAddress }).then(res => {
+        const address = res.shift();
+        if (address != null && mapRef.current != null) {
+          const center = new naver.maps.LatLng(+address.y, +address.x);
+          setMap(
+            new naver.maps.Map(mapRef.current, {
+              center,
+              disableKineticPan: false,
+              scrollWheel: false,
+            }),
+          );
+        }
+      });
+    }
+  }, [post]);
 
   const [selected, setSelected] = useState<
     | {
