@@ -64,7 +64,7 @@ const styles = {
     width: 1rem;
     height: 1rem;
     flex-shrink: 0;
-    background: url('kebab-horizontal.svg') no-repeat;
+    background: url('/kebab-horizontal.svg') no-repeat;
     cursor: pointer;
   `,
   messageContainer: styled.div`
@@ -145,6 +145,26 @@ function calTimeDiff(time: string, type: string) {
   if (timeDiff < 60 * 24) return `${Math.floor(timeDiff / 60)}시간 전`;
 
   return `${Math.floor(timeDiff / (60 * 24))}일 전`;
+}
+
+function useInterval(callback: () => void, delay: number) {
+  const savedCallback = useRef(callback);
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    if (delay != null) {
+      const id = setInterval(() => {
+        savedCallback.current();
+      }, delay);
+      return () => {
+        clearInterval(id);
+      };
+    }
+    return undefined;
+  }, [delay]);
 }
 
 export function ChattingRoom({
@@ -241,7 +261,11 @@ export function ChattingRoom({
   }, [auth?.accessToken]);
 
   const sendMessage = () => {
-    if (stompClient !== null && stompClient.connected) {
+    if (
+      stompClient !== null &&
+      stompClient.connected &&
+      inputMessage.length !== 0
+    ) {
       const destination = `/send/${roomId}`;
 
       stompClient.publish({
@@ -257,6 +281,16 @@ export function ChattingRoom({
 
     setInputMessage('');
   };
+
+  const [timeString, setTimeString] = useState(calTimeDiff(lastTime, 'server'));
+
+  useEffect(() => {
+    setTimeString(calTimeDiff(time, type));
+  }, [time, type]);
+
+  useInterval(() => {
+    setTimeString(calTimeDiff(time, type));
+  }, 60000);
 
   const handleMenuClick = () => {
     setIsMenuClick(prev => !prev);
@@ -301,7 +335,7 @@ export function ChattingRoom({
         />
         <styles.roomInfo>
           <styles.roomName>{roomName}</styles.roomName>
-          <styles.latestTime>{calTimeDiff(time, type)}</styles.latestTime>
+          <styles.latestTime>{timeString}</styles.latestTime>
         </styles.roomInfo>
         <styles.menu onClick={handleMenuClick} />
         {isMenuClick && (

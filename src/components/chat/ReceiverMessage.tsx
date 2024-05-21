@@ -25,7 +25,7 @@ const styles = {
     height: 2rem;
     border-radius: 50%;
     flex-shrink: 0;
-    background: url('__avatar_url.png') center no-repeat;
+    background: url('/__avatar_url.png') center no-repeat;
   `,
   userName: styled.p`
     color: var(--Text-gray, #666668);
@@ -49,7 +49,7 @@ const styles = {
   leftTop: styled.div`
     width: 0.9375rem;
     height: 0.75rem;
-    background: url('Bubble tip R.svg') no-repeat;
+    background: url('/Bubble tip R.svg') no-repeat;
   `,
   leftMiddle: styled.div`
     width: 0.375rem;
@@ -59,7 +59,7 @@ const styles = {
   leftBottom: styled.div`
     width: 0.375rem;
     height: 0.4375rem;
-    background: url('bottom-curve-vector R.svg') no-repeat;
+    background: url('/bottom-curve-vector R.svg') no-repeat;
   `,
   right: styled.div`
     display: flex;
