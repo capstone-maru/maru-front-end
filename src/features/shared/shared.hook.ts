@@ -120,7 +120,7 @@ export const useSharedPostProps = ({
     }: GetSharedPostDTO | GetDormitorySharedPostDTO) => {
       fromAddrToCoord({ query: data.address.roadAddress })
         .then(res => {
-          const address = res.data.addresses.shift();
+          const address = res.shift();
           if (address != null) setState(prev => ({ ...prev, address }));
         })
         .catch(err => {

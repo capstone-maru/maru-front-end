@@ -458,7 +458,7 @@ export function VitalSection({
               event.preventDefault();
               fromAddrToCoord({ query: searchText })
                 .then(response => {
-                  setAddresses(response.data.addresses);
+                  setAddresses(response);
                 })
                 .catch((error: Error) => {
                   console.log(error);
