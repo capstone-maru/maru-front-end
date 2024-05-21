@@ -152,7 +152,7 @@ export function MobileMainPage() {
         {recommendationMates?.data != null &&
         recommendationMates.data.length > 0 ? (
           <styles.mateRecommendation>
-            {recommendationMates?.data?.map(
+            {recommendationMates.data.map(
               ({ memberId, score, nickname, location, profileImageUrl }) => (
                 <Link href={`/profile/${memberId}`} key={memberId}>
                   <UserCard
@@ -167,7 +167,7 @@ export function MobileMainPage() {
           </styles.mateRecommendation>
         ) : (
           <styles.mateRecommendationIsEmpty>
-            추천되는 메이트가 없습니다.
+            <p>추천되는 메이트가 없습니다.</p>
           </styles.mateRecommendationIsEmpty>
         )}
       </styles.mateRecommendationContainer>

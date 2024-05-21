@@ -168,7 +168,7 @@ export function MainPage() {
                 onClick={handleScrollLeft}
               />
               <styles.mateRecommendation ref={scrollRef}>
-                {recommendationMates?.data?.map(
+                {recommendationMates.data.map(
                   ({
                     memberId,
                     score,
@@ -195,7 +195,7 @@ export function MainPage() {
             </>
           ) : (
             <styles.mateRecommendationIsEmpty style={{ alignSelf: 'center' }}>
-              추천되는 메이트가 없습니다.
+              <p>추천되는 메이트가 없습니다.</p>
             </styles.mateRecommendationIsEmpty>
           )}
         </styles.mateRecommendationRow>

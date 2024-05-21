@@ -135,6 +135,16 @@ const styles = {
       justify-content: flex-start;
     }
   `,
+  noRecommendationMates: styled.div`
+    font-family: 'Noto Sans KR';
+    font-size: 0.85rem;
+    font-style: normal;
+    font-weight: 500;
+
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  `,
 };
 
 export function MobileSharedPostsPage() {
@@ -302,17 +312,24 @@ export function MobileSharedPostsPage() {
         </>
       ) : (
         <styles.cards>
-          {recommendationMates?.data?.map(
-            ({ memberId, score, nickname, location, profileImageUrl }) => (
-              <Link href={`/profile/${memberId}`} key={memberId}>
-                <UserCard
-                  name={nickname}
-                  percentage={score}
-                  location={location}
-                  profileImage={profileImageUrl}
-                />
-              </Link>
-            ),
+          {recommendationMates?.data != null &&
+          recommendationMates.data.length > 0 ? (
+            recommendationMates.data.map(
+              ({ memberId, score, nickname, location, profileImageUrl }) => (
+                <Link href={`/profile/${memberId}`} key={memberId}>
+                  <UserCard
+                    name={nickname}
+                    percentage={score}
+                    location={location}
+                    profileImage={profileImageUrl}
+                  />
+                </Link>
+              ),
+            )
+          ) : (
+            <styles.noRecommendationMates>
+              <p>추천되는 메이트가 없습니다.</p>
+            </styles.noRecommendationMates>
           )}
         </styles.cards>
       )}
