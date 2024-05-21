@@ -22,8 +22,6 @@ import {
   useDormitorySharedPosts,
   usePaging,
   useSharedPosts,
-  type GetDormitorySharedPostsDTO,
-  type GetSharedPostsDTO,
 } from '@/features/shared';
 
 const styles = {
@@ -113,7 +111,7 @@ const styles = {
     flex-wrap: wrap;
     gap: 2rem 2.62rem;
   `,
-  noRecommendationMates: styled.div`
+  noRecommendation: styled.div`
     font-family: 'Noto Sans KR';
     font-size: 1.25rem;
     font-style: normal;
@@ -131,9 +129,6 @@ export function SharedPostsPage() {
   const auth = useAuthValue();
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
   const [totalPageCount, setTotalPageCount] = useState(0);
-  const [prevSharedPosts, setPrevSharedPosts] = useState<
-    GetSharedPostsDTO | GetDormitorySharedPostsDTO | null
-  >(null);
 
   const { filter, derivedFilter, reset: resetFilter } = useSharedPostsFilter();
 
@@ -185,10 +180,8 @@ export function SharedPostsPage() {
   useEffect(() => {
     if (selected === 'hasRoom' && sharedPosts != null) {
       setTotalPageCount(sharedPosts.data.totalPages);
-      setPrevSharedPosts(null);
     } else if (selected === 'dormitory' && dormitorySharedPosts != null) {
       setTotalPageCount(dormitorySharedPosts.data.totalPages);
-      setPrevSharedPosts(null);
     }
   }, [selected, dormitorySharedPosts, sharedPosts]);
 
@@ -212,27 +205,23 @@ export function SharedPostsPage() {
       {selected === 'hasRoom' || selected === 'dormitory' ? (
         <>
           <styles.posts>
-            {prevSharedPosts != null
-              ? prevSharedPosts.data.content.map(post => (
-                  <PostCard
-                    key={post.id}
-                    post={post}
-                    onClick={() => {
-                      router.push(`/shared/${post.id}`);
-                    }}
-                  />
-                ))
-              : posts?.data.content.map(post => (
-                  <PostCard
-                    key={post.id}
-                    post={post}
-                    onClick={() => {
-                      router.push(
-                        `/shared/${selected === 'hasRoom' ? 'room' : 'dormitory'}/${post.id}`,
-                      );
-                    }}
-                  />
-                ))}
+            {posts?.data != null && posts.data.content.length > 0 ? (
+              posts?.data.content.map(post => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onClick={() => {
+                    router.push(
+                      `/shared/${selected === 'hasRoom' ? 'room' : 'dormitory'}/${post.id}`,
+                    );
+                  }}
+                />
+              ))
+            ) : (
+              <styles.noRecommendation>
+                <p>추천되는 게시글이 없습니다.</p>
+              </styles.noRecommendation>
+            )}
           </styles.posts>
           {posts != null && posts.data.content.length !== 0 && (
             <styles.pagingRow>
@@ -240,9 +229,6 @@ export function SharedPostsPage() {
                 direction="left"
                 disabled={isFirstPage}
                 onClick={() => {
-                  if (sharedPosts != null) {
-                    setPrevSharedPosts(sharedPosts);
-                  }
                   handlePrevPage();
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
@@ -257,9 +243,6 @@ export function SharedPostsPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      if (sharedPosts != null) {
-                        setPrevSharedPosts(sharedPosts);
-                      }
                       handleSetPage(index + 1 + currentSlice * sliceSize);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
@@ -278,9 +261,6 @@ export function SharedPostsPage() {
                 direction="right"
                 disabled={isLastPage}
                 onClick={() => {
-                  if (sharedPosts != null) {
-                    setPrevSharedPosts(sharedPosts);
-                  }
                   handleNextPage();
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
@@ -305,9 +285,9 @@ export function SharedPostsPage() {
               ),
             )
           ) : (
-            <styles.noRecommendationMates>
+            <styles.noRecommendation>
               <p>추천되는 메이트가 없습니다.</p>
-            </styles.noRecommendationMates>
+            </styles.noRecommendation>
           )}
         </styles.cards>
       )}
