@@ -332,7 +332,6 @@ export function FloatingChatting() {
 
   const auth = useAuthValue();
   if (auth == null) return <></>;
-
   return (
     <>
       <styles.chattingButton onClick={toggleChat}>
