@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRecoilState } from 'recoil';
@@ -583,6 +584,8 @@ export function SharedPostPage({
     setFollowList(newFollowList);
   }, [post]);
 
+  const queryClient = useQueryClient();
+
   if (isLoading || post == null) return <></>;
 
   return (
@@ -599,7 +602,18 @@ export function SharedPostPage({
                 hasBorder={false}
                 marked={post.data.isScrapped}
                 onToggle={() => {
-                  scrapPost(postId);
+                  scrapPost(postId, {
+                    onSuccess: () => {
+                      if (type === 'hasRoom')
+                        queryClient.invalidateQueries({
+                          queryKey: [`/api/shared/posts/studio/${postId}`],
+                        });
+                      else
+                        queryClient.invalidateQueries({
+                          queryKey: [`/api/shared/posts/dormitory/${postId}`],
+                        });
+                    },
+                  });
                 }}
                 color="black"
               />
@@ -767,8 +781,36 @@ export function SharedPostPage({
                       followList[selected.memberId] == null
                     )
                       return;
-                    if (followList[selected.memberId]) unfollow();
-                    else follow();
+                    if (followList[selected.memberId])
+                      unfollow(undefined, {
+                        onSuccess: () => {
+                          if (type === 'hasRoom')
+                            queryClient.invalidateQueries({
+                              queryKey: [`/api/shared/posts/studio/${postId}`],
+                            });
+                          else
+                            queryClient.invalidateQueries({
+                              queryKey: [
+                                `/api/shared/posts/dormitory/${postId}`,
+                              ],
+                            });
+                        },
+                      });
+                    else
+                      follow(undefined, {
+                        onSuccess: () => {
+                          if (type === 'hasRoom')
+                            queryClient.invalidateQueries({
+                              queryKey: [`/api/shared/posts/studio/${postId}`],
+                            });
+                          else
+                            queryClient.invalidateQueries({
+                              queryKey: [
+                                `/api/shared/posts/dormitory/${postId}`,
+                              ],
+                            });
+                        },
+                      });
                   }}
                   hasBorder
                   color="#888"
