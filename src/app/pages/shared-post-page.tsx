@@ -517,18 +517,9 @@ export function SharedPostPage({
     }
   }, [sharedPost]);
 
-  const [roomName, setRoomName] = useState<string>('');
-  const [userId, setUserId] = useState<string>('');
   const [, setIsChatOpen] = useRecoilState(chatOpenState);
 
-  useEffect(() => {
-    if (sharedPost !== undefined) {
-      setRoomName(sharedPost.data.publisherAccount.nickname);
-      setUserId(sharedPost.data.publisherAccount.memberId);
-    }
-  }, [sharedPost]);
-
-  const { mutate: chattingMutate } = useCreateChatRoom(roomName, [userId]);
+  const { mutate: chattingMutate } = useCreateChatRoom();
 
   const isLoading = useMemo(
     () =>
@@ -749,7 +740,13 @@ export function SharedPostPage({
             <styles.buttons>
               <styles.chattingButton
                 onClick={() => {
-                  chattingMutate();
+                  if (selected == null) return;
+
+                  chattingMutate({
+                    roomName: selected.nickname,
+                    members: [selected.memberId],
+                  });
+
                   setTimeout(() => {
                     setIsChatOpen(true);
                   }, 200);
