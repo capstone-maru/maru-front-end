@@ -33,7 +33,7 @@ const styles = {
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
-    background: url('__avatar_url.png') lightgray 50% / cover no-repeat;
+    background: url('/House with garden.svg') lightgray 50% / cover no-repeat;
   `,
   roomName: styled.p`
     color: #000;

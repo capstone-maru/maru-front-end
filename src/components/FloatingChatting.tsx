@@ -4,13 +4,14 @@ import { Client } from '@stomp/stompjs';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { ChattingList } from './chat/ChattingList';
 import { ChattingRoom } from './chat/ChattingRoom';
 
 import { useAuthValue, useUserData } from '@/features/auth';
-import { type GetChatRoomDTO } from '@/features/chat';
+import { chatOpenState, type GetChatRoomDTO } from '@/features/chat';
 import { useIsMobile } from '@/shared/mobile';
 
 const styles = {
@@ -246,7 +247,7 @@ function FloatingChattingBox() {
   }, [message, isChatRoomOpen]);
 
   // const roomName = 'test2';
-  // const members = ['naver_htT4VdDRPKqGqKpnncpa71HCA4CVg5LdRC1cWZhCnF8'];
+  // const members = ['naver_hW_CDCYdU3NNTQWq_TV_MkpldnMZI6fOD1mnPo-V1NE'];
   // const { mutate: chattingCreate } = useCreateChatRoom(roomName, members);
 
   return (
@@ -269,12 +270,12 @@ function FloatingChattingBox() {
 
         <styles.chattingSection>
           {/* <button
-          onClick={() => {
-            chattingCreate();
-          }}
-        >
-          생성
-        </button> */}
+            onClick={() => {
+              chattingCreate();
+            }}
+          >
+            생성
+          </button> */}
           {chatRooms.map((room, index) => (
             <ChattingList
               key={index}
@@ -306,7 +307,7 @@ function FloatingChattingBox() {
 }
 
 export function FloatingChatting() {
-  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+  const [isChatOpen, setIsChatOpen] = useRecoilState(chatOpenState);
   const router = useRouter();
 
   const toggleChat = () => {
@@ -315,7 +316,6 @@ export function FloatingChatting() {
 
   const isMobile = useIsMobile();
   useEffect(() => {
-    if (!isMobile) router.replace('/');
     if (isChatOpen && isMobile) {
       router.replace('/chat');
     }
@@ -323,6 +323,12 @@ export function FloatingChatting() {
       router.replace('/');
     }
   }, [isChatOpen, isMobile]);
+
+  useEffect(() => {
+    if (!isMobile && window.location.pathname === '/chat') {
+      router.replace('/');
+    }
+  }, [isMobile]);
 
   const auth = useAuthValue();
   if (auth == null) return <></>;

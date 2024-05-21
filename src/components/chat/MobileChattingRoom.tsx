@@ -143,6 +143,26 @@ function calTimeDiff(time: string, type: string) {
   return `${Math.floor(timeDiff / (60 * 24))}일 전`;
 }
 
+function useInterval(callback: () => void, delay: number) {
+  const savedCallback = useRef(callback);
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    if (delay != null) {
+      const id = setInterval(() => {
+        savedCallback.current();
+      }, delay);
+      return () => {
+        clearInterval(id);
+      };
+    }
+    return undefined;
+  }, [delay]);
+}
+
 export function MobileChattingRoom({
   userId,
   userName,
@@ -254,6 +274,16 @@ export function MobileChattingRoom({
     setInputMessage('');
   };
 
+  const [timeString, setTimeString] = useState(calTimeDiff(lastTime, 'server'));
+
+  useEffect(() => {
+    setTimeString(calTimeDiff(time, type));
+  }, [time, type]);
+
+  useInterval(() => {
+    setTimeString(calTimeDiff(time, type));
+  }, 60000);
+
   const handleMenuClick = () => {
     setIsMenuClick(prev => !prev);
   };
@@ -297,7 +327,7 @@ export function MobileChattingRoom({
         />
         <styles.roomInfo>
           <styles.roomName>{roomName}</styles.roomName>
-          <styles.latestTime>{calTimeDiff(time, type)}</styles.latestTime>
+          <styles.latestTime>{timeString}</styles.latestTime>
         </styles.roomInfo>
         <styles.menu onClick={handleMenuClick} />
         {isMenuClick && (
