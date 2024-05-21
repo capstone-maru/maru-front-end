@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { Bookmark, CircularProfileImage } from '@/components';
 import { ImageGrid } from '@/components/shared-post-page';
-import { useAuthValue, useUserData } from '@/features/auth';
+import { useAuthValue } from '@/features/auth';
 import { useCreateChatRoom } from '@/features/chat';
 import { fromAddrToCoord } from '@/features/geocoding';
 import { useFollowUser, useUnfollowUser } from '@/features/profile';
@@ -445,15 +445,6 @@ export function MobileSharedPostPage({
       enabled: type === 'dormitory' && auth?.accessToken != null,
     });
 
-  const { data: userData } = useUserData(auth?.accessToken != null);
-  const [userId, setUserId] = useState<string>('');
-
-  useEffect(() => {
-    if (userData != null) {
-      setUserId(userData.memberId);
-    }
-  }, [userData]);
-
   useEffect(() => {
     if (sharedPost?.data.address.roadAddress != null) {
       fromAddrToCoord({ query: sharedPost?.data.address.roadAddress }).then(
@@ -474,16 +465,7 @@ export function MobileSharedPostPage({
     }
   }, [sharedPost]);
 
-  const [roomName, setRoomName] = useState<string>('');
-
-  useEffect(() => {
-    if (sharedPost !== undefined) {
-      setRoomName(sharedPost.data.publisherAccount.nickname);
-    }
-  }, [sharedPost]);
-
-  const members = [userId];
-  const { mutate: chattingMutate } = useCreateChatRoom(roomName, members);
+  const { mutate: chattingMutate } = useCreateChatRoom();
 
   const isLoading = useMemo(
     () =>
@@ -574,7 +556,12 @@ export function MobileSharedPostPage({
                   </div>
                   <styles.chattingButton
                     onClick={() => {
-                      chattingMutate();
+                      if (selected == null) return;
+
+                      chattingMutate({
+                        roomName: selected.nickname,
+                        members: [selected.memberId],
+                      });
                     }}
                   >
                     채팅
