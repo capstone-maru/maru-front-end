@@ -14,11 +14,17 @@ export const getChatRoomList = async (token: string | undefined) =>
     })
     .then(res => res.data);
 
-export const postChatRoom = async (roomName: string, members: string[]) => {
+export const postChatRoom = async ({
+  roomName,
+  members,
+}: {
+  roomName: string;
+  members: string[];
+}) => {
   await axios
     .post<PostChatRoomDTO>(`/maru-api/chatRoom`, {
-      roomName: roomName,
-      members: members,
+      roomName,
+      members,
     })
     .then(res => res.data);
 };
@@ -26,7 +32,7 @@ export const postChatRoom = async (roomName: string, members: string[]) => {
 export const postInviteUser = async (roomId: number, members: string[]) => {
   await axios
     .post(`/maru-api/chatRoom/${roomId}/invite`, {
-      members: members,
+      members,
     })
     .then(res => res.data);
 };
@@ -40,9 +46,9 @@ export const getEnterChatRoom = async (
     `/maru-api/chatRoom/${roomId}/chat`,
     {
       params: {
-        roomId: roomId,
-        page: page,
-        size: size,
+        roomId,
+        page,
+        size,
       },
     },
   );

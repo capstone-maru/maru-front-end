@@ -56,11 +56,6 @@ const styles = {
     font-weight: 300;
     line-height: normal;
   `,
-  readState: styled.div`
-    width: 1rem;
-    height: 0.5rem;
-    background: url('read.svg') no-repeat;
-  `,
   left: styled.div`
     display: flex;
     flex-direction: column;
@@ -71,7 +66,7 @@ const styles = {
   leftTop: styled.div`
     width: 0.9375rem;
     height: 0.75rem;
-    background: url('Bubble tip.svg') no-repeat;
+    background: url('/Bubble tip.svg') no-repeat;
   `,
   leftMiddle: styled.div`
     width: 0.375rem;
@@ -82,7 +77,7 @@ const styles = {
     width: 0.375rem;
     height: 0.4375rem;
     fill: var(--Gray-5, #828282);
-    background: url('bottom-curve-vector.svg') no-repeat;
+    background: url('/bottom-curve-vector.svg') no-repeat;
   `,
 };
 
@@ -103,7 +98,6 @@ export function SenderMessage({
             <styles.message>{message} </styles.message>
             <styles.messageInfo>
               <styles.time>{getLocalTime(time, type)}</styles.time>
-              <styles.readState />
             </styles.messageInfo>
           </styles.messageBody>
         </styles.messageFrame>

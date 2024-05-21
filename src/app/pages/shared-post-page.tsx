@@ -2,12 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Bookmark, CircularProfileImage } from '@/components';
 import { CardToggleButton, ImageGrid } from '@/components/shared-post-page';
-import { useAuthValue, useUserData } from '@/features/auth';
-import { useCreateChatRoom } from '@/features/chat';
+import { useAuthValue } from '@/features/auth';
+import { chatOpenState, useCreateChatRoom } from '@/features/chat';
 import { fromAddrToCoord } from '@/features/geocoding';
 import { useFollowUser, useUnfollowUser } from '@/features/profile';
 import {
@@ -496,15 +497,6 @@ export function SharedPostPage({
       enabled: type === 'dormitory' && auth?.accessToken != null,
     });
 
-  const { data: userData } = useUserData(auth?.accessToken != null);
-  const [userId, setUserId] = useState<string>('');
-
-  useEffect(() => {
-    if (userData != null) {
-      setUserId(userData.memberId);
-    }
-  }, [userData]);
-
   useEffect(() => {
     if (sharedPost?.data.address.roadAddress != null) {
       fromAddrToCoord({ query: sharedPost?.data.address.roadAddress }).then(
@@ -525,15 +517,9 @@ export function SharedPostPage({
     }
   }, [sharedPost]);
 
-  const [roomName, setRoomName] = useState<string>('');
+  const [, setIsChatOpen] = useRecoilState(chatOpenState);
 
-  useEffect(() => {
-    if (sharedPost !== undefined) {
-      setRoomName(sharedPost.data.publisherAccount.nickname);
-    }
-  }, [sharedPost]);
-
-  const { mutate: chattingMutate } = useCreateChatRoom(roomName, [userId]);
+  const { mutate: chattingMutate } = useCreateChatRoom();
 
   const isLoading = useMemo(
     () =>
@@ -754,7 +740,16 @@ export function SharedPostPage({
             <styles.buttons>
               <styles.chattingButton
                 onClick={() => {
-                  chattingMutate();
+                  if (selected == null) return;
+
+                  chattingMutate({
+                    roomName: selected.nickname,
+                    members: [selected.memberId],
+                  });
+
+                  setTimeout(() => {
+                    setIsChatOpen(true);
+                  }, 200);
                 }}
               >
                 채팅하기

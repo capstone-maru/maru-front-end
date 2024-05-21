@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-// import { useFollowingListData } from '@/features/profile';
-import { useChatRoomUser } from '@/features/chat';
+import { useChatRoomUser, useInviteUsers } from '@/features/chat';
+import { useSearchUser } from '@/features/profile';
 
 const styles = {
   menuContainer: styled.div`
@@ -169,7 +169,6 @@ const styles = {
   followingUserContainer: styled.div`
     display: flex;
     padding: 0.625rem;
-    justify-content: center;
     align-items: center;
     gap: 0.625rem;
     align-self: stretch;
@@ -203,7 +202,6 @@ export function ChatMenu({
   const [isInviteClick, setIsInviteClick] = useState<boolean>(false);
   const users = useChatRoomUser(roomId);
   const [userList, setUserList] = useState<User[]>([]);
-  // const folloingUsers = useFollowingListData();
 
   useEffect(() => {
     if (users.data !== undefined) {
@@ -217,9 +215,26 @@ export function ChatMenu({
     onMenuClicked(isCloseClick);
   };
 
-  // const { mutate: inviteUser } = useInviteUsers(roomId, [
-  //   'naver_htT4VdDRPKqGqKpnncpa71HCA4CVg5LdRC1cWZhCnF8',
-  // ]);
+  const [email, setEmail] = useState<string>('');
+  const { mutate: mutateSearchUser, data: searchData } = useSearchUser(email);
+
+  const [searchUser, setSearchUser] = useState<User>();
+
+  useEffect(() => {
+    if (searchData?.data != null) {
+      setSearchUser(searchData.data);
+    }
+  }, [searchData]);
+
+  const { mutate: inviteUser } = useInviteUsers(roomId, [
+    searchUser?.memberId ?? '',
+  ]);
+
+  function handleKeyUp(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.keyCode === 13) {
+      mutateSearchUser();
+    }
+  }
 
   return (
     <styles.menuContainer>
@@ -243,7 +258,6 @@ export function ChatMenu({
         <styles.menuList>
           <styles.inviteButton
             onClick={() => {
-              // inviteUser();
               setIsInviteClick(prev => !prev);
             }}
           >
@@ -253,30 +267,31 @@ export function ChatMenu({
             <styles.dropDownContainer>
               <styles.followingListContainer>
                 <styles.searchBox>
-                  <styles.searchInput style={{ width: '100%' }} />
+                  <styles.searchInput
+                    style={{ width: '100%' }}
+                    onChange={e => {
+                      setEmail(e.target.value);
+                    }}
+                    onKeyUp={handleKeyUp}
+                  />
                   <styles.searchButton src="/icon-search.svg" />
                 </styles.searchBox>
                 <styles.followingUserContainer>
-                  {/* {Object.values(
-                    folloingUsers.data?.data.followingList as Record<
-                      string,
-                      string[]
-                    >,
-                  ).map((user, index) => (
+                  {searchUser != null ? (
                     <styles.userList
-                      key={index}
-                      style={{ flexDirection: 'column' }}
+                      onClick={() => {
+                        inviteUser();
+                      }}
                     >
-                      <styles.userImg src={user[1]} />
-                      {user[0]}
+                      <styles.userImg src={searchUser?.profileImageUrl} />
+                      {searchUser?.nickname}
                     </styles.userList>
-                  ))} */}
+                  ) : null}
                 </styles.followingUserContainer>
               </styles.followingListContainer>
             </styles.dropDownContainer>
           )}
         </styles.menuList>
-        <styles.menuList>마이 마루</styles.menuList>
         <styles.menuList>채팅방 나가기</styles.menuList>
       </styles.menuListContainer>
       <styles.footer>

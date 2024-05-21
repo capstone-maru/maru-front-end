@@ -64,7 +64,7 @@ const styles = {
     width: 1rem;
     height: 1rem;
     flex-shrink: 0;
-    background: url('kebab-horizontal.svg') no-repeat;
+    background: url('/kebab-horizontal.svg') no-repeat;
     cursor: pointer;
   `,
   messageContainer: styled.div`
@@ -147,6 +147,26 @@ function calTimeDiff(time: string, type: string) {
   return `${Math.floor(timeDiff / (60 * 24))}일 전`;
 }
 
+function useInterval(callback: () => void, delay: number) {
+  const savedCallback = useRef(callback);
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    if (delay != null) {
+      const id = setInterval(() => {
+        savedCallback.current();
+      }, delay);
+      return () => {
+        clearInterval(id);
+      };
+    }
+    return undefined;
+  }, [delay]);
+}
+
 export function ChattingRoom({
   userId,
   userName,
@@ -197,7 +217,7 @@ export function ChattingRoom({
     const initializeChat = async () => {
       try {
         const stomp = new Client({
-          brokerURL: `ws://ec2-54-180-133-123.ap-northeast-2.compute.amazonaws.com:8080/ws`,
+          brokerURL: `${process.env.NEXT_PUBLIC_CHAT_API_URL}`,
           connectHeaders: {
             Authorization: `Bearer ${auth?.accessToken}`,
           },
@@ -241,7 +261,11 @@ export function ChattingRoom({
   }, [auth?.accessToken]);
 
   const sendMessage = () => {
-    if (stompClient !== null && stompClient.connected) {
+    if (
+      stompClient !== null &&
+      stompClient.connected &&
+      inputMessage.length !== 0
+    ) {
       const destination = `/send/${roomId}`;
 
       stompClient.publish({
@@ -257,6 +281,16 @@ export function ChattingRoom({
 
     setInputMessage('');
   };
+
+  const [timeString, setTimeString] = useState(calTimeDiff(lastTime, 'server'));
+
+  useEffect(() => {
+    setTimeString(calTimeDiff(time, type));
+  }, [time, type]);
+
+  useInterval(() => {
+    setTimeString(calTimeDiff(time, type));
+  }, 60000);
 
   const handleMenuClick = () => {
     setIsMenuClick(prev => !prev);
@@ -301,7 +335,7 @@ export function ChattingRoom({
         />
         <styles.roomInfo>
           <styles.roomName>{roomName}</styles.roomName>
-          <styles.latestTime>{calTimeDiff(time, type)}</styles.latestTime>
+          <styles.latestTime>{timeString}</styles.latestTime>
         </styles.roomInfo>
         <styles.menu onClick={handleMenuClick} />
         {isMenuClick && (
