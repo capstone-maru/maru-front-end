@@ -166,7 +166,7 @@ const styles = {
     }
     animation: dropdown 0.5s ease;
   `,
-  followingUserContainer: styled.div`
+  followingUserContainer: styled.ul`
     display: flex;
     padding: 0.625rem;
     align-items: center;
