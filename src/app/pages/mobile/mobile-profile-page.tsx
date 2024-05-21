@@ -3,10 +3,12 @@
 import axios from 'axios';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Bookmark } from '@/components';
 import { useAuthValue, useUserData } from '@/features/auth';
+import { chatOpenState, useCreateChatRoom } from '@/features/chat';
 import {
   type GetFollowingListDTO,
   useCertification,
@@ -70,7 +72,7 @@ const styles = {
     display: inline-flex;
     width: 100%;
     align-items: flex-start;
-    gap: 2rem;
+    gap: 1rem;
   `,
   userName: styled.div`
     color: #000;
@@ -290,6 +292,67 @@ const styles = {
     font-weight: 400;
     line-height: normal;
   `,
+
+  chattingButton: styled.button`
+    all: unset;
+    cursor: pointer;
+
+    display: flex;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    align-self: stretch;
+
+    border-radius: 8px;
+    background: var(--Black, #35373a);
+
+    color: #fff;
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5rem;
+  `,
+
+  postContainer: styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    align-self: stretch;
+
+    h1 {
+      color: #000;
+      font-family: 'Noto Sans KR';
+      font-size: 1.25rem;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+    }
+  `,
+
+  posts: styled.div`
+    display: flex;
+    padding: 2rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    align-self: stretch;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
+  `,
+
+  postName: styled.p`
+    color: #000;
+
+    font-family: 'Noto Sans KR';
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  `,
 };
 
 interface UserProfileInfoProps {
@@ -345,6 +408,10 @@ function UserInfo({
   const { mutate: follow } = useFollowUser(memberId);
   const { mutate: unfollow } = useUnfollowUser(memberId);
 
+  const [, setIsChatOpen] = useRecoilState(chatOpenState);
+
+  const { mutate: chattingMutate } = useCreateChatRoom();
+
   return (
     <styles.userProfileContainer>
       <styles.userProfileWithoutInfo>
@@ -368,16 +435,33 @@ function UserInfo({
             <styles.userDetailedInfo>{email}</styles.userDetailedInfo>
           </div>
           {!isMySelf && (
-            <Bookmark
-              marked={isMarked}
-              onToggle={() => {
-                if (isMarked) unfollow();
-                else follow();
-                setIsMarked(prev => !prev);
-              }}
-              hasBorder
-              color="#888"
-            />
+            <>
+              <styles.chattingButton
+                onClick={() => {
+                  if (name != null)
+                    chattingMutate({
+                      roomName: name,
+                      members: [memberId],
+                    });
+
+                  setTimeout(() => {
+                    setIsChatOpen(true);
+                  }, 200);
+                }}
+              >
+                채팅
+              </styles.chattingButton>
+              <Bookmark
+                marked={isMarked}
+                onToggle={() => {
+                  if (isMarked) unfollow();
+                  else follow();
+                  setIsMarked(prev => !prev);
+                }}
+                hasBorder
+                color="#888"
+              />
+            </>
           )}
         </styles.userDetailedContainer>
       </styles.userInfoContainer>
@@ -553,6 +637,19 @@ function Card({
   );
 }
 
+function Posts() {
+  return (
+    <styles.postContainer>
+      <h1>게시글</h1>
+      <styles.posts>
+        <styles.postName>게시글 제목</styles.postName>
+        <styles.postName>게시글 제목</styles.postName>
+        <styles.postName>게시글 제목</styles.postName>
+      </styles.posts>
+    </styles.postContainer>
+  );
+}
+
 interface UserProps {
   memberId: string;
   email: string;
@@ -633,6 +730,7 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
         mateCardId={userData?.mateCardId}
         isMySelf={isMySelf}
       />
+      <Posts />
     </styles.container>
   );
 }
