@@ -261,7 +261,11 @@ export function ChattingRoom({
   }, [auth?.accessToken]);
 
   const sendMessage = () => {
-    if (stompClient !== null && stompClient.connected) {
+    if (
+      stompClient !== null &&
+      stompClient.connected &&
+      inputMessage.length !== 0
+    ) {
       const destination = `/send/${roomId}`;
 
       stompClient.publish({
