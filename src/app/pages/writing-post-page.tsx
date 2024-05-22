@@ -441,6 +441,7 @@ export function WritingPostPage({
     selectedExtraOptions,
     expectedMonthlyFee,
     derivedMateCardFeatures,
+    isCreatable,
     setSharedPostProps,
     handleOptionClick,
     handleExtraOptionClick,
@@ -525,6 +526,16 @@ export function WritingPostPage({
   };
 
   const handleCreatePost = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!isCreatable) {
+      createToast({
+        message: '필수 항목들이 입력되어야 합니다.',
+        option: {
+          duration: 3000,
+        },
+      });
+      return;
+    }
+
     const extractFileName = (url: string): string => {
       const regex =
         /\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.\w+)/;

@@ -189,12 +189,12 @@ function FloatingChattingBox() {
     };
 
     if (auth?.accessToken != null) {
-      void initializeChat();
+      initializeChat();
     }
 
     return () => {
       if (stompClient != null && stompClient.connected) {
-        void stompClient.deactivate();
+        stompClient.deactivate();
       }
     };
   }, [auth?.accessToken, userId]);
