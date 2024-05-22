@@ -466,7 +466,7 @@ const styles = {
 
   posts: styled.div`
     display: flex;
-    padding: 2rem;
+    padding: 4rem 2rem;
     flex-direction: column;
     align-items: flex-start;
     gap: 1.5rem;
@@ -484,6 +484,8 @@ const styles = {
     font-style: normal;
     font-weight: 400;
     line-height: normal;
+
+    cursor: pointer;
   `,
 };
 
@@ -550,11 +552,15 @@ function UserInfo({
         <styles.userPicContainer>
           <styles.userPic src={src} alt="User Profile Pic" />
         </styles.userPicContainer>
-        <Auth certification={certification} />
+        <Auth certification={certification} isMySelf={isMySelf} />
       </styles.userProfileWithoutInfo>
       <styles.userInfoContainer>
         <styles.userName>{name}</styles.userName>
-        <ToggleSwitch isChecked={isChecked} onToggle={toggleSwitch} />
+        <ToggleSwitch
+          isChecked={isChecked}
+          onToggle={toggleSwitch}
+          isMySelf={isMySelf}
+        />
         <styles.userDetailedContainer>
           <div
             style={{
@@ -604,16 +610,19 @@ function UserInfo({
 interface ToggleSwitchProps {
   isChecked: boolean;
   onToggle: () => void;
+  isMySelf: boolean;
 }
 
-function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
+function ToggleSwitch({ isChecked, onToggle, isMySelf }: ToggleSwitchProps) {
   return (
     <styles.switchContainer>
       <styles.switchWrapper>
         <styles.switchInput
           type="checkbox"
           checked={isChecked}
-          onChange={onToggle}
+          onChange={() => {
+            if (isMySelf) onToggle();
+          }}
         />
         <styles.slider
           style={{
@@ -632,7 +641,13 @@ function ToggleSwitch({ isChecked, onToggle }: ToggleSwitchProps) {
   );
 }
 
-function Auth({ certification }: { certification?: boolean }) {
+function Auth({
+  certification,
+  isMySelf,
+}: {
+  certification?: boolean;
+  isMySelf: boolean;
+}) {
   const [univName, setUnivName] = useState<string>();
   const [email, setEmail] = useState<string>();
   const [code, setCode] = useState<number>();
@@ -658,7 +673,7 @@ function Auth({ certification }: { certification?: boolean }) {
     <>
       <styles.authContainer
         onClick={() => {
-          setIsCertificationClick(prev => !prev);
+          if (isMySelf) setIsCertificationClick(prev => !prev);
         }}
       >
         <styles.authCheckImg
@@ -774,9 +789,13 @@ function Posts() {
     <styles.postContainer>
       <h1>게시글</h1>
       <styles.posts>
-        <styles.postName>게시글 제목</styles.postName>
-        <styles.postName>게시글 제목</styles.postName>
-        <styles.postName>게시글 제목</styles.postName>
+        <styles.postName>
+          혼자 살긴 너무 큰 방 같이 살 룸메이트 구해요!
+        </styles.postName>
+        <styles.postName>복층 비흡연자 구합니다!</styles.postName>
+        <styles.postName>
+          길음동 투룸 빌라 깔끔한 메이트 분 구해요.
+        </styles.postName>
       </styles.posts>
     </styles.postContainer>
   );

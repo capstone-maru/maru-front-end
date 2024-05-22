@@ -153,13 +153,24 @@ export function MainPage() {
           />
           <styles.mateRecommendation ref={scrollRef}>
             {recommendationMates?.data?.map(
-              ({ memberId, score, nickname, location, profileImageUrl }) => (
+              ({
+                memberId,
+                score,
+                nickname,
+                location,
+                profileImageUrl,
+                options: { mateAge, smoking, roomSharingOption },
+              }) => (
                 <Link href={`/profile/${memberId}`} key={memberId}>
                   <UserCard
                     name={nickname}
                     percentage={score}
                     profileImage={profileImageUrl}
                     location={location}
+                    mateAge={mateAge}
+                    roomSharingOption={roomSharingOption}
+                    smoking={smoking}
+                    hideScore
                   />
                 </Link>
               ),

@@ -11,7 +11,11 @@ import { ChattingList } from './chat/ChattingList';
 import { ChattingRoom } from './chat/ChattingRoom';
 
 import { useAuthValue, useUserData } from '@/features/auth';
-import { chatOpenState, type GetChatRoomDTO } from '@/features/chat';
+import {
+  chatOpenState,
+  useCreateChatRoom,
+  type GetChatRoomDTO,
+} from '@/features/chat';
 import { useIsMobile } from '@/shared/mobile';
 
 const styles = {
@@ -246,9 +250,9 @@ function FloatingChattingBox() {
     }
   }, [message, isChatRoomOpen]);
 
-  // const roomName = 'test2';
-  // const members = ['naver_hW_CDCYdU3NNTQWq_TV_MkpldnMZI6fOD1mnPo-V1NE'];
-  // const { mutate: chattingCreate } = useCreateChatRoom(roomName, members);
+  const roomName = 'test2';
+  const members = ['naver_hW_CDCYdU3NNTQWq_TV_MkpldnMZI6fOD1mnPo-V1NE'];
+  const { mutate: chattingCreate } = useCreateChatRoom();
 
   return (
     <>
@@ -271,7 +275,10 @@ function FloatingChattingBox() {
         <styles.chattingSection>
           {/* <button
             onClick={() => {
-              chattingCreate();
+              chattingCreate({
+                roomName: '최정민, 조희정',
+                members: ['naver_hW_CDCYdU3NNTQWq_TV_MkpldnMZI6fOD1mnPo-V1NE'],
+              });
             }}
           >
             생성

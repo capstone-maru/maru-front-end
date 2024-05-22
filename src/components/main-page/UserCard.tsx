@@ -94,11 +94,19 @@ export function UserCard({
   location,
   percentage,
   profileImage,
+  smoking,
+  roomSharingOption,
+  mateAge,
+  hideScore,
 }: {
   name: string;
   location: string;
   percentage: number;
   profileImage: string;
+  smoking: string;
+  roomSharingOption: string;
+  mateAge?: number;
+  hideScore?: boolean;
 }) {
   const isMobile = useIsMobile();
   return (
@@ -108,13 +116,15 @@ export function UserCard({
           <CircularProfileImage
             diameter={65}
             percentage={percentage}
-            url={profileImage}
+            url={'/profile_img_nonpercent.png'}
+            hideScore={hideScore}
           />
         ) : (
           <CircularProfileImage
             diameter={110}
             percentage={percentage}
-            url={profileImage}
+            url={'/profile_img_nonpercent.png'}
+            hideScore={hideScore}
           />
         )}
         <div>
@@ -122,7 +132,11 @@ export function UserCard({
           <p>{location}</p>
         </div>
       </styles.profileInfo>
-      <styles.data />
+      <styles.data>
+        <p>흡연 여부: {smoking}</p>
+        <p>룸메이트와: {roomSharingOption}</p>
+        <p>메이트 나이: {mateAge == null ? '상관없어요' : `±${mateAge}`}</p>
+      </styles.data>
     </styles.container>
   );
 }
