@@ -11,11 +11,7 @@ import { ChattingList } from './chat/ChattingList';
 import { ChattingRoom } from './chat/ChattingRoom';
 
 import { useAuthValue, useUserData } from '@/features/auth';
-import {
-  chatOpenState,
-  useCreateChatRoom,
-  type GetChatRoomDTO,
-} from '@/features/chat';
+import { chatOpenState, type GetChatRoomDTO } from '@/features/chat';
 import { useIsMobile } from '@/shared/mobile';
 
 const styles = {
@@ -193,12 +189,12 @@ function FloatingChattingBox() {
     };
 
     if (auth?.accessToken != null) {
-      void initializeChat();
+      initializeChat();
     }
 
     return () => {
       if (stompClient != null && stompClient.connected) {
-        void stompClient.deactivate();
+        stompClient.deactivate();
       }
     };
   }, [auth?.accessToken, userId]);
@@ -250,9 +246,7 @@ function FloatingChattingBox() {
     }
   }, [message, isChatRoomOpen]);
 
-  const roomName = 'test2';
-  const members = ['naver_hW_CDCYdU3NNTQWq_TV_MkpldnMZI6fOD1mnPo-V1NE'];
-  const { mutate: chattingCreate } = useCreateChatRoom();
+  // const { mutate: chattingCreate } = useCreateChatRoom();
 
   return (
     <>

@@ -556,11 +556,7 @@ function UserInfo({
       </styles.userProfileWithoutInfo>
       <styles.userInfoContainer>
         <styles.userName>{name}</styles.userName>
-        <ToggleSwitch
-          isChecked={isChecked}
-          onToggle={toggleSwitch}
-          isMySelf={isMySelf}
-        />
+        <ToggleSwitch isChecked onToggle={toggleSwitch} isMySelf={isMySelf} />
         <styles.userDetailedContainer>
           <div
             style={{

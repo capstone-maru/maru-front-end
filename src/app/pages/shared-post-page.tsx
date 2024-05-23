@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRecoilState } from 'recoil';
@@ -585,6 +586,8 @@ export function SharedPostPage({
     setFollowList(newFollowList);
   }, [post]);
 
+  const queryClient = useQueryClient();
+
   if (isLoading || post == null) return <></>;
 
   const img = [
@@ -604,7 +607,18 @@ export function SharedPostPage({
                 hasBorder={false}
                 marked={post.data.isScrapped}
                 onToggle={() => {
-                  scrapPost(postId);
+                  scrapPost(postId, {
+                    onSuccess: () => {
+                      if (type === 'hasRoom')
+                        queryClient.invalidateQueries({
+                          queryKey: [`/api/shared/posts/studio/${postId}`],
+                        });
+                      else
+                        queryClient.invalidateQueries({
+                          queryKey: [`/api/shared/posts/dormitory/${postId}`],
+                        });
+                    },
+                  });
                 }}
                 color="black"
               />
@@ -734,11 +748,9 @@ export function SharedPostPage({
             ))}
 
             <styles.mate
-              $selected={true}
+              $selected
               $zIndex={1}
-              src={
-                'https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1717372800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ow98XTfWHrk0C32DL3SoRSxemPCfPkj7YlxH52xrOPk00uy16I1JLBMG5Xvxo0LnVsTQXmyoDXLcgy6iGBNGcE4f0PD1Do3YryquHVSIdS2ZSq0-ueFMjgFaM08vI3lg7kF6S5iq6rDCuiknko2CrnA6oS~2IX51AcAWxtcJoSS3B2p~itG2Uw7p-Lw0UnnZJGooADrq95zrcqfKR0pVGaUIsurJDBF01wjm0~vAfMJhErWLqIbf84SZIbEKeRtsjrc~2xhEzTf8kPDwtWam0NvSl-lrhGI6oK69xbsaNVUt9~Cj80vkMWbBkG0QlIdGwmHS5ZYVlDJU-6KE1hdjcA__'
-              }
+              src="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1717372800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ow98XTfWHrk0C32DL3SoRSxemPCfPkj7YlxH52xrOPk00uy16I1JLBMG5Xvxo0LnVsTQXmyoDXLcgy6iGBNGcE4f0PD1Do3YryquHVSIdS2ZSq0-ueFMjgFaM08vI3lg7kF6S5iq6rDCuiknko2CrnA6oS~2IX51AcAWxtcJoSS3B2p~itG2Uw7p-Lw0UnnZJGooADrq95zrcqfKR0pVGaUIsurJDBF01wjm0~vAfMJhErWLqIbf84SZIbEKeRtsjrc~2xhEzTf8kPDwtWam0NvSl-lrhGI6oK69xbsaNVUt9~Cj80vkMWbBkG0QlIdGwmHS5ZYVlDJU-6KE1hdjcA__"
               onClick={() => {}}
             />
           </styles.mates>
@@ -747,7 +759,7 @@ export function SharedPostPage({
               <CircularProfileImage
                 diameter={110}
                 percentage={50}
-                url={'/profile_img_nonpercent.png'}
+                url="/profile_img_nonpercent.png"
               />
               <styles.profileInfo>
                 <p className="name">{selected?.nickname}</p>
@@ -787,8 +799,36 @@ export function SharedPostPage({
                       followList[selected.memberId] == null
                     )
                       return;
-                    if (followList[selected.memberId]) unfollow();
-                    else follow();
+                    if (followList[selected.memberId])
+                      unfollow(undefined, {
+                        onSuccess: () => {
+                          if (type === 'hasRoom')
+                            queryClient.invalidateQueries({
+                              queryKey: [`/api/shared/posts/studio/${postId}`],
+                            });
+                          else
+                            queryClient.invalidateQueries({
+                              queryKey: [
+                                `/api/shared/posts/dormitory/${postId}`,
+                              ],
+                            });
+                        },
+                      });
+                    else
+                      follow(undefined, {
+                        onSuccess: () => {
+                          if (type === 'hasRoom')
+                            queryClient.invalidateQueries({
+                              queryKey: [`/api/shared/posts/studio/${postId}`],
+                            });
+                          else
+                            queryClient.invalidateQueries({
+                              queryKey: [
+                                `/api/shared/posts/dormitory/${postId}`,
+                              ],
+                            });
+                        },
+                      });
                   }}
                   hasBorder
                   color="#888"
