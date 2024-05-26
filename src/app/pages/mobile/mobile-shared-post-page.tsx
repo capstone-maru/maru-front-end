@@ -529,7 +529,7 @@ export function MobileSharedPostPage({
 
   if (isLoading || post == null) return <></>;
 
-  const img = [
+  const DefaultImg = [
     'https://s3-alpha-sig.figma.com/img/efd0/12b5/6a0078a4aa75b0e9a9fb53a6d9a7c560?Expires=1717372800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=NwXjleKGoJwaCi2N64-8F-IXXmnDeDiW7l89SdtxBr~I8HZmj9Q10Q-hS2okLsC8BlfKkVX3mkXGwxRhi8ZkW6IibIhnF03oD-A7nTx~psdkoAmQNrCk1-Hzzp2GLm6VYw-M-d~I6g1joFaK~piDCRNZnix2gzTWoL7TT4VWEkLgUMYG9h-ri2dIE76HkBdnd3XDyfNBIA74PXwIAOn5JiZBOpa9JZ-b4m813TsA6vlSx53Og3K94xrWJKc1gjgLS7TRgXgXx-9Uj5eTerl7J5Wu1EIMERHhlXgJp-kL-siZa0wz2ZuZaLHgd54E5tWJJVm0m~vRArxADyi6~QQKPg__',
     'https://s3-alpha-sig.figma.com/img/ff85/788d/96b4a3ec1b31b6baf36b11c772529753?Expires=1717372800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=cgciQ~G5~mtUH65spDt4W4Knf~wmgUupCCRhSEq9h73kTWCBqTNwsAAYbY4ZgmJZB36PCnHA2ctPSM~hInMuGwkKL7D-mruzGWgJ~moxkQtqbdq4V9pF2UbOP8XbcEWM1fSUQZyR5mZUzfkSn7WrnwgwtUyXb1~DhF6RDokp~bnzfGqxGby4tk9PcXiJrNVPzE~I28ERMbn3hLITWYcX5KeymYfIk9eO5ghmPsL4yU1~PC0E7rZpdjeTWT3kbNebhXjJsy9-mlLL8eUW0vx69IMxsKYO6ht~0X4wMb~bGaVS040RrdKhYW0qDKJteLWA~lSWRHPmMd1HqlkNMjdm-g__',
   ];
@@ -544,7 +544,11 @@ export function MobileSharedPostPage({
                 <CircularProfileImage
                   diameter={89}
                   percentage={50}
-                  url="/profile_img_nonpercent.png"
+                  url={
+                    selected?.profileImageFileName != null
+                      ? selected.profileImageFileName
+                      : '/profile_img_nonpercent.png'
+                  }
                 />
                 <styles.profileInfo>
                   <p className="name">{selected?.nickname}</p>
@@ -630,17 +634,17 @@ export function MobileSharedPostPage({
                       }}
                     />
                   ))}
-                  <styles.mate
-                    $selected
-                    $zIndex={1}
-                    src="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1717372800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ow98XTfWHrk0C32DL3SoRSxemPCfPkj7YlxH52xrOPk00uy16I1JLBMG5Xvxo0LnVsTQXmyoDXLcgy6iGBNGcE4f0PD1Do3YryquHVSIdS2ZSq0-ueFMjgFaM08vI3lg7kF6S5iq6rDCuiknko2CrnA6oS~2IX51AcAWxtcJoSS3B2p~itG2Uw7p-Lw0UnnZJGooADrq95zrcqfKR0pVGaUIsurJDBF01wjm0~vAfMJhErWLqIbf84SZIbEKeRtsjrc~2xhEzTf8kPDwtWam0NvSl-lrhGI6oK69xbsaNVUt9~Cj80vkMWbBkG0QlIdGwmHS5ZYVlDJU-6KE1hdjcA__"
-                    onClick={() => {}}
-                  />
                 </styles.mates>
               </styles.profile>
             </styles.selectedMateContainer>
           </styles.mateContainer>
-          <styles.ImageGrid images={img.map(fileName => fileName)} />
+          <styles.ImageGrid
+            images={
+              post.data.roomImages.length === 0
+                ? DefaultImg.map(fileName => fileName)
+                : post.data.roomImages.map(({ fileName }) => fileName)
+            }
+          />
           <styles.postInfoContainer>
             <div>
               <h1>{post.data.title}</h1>

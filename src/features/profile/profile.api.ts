@@ -99,3 +99,8 @@ export const getRecommendMates = async (cardOption: CardType) => {
   );
   return res.data;
 };
+
+export const getMutualFollowingList = async () =>
+  await axios
+    .get<GetFollowingListDTO>(`/maru-api/profile/mutual/follow`)
+    .then(res => res.data);

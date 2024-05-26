@@ -780,18 +780,16 @@ function Card({
   );
 }
 
-function Posts() {
+function Posts({ posts }: { posts?: PostsProps[] }) {
   return (
     <styles.postContainer>
       <h1>게시글</h1>
       <styles.posts>
-        <styles.postName>
-          혼자 살긴 너무 큰 방 같이 살 룸메이트 구해요!
-        </styles.postName>
-        <styles.postName>복층 비흡연자 구합니다!</styles.postName>
-        <styles.postName>
-          길음동 투룸 빌라 깔끔한 메이트 분 구해요.
-        </styles.postName>
+        {posts?.map(post => (
+          <Link key={post.id} href={`/shared/${post.type}/${post.id}`}>
+            <styles.postName>{post.title}</styles.postName>
+          </Link>
+        ))}
       </styles.posts>
     </styles.postContainer>
   );
@@ -810,6 +808,14 @@ interface UserProps {
   univCertified: boolean;
 }
 
+interface PostsProps {
+  id: number;
+  title: string;
+  type: string;
+  createdAt: string;
+  modifiedAt: string;
+}
+
 export function ProfilePage({ memberId }: { memberId: string }) {
   const auth = useAuthValue();
   const { data } = useUserData(auth?.accessToken !== undefined);
@@ -821,6 +827,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
 
   const { mutate: mutateProfile, data: profileData } = useUserProfile(memberId);
   const [profileImg, setProfileImg] = useState<string>('');
+  const [posts, setPosts] = useState<PostsProps[]>();
 
   useEffect(() => {
     mutateProfile();
@@ -853,6 +860,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         univCertified,
       });
       setProfileImg(profileData.data.profileImage);
+      setPosts(profileData.data.posts);
       if (authId === memberId) {
         setIsMySelf(true);
       }
@@ -877,7 +885,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         mateCardId={userData?.mateCardId}
         isMySelf={isMySelf}
       />
-      <Posts />
+      <Posts posts={posts} />
     </styles.pageContainer>
   );
 }

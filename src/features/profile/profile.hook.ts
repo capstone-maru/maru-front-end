@@ -11,6 +11,7 @@ import {
   postEmail,
   postCertificate,
   getRecommendMates,
+  getMutualFollowingList,
 } from './profile.api';
 
 import { type CardType } from '@/entities/shared-posts-filter';
@@ -94,4 +95,10 @@ export const useRecommendMates = ({
     queryKey: ['/api/profile/recommend', cardOption],
     queryFn: async () => await getRecommendMates(cardOption),
     enabled,
+  });
+
+export const useMutualFollowingListData = () =>
+  useQuery({
+    queryKey: [`/api/profile/mutual/follow`],
+    queryFn: getMutualFollowingList,
   });

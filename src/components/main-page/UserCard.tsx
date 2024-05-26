@@ -116,14 +116,18 @@ export function UserCard({
           <CircularProfileImage
             diameter={65}
             percentage={percentage}
-            url="/profile_img_nonpercent.png"
+            url={
+              profileImage !== '' ? profileImage : '/profile_img_nonpercent.png'
+            }
             hideScore={hideScore}
           />
         ) : (
           <CircularProfileImage
             diameter={110}
             percentage={percentage}
-            url="/profile_img_nonpercent.png"
+            url={
+              profileImage !== '' ? profileImage : '/profile_img_nonpercent.png'
+            }
             hideScore={hideScore}
           />
         )}

@@ -35,6 +35,15 @@ export interface PostUserProfileDTO extends SuccessBaseDTO {
         options: string;
       };
     };
+    posts: [
+      {
+        id: number;
+        title: string;
+        type: string;
+        createdAt: string;
+        modifiedAt: string;
+      },
+    ];
   };
 }
 
