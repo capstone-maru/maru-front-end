@@ -20,6 +20,7 @@ import { useAuthValue, useUserData } from '@/features/auth';
 
 const styles = {
   container: styled.div`
+    width: 100%;
     display: flex;
     gap: 1rem;
 

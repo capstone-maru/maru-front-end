@@ -26,9 +26,10 @@ import {
 
 const styles = {
   container: styled.div`
-    padding-top: 4.12rem;
-    padding-inline: 16rem;
+    padding-block: 4.12rem;
+    padding-inline: 10rem;
     width: 100%;
+    max-width: 1440px;
     height: fit-content;
 
     display: flex;
@@ -67,7 +68,6 @@ const styles = {
   posts: styled.div`
     display: flex;
     flex-direction: column;
-    padding-inline: 2rem;
     gap: 2rem;
   `,
   CircularButton: styled(CircularButton)`
@@ -106,10 +106,13 @@ const styles = {
     }
   `,
   cards: styled.div`
-    padding-left: 2.62rem;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    gap: 2rem;
+    align-self: stretch;
     flex-wrap: wrap;
-    gap: 2rem 2.62rem;
   `,
   noRecommendation: styled.div`
     font-family: 'Noto Sans KR';

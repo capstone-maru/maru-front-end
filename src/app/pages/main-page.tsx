@@ -20,7 +20,7 @@ const styles = {
   `,
   map: styled.div`
     width: 100%;
-    height: 50dvh;
+    height: 30rem;
 
     display: flex;
     flex-direction: column;
@@ -49,9 +49,7 @@ const styles = {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 2.6875rem;
-
-    margin-bottom: 5rem;
+    gap: 3rem;
   `,
   mateRecommendationTitle: styled.h1`
     color: #000;
@@ -67,14 +65,14 @@ const styles = {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 2.12rem;
-    padding: 0 2.5rem;
+    gap: 2rem;
+    padding: 0 2.25rem;
   `,
   mateRecommendation: styled.div`
     display: flex;
     flex-grow: 1;
     flex-direction: row;
-    gap: 2.625rem;
+    gap: 2rem;
     overflow-x: auto;
 
     -ms-overflow-style: none;
