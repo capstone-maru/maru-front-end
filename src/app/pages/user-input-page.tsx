@@ -367,7 +367,7 @@ export function UserInputPage() {
     case 0:
       ageString = '동갑';
       break;
-    case 11:
+    case undefined:
       ageString = '상관없어요';
       break;
     default:

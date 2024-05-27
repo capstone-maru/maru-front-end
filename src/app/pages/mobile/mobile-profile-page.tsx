@@ -658,7 +658,10 @@ function Posts({ posts }: { posts?: PostsProps[] }) {
       <h1>게시글</h1>
       <styles.posts>
         {posts?.map(post => (
-          <Link key={post.id} href={`/shared/${post.type}/${post.id}`}>
+          <Link
+            key={post.id}
+            href={`/shared/${post.type === 'studio' ? 'room' : 'dormitory'}/${post.id}`}
+          >
             <styles.postName>{post.title}</styles.postName>
           </Link>
         ))}
