@@ -20,10 +20,14 @@ const styles = {
   pageContainer: styled.div`
     display: flex;
     width: 100%;
-    padding: 0rem 10rem 10rem 10rem;
+    max-width: 1194px;
     flex-direction: column;
     gap: 3rem;
     align-self: stretch;
+
+    @media (max-width: 1440px) {
+      padding: 0 5rem 5rem 5rem;
+    }
   `,
   userProfileContainer: styled.div`
     display: inline-flex;
@@ -399,7 +403,6 @@ const styles = {
       padding: 0.5rem 1rem;
     }
   `,
-
   certificationButton: styled.button`
     display: flex;
     width: 9.5rem;
