@@ -19,21 +19,19 @@ import {
 const styles = {
   pageContainer: styled.div`
     display: flex;
-    height: 98rem;
     width: 100%;
     padding: 0rem 10rem 10rem 10rem;
     flex-direction: column;
     gap: 3rem;
     align-self: stretch;
   `,
-
   userProfileContainer: styled.div`
     display: inline-flex;
     width: 100%;
     align-items: center;
     flex-shrink: 0;
     gap: 3rem;
-    margin-top: 5.12rem;
+    padding-block: 2rem;
   `,
   userProfileWithoutInfo: styled.div`
     display: inline-flex;
@@ -298,7 +296,6 @@ const styles = {
 
     background: var(--Purple, #6b5ee1);
   `,
-
   rulesContainer: styled.div`
     display: flex;
     flex-direction: column;

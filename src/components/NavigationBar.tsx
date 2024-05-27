@@ -22,12 +22,12 @@ const styles = {
   container: styled.nav`
     display: flex;
     flex: 1;
-    min-width: 1440px;
+    min-width: 1194px;
     width: 100%;
     height: 4.5rem;
-    padding: 1rem 11.25rem;
+    padding: 1rem 0rem;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
 
     border-bottom: 1px solid #f7f6f9;
     background: #fff;
