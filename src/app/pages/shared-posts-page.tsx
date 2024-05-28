@@ -194,7 +194,7 @@ export function SharedPostsPage() {
     }
   }, [selected, dormitorySharedPosts, sharedPosts]);
 
-  const renderPosts = () => {
+  const renderPosts = useMemo(() => {
     if (isSharedPostsLoading || isDormitorySharedPostsLoading) {
       return (
         <styles.noRecommendation>잠시만 기다려주세요..</styles.noRecommendation>
@@ -220,9 +220,15 @@ export function SharedPostsPage() {
         }}
       />
     ));
-  };
+  }, [
+    isDormitorySharedPostsLoading,
+    isSharedPostsLoading,
+    posts?.data,
+    router,
+    selected,
+  ]);
 
-  const renderMates = () => {
+  const renderMates = useMemo(() => {
     if (isMatesLoading) {
       return (
         <styles.noRecommendation>잠시만 기다려주세요..</styles.noRecommendation>
@@ -252,7 +258,7 @@ export function SharedPostsPage() {
         </Link>
       ),
     );
-  };
+  }, [isMatesLoading, recommendationMates?.data]);
 
   return (
     <styles.container>
@@ -273,7 +279,7 @@ export function SharedPostsPage() {
       </styles.createButtonRow>
       {selected === 'hasRoom' || selected === 'dormitory' ? (
         <>
-          <styles.posts>{renderPosts()}</styles.posts>
+          <styles.posts>{renderPosts}</styles.posts>
           {posts != null && posts.data.content.length !== 0 && (
             <styles.pagingRow>
               <styles.CircularButton
@@ -320,7 +326,7 @@ export function SharedPostsPage() {
           )}
         </>
       ) : (
-        <styles.cards>{renderMates()}</styles.cards>
+        <styles.cards>{renderMates}</styles.cards>
       )}
     </styles.container>
   );
