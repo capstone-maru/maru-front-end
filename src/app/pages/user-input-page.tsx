@@ -49,6 +49,7 @@ const styles = {
     flex-direction: column;
     align-items: flex-start;
     min-width: 20rem;
+    max-width: 20rem;
     gap: 1rem;
     align-self: stretch;
   `,
