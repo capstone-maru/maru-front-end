@@ -324,9 +324,31 @@ export const useSharedPostProps = ({
     }
   }, [user, setState]);
 
+  const isCreatable = useMemo(
+    () =>
+      state.title.trim().length > 0 &&
+      state.content.trim().length > 0 &&
+      state.images.length >= 2 &&
+      state.address != null &&
+      state.mateLimit > 0 &&
+      state.expectedMonthlyFee > 0 &&
+      state.houseSize > 0 &&
+      state.selectedOptions.budget != null &&
+      state.selectedOptions.roomType != null &&
+      state.selectedOptions.livingRoom != null &&
+      state.selectedOptions.roomCount != null &&
+      state.selectedOptions.restRoomCount != null &&
+      state.selectedOptions.floorType != null &&
+      state.mateCard.features.smoking != null &&
+      state.mateCard.features.roomSharingOption != null &&
+      state.mateCard.features.mateAge != null,
+    [state],
+  );
+
   return {
     ...state,
     derivedMateCardFeatures,
+    isCreatable,
     setSharedPostProps: setState,
     reset,
     handleOptionClick,

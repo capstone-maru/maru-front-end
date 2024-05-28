@@ -20,7 +20,7 @@ const styles = {
   `,
   map: styled.div`
     width: 100%;
-    height: 50dvh;
+    height: 30rem;
 
     display: flex;
     flex-direction: column;
@@ -49,9 +49,7 @@ const styles = {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 2.6875rem;
-
-    margin-bottom: 5rem;
+    gap: 3rem;
   `,
   mateRecommendationTitle: styled.h1`
     color: #000;
@@ -67,14 +65,14 @@ const styles = {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 2.12rem;
-    padding: 0 2.5rem;
+    gap: 2rem;
+    padding: 0 2.25rem;
   `,
   mateRecommendation: styled.div`
     display: flex;
     flex-grow: 1;
     flex-direction: row;
-    gap: 2.625rem;
+    gap: 2rem;
     overflow-x: auto;
 
     -ms-overflow-style: none;
@@ -82,6 +80,19 @@ const styles = {
     scrollbar ::-webkit-scrollbar {
       display: none;
     }
+  `,
+  mateRecommendationIsEmpty: styled.div`
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding-block: 2rem;
   `,
 };
 
@@ -146,30 +157,45 @@ export function MainPage() {
           {auth?.user?.name}님의 추천 메이트
         </styles.mateRecommendationTitle>
         <styles.mateRecommendationRow>
-          <CircularButton
-            direction="left"
-            disabled={false}
-            onClick={handleScrollLeft}
-          />
-          <styles.mateRecommendation ref={scrollRef}>
-            {recommendationMates?.data?.map(
-              ({ memberId, score, nickname, location, profileImageUrl }) => (
-                <Link href={`/profile/${memberId}`} key={memberId}>
-                  <UserCard
-                    name={nickname}
-                    percentage={score}
-                    profileImage={profileImageUrl}
-                    location={location}
-                  />
-                </Link>
-              ),
-            )}
-          </styles.mateRecommendation>
-          <CircularButton
-            direction="right"
-            disabled={false}
-            onClick={handleScrollRight}
-          />
+          {recommendationMates?.data != null &&
+          recommendationMates.data.length > 0 ? (
+            <>
+              <CircularButton
+                direction="left"
+                disabled={false}
+                onClick={handleScrollLeft}
+              />
+              <styles.mateRecommendation ref={scrollRef}>
+                {recommendationMates.data.map(
+                  ({
+                    memberId,
+                    score,
+                    nickname,
+                    location,
+                    profileImageUrl,
+                  }) => (
+                    <Link href={`/profile/${memberId}`} key={memberId}>
+                      <UserCard
+                        name={nickname}
+                        percentage={score}
+                        profileImage={profileImageUrl}
+                        location={location}
+                      />
+                    </Link>
+                  ),
+                )}
+              </styles.mateRecommendation>
+              <CircularButton
+                direction="right"
+                disabled={false}
+                onClick={handleScrollRight}
+              />
+            </>
+          ) : (
+            <styles.mateRecommendationIsEmpty style={{ alignSelf: 'center' }}>
+              <p>추천되는 메이트가 없습니다.</p>
+            </styles.mateRecommendationIsEmpty>
+          )}
         </styles.mateRecommendationRow>
       </styles.mateRecommendationContainer>
     </styles.container>

@@ -88,6 +88,19 @@ const styles = {
     overflow-x: auto;
     flex-wrap: wrap;
   `,
+  mateRecommendationIsEmpty: styled.div`
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding-block: 2rem;
+  `,
 };
 
 export function MobileMainPage() {
@@ -136,20 +149,27 @@ export function MobileMainPage() {
         <styles.mateRecommendationTitle>
           <h1>{auth?.user?.name}님의 추천 메이트</h1>
         </styles.mateRecommendationTitle>
-        <styles.mateRecommendation>
-          {recommendationMates?.data?.map(
-            ({ memberId, score, nickname, location, profileImageUrl }) => (
-              <Link href={`/profile/${memberId}`} key={memberId}>
-                <UserCard
-                  name={nickname}
-                  percentage={score}
-                  location={location}
-                  profileImage={profileImageUrl}
-                />
-              </Link>
-            ),
-          )}
-        </styles.mateRecommendation>
+        {recommendationMates?.data != null &&
+        recommendationMates.data.length > 0 ? (
+          <styles.mateRecommendation>
+            {recommendationMates.data.map(
+              ({ memberId, score, nickname, location, profileImageUrl }) => (
+                <Link href={`/profile/${memberId}`} key={memberId}>
+                  <UserCard
+                    name={nickname}
+                    percentage={score}
+                    location={location}
+                    profileImage={profileImageUrl}
+                  />
+                </Link>
+              ),
+            )}
+          </styles.mateRecommendation>
+        ) : (
+          <styles.mateRecommendationIsEmpty>
+            <p>추천되는 메이트가 없습니다.</p>
+          </styles.mateRecommendationIsEmpty>
+        )}
       </styles.mateRecommendationContainer>
     </styles.container>
   );

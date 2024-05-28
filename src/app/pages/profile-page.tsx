@@ -19,21 +19,23 @@ import {
 const styles = {
   pageContainer: styled.div`
     display: flex;
-    height: 98rem;
     width: 100%;
-    padding: 0rem 10rem 10rem 10rem;
+    max-width: 1194px;
     flex-direction: column;
     gap: 3rem;
     align-self: stretch;
-  `,
 
+    @media (max-width: 1440px) {
+      padding: 0 5rem 5rem 5rem;
+    }
+  `,
   userProfileContainer: styled.div`
     display: inline-flex;
     width: 100%;
     align-items: center;
     flex-shrink: 0;
     gap: 3rem;
-    margin-top: 5.12rem;
+    padding-block: 2rem;
   `,
   userProfileWithoutInfo: styled.div`
     display: inline-flex;
@@ -298,7 +300,6 @@ const styles = {
 
     background: var(--Purple, #6b5ee1);
   `,
-
   rulesContainer: styled.div`
     display: flex;
     flex-direction: column;
@@ -402,7 +403,6 @@ const styles = {
       padding: 0.5rem 1rem;
     }
   `,
-
   certificationButton: styled.button`
     display: flex;
     width: 9.5rem;
