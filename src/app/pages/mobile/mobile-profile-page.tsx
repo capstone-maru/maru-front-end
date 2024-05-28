@@ -2,13 +2,14 @@
 
 import axios from 'axios';
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
-import { useRecoilState } from 'recoil';
+import React, { useState, useEffect, useRef } from 'react';
+import { atom, useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { Bookmark } from '@/components';
 import { useAuthValue, useUserData } from '@/features/auth';
 import { chatOpenState, useCreateChatRoom } from '@/features/chat';
+import { getImageURL, putImage } from '@/features/image';
 import {
   type GetFollowingListDTO,
   useCertification,
@@ -413,13 +414,47 @@ function UserInfo({
   const { mutate: unfollow } = useUnfollowUser(memberId);
 
   const [, setIsChatOpen] = useRecoilState(chatOpenState);
+  const [, setProfileImgChanged] = useRecoilState(profileImgState);
 
   const { mutate: chattingMutate } = useCreateChatRoom();
+
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const handleImageInputClicked = () => {
+    if (isMySelf) imageInputRef.current?.click();
+  };
+
+  const changeProfileImage = async (file: File) => {
+    try {
+      const result = await getImageURL(`.${file.type.split('/')[1]}`);
+
+      await putImage(result.data.data.url, file);
+
+      await axios.patch('/maru-api/profile/image', result.data.data.fileName, {
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    setProfileImgChanged(prev => !prev);
+  };
 
   return (
     <styles.userProfileContainer>
       <styles.userProfileWithoutInfo>
-        <styles.userPicContainer>
+        <styles.userPicContainer onClick={handleImageInputClicked}>
+          <input
+            type="file"
+            ref={imageInputRef}
+            onChange={e => {
+              const file = e.target.files?.[0];
+              if (file != null) {
+                changeProfileImage(file);
+              }
+            }}
+            style={{ display: 'none' }}
+          />
           <styles.userPic src={src} alt="User Profile Pic" />
         </styles.userPicContainer>
         <Auth certification={certification} isMySelf={isMySelf} />
@@ -694,6 +729,11 @@ interface PostsProps {
   modifiedAt: string;
 }
 
+const profileImgState = atom<boolean>({
+  key: 'isChangeProfileImg',
+  default: false,
+});
+
 export function MobileProfilePage({ memberId }: { memberId: string }) {
   const auth = useAuthValue();
   const { data } = useUserData(auth?.accessToken !== undefined);
@@ -707,9 +747,11 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
   const [profileImg, setProfileImg] = useState<string>('');
   const [posts, setPosts] = useState<PostsProps[]>();
 
+  const profileImgChanged = useRecoilValue(profileImgState);
+
   useEffect(() => {
     mutateProfile();
-  }, [auth]);
+  }, [auth, profileImgChanged]);
 
   useEffect(() => {
     if (profileData?.data !== undefined) {

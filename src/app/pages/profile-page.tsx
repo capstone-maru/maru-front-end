@@ -3,7 +3,7 @@
 import axios from 'axios';
 import Link from 'next/link';
 import React, { useState, useEffect, useRef } from 'react';
-import { useRecoilState } from 'recoil';
+import { atom, useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { Bookmark } from '@/components';
@@ -547,12 +547,13 @@ function UserInfo({
   const { mutate: unfollow } = useUnfollowUser(memberId);
 
   const [, setIsChatOpen] = useRecoilState(chatOpenState);
+  const [, setProfileImgChanged] = useRecoilState(profileImgState);
 
   const { mutate: chattingMutate } = useCreateChatRoom();
 
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const handleImageInputClicked = () => {
-    imageInputRef.current?.click();
+    if (isMySelf) imageInputRef.current?.click();
   };
 
   const changeProfileImage = async (file: File) => {
@@ -566,11 +567,10 @@ function UserInfo({
           'Content-Type': 'text/plain',
         },
       });
-
-      console.log('Profile image updated successfully');
     } catch (error) {
-      console.error('Error updating profile image:', error);
+      console.error(error);
     }
+    setProfileImgChanged(prev => !prev);
   };
 
   return (
@@ -579,7 +579,6 @@ function UserInfo({
         <styles.userPicContainer onClick={handleImageInputClicked}>
           <input
             type="file"
-            readOnly={isMySelf}
             ref={imageInputRef}
             onChange={e => {
               const file = e.target.files?.[0];
@@ -859,6 +858,11 @@ interface PostsProps {
   modifiedAt: string;
 }
 
+const profileImgState = atom<boolean>({
+  key: 'isChangeProfileImg',
+  default: false,
+});
+
 export function ProfilePage({ memberId }: { memberId: string }) {
   const auth = useAuthValue();
   const { data } = useUserData(auth?.accessToken !== undefined);
@@ -872,9 +876,11 @@ export function ProfilePage({ memberId }: { memberId: string }) {
   const [profileImg, setProfileImg] = useState<string>('');
   const [posts, setPosts] = useState<PostsProps[]>();
 
+  const profileImgChanged = useRecoilValue(profileImgState);
+
   useEffect(() => {
     mutateProfile();
-  }, [auth]);
+  }, [auth, profileImgChanged]);
 
   useEffect(() => {
     if (profileData?.data !== undefined) {
