@@ -61,6 +61,7 @@ axios.interceptors.response.use(
         return await axios(config);
       }
     } catch (refreshError) {
+      window.location.href = '/';
       return await Promise.reject(error);
     } finally {
       isRefreshing = false;
