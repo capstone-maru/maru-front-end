@@ -12,6 +12,7 @@ import {
   postCertificate,
   getRecommendMates,
   getMutualFollowingList,
+  patchProfileImage,
 } from './profile.api';
 
 import { type CardType } from '@/entities/shared-posts-filter';
@@ -101,4 +102,9 @@ export const useMutualFollowingListData = () =>
   useQuery({
     queryKey: [`/api/profile/mutual/follow`],
     queryFn: getMutualFollowingList,
+  });
+
+export const useChangeProfileImage = () =>
+  useMutation({
+    mutationFn: async (fileName: string) => await patchProfileImage(fileName),
   });

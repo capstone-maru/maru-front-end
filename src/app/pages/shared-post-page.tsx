@@ -783,6 +783,7 @@ export function SharedPostPage({
                   chattingMutate({
                     roomName: selected.nickname,
                     members: [selected.memberId],
+                    myID: auth?.user?.memberId ?? '',
                   });
 
                   setTimeout(() => {

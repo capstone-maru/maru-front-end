@@ -12,7 +12,7 @@ import {
 export const useChatRoomList = (token: string | undefined) =>
   useQuery({
     queryKey: [`/api/chatRoom`, token],
-    queryFn: async () => await getChatRoomList(token),
+    queryFn: async () => await getChatRoomList(),
     enabled: token !== undefined,
   });
 

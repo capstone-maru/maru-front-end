@@ -104,3 +104,10 @@ export const getMutualFollowingList = async () =>
   await axios
     .get<GetFollowingListDTO>(`/maru-api/profile/mutual/follow`)
     .then(res => res.data);
+
+export const patchProfileImage = async (fileName: string) =>
+  await axios.patch('/maru-api/profile/image', fileName, {
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+  });

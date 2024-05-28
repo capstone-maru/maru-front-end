@@ -2,13 +2,14 @@
 
 import axios from 'axios';
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Bookmark } from '@/components';
 import { useAuthValue, useUserData } from '@/features/auth';
 import { chatOpenState, useCreateChatRoom } from '@/features/chat';
+import { getImageURL, putImage } from '@/features/image';
 import {
   type GetFollowingListDTO,
   useCertification,
@@ -54,6 +55,7 @@ const styles = {
     border: 1px solid #dcddea;
 
     background: #c4c4c4;
+    cursor: pointer;
   `,
   userPic: styled.img`
     width: 100%;
@@ -497,6 +499,7 @@ interface UserProfileInfoProps {
   memberId: string;
   isMySelf: boolean;
   certification?: boolean;
+  myID: string;
 }
 
 function UserInfo({
@@ -507,6 +510,7 @@ function UserInfo({
   memberId,
   isMySelf,
   certification,
+  myID,
 }: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(false);
 
@@ -546,10 +550,45 @@ function UserInfo({
 
   const { mutate: chattingMutate } = useCreateChatRoom();
 
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const handleImageInputClicked = () => {
+    imageInputRef.current?.click();
+  };
+
+  const changeProfileImage = async (file: File) => {
+    try {
+      const result = await getImageURL(`.${file.type.split('/')[1]}`);
+
+      await putImage(result.data.data.url, file);
+
+      await axios.patch('/maru-api/profile/image', result.data.data.fileName, {
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
+
+      console.log('Profile image updated successfully');
+    } catch (error) {
+      console.error('Error updating profile image:', error);
+    }
+  };
+
   return (
     <styles.userProfileContainer>
       <styles.userProfileWithoutInfo>
-        <styles.userPicContainer>
+        <styles.userPicContainer onClick={handleImageInputClicked}>
+          <input
+            type="file"
+            readOnly={isMySelf}
+            ref={imageInputRef}
+            onChange={e => {
+              const file = e.target.files?.[0];
+              if (file != null) {
+                changeProfileImage(file);
+              }
+            }}
+            style={{ display: 'none' }}
+          />
           <styles.userPic src={src} alt="User Profile Pic" />
         </styles.userPicContainer>
         <Auth certification={certification} isMySelf={isMySelf} />
@@ -576,6 +615,7 @@ function UserInfo({
                     chattingMutate({
                       roomName: name,
                       members: [memberId],
+                      myID: myID,
                     });
 
                   setTimeout(() => {
@@ -880,6 +920,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         memberId={memberId}
         isMySelf={isMySelf}
         certification={userData?.univCertified}
+        myID={authId ?? ''}
       />
       <Card
         name={userData?.name}

@@ -365,6 +365,7 @@ interface UserProfileInfoProps {
   memberId: string;
   isMySelf: boolean;
   certification?: boolean;
+  myID: string;
 }
 
 function UserInfo({
@@ -375,6 +376,7 @@ function UserInfo({
   memberId,
   isMySelf,
   certification,
+  myID,
 }: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(false);
 
@@ -448,6 +450,7 @@ function UserInfo({
                     chattingMutate({
                       roomName: name,
                       members: [memberId],
+                      myID: myID,
                     });
 
                   setTimeout(() => {
@@ -752,6 +755,7 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
         memberId={memberId}
         isMySelf={isMySelf}
         certification={userData?.univCertified}
+        myID={authId ?? ''}
       />
       <Card
         name={userData?.name}
