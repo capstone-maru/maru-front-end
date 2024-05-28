@@ -81,6 +81,19 @@ const styles = {
       display: none;
     }
   `,
+  mateRecommendationIsEmpty: styled.div`
+    color: #000;
+    font-family: 'Noto Sans KR';
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding-block: 2rem;
+  `,
 };
 
 export function MainPage() {
@@ -144,30 +157,45 @@ export function MainPage() {
           {auth?.user?.name}님의 추천 메이트
         </styles.mateRecommendationTitle>
         <styles.mateRecommendationRow>
-          <CircularButton
-            direction="left"
-            disabled={false}
-            onClick={handleScrollLeft}
-          />
-          <styles.mateRecommendation ref={scrollRef}>
-            {recommendationMates?.data?.map(
-              ({ memberId, score, nickname, location, profileImageUrl }) => (
-                <Link href={`/profile/${memberId}`} key={memberId}>
-                  <UserCard
-                    name={nickname}
-                    percentage={score}
-                    profileImage={profileImageUrl}
-                    location={location}
-                  />
-                </Link>
-              ),
-            )}
-          </styles.mateRecommendation>
-          <CircularButton
-            direction="right"
-            disabled={false}
-            onClick={handleScrollRight}
-          />
+          {recommendationMates?.data != null &&
+          recommendationMates.data.length > 0 ? (
+            <>
+              <CircularButton
+                direction="left"
+                disabled={false}
+                onClick={handleScrollLeft}
+              />
+              <styles.mateRecommendation ref={scrollRef}>
+                {recommendationMates.data.map(
+                  ({
+                    memberId,
+                    score,
+                    nickname,
+                    location,
+                    profileImageUrl,
+                  }) => (
+                    <Link href={`/profile/${memberId}`} key={memberId}>
+                      <UserCard
+                        name={nickname}
+                        percentage={score}
+                        profileImage={profileImageUrl}
+                        location={location}
+                      />
+                    </Link>
+                  ),
+                )}
+              </styles.mateRecommendation>
+              <CircularButton
+                direction="right"
+                disabled={false}
+                onClick={handleScrollRight}
+              />
+            </>
+          ) : (
+            <styles.mateRecommendationIsEmpty style={{ alignSelf: 'center' }}>
+              <p>추천되는 메이트가 없습니다.</p>
+            </styles.mateRecommendationIsEmpty>
+          )}
         </styles.mateRecommendationRow>
       </styles.mateRecommendationContainer>
     </styles.container>
