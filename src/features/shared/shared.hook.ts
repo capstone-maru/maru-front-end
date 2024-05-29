@@ -370,10 +370,7 @@ export const useSharedPostProps = ({
       state.selectedOptions.livingRoom != null &&
       state.selectedOptions.roomCount != null &&
       state.selectedOptions.restRoomCount != null &&
-      state.selectedOptions.floorType != null &&
-      state.mateCard.features.smoking != null &&
-      state.mateCard.features.roomSharingOption != null &&
-      state.mateCard.features.mateAge != null,
+      state.selectedOptions.floorType != null,
     [state],
   );
 
