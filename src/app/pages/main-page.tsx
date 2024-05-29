@@ -173,7 +173,6 @@ export function MainPage() {
                     nickname,
                     location,
                     profileImageUrl,
-                    options: { mateAge, smoking, roomSharingOption },
                   }) => (
                     <Link href={`/profile/${memberId}`} key={memberId}>
                       <UserCard
@@ -181,10 +180,6 @@ export function MainPage() {
                         percentage={score}
                         profileImage={profileImageUrl}
                         location={location}
-                        mateAge={mateAge}
-                        roomSharingOption={roomSharingOption}
-                        smoking={smoking}
-                        hideScore
                       />
                     </Link>
                   ),
