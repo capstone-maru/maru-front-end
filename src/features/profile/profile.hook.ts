@@ -11,9 +11,18 @@ import {
   postEmail,
   postCertificate,
   getRecommendMates,
+  getMutualFollowUsers,
 } from './profile.api';
 
 import { type CardType } from '@/entities/shared-posts-filter';
+
+export const useMutualFollowUsers = (enabled: boolean) =>
+  useQuery({
+    queryKey: ['/api/profile/mutual/follow'],
+    queryFn: async () =>
+      await getMutualFollowUsers().then(res => res.data.data.followingList),
+    enabled,
+  });
 
 export const useUserProfile = (memberId: string) =>
   useMutation({
@@ -45,7 +54,7 @@ export const usePutUserCard = (cardId: number) =>
 export const useFollowingListData = () =>
   useQuery({
     queryKey: [`/api/profile/follow`],
-    queryFn: getFollowingListData,
+    queryFn: async () => await getFollowingListData().then(res => res),
   });
 
 export const useFollowUser = (memberId: string) =>

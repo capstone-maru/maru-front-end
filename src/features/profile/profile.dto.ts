@@ -65,7 +65,21 @@ export interface PutUserCardDTO extends SuccessBaseDTO {
 
 export interface GetFollowingListDTO extends SuccessBaseDTO {
   data: {
-    followingList: Record<string, string[]>;
+    followingList: Array<{
+      memberId: string;
+      nickname: string;
+      profileImage: string;
+    }>;
+  };
+}
+
+export interface GetMutualFollowUsersDTO extends SuccessBaseDTO {
+  data: {
+    followingList: Array<{
+      memberId: string;
+      nickname: string;
+      profileImage: string;
+    }>;
   };
 }
 
