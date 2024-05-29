@@ -44,6 +44,7 @@ export interface PostUserProfileDTO extends SuccessBaseDTO {
         modifiedAt: string;
       },
     ];
+    recommendOn: boolean;
   };
 }
 

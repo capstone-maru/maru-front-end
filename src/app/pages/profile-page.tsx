@@ -503,6 +503,7 @@ interface UserProfileInfoProps {
   certification?: boolean;
   myID: string;
   myName: string;
+  recommendOn: boolean;
 }
 
 function UserInfo({
@@ -515,8 +516,13 @@ function UserInfo({
   certification,
   myID,
   myName,
+  recommendOn,
 }: UserProfileInfoProps) {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(recommendOn);
+
+  useEffect(() => {
+    setIsChecked(recommendOn);
+  }, [recommendOn]);
 
   const [followList, setFollowList] = useState<
     Array<{
@@ -900,6 +906,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
   } = useUserProfile(memberId);
   const [profileImg, setProfileImg] = useState<string>('');
   const [posts, setPosts] = useState<PostsProps[]>();
+  const [recommendOn, setRecommendOn] = useState(false);
 
   const profileImgChanged = useRecoilValue(profileImgState);
 
@@ -939,6 +946,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
       });
       setProfileImg(profileData.data.profileImage);
       setPosts(profileData.data.posts);
+      setRecommendOn(profileData.data.recommendOn);
       if (authId === memberId) {
         setIsMySelf(true);
       }
@@ -957,6 +965,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         certification={userData?.univCertified}
         myID={authId ?? ''}
         myName={auth?.user?.name ?? ''}
+        recommendOn={recommendOn}
       />
       <Card
         name={userData?.name}

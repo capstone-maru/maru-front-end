@@ -4,7 +4,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { useChatRoomUser, useInviteUsers } from '@/features/chat';
+// import { useAuthValue } from '@/features/auth';
+import {
+  useChangeChatRoomName,
+  useChatRoomUser,
+  useDeleteChatRoom,
+  useInviteUsers,
+} from '@/features/chat';
 import { useSearchUser } from '@/features/profile';
 import { useToast } from '@/features/toast';
 
@@ -194,15 +200,19 @@ interface User {
 
 export function ChatMenu({
   roomId,
+  roomName,
   onMenuClicked,
 }: {
   roomId: number;
+  roomName: string;
   onMenuClicked: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [isCloseClick, setIsCloseClick] = useState<boolean>(false);
   const [isInviteClick, setIsInviteClick] = useState<boolean>(false);
   const users = useChatRoomUser(roomId);
   const [userList, setUserList] = useState<User[]>([]);
+
+  // const auth = useAuthValue();
 
   useEffect(() => {
     if (users.data !== undefined) {
@@ -247,6 +257,16 @@ export function ChatMenu({
   const { mutate: inviteUser } = useInviteUsers(roomId, [
     searchUser?.memberId ?? '',
   ]);
+  const { mutate: setInviteChatRoomName } = useChangeChatRoomName(
+    `${roomName}, ${searchUser?.nickname}`,
+    roomId,
+  );
+  const { mutate: setDeleteChatRoomName } = useChangeChatRoomName(
+    `${roomName}`,
+    roomId,
+  );
+
+  const { mutate: deleteChatRoom } = useDeleteChatRoom();
 
   function handleKeyUp(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.keyCode === 13) {
@@ -299,6 +319,7 @@ export function ChatMenu({
                     <styles.userList
                       onClick={() => {
                         inviteUser();
+                        setInviteChatRoomName();
                       }}
                     >
                       <styles.userImg src={searchUser?.profileImageUrl} />
@@ -310,7 +331,14 @@ export function ChatMenu({
             </styles.dropDownContainer>
           )}
         </styles.menuList>
-        <styles.menuList>채팅방 나가기</styles.menuList>
+        <styles.menuList
+          onClick={() => {
+            deleteChatRoom(roomId);
+            setDeleteChatRoomName();
+          }}
+        >
+          채팅방 나가기
+        </styles.menuList>
       </styles.menuListContainer>
     </styles.menuContainer>
   );
