@@ -36,9 +36,10 @@ const styles = {
 
     @media (max-width: 768px) {
       min-width: 390px;
-      width: 100vw;
+      width: 100dvw;
       padding: 1rem 2rem;
-      z-index: 10000;
+      justify-content: space-between;
+      z-index: 2147483647;
     }
   `,
   mobileMenuIcon: styled.div`

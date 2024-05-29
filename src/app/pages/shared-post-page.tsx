@@ -597,11 +597,11 @@ export function SharedPostPage({
                     onSuccess: () => {
                       if (type === 'hasRoom')
                         queryClient.invalidateQueries({
-                          queryKey: [`/api/shared/posts/studio/${postId}`],
+                          queryKey: [`/shared/posts/studio/${postId}`],
                         });
                       else
                         queryClient.invalidateQueries({
-                          queryKey: [`/api/shared/posts/dormitory/${postId}`],
+                          queryKey: [`/shared/posts/dormitory/${postId}`],
                         });
                     },
                   });
@@ -783,13 +783,11 @@ export function SharedPostPage({
                         onSuccess: () => {
                           if (type === 'hasRoom')
                             queryClient.invalidateQueries({
-                              queryKey: [`/api/shared/posts/studio/${postId}`],
+                              queryKey: [`/shared/posts/studio/${postId}`],
                             });
                           else
                             queryClient.invalidateQueries({
-                              queryKey: [
-                                `/api/shared/posts/dormitory/${postId}`,
-                              ],
+                              queryKey: [`/shared/posts/dormitory/${postId}`],
                             });
                         },
                       });
@@ -798,13 +796,11 @@ export function SharedPostPage({
                         onSuccess: () => {
                           if (type === 'hasRoom')
                             queryClient.invalidateQueries({
-                              queryKey: [`/api/shared/posts/studio/${postId}`],
+                              queryKey: [`/shared/posts/studio/${postId}`],
                             });
                           else
                             queryClient.invalidateQueries({
-                              queryKey: [
-                                `/api/shared/posts/dormitory/${postId}`,
-                              ],
+                              queryKey: [`/shared/posts/dormitory/${postId}`],
                             });
                         },
                       });
