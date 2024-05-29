@@ -146,6 +146,22 @@ export const useSharedPostProps = ({
             url: fileName,
             uploaded: true,
           })),
+          mates: data.participants.reduce<
+            Record<
+              string,
+              { memberId: string; nickname: string; profileImage: string }
+            >
+          >(
+            (
+              prev,
+              { memberId, nickname, profileImageFileName: profileImage },
+            ) => {
+              const next = { ...prev };
+              next[memberId] = { memberId, nickname, profileImage };
+              return next;
+            },
+            {},
+          ),
           mateLimit: data.roomInfo.recruitmentCapacity,
           expectedMonthlyFee: data.roomInfo.expectedPayment,
           houseSize: data.roomInfo.size,
@@ -189,6 +205,22 @@ export const useSharedPostProps = ({
             url: fileName,
             uploaded: true,
           })),
+          mates: data.participants.reduce<
+            Record<
+              string,
+              { memberId: string; nickname: string; profileImage: string }
+            >
+          >(
+            (
+              prev,
+              { memberId, nickname, profileImageFileName: profileImage },
+            ) => {
+              const next = { ...prev };
+              next[memberId] = { memberId, nickname, profileImage };
+              return next;
+            },
+            {},
+          ),
           mateLimit: data.recruitmentCapacity,
           expectedMonthlyFee: 0,
           houseSize: 0,
