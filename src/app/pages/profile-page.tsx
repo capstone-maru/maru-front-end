@@ -831,6 +831,9 @@ function Posts({ posts }: { posts?: PostsProps[] }) {
     <styles.postContainer>
       <h1>게시글</h1>
       <styles.posts>
+        {posts?.length === 0 && (
+          <styles.postName>게시글이 없습니다.</styles.postName>
+        )}
         {posts?.map(post => (
           <Link
             key={post.id}
