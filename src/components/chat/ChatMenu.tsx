@@ -1,12 +1,21 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { useChatRoomUser, useInviteUsers } from '@/features/chat';
+import { useAuthValue } from '@/features/auth';
+import {
+  chatOpenState,
+  useChangeChatRoomName,
+  useChatRoomUser,
+  useDeleteChatRoom,
+  useInviteUsers,
+} from '@/features/chat';
 import { useSearchUser } from '@/features/profile';
+import { useToast } from '@/features/toast';
 
 const styles = {
   menuContainer: styled.div`
@@ -194,16 +203,20 @@ interface User {
 
 export function ChatMenu({
   roomId,
+  roomName,
   onMenuClicked,
 }: {
   roomId: number;
+  roomName: string;
   onMenuClicked: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [isCloseClick, setIsCloseClick] = useState<boolean>(false);
   const [isInviteClick, setIsInviteClick] = useState<boolean>(false);
   const users = useChatRoomUser(roomId);
   const [userList, setUserList] = useState<User[]>([]);
-  const router = useRouter();
+  const [, setIsChatOpen] = useRecoilState(chatOpenState);
+
+  const auth = useAuthValue();
 
   useEffect(() => {
     if (users.data !== undefined) {
@@ -232,19 +245,54 @@ export function ChatMenu({
     }
   }, [searchData]);
 
+  const { createToast } = useToast();
+
   useEffect(() => {
-    if (error != null) router.replace('/error');
+    if (error != null) {
+      createToast({
+        message: '존재하지 않는 유저입니다.',
+        option: {
+          duration: 3000,
+        },
+      });
+    }
   }, [error]);
+
+  const [deleteName, setDeleteName] = useState('');
+
+  const createDeleteChatRoomName = () => {
+    let newName = '';
+    userList.map((user, index) => {
+      if (user.nickname !== auth?.user?.name) {
+        if (index !== 0) newName = `${newName}, ${user.nickname}`;
+        else newName = user.nickname;
+      }
+      return true;
+    });
+    setDeleteName(newName);
+  };
 
   const { mutate: inviteUser } = useInviteUsers(roomId, [
     searchUser?.memberId ?? '',
   ]);
+  const { mutate: setInviteChatRoomName } = useChangeChatRoomName(
+    `${roomName}, ${searchUser?.nickname}`,
+    roomId,
+  );
+  const { mutate: setDeleteChatRoomName } = useChangeChatRoomName(
+    `${deleteName}`,
+    roomId,
+  );
+
+  const { mutate: deleteChatRoom } = useDeleteChatRoom();
 
   function handleKeyUp(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.keyCode === 13) {
       mutateSearchUser();
     }
   }
+
+  const queryClient = useQueryClient();
 
   return (
     <styles.menuContainer>
@@ -290,7 +338,14 @@ export function ChatMenu({
                   {searchUser != null ? (
                     <styles.userList
                       onClick={() => {
-                        inviteUser();
+                        inviteUser(undefined, {
+                          onSuccess: () => {
+                            queryClient.invalidateQueries({
+                              queryKey: [`/chatRoom/${roomId}`],
+                            });
+                          },
+                        });
+                        setInviteChatRoomName();
                       }}
                     >
                       <styles.userImg src={searchUser?.profileImageUrl} />
@@ -302,12 +357,17 @@ export function ChatMenu({
             </styles.dropDownContainer>
           )}
         </styles.menuList>
-        <styles.menuList>채팅방 나가기</styles.menuList>
+        <styles.menuList
+          onClick={() => {
+            deleteChatRoom(roomId);
+            createDeleteChatRoomName();
+            setDeleteChatRoomName();
+            setIsChatOpen(false);
+          }}
+        >
+          채팅방 나가기
+        </styles.menuList>
       </styles.menuListContainer>
-      <styles.footer>
-        <styles.searchInput />
-        <styles.searchButton src="/icon-search.svg" />
-      </styles.footer>
     </styles.menuContainer>
   );
 }

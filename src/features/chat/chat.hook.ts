@@ -7,6 +7,8 @@ import {
   getEnterChatRoom,
   postInviteUser,
   postExitChatRoom,
+  putChatRoomName,
+  deleteChatRoom,
 } from './chat.api';
 
 export const useChatRoomList = (token: string | undefined) =>
@@ -46,4 +48,16 @@ export const useChatRoomUser = (roomId: number) =>
     queryKey: [`/chatRoom/${roomId}`],
     queryFn: async () => await getChatRoomUser(roomId),
     enabled: roomId !== undefined,
+  });
+
+export const useChangeChatRoomName = (roomName: string, roomId: number) =>
+  useMutation({
+    mutationFn: async () => {
+      await putChatRoomName(roomName, roomId);
+    },
+  });
+
+export const useDeleteChatRoom = () =>
+  useMutation({
+    mutationFn: deleteChatRoom,
   });

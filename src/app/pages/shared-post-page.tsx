@@ -557,7 +557,7 @@ export function SharedPostPage({
         memberId: post.data.publisherAccount.memberId,
         birthYear: post.data.publisherAccount.birthYear,
         nickname: post.data.publisherAccount.nickname,
-        profileImageFileName: '/profile_img_nonpercent.png',
+        profileImageFileName: post.data.publisherAccount.profileImageFileName,
         isScrapped: false,
       });
   });
@@ -756,11 +756,7 @@ export function SharedPostPage({
               <CircularProfileImage
                 diameter={110}
                 percentage={50}
-                url={
-                  selected?.profileImageFileName != null
-                    ? selected.profileImageFileName
-                    : '/profile_img_nonpercent.png'
-                }
+                url={selected?.profileImageFileName ?? ''}
               />
               <styles.profileInfo>
                 <p className="name">{selected?.nickname}</p>
@@ -779,7 +775,7 @@ export function SharedPostPage({
                   if (selected == null) return;
 
                   chattingMutate({
-                    roomName: selected.nickname,
+                    roomName: `${selected.nickname}, ${auth?.user?.name}`,
                     members: [selected.memberId],
                     myID: auth?.user?.memberId ?? '',
                   });
