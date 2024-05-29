@@ -458,7 +458,7 @@ export function VitalSection({
               event.preventDefault();
               fromAddrToCoord({ query: searchText })
                 .then(response => {
-                  setAddresses(response.data.addresses);
+                  setAddresses(response);
                 })
                 .catch((error: Error) => {
                   console.log(error);
@@ -479,7 +479,7 @@ export function VitalSection({
                       setSearchText(event.target.value);
                     }}
                     onClick={() => {
-                      setLocationBoxClick(prev => !prev);
+                      if (isMySelf) setLocationBoxClick(prev => !prev);
                     }}
                   />
                 </styles.searchBox>
@@ -631,7 +631,9 @@ export function VitalSection({
                   max={11}
                   step={1}
                   value={ageValue}
-                  onChange={handleAgeChange}
+                  onChange={e => {
+                    if (isMySelf) handleAgeChange(e);
+                  }}
                 />
               </styles.sliderContainer>
               <styles.value>{ageValueString}</styles.value>

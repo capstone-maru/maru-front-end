@@ -21,16 +21,15 @@ const styles = {
     flex-direction: column;
     justify-content: center;
     align-items: flex-end;
-    gap: 0.25rem;
-    align-self: stretch;
   `,
   messageBody: styled.div`
     display: flex;
-    align-items: flex-start;
+    align-items: flex-end;
     gap: 0.5rem;
   `,
   message: styled.div`
     display: flex;
+    width: 85%;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.625rem;
@@ -43,7 +42,7 @@ const styles = {
   `,
   messageInfo: styled.div`
     display: flex;
-    margin-top: 2rem;
+    width: 3.5rem;
     align-items: flex-end;
     gap: 0.25rem;
     align-self: stretch;

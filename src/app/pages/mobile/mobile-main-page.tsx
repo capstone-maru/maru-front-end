@@ -158,8 +158,8 @@ export function MobileMainPage() {
                   <UserCard
                     name={nickname}
                     percentage={score}
-                    location={location}
                     profileImage={profileImageUrl}
+                    location={location}
                   />
                 </Link>
               ),

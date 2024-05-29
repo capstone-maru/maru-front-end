@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import {
+  type GetMutualFollowUsersDTO,
   type GetFollowingListDTO,
   type GetRecommendMatesDTO,
   type GetUserCardDTO,
@@ -10,6 +11,9 @@ import {
 } from './profile.dto';
 
 import { type CardType } from '@/entities/shared-posts-filter';
+
+export const getMutualFollowUsers = async () =>
+  await axios.get<GetMutualFollowUsersDTO>('/maru-api/profile/mutual/follow');
 
 export const postUserProfile = async (memberId: string) => {
   const res = await axios.post<PostUserProfileDTO>(`/maru-api/profile`, {
@@ -99,3 +103,10 @@ export const getRecommendMates = async (cardOption: CardType) => {
   );
   return res.data;
 };
+
+export const patchProfileImage = async (fileName: string) =>
+  await axios.patch('/maru-api/profile/image', fileName, {
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+  });

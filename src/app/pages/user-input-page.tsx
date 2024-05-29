@@ -1,12 +1,13 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 
 import { VitalSection, OptionSection } from '@/components';
 import { useAuthValue, useUserData } from '@/features/auth';
 import { usePutUserCard } from '@/features/profile';
+import { useToast } from '@/features/toast';
 import Location from '@/public/option-img/location_on.svg';
 import Meeting from '@/public/option-img/meeting_room.svg';
 import Person from '@/public/option-img/person.svg';
@@ -286,6 +287,8 @@ export function UserInputPage() {
   const { data } = useUserData(auth?.accessToken !== undefined);
   const [user, setUserData] = useState<UserProps | null>(null);
 
+  const router = useRouter();
+
   useEffect(() => {
     if (data !== undefined) {
       const { name, gender, birthYear, memberId, myCardId, mateCardId } = data;
@@ -316,7 +319,18 @@ export function UserInputPage() {
 
   const [mateAge, setMateAge] = useState<number | undefined>(0);
 
+  const { createToast } = useToast();
+
   const handleButtonClick = () => {
+    if (locationInput == null || locationInput === '') {
+      createToast({
+        message: '필수 항목을 입력하셔야 합니다.',
+        option: {
+          duration: 3000,
+        },
+      });
+      return;
+    }
     const location = locationInput ?? '';
     const myOptions: string[] = [mbti ?? '', major ?? '', budget ?? ''];
     myFeatures?.options?.forEach(option => myOptions.push(option));
@@ -351,6 +365,7 @@ export function UserInputPage() {
         location,
         features: mutateMateFeatures,
       });
+      router.replace('/');
     } catch (error) {
       console.error(error);
     }
@@ -371,7 +386,7 @@ export function UserInputPage() {
     case 0:
       ageString = '동갑';
       break;
-    case 11:
+    case undefined:
       ageString = '상관없어요';
       break;
     default:
@@ -541,14 +556,12 @@ export function UserInputPage() {
           </styles.checkContainer>
         </styles.cardContainer>
       </styles.contentContainer>
-      <Link href="/">
-        <styles.mateButtonContainer onClick={handleButtonClick}>
-          <styles.mateButtonDescription>
-            나의 메이트 확인하기
-          </styles.mateButtonDescription>
-          <styles.mateButtonIcon src="/chevron-right.svg" />
-        </styles.mateButtonContainer>
-      </Link>
+      <styles.mateButtonContainer onClick={handleButtonClick}>
+        <styles.mateButtonDescription>
+          나의 메이트 확인하기
+        </styles.mateButtonDescription>
+        <styles.mateButtonIcon src="/chevron-right.svg" />
+      </styles.mateButtonContainer>
     </styles.pageContainer>
   );
 }

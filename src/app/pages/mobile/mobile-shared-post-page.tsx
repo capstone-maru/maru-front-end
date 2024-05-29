@@ -302,7 +302,7 @@ const styles = {
     .name {
       color: #000;
       font-family: 'Noto Sans KR';
-      font-size: 1rem;
+      font-size: 0.875rem;
       font-style: normal;
       font-weight: 500;
       line-height: normal;
@@ -446,26 +446,6 @@ export function MobileSharedPostPage({
       enabled: type === 'dormitory' && auth?.accessToken != null,
     });
 
-  useEffect(() => {
-    if (sharedPost?.data.address.roadAddress != null) {
-      fromAddrToCoord({ query: sharedPost?.data.address.roadAddress }).then(
-        res => {
-          const address = res.data.addresses.shift();
-          if (address != null && mapRef.current != null) {
-            const center = new naver.maps.LatLng(+address.y, +address.x);
-            setMap(
-              new naver.maps.Map(mapRef.current, {
-                center,
-                disableKineticPan: false,
-                scrollWheel: false,
-              }),
-            );
-          }
-        },
-      );
-    }
-  }, [sharedPost]);
-
   const { mutate: chattingMutate } = useCreateChatRoom();
 
   const isLoading = useMemo(
@@ -479,6 +459,26 @@ export function MobileSharedPostPage({
     [type, sharedPost, dormitorySharedPost],
   );
 
+  useEffect(() => {
+    if (post == null) return;
+
+    if (post.data.address.roadAddress != null) {
+      fromAddrToCoord({ query: post.data.address.roadAddress }).then(res => {
+        const address = res.shift();
+        if (address != null && mapRef.current != null) {
+          const center = new naver.maps.LatLng(+address.y, +address.x);
+          setMap(
+            new naver.maps.Map(mapRef.current, {
+              center,
+              disableKineticPan: false,
+              scrollWheel: false,
+            }),
+          );
+        }
+      });
+    }
+  }, [post]);
+
   const [selected, setSelected] = useState<
     | {
         memberId: string;
@@ -489,6 +489,17 @@ export function MobileSharedPostPage({
       }
     | undefined
   >(post != null ? post.data.participants[0] : undefined);
+
+  useEffect(() => {
+    if (post?.data.participants.length === 0 && selected == null)
+      setSelected({
+        memberId: post.data.publisherAccount.memberId,
+        birthYear: post.data.publisherAccount.birthYear,
+        nickname: post.data.publisherAccount.nickname,
+        profileImageFileName: '/profile_img_nonpercent.png',
+        isScrapped: false,
+      });
+  });
 
   useEffect(() => {
     if (post == null || selected != null) return;
@@ -518,6 +529,11 @@ export function MobileSharedPostPage({
 
   if (isLoading || post == null) return <></>;
 
+  const DefaultImg = [
+    'https://s3-alpha-sig.figma.com/img/efd0/12b5/6a0078a4aa75b0e9a9fb53a6d9a7c560?Expires=1717372800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=NwXjleKGoJwaCi2N64-8F-IXXmnDeDiW7l89SdtxBr~I8HZmj9Q10Q-hS2okLsC8BlfKkVX3mkXGwxRhi8ZkW6IibIhnF03oD-A7nTx~psdkoAmQNrCk1-Hzzp2GLm6VYw-M-d~I6g1joFaK~piDCRNZnix2gzTWoL7TT4VWEkLgUMYG9h-ri2dIE76HkBdnd3XDyfNBIA74PXwIAOn5JiZBOpa9JZ-b4m813TsA6vlSx53Og3K94xrWJKc1gjgLS7TRgXgXx-9Uj5eTerl7J5Wu1EIMERHhlXgJp-kL-siZa0wz2ZuZaLHgd54E5tWJJVm0m~vRArxADyi6~QQKPg__',
+    'https://s3-alpha-sig.figma.com/img/ff85/788d/96b4a3ec1b31b6baf36b11c772529753?Expires=1717372800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=cgciQ~G5~mtUH65spDt4W4Knf~wmgUupCCRhSEq9h73kTWCBqTNwsAAYbY4ZgmJZB36PCnHA2ctPSM~hInMuGwkKL7D-mruzGWgJ~moxkQtqbdq4V9pF2UbOP8XbcEWM1fSUQZyR5mZUzfkSn7WrnwgwtUyXb1~DhF6RDokp~bnzfGqxGby4tk9PcXiJrNVPzE~I28ERMbn3hLITWYcX5KeymYfIk9eO5ghmPsL4yU1~PC0E7rZpdjeTWT3kbNebhXjJsy9-mlLL8eUW0vx69IMxsKYO6ht~0X4wMb~bGaVS040RrdKhYW0qDKJteLWA~lSWRHPmMd1HqlkNMjdm-g__',
+  ];
+
   return (
     <styles.container>
       <styles.contentContainer>
@@ -528,7 +544,11 @@ export function MobileSharedPostPage({
                 <CircularProfileImage
                   diameter={89}
                   percentage={50}
-                  url="https://s3-alpha-sig.figma.com/img/59a5/3c6f/ae49249b51c7d5d81ab89eeb0bf610f1?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ou47yOoRJ57c0QqtWD~w0S6BP1UYWpmpCOCgsq9YTqfbNq~TmwfAI2T24-fYxpKSiBDv8y1Tkup68OTc5v2ZHIG~~CLwn6NCBF7QqTu7sQB0oPCvdRFdBm~y4wI8VEIErYhPsCuV2k7L0GVlJss4KkeM1tt1RX0kwfINvh03yzFf8wtjd0xsUJjMaKjNxU3muS2Cj8BZymckjgNGrTvafiGbAfHt0Bw2fTkH8tctfNNXpnZgqrEeDldEuENV~g-fSsLSFbMceZGN5ILEd9gd6fnY2YYeB7qtb9xozvczwTbz6kYIzzHJc7veYTsvxjqx~qTiKF2Yrn45cn5pXvOv1w__"
+                  url={
+                    selected?.profileImageFileName != null
+                      ? selected.profileImageFileName
+                      : '/profile_img_nonpercent.png'
+                  }
                 />
                 <styles.profileInfo>
                   <p className="name">{selected?.nickname}</p>
@@ -555,14 +575,12 @@ export function MobileSharedPostPage({
                             onSuccess: () => {
                               if (type === 'hasRoom')
                                 queryClient.invalidateQueries({
-                                  queryKey: [
-                                    `/api/shared/posts/studio/${postId}`,
-                                  ],
+                                  queryKey: [`/shared/posts/studio/${postId}`],
                                 });
                               else
                                 queryClient.invalidateQueries({
                                   queryKey: [
-                                    `/api/shared/posts/dormitory/${postId}`,
+                                    `/shared/posts/dormitory/${postId}`,
                                   ],
                                 });
                             },
@@ -572,14 +590,12 @@ export function MobileSharedPostPage({
                             onSuccess: () => {
                               if (type === 'hasRoom')
                                 queryClient.invalidateQueries({
-                                  queryKey: [
-                                    `/api/shared/posts/studio/${postId}`,
-                                  ],
+                                  queryKey: [`/shared/posts/studio/${postId}`],
                                 });
                               else
                                 queryClient.invalidateQueries({
                                   queryKey: [
-                                    `/api/shared/posts/dormitory/${postId}`,
+                                    `/shared/posts/dormitory/${postId}`,
                                   ],
                                 });
                             },
@@ -596,6 +612,7 @@ export function MobileSharedPostPage({
                       chattingMutate({
                         roomName: selected.nickname,
                         members: [selected.memberId],
+                        myID: auth?.user?.memberId ?? '',
                       });
                     }}
                   >
@@ -619,7 +636,11 @@ export function MobileSharedPostPage({
             </styles.selectedMateContainer>
           </styles.mateContainer>
           <styles.ImageGrid
-            images={post.data.roomImages.map(({ fileName }) => fileName)}
+            images={
+              post.data.roomImages.length === 0
+                ? DefaultImg.map(fileName => fileName)
+                : post.data.roomImages.map(({ fileName }) => fileName)
+            }
           />
           <styles.postInfoContainer>
             <div>
@@ -632,11 +653,11 @@ export function MobileSharedPostPage({
                     onSuccess: () => {
                       if (type === 'hasRoom')
                         queryClient.invalidateQueries({
-                          queryKey: [`/api/shared/posts/studio/${postId}`],
+                          queryKey: [`/shared/posts/studio/${postId}`],
                         });
                       else
                         queryClient.invalidateQueries({
-                          queryKey: [`/api/shared/posts/dormitory/${postId}`],
+                          queryKey: [`/shared/posts/dormitory/${postId}`],
                         });
                     },
                   });

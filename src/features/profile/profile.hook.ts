@@ -11,20 +11,28 @@ import {
   postEmail,
   postCertificate,
   getRecommendMates,
+  getMutualFollowUsers,
 } from './profile.api';
 
 import { type CardType } from '@/entities/shared-posts-filter';
+
+export const useMutualFollowUsers = (enabled: boolean) =>
+  useQuery({
+    queryKey: ['/profile/mutual/follow'],
+    queryFn: async () =>
+      await getMutualFollowUsers().then(res => res.data.data.followingList),
+    enabled,
+  });
 
 export const useUserProfile = (memberId: string) =>
   useMutation({
     mutationFn: async () => await postUserProfile(memberId),
     onSuccess: data => data.data,
-    onError: error => error,
   });
 
 export const useUserCard = (cardId: number) =>
   useQuery({
-    queryKey: [`/api/profile/card/${cardId}`],
+    queryKey: [`/profile/card/${cardId}`],
     queryFn: async () => await getUserCard(cardId),
     enabled: cardId !== undefined,
   });
@@ -44,8 +52,8 @@ export const usePutUserCard = (cardId: number) =>
 
 export const useFollowingListData = () =>
   useQuery({
-    queryKey: [`/api/profile/follow`],
-    queryFn: getFollowingListData,
+    queryKey: [`/profile/follow`],
+    queryFn: async () => await getFollowingListData().then(res => res),
   });
 
 export const useFollowUser = (memberId: string) =>
@@ -91,7 +99,7 @@ export const useRecommendMates = ({
   cardOption: CardType;
 }) =>
   useQuery({
-    queryKey: ['/api/profile/recommend', cardOption],
+    queryKey: ['/profile/recommend', cardOption],
     queryFn: async () => await getRecommendMates(cardOption),
     enabled,
   });

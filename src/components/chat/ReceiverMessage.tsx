@@ -6,8 +6,8 @@ import { getLocalTime } from '@/shared';
 
 const styles = {
   container: styled.div`
-    display: flex;
-    align-items: flex-start;
+    display: inline-flex;
+    width: 100%;
     gap: 0.25rem;
     flex-shrink: 0;
   `,
@@ -74,7 +74,6 @@ const styles = {
     justify-content: center;
     align-items: flex-end;
     gap: 0.25rem;
-    align-self: stretch;
   `,
   messageBody: styled.div`
     display: flex;
@@ -83,6 +82,7 @@ const styles = {
   `,
   message: styled.div`
     display: flex;
+    width: 80%;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.625rem;
@@ -103,6 +103,7 @@ const styles = {
   `,
   messageInfo: styled.div`
     display: flex;
+    width: 3.5rem;
     margin-top: 2rem;
     align-items: flex-end;
     gap: 0.25rem;

@@ -87,12 +87,14 @@ const styles = {
   `,
   senderFrame: styled.div`
     display: flex;
+    width: 20rem;
     justify-content: flex-end;
     padding-right: 0.8rem;
-    margin: 0.8rem 0;
+    margin: 0.8rem 0 0.8rem 5rem;
   `,
   receiverFrame: styled.div`
     display: flex;
+    width: 23rem;
     justify-content: flex-start;
     padding-left: 0.8rem;
     margin: 0.8rem 0;
