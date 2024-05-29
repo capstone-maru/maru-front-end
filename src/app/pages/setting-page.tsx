@@ -12,6 +12,7 @@ import {
   useUserCard,
   useUserProfile,
 } from '@/features/profile';
+import { useToast } from '@/features/toast';
 import Location from '@/public/option-img/location_on.svg';
 import Meeting from '@/public/option-img/meeting_room.svg';
 import Person from '@/public/option-img/person.svg';
@@ -275,7 +276,19 @@ export function SettingPage({ cardId }: { cardId: number }) {
   const { mutate } = usePutUserCard(cardId);
   const router = useRouter();
 
+  const { createToast } = useToast();
+
   const saveData = () => {
+    if (locationInput == null || locationInput === '') {
+      createToast({
+        message: '필수 항목을 입력하셔야 합니다.',
+        option: {
+          duration: 3000,
+        },
+      });
+      return;
+    }
+
     const location = locationInput ?? '';
     const options: string[] = [mbti ?? '', major ?? '', budget ?? ''];
     features?.options?.forEach(option => options.push(option));
