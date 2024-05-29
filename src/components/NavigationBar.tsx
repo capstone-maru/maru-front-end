@@ -39,7 +39,7 @@ const styles = {
       width: 100dvw;
       padding: 1rem 2rem;
       justify-content: space-between;
-      z-index: 2147483647;
+      z-index: 2000;
     }
   `,
   mobileMenuIcon: styled.div`

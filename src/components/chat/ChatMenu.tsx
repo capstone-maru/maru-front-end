@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { useChatRoomUser, useInviteUsers } from '@/features/chat';
 import { useSearchUser } from '@/features/profile';
+import { useToast } from '@/features/toast';
 
 const styles = {
   menuContainer: styled.div`
@@ -203,7 +203,6 @@ export function ChatMenu({
   const [isInviteClick, setIsInviteClick] = useState<boolean>(false);
   const users = useChatRoomUser(roomId);
   const [userList, setUserList] = useState<User[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     if (users.data !== undefined) {
@@ -232,8 +231,17 @@ export function ChatMenu({
     }
   }, [searchData]);
 
+  const { createToast } = useToast();
+
   useEffect(() => {
-    if (error != null) router.replace('/error');
+    if (error != null) {
+      createToast({
+        message: '존재하지 않는 유저입니다.',
+        option: {
+          duration: 3000,
+        },
+      });
+    }
   }, [error]);
 
   const { mutate: inviteUser } = useInviteUsers(roomId, [

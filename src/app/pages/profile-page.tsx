@@ -18,6 +18,7 @@ import {
   useGetCode,
   useUnfollowUser,
   useUserProfile,
+  useProfileSetting,
 } from '@/features/profile';
 
 const styles = {
@@ -548,7 +549,10 @@ function UserInfo({
     })();
   }, [setIsMarked]);
 
+  const { mutate: settingRecommend } = useProfileSetting();
+
   const toggleSwitch = () => {
+    settingRecommend(!isChecked);
     setIsChecked(!isChecked);
   };
 
@@ -603,7 +607,11 @@ function UserInfo({
       </styles.userProfileWithoutInfo>
       <styles.userInfoContainer>
         <styles.userName>{name}</styles.userName>
-        <ToggleSwitch isChecked onToggle={toggleSwitch} isMySelf={isMySelf} />
+        <ToggleSwitch
+          isChecked={isChecked}
+          onToggle={toggleSwitch}
+          isMySelf={isMySelf}
+        />
         <styles.userDetailedContainer>
           <div
             style={{

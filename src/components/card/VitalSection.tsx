@@ -52,7 +52,7 @@ const styles = {
     }
   `,
   vitalListItemDescription: styled.p`
-    width: 5rem;
+    width: 6rem;
     color: var(--Main-2, #767d86);
     font-family: 'Noto Sans KR';
     font-size: 1.125rem;
