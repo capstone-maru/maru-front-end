@@ -12,6 +12,7 @@ import {
   useUserCard,
   useUserProfile,
 } from '@/features/profile';
+import { useToast } from '@/features/toast';
 import Location from '@/public/option-img/location_on.svg';
 import Meeting from '@/public/option-img/meeting_room.svg';
 import Person from '@/public/option-img/person.svg';
@@ -185,7 +186,12 @@ export function SettingPage({ cardId }: { cardId: number }) {
     roomSharingOption?: string;
     mateAge?: number;
     options?: Set<string>;
-  }>({ options: new Set() });
+  }>({
+    smoking: '상관없어요',
+    roomSharingOption: '상관없어요',
+    mateAge: 0,
+    options: new Set(),
+  });
 
   const [initialMbti, setInitialMbti] = useState('');
   const [initialMajor, setInitialMajor] = useState('');
@@ -239,34 +245,50 @@ export function SettingPage({ cardId }: { cardId: number }) {
       key: 'smoking' | 'roomSharingOption' | 'mateAge',
       value: string | number,
     ) => {
-      setFeatures(prev => {
-        if (prev?.[key] === value) {
-          return { ...prev, [key]: undefined };
-        }
-        return { ...prev, [key]: value };
-      });
+      if (isMySelf) {
+        setFeatures(prev => {
+          if (prev?.[key] === value) {
+            return { ...prev, [key]: undefined };
+          }
+          return { ...prev, [key]: value };
+        });
+      }
     },
     [],
   );
 
   const handleOptionalFeatureChange = useCallback((option: string) => {
-    setFeatures(prev => {
-      const { options } = prev;
-      const newOptions = new Set(options);
+    if (isMySelf) {
+      setFeatures(prev => {
+        const { options } = prev;
+        const newOptions = new Set(options);
 
-      if (options != null && options.has(option)) {
-        newOptions.delete(option);
-        console.log(newOptions);
-      } else newOptions.add(option);
+        if (options != null && options.has(option)) {
+          newOptions.delete(option);
+          console.log(newOptions);
+        } else newOptions.add(option);
 
-      return { ...prev, options: newOptions };
-    });
+        return { ...prev, options: newOptions };
+      });
+    }
   }, []);
 
   const { mutate } = usePutUserCard(cardId);
   const router = useRouter();
 
+  const { createToast } = useToast();
+
   const saveData = () => {
+    if (locationInput == null || locationInput === '') {
+      createToast({
+        message: '필수 항목을 입력하셔야 합니다.',
+        option: {
+          duration: 3000,
+        },
+      });
+      return;
+    }
+
     const location = locationInput ?? '';
     const options: string[] = [mbti ?? '', major ?? '', budget ?? ''];
     features?.options?.forEach(option => options.push(option));
@@ -278,7 +300,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
       options: JSON.stringify(options.filter(value => value !== '')),
     };
 
-    mutate({ location, features: myFeatures });
+    if (isMySelf) mutate({ location, features: myFeatures });
   };
 
   const handleBeforeUnload = () => {
@@ -332,7 +354,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
       case 0:
         ageString = '동갑';
         break;
-      case 11:
+      case undefined:
         ageString = '상관없어요';
         break;
       default:

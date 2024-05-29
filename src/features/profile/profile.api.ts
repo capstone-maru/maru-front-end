@@ -103,3 +103,10 @@ export const getRecommendMates = async (cardOption: CardType) => {
   );
   return res.data;
 };
+
+export const patchProfileImage = async (fileName: string) =>
+  await axios.patch('/maru-api/profile/image', fileName, {
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+  });

@@ -73,14 +73,26 @@ export function CircularProfileImage({
   url,
   percentage,
   diameter,
+  hideScore,
 }: {
   url: string;
   percentage: number;
   diameter: number;
+  hideScore?: boolean;
 }) {
   return (
     <styles.container $diameter={diameter}>
       <styles.backgroundContainer $url={url} />
+      {hideScore === true && (
+        <>
+          <styles.CircularProgressBar
+            diameter={diameter}
+            percentage={percentage}
+            strokeWidth={10}
+          />
+          <styles.percentage>{percentage}%</styles.percentage>
+        </>
+      )}
     </styles.container>
   );
 }

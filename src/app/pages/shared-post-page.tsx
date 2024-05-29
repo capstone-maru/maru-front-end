@@ -498,26 +498,6 @@ export function SharedPostPage({
       enabled: type === 'dormitory' && auth?.accessToken != null,
     });
 
-  useEffect(() => {
-    if (sharedPost?.data.address.roadAddress != null) {
-      fromAddrToCoord({ query: sharedPost?.data.address.roadAddress }).then(
-        res => {
-          const address = res.data.addresses.shift();
-          if (address != null && mapRef.current != null) {
-            const center = new naver.maps.LatLng(+address.y, +address.x);
-            setMap(
-              new naver.maps.Map(mapRef.current, {
-                center,
-                disableKineticPan: false,
-                scrollWheel: false,
-              }),
-            );
-          }
-        },
-      );
-    }
-  }, [sharedPost]);
-
   const [, setIsChatOpen] = useRecoilState(chatOpenState);
 
   const { mutate: chattingMutate } = useCreateChatRoom();
@@ -532,6 +512,26 @@ export function SharedPostPage({
     () => (type === 'hasRoom' ? sharedPost : dormitorySharedPost),
     [type, sharedPost, dormitorySharedPost],
   );
+
+  useEffect(() => {
+    if (post == null) return;
+
+    if (post.data.address.roadAddress != null) {
+      fromAddrToCoord({ query: post.data.address.roadAddress }).then(res => {
+        const address = res.shift();
+        if (address != null && mapRef.current != null) {
+          const center = new naver.maps.LatLng(+address.y, +address.x);
+          setMap(
+            new naver.maps.Map(mapRef.current, {
+              center,
+              disableKineticPan: false,
+              scrollWheel: false,
+            }),
+          );
+        }
+      });
+    }
+  }, [post]);
 
   const [showMateCard, setShowMateCard] = useState(false);
 
@@ -550,6 +550,17 @@ export function SharedPostPage({
       }
     | undefined
   >(post != null ? post.data.participants[0] : undefined);
+
+  useEffect(() => {
+    if (post?.data.participants.length === 0 && selected == null)
+      setSelected({
+        memberId: post.data.publisherAccount.memberId,
+        birthYear: post.data.publisherAccount.birthYear,
+        nickname: post.data.publisherAccount.nickname,
+        profileImageFileName: '/profile_img_nonpercent.png',
+        isScrapped: false,
+      });
+  });
 
   useEffect(() => {
     if (post == null || selected != null) return;
@@ -579,12 +590,21 @@ export function SharedPostPage({
 
   if (isLoading || post == null) return <></>;
 
+  const DefaultImg = [
+    'https://s3-alpha-sig.figma.com/img/efd0/12b5/6a0078a4aa75b0e9a9fb53a6d9a7c560?Expires=1717372800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=NwXjleKGoJwaCi2N64-8F-IXXmnDeDiW7l89SdtxBr~I8HZmj9Q10Q-hS2okLsC8BlfKkVX3mkXGwxRhi8ZkW6IibIhnF03oD-A7nTx~psdkoAmQNrCk1-Hzzp2GLm6VYw-M-d~I6g1joFaK~piDCRNZnix2gzTWoL7TT4VWEkLgUMYG9h-ri2dIE76HkBdnd3XDyfNBIA74PXwIAOn5JiZBOpa9JZ-b4m813TsA6vlSx53Og3K94xrWJKc1gjgLS7TRgXgXx-9Uj5eTerl7J5Wu1EIMERHhlXgJp-kL-siZa0wz2ZuZaLHgd54E5tWJJVm0m~vRArxADyi6~QQKPg__',
+    'https://s3-alpha-sig.figma.com/img/ff85/788d/96b4a3ec1b31b6baf36b11c772529753?Expires=1717372800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=cgciQ~G5~mtUH65spDt4W4Knf~wmgUupCCRhSEq9h73kTWCBqTNwsAAYbY4ZgmJZB36PCnHA2ctPSM~hInMuGwkKL7D-mruzGWgJ~moxkQtqbdq4V9pF2UbOP8XbcEWM1fSUQZyR5mZUzfkSn7WrnwgwtUyXb1~DhF6RDokp~bnzfGqxGby4tk9PcXiJrNVPzE~I28ERMbn3hLITWYcX5KeymYfIk9eO5ghmPsL4yU1~PC0E7rZpdjeTWT3kbNebhXjJsy9-mlLL8eUW0vx69IMxsKYO6ht~0X4wMb~bGaVS040RrdKhYW0qDKJteLWA~lSWRHPmMd1HqlkNMjdm-g__',
+  ];
+
   return (
     <styles.container>
       <styles.contentContainer>
         <styles.postContainer>
           <styles.ImageGrid
-            images={post.data.roomImages.map(({ fileName }) => fileName)}
+            images={
+              post.data.roomImages.length === 0
+                ? DefaultImg.map(fileName => fileName)
+                : post.data.roomImages.map(({ fileName }) => fileName)
+            }
           />
           <styles.postInfoContainer>
             <div>
@@ -738,7 +758,11 @@ export function SharedPostPage({
               <CircularProfileImage
                 diameter={110}
                 percentage={50}
-                url={selected?.profileImageFileName ?? ''}
+                url={
+                  selected?.profileImageFileName != null
+                    ? selected.profileImageFileName
+                    : '/profile_img_nonpercent.png'
+                }
               />
               <styles.profileInfo>
                 <p className="name">{selected?.nickname}</p>
@@ -759,6 +783,7 @@ export function SharedPostPage({
                   chattingMutate({
                     roomName: selected.nickname,
                     members: [selected.memberId],
+                    myID: auth?.user?.memberId ?? '',
                   });
 
                   setTimeout(() => {
