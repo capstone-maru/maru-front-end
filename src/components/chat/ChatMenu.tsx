@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-// import { useAuthValue } from '@/features/auth';
+import { useAuthValue } from '@/features/auth';
 import {
+  chatOpenState,
   useChangeChatRoomName,
   useChatRoomUser,
   useDeleteChatRoom,
@@ -211,8 +213,9 @@ export function ChatMenu({
   const [isInviteClick, setIsInviteClick] = useState<boolean>(false);
   const users = useChatRoomUser(roomId);
   const [userList, setUserList] = useState<User[]>([]);
+  const [, setIsChatOpen] = useRecoilState(chatOpenState);
 
-  // const auth = useAuthValue();
+  const auth = useAuthValue();
 
   useEffect(() => {
     if (users.data !== undefined) {
@@ -254,6 +257,20 @@ export function ChatMenu({
     }
   }, [error]);
 
+  const [deleteName, setDeleteName] = useState('');
+
+  const createDeleteChatRoomName = () => {
+    let newName = '';
+    userList.map((user, index) => {
+      if (user.nickname !== auth?.user?.name) {
+        if (index !== 0) newName = `${newName}, ${user.nickname}`;
+        else newName = user.nickname;
+      }
+      return true;
+    });
+    setDeleteName(newName);
+  };
+
   const { mutate: inviteUser } = useInviteUsers(roomId, [
     searchUser?.memberId ?? '',
   ]);
@@ -262,7 +279,7 @@ export function ChatMenu({
     roomId,
   );
   const { mutate: setDeleteChatRoomName } = useChangeChatRoomName(
-    `${roomName}`,
+    `${deleteName}`,
     roomId,
   );
 
@@ -334,7 +351,9 @@ export function ChatMenu({
         <styles.menuList
           onClick={() => {
             deleteChatRoom(roomId);
+            createDeleteChatRoomName();
             setDeleteChatRoomName();
+            setIsChatOpen(false);
           }}
         >
           채팅방 나가기

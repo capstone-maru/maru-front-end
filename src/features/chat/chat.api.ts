@@ -99,10 +99,10 @@ export const getChatRoomUser = async (roomId: number) =>
 
 export const putChatRoomName = async (roomName: string, roomId: number) =>
   await axios
-    .put(`/maru-api/chatRoom/${roomId}`, {
+    .patch(`/maru-api/chatRoom/${roomId}`, {
       roomName: roomName,
     })
     .then(res => res.data);
 
 export const deleteChatRoom = async (roomId: number) =>
-  await axios.delete(`maru-api/chatRoom/${roomId}/exit`);
+  await axios.delete(`/maru-api/chatRoom/${roomId}/exit`);

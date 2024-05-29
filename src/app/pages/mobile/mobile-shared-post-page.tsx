@@ -496,7 +496,7 @@ export function MobileSharedPostPage({
         memberId: post.data.publisherAccount.memberId,
         birthYear: post.data.publisherAccount.birthYear,
         nickname: post.data.publisherAccount.nickname,
-        profileImageFileName: '/profile_img_nonpercent.png',
+        profileImageFileName: post.data.publisherAccount.profileImageFileName,
         isScrapped: false,
       });
   });
