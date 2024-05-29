@@ -16,7 +16,6 @@ import {
   useSharedPostsFilter,
   type SharedPostsType,
 } from '@/entities/shared-posts-filter';
-import { useAuthValue, useUserData } from '@/features/auth';
 
 const styles = {
   container: styled.div`
@@ -38,21 +37,14 @@ export function SharedPostFilters({
 }: {
   selected: SharedPostsType;
 } & React.ComponentProps<'div'>) {
-  const auth = useAuthValue();
-  const { data: userData } = useUserData(auth?.accessToken != null);
-
   const { filter } = useSharedPostsFilter();
 
   const mateCardFilterTitle = useMemo(() => {
-    if (selected === 'homeless' && filter.cardType === 'mate')
-      return '메이트카드';
-    if (selected === 'homeless' && filter.cardType === 'my') return '마이카드';
-
+    if (filter.cardType === 'mate') return '메이트카드';
+    if (filter.cardType === 'my') return '마이카드';
     if (filter.cardType == null) return SharedPostsFilterTypeValue.cardType;
-    if (filter.cardType === 'mate') return `${userData?.name}님이 원하는 방`;
-    if (filter.cardType === 'my') return `${userData?.name}님을 원하는 방`;
     return 'error';
-  }, [selected, filter.cardType, userData?.name]);
+  }, [filter.cardType]);
 
   return (
     <styles.container className={className}>
