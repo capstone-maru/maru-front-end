@@ -11,7 +11,7 @@ import {
 
 export const useChatRoomList = (token: string | undefined) =>
   useQuery({
-    queryKey: [`/api/chatRoom`, token],
+    queryKey: [`/chatRoom`, token],
     queryFn: async () => await getChatRoomList(),
     enabled: token !== undefined,
   });
@@ -30,7 +30,7 @@ export const useInviteUsers = (roomId: number, members: string[]) =>
 
 export const useEnterChatRoom = (roomId: number, page: number, size: number) =>
   useQuery({
-    queryKey: [`/api/chatRoom/${roomId}/chat`, page, size],
+    queryKey: [`/chatRoom/${roomId}/chat`, page, size],
     queryFn: async () => await getEnterChatRoom(roomId, page, size),
   });
 
@@ -43,7 +43,7 @@ export const useExitChatRoom = (roomId: number) =>
 
 export const useChatRoomUser = (roomId: number) =>
   useQuery({
-    queryKey: [`/api/chatRoom/${roomId}`],
+    queryKey: [`/chatRoom/${roomId}`],
     queryFn: async () => await getChatRoomUser(roomId),
     enabled: roomId !== undefined,
   });
