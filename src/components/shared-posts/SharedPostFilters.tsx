@@ -40,8 +40,8 @@ export function SharedPostFilters({
   const { filter } = useSharedPostsFilter();
 
   const mateCardFilterTitle = useMemo(() => {
-    if (filter.cardType === 'mate') return '메이트카드';
-    if (filter.cardType === 'my') return '마이카드';
+    if (filter.cardType === 'mate') return '메이트 카드';
+    if (filter.cardType === 'my') return '마이 카드';
     if (filter.cardType == null) return SharedPostsFilterTypeValue.cardType;
     return 'error';
   }, [filter.cardType]);

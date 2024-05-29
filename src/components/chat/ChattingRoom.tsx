@@ -341,7 +341,11 @@ export function ChattingRoom({
         </styles.roomInfo>
         <styles.menu onClick={handleMenuClick} />
         {isMenuClick && (
-          <ChatMenu roomId={roomId} onMenuClicked={setIsMenuClick} />
+          <ChatMenu
+            roomId={roomId}
+            onMenuClicked={setIsMenuClick}
+            roomName={roomName}
+          />
         )}
       </styles.header>
       <styles.messageContainer ref={messageContainerRef}>

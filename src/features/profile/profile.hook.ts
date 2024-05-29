@@ -12,6 +12,7 @@ import {
   postCertificate,
   getRecommendMates,
   getMutualFollowUsers,
+  patchProfileSetting,
 } from './profile.api';
 
 import { type CardType } from '@/entities/shared-posts-filter';
@@ -102,4 +103,10 @@ export const useRecommendMates = ({
     queryKey: ['/profile/recommend', cardOption],
     queryFn: async () => await getRecommendMates(cardOption),
     enabled,
+  });
+
+export const useProfileSetting = () =>
+  useMutation({
+    mutationFn: async (status: boolean) => await patchProfileSetting(status),
+    onSuccess: data => data.data,
   });

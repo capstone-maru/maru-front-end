@@ -18,7 +18,9 @@ import {
   useGetCode,
   useUnfollowUser,
   useUserProfile,
+  useProfileSetting,
 } from '@/features/profile';
+import { convertPhoneNumber } from '@/shared';
 
 const styles = {
   container: styled.div`
@@ -368,6 +370,8 @@ interface UserProfileInfoProps {
   isMySelf: boolean;
   certification?: boolean;
   myID: string;
+  myName: string;
+  recommendOn: boolean;
 }
 
 function UserInfo({
@@ -379,8 +383,14 @@ function UserInfo({
   isMySelf,
   certification,
   myID,
+  myName,
+  recommendOn,
 }: UserProfileInfoProps) {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(recommendOn);
+
+  useEffect(() => {
+    setIsChecked(recommendOn);
+  }, [recommendOn]);
 
   const [followList, setFollowList] = useState<
     Array<{
@@ -413,7 +423,10 @@ function UserInfo({
     })();
   }, [setIsMarked]);
 
+  const { mutate: settingRecommend } = useProfileSetting();
+
   const toggleSwitch = () => {
+    settingRecommend(!isChecked);
     setIsChecked(!isChecked);
   };
 
@@ -481,7 +494,9 @@ function UserInfo({
               gap: '0.25rem',
             }}
           >
-            <styles.userDetailedInfo>{phoneNum}</styles.userDetailedInfo>
+            <styles.userDetailedInfo>
+              {phoneNum != null && convertPhoneNumber(phoneNum)}
+            </styles.userDetailedInfo>
             <styles.userDetailedInfo>{email}</styles.userDetailedInfo>
           </div>
           {!isMySelf && (
@@ -490,9 +505,9 @@ function UserInfo({
                 onClick={() => {
                   if (name != null)
                     chattingMutate({
-                      roomName: name,
+                      roomName: `${name}, ${myName}`,
                       members: [memberId],
-                      myID: myID,
+                      myID,
                     });
 
                   setTimeout(() => {
@@ -702,6 +717,9 @@ function Posts({ posts }: { posts?: PostsProps[] }) {
     <styles.postContainer>
       <h1>게시글</h1>
       <styles.posts>
+        {posts?.length === 0 && (
+          <styles.postName>게시글이 없습니다.</styles.postName>
+        )}
         {posts?.map(post => (
           <Link
             key={post.id}
@@ -737,7 +755,7 @@ interface PostsProps {
 }
 
 const profileImgState = atom<boolean>({
-  key: 'isMobileChangeProfileImg',
+  key: 'isChangeProfileImg',
   default: false,
 });
 
@@ -758,16 +776,17 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
   } = useUserProfile(memberId);
   const [profileImg, setProfileImg] = useState<string>('');
   const [posts, setPosts] = useState<PostsProps[]>();
+  const [recommendOn, setRecommendOn] = useState(false);
 
   const profileImgChanged = useRecoilValue(profileImgState);
 
   useEffect(() => {
-    mutateProfile();
-  }, [auth, profileImgChanged]);
-
-  useEffect(() => {
     if (error != null) router.replace('/error');
   }, [error]);
+
+  useEffect(() => {
+    mutateProfile();
+  }, [auth, profileImgChanged]);
 
   useEffect(() => {
     if (profileData?.data !== undefined) {
@@ -797,6 +816,7 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
       });
       setProfileImg(profileData.data.profileImage);
       setPosts(profileData.data.posts);
+      setRecommendOn(profileData.data.recommendOn);
       if (authId === memberId) {
         setIsMySelf(true);
       }
@@ -814,6 +834,8 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
         isMySelf={isMySelf}
         certification={userData?.univCertified}
         myID={authId ?? ''}
+        myName={auth?.user?.name ?? ''}
+        recommendOn={recommendOn}
       />
       <Card
         name={userData?.name}

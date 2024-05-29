@@ -110,3 +110,14 @@ export const patchProfileImage = async (fileName: string) =>
       'Content-Type': 'text/plain',
     },
   });
+
+export const patchProfileSetting = async (status: boolean) =>
+  await axios.patch(
+    '/maru-api/profile/setting',
+    { recommendOn: status },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );

@@ -326,7 +326,7 @@ export function MobileUserInputPage() {
               $active={activeContainer === 'my'}
             >
               <styles.miniCardName $active={activeContainer === 'my'}>
-                내카드
+                내 카드
               </styles.miniCardName>
             </styles.miniCard>
             <styles.miniCard
@@ -334,7 +334,7 @@ export function MobileUserInputPage() {
               $active={activeContainer === 'mate'}
             >
               <styles.miniCardName $active={activeContainer === 'mate'}>
-                메이트카드
+                메이트 카드
               </styles.miniCardName>
             </styles.miniCard>
           </styles.cardNameSection>
