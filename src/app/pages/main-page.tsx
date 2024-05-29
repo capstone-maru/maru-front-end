@@ -17,7 +17,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     gap: 3rem;
-    padding: 2rem 0;
+    padding: 0rem 0rem 0rem 2rem;
   `,
   map: styled.div`
     width: 100%;
