@@ -160,6 +160,7 @@ export function MobileMainPage() {
                     percentage={score}
                     profileImage={profileImageUrl}
                     location={location}
+                    hideScore={false}
                   />
                 </Link>
               ),
