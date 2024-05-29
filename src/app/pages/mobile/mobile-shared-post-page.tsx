@@ -539,11 +539,7 @@ export function MobileSharedPostPage({
                 <CircularProfileImage
                   diameter={89}
                   percentage={50}
-                  url={
-                    selected?.profileImageFileName != null
-                      ? selected.profileImageFileName
-                      : '/profile_img_nonpercent.png'
-                  }
+                  url={selected?.profileImageFileName ?? ''}
                 />
                 <styles.profileInfo>
                   <p className="name">{selected?.nickname}</p>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
@@ -291,6 +292,8 @@ export function ChatMenu({
     }
   }
 
+  const queryClient = useQueryClient();
+
   return (
     <styles.menuContainer>
       <styles.header>
@@ -335,7 +338,13 @@ export function ChatMenu({
                   {searchUser != null ? (
                     <styles.userList
                       onClick={() => {
-                        inviteUser();
+                        inviteUser(undefined, {
+                          onSuccess: () => {
+                            queryClient.invalidateQueries({
+                              queryKey: [`/chatRoom/${roomId}`],
+                            });
+                          },
+                        });
                         setInviteChatRoomName();
                       }}
                     >
