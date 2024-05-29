@@ -377,7 +377,7 @@ export function SettingPage({ cardId }: { cardId: number }) {
         <styles.cardContainer>
           <styles.miniCard>
             <styles.miniCardName>
-              {type === 'myCard' ? '내카드' : '메이트카드'}
+              {type === 'myCard' ? '내 카드' : '메이트 카드'}
             </styles.miniCardName>
             <styles.miniCardKeywordsContainer>
               <styles.miniCardList>

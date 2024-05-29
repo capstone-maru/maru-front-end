@@ -16,7 +16,8 @@ const styles = {
     height: fit-content;
     display: flex;
     flex-direction: column;
-    gap: 4.44rem;
+    gap: 3rem;
+    padding: 2rem 0;
   `,
   map: styled.div`
     width: 100%;

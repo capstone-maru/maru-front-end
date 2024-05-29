@@ -836,7 +836,7 @@ export function SharedPostPage({
           </styles.selectedMateContainer>
           <styles.mateCardContainer>
             <CardToggleButton
-              label="메이트카드"
+              label="메이트 카드"
               isOpen={showMateCard}
               onClick={() => {
                 setShowMateCard(prev => !prev);
