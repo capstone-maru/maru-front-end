@@ -610,7 +610,7 @@ export function MobileSharedPostPage({
                       if (selected == null) return;
 
                       chattingMutate({
-                        roomName: selected.nickname,
+                        roomName: `${selected.nickname}, ${auth?.user?.name}`,
                         members: [selected.memberId],
                         myID: auth?.user?.memberId ?? '',
                       });

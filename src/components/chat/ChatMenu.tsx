@@ -304,10 +304,6 @@ export function ChatMenu({
         </styles.menuList>
         <styles.menuList>채팅방 나가기</styles.menuList>
       </styles.menuListContainer>
-      <styles.footer>
-        <styles.searchInput />
-        <styles.searchButton src="/icon-search.svg" />
-      </styles.footer>
     </styles.menuContainer>
   );
 }
