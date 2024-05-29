@@ -94,12 +94,18 @@ export function UserCard({
   location,
   percentage,
   profileImage,
+  smoking,
+  roomSharingOption,
+  mateAge,
   hideScore,
 }: {
   name: string;
   location: string;
   percentage: number;
   profileImage: string;
+  smoking: string;
+  roomSharingOption: string;
+  mateAge: number;
   hideScore?: boolean;
 }) {
   const isMobile = useIsMobile();
@@ -126,7 +132,11 @@ export function UserCard({
           <p>{location}</p>
         </div>
       </styles.profileInfo>
-      <styles.data />
+      <styles.data>
+        <p className="selected">흡연 여부: {smoking}</p>
+        <p className="selected">룸메이트 방 공유: {roomSharingOption}</p>
+        <p className="selected">나이 차이: {mateAge}</p>
+      </styles.data>
     </styles.container>
   );
 }
