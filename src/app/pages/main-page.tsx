@@ -1,13 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import styled from 'styled-components';
 
-import { CircularButton } from '@/components';
+import { CircularButton, CircularProfileImage } from '@/components';
 import { UserCard } from '@/components/main-page';
 import { useAuthValue } from '@/features/auth';
-import { getGeolocation } from '@/features/geocoding';
+import { fromAddrToCoord, getGeolocation } from '@/features/geocoding';
 import { useRecommendMates } from '@/features/profile';
 
 const styles = {
@@ -97,6 +99,36 @@ const styles = {
   `,
 };
 
+function Marker({
+  nickname,
+  profileImage,
+  score,
+}: {
+  score: number;
+  profileImage: string;
+  nickname: string;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '0.75rem',
+        scale: 0.75,
+      }}
+    >
+      <CircularProfileImage
+        diameter={100}
+        percentage={score}
+        url={profileImage}
+        hideScore={false}
+      />
+      <p>{nickname}</p>
+    </div>
+  );
+}
+
 export function MainPage() {
   const auth = useAuthValue();
 
@@ -108,6 +140,8 @@ export function MainPage() {
   const [map, setMap] = useState<naver.maps.Map | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter();
 
   const handleScrollRight = () => {
     if (scrollRef.current !== null) {
@@ -142,6 +176,85 @@ export function MainPage() {
       },
     });
   }, []);
+
+  const [createdMarkers, setCreatedMarkers] = useState<naver.maps.Marker[]>([]);
+
+  useEffect(() => {
+    if (map == null) return;
+
+    recommendationMates?.data.forEach(mate => {
+      fromAddrToCoord({ query: mate.location }).then(res => {
+        const address = res.shift();
+        if (address == null) return;
+
+        const spot = new naver.maps.LatLng(+address.y, +address.x);
+        const marker = new naver.maps.Marker({
+          position: spot,
+          map,
+          icon: {
+            content: renderToStaticMarkup(
+              <Marker
+                nickname={mate.nickname}
+                profileImage={mate.profileImageUrl}
+                score={mate.score}
+              />,
+            ),
+          },
+        });
+
+        marker.addListener('click', () => {
+          router.push(`/profile/${mate.memberId}`);
+        });
+
+        setCreatedMarkers(prev => prev.concat(marker));
+      });
+    });
+  }, [map, recommendationMates?.data, router]);
+
+  useEffect(() => {
+    if (map == null) return () => {};
+
+    const showMarker = (
+      targetMap: naver.maps.Map,
+      marker: naver.maps.Marker,
+    ) => {
+      if (marker.getMap() != null) return;
+      marker.setMap(targetMap);
+    };
+
+    const hideMarker = (marker: naver.maps.Marker) => {
+      if (marker.getMap() == null) return;
+      marker.setMap(null);
+    };
+
+    const updateMarkers = (
+      targetMap: naver.maps.Map | null,
+      markers: naver.maps.Marker[],
+    ) => {
+      if (targetMap == null) return;
+
+      const mapBounds = targetMap.getBounds();
+      let marker: naver.maps.Marker, position;
+
+      for (let i = 0; i < markers.length; i += 1) {
+        marker = markers[i];
+        position = marker.getPosition();
+
+        if (mapBounds.hasPoint(position)) {
+          showMarker(targetMap, marker);
+        } else {
+          hideMarker(marker);
+        }
+      }
+    };
+
+    const MoveEventListner = naver.maps.Event.addListener(map, 'idle', () => {
+      updateMarkers(map, createdMarkers);
+    });
+    return () => {
+      naver.maps.Event.removeListener(MoveEventListner);
+    };
+  }, [createdMarkers, map]);
 
   return (
     <styles.container>

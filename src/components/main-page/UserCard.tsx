@@ -109,6 +109,12 @@ export function UserCard({
   hideScore?: boolean;
 }) {
   const isMobile = useIsMobile();
+
+  const mateAgeStringify = (() => {
+    if (mateAge === 0) return '동갑';
+    if (mateAge === 11) return '상관없어요';
+    return `±${mateAge}`;
+  })();
   return (
     <styles.container>
       <styles.profileInfo>
@@ -135,7 +141,7 @@ export function UserCard({
       <styles.data>
         <p className="selected">흡연 여부: {smoking}</p>
         <p className="selected">룸메이트 방 공유: {roomSharingOption}</p>
-        <p className="selected">나이 차이: {mateAge}</p>
+        <p className="selected">나이 차이: {mateAgeStringify}</p>
       </styles.data>
     </styles.container>
   );
