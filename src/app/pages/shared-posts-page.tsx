@@ -26,9 +26,10 @@ import {
 
 const styles = {
   container: styled.div`
-    padding-top: 4.12rem;
-    padding-inline: 16rem;
+    padding-block: 4.12rem;
+    padding-inline: 10rem;
     width: 100%;
+    max-width: 1440px;
     height: fit-content;
 
     display: flex;
@@ -67,7 +68,6 @@ const styles = {
   posts: styled.div`
     display: flex;
     flex-direction: column;
-    padding-inline: 2rem;
     gap: 2rem;
   `,
   CircularButton: styled(CircularButton)`
@@ -106,10 +106,13 @@ const styles = {
     }
   `,
   cards: styled.div`
-    padding-left: 2.62rem;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    gap: 2rem;
+    align-self: stretch;
     flex-wrap: wrap;
-    gap: 2rem 2.62rem;
   `,
   noRecommendation: styled.div`
     font-family: 'Noto Sans KR';
@@ -146,14 +149,19 @@ export function SharedPostsPage() {
     sliceSize: 10,
   });
 
-  const { data: sharedPosts } = useSharedPosts({
-    filter: derivedFilter,
-    cardOption: filter.cardType ?? 'my',
-    enabled: auth?.accessToken != null && selected === 'hasRoom',
-    page: page - 1,
-  });
+  const { isLoading: isSharedPostsLoading, data: sharedPosts } = useSharedPosts(
+    {
+      filter: derivedFilter,
+      cardOption: filter.cardType ?? 'my',
+      enabled: auth?.accessToken != null && selected === 'hasRoom',
+      page: page - 1,
+    },
+  );
 
-  const { data: dormitorySharedPosts } = useDormitorySharedPosts({
+  const {
+    isLoading: isDormitorySharedPostsLoading,
+    data: dormitorySharedPosts,
+  } = useDormitorySharedPosts({
     filter: derivedFilter,
     cardOption: filter.cardType ?? 'my',
     enabled: auth?.accessToken != null && selected === 'dormitory',
@@ -165,10 +173,11 @@ export function SharedPostsPage() {
     [selected, sharedPosts, dormitorySharedPosts],
   );
 
-  const { data: recommendationMates } = useRecommendMates({
-    enabled: auth?.accessToken != null && selected === 'homeless',
-    cardOption: filter.cardType ?? 'my',
-  });
+  const { isLoading: isMatesLoading, data: recommendationMates } =
+    useRecommendMates({
+      enabled: auth?.accessToken != null && selected === 'homeless',
+      cardOption: filter.cardType ?? 'my',
+    });
 
   useEffect(() => {
     resetFilter();
@@ -184,6 +193,72 @@ export function SharedPostsPage() {
       setTotalPageCount(dormitorySharedPosts.data.totalPages);
     }
   }, [selected, dormitorySharedPosts, sharedPosts]);
+
+  const renderPosts = useMemo(() => {
+    if (isSharedPostsLoading || isDormitorySharedPostsLoading) {
+      return (
+        <styles.noRecommendation>잠시만 기다려주세요..</styles.noRecommendation>
+      );
+    }
+
+    if (posts?.data == null || posts.data.content.length === 0) {
+      return (
+        <styles.noRecommendation>
+          <p>추천되는 게시글이 없습니다.</p>
+        </styles.noRecommendation>
+      );
+    }
+
+    return posts?.data.content.map(post => (
+      <PostCard
+        key={post.id}
+        post={post}
+        onClick={() => {
+          router.push(
+            `/shared/${selected === 'hasRoom' ? 'room' : 'dormitory'}/${post.id}`,
+          );
+        }}
+      />
+    ));
+  }, [
+    isDormitorySharedPostsLoading,
+    isSharedPostsLoading,
+    posts?.data,
+    router,
+    selected,
+  ]);
+
+  const renderMates = useMemo(() => {
+    if (isMatesLoading) {
+      return (
+        <styles.noRecommendation>잠시만 기다려주세요..</styles.noRecommendation>
+      );
+    }
+
+    if (
+      recommendationMates?.data == null ||
+      recommendationMates.data.length === 0
+    ) {
+      return (
+        <styles.noRecommendation>
+          <p>추천되는 메이트가 없습니다.</p>
+        </styles.noRecommendation>
+      );
+    }
+
+    return recommendationMates.data.map(
+      ({ memberId, score, nickname, location, profileImageUrl }) => (
+        <Link href={`/profile/${memberId}`} key={memberId}>
+          <UserCard
+            name={nickname}
+            percentage={score}
+            location={location}
+            profileImage={profileImageUrl}
+          />
+        </Link>
+      ),
+    );
+  }, [isMatesLoading, recommendationMates?.data]);
 
   return (
     <styles.container>
@@ -204,25 +279,7 @@ export function SharedPostsPage() {
       </styles.createButtonRow>
       {selected === 'hasRoom' || selected === 'dormitory' ? (
         <>
-          <styles.posts>
-            {posts?.data != null && posts.data.content.length > 0 ? (
-              posts?.data.content.map(post => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  onClick={() => {
-                    router.push(
-                      `/shared/${selected === 'hasRoom' ? 'room' : 'dormitory'}/${post.id}`,
-                    );
-                  }}
-                />
-              ))
-            ) : (
-              <styles.noRecommendation>
-                <p>추천되는 게시글이 없습니다.</p>
-              </styles.noRecommendation>
-            )}
-          </styles.posts>
+          <styles.posts>{renderPosts}</styles.posts>
           {posts != null && posts.data.content.length !== 0 && (
             <styles.pagingRow>
               <styles.CircularButton
@@ -269,38 +326,7 @@ export function SharedPostsPage() {
           )}
         </>
       ) : (
-        <styles.cards>
-          {recommendationMates?.data != null &&
-          recommendationMates.data.length > 0 ? (
-            recommendationMates.data.map(
-              ({
-                memberId,
-                score,
-                nickname,
-                location,
-                profileImageUrl,
-                options: { mateAge, smoking, roomSharingOption },
-              }) => (
-                <Link href={`/profile/${memberId}`} key={memberId}>
-                  <UserCard
-                    name={nickname}
-                    percentage={score}
-                    profileImage={profileImageUrl}
-                    location={location}
-                    mateAge={mateAge}
-                    roomSharingOption={roomSharingOption}
-                    smoking={smoking}
-                    hideScore
-                  />
-                </Link>
-              ),
-            )
-          ) : (
-            <styles.noRecommendation>
-              <p>추천되는 메이트가 없습니다.</p>
-            </styles.noRecommendation>
-          )}
-        </styles.cards>
+        <styles.cards>{renderMates}</styles.cards>
       )}
     </styles.container>
   );
