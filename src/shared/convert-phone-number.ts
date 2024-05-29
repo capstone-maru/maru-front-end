@@ -5,5 +5,5 @@ export const convertPhoneNumber = (input: string) => {
   if (phonePattern1.test(input)) return input;
   if (phonePattern2.test(input))
     return input.replace(/^\+82 10-(\d{4})-(\d{4})$/, '010-$1-$2');
-  throw new Error('Invalid phone number format');
+  return input;
 };
