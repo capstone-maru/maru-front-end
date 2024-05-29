@@ -94,11 +94,13 @@ export function UserCard({
   location,
   percentage,
   profileImage,
+  hideScore,
 }: {
   name: string;
   location: string;
   percentage: number;
   profileImage: string;
+  hideScore?: boolean;
 }) {
   const isMobile = useIsMobile();
   return (
@@ -109,12 +111,14 @@ export function UserCard({
             diameter={65}
             percentage={percentage}
             url={profileImage}
+            hideScore={hideScore}
           />
         ) : (
           <CircularProfileImage
             diameter={110}
             percentage={percentage}
             url={profileImage}
+            hideScore={hideScore}
           />
         )}
         <div>

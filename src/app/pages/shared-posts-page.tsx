@@ -254,6 +254,7 @@ export function SharedPostsPage() {
             percentage={score}
             location={location}
             profileImage={profileImageUrl}
+            hideScore={false}
           />
         </Link>
       ),
