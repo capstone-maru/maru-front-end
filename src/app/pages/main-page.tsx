@@ -181,6 +181,7 @@ export function MainPage() {
                         percentage={score}
                         profileImage={profileImageUrl}
                         location={location}
+                        hideScore={false}
                       />
                     </Link>
                   ),

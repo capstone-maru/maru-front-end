@@ -83,7 +83,7 @@ export function CircularProfileImage({
   return (
     <styles.container $diameter={diameter}>
       <styles.backgroundContainer $url={url} />
-      {hideScore === true && (
+      {hideScore === false && (
         <>
           <styles.CircularProgressBar
             diameter={diameter}
