@@ -18,6 +18,7 @@ import {
   useGetCode,
   useUnfollowUser,
   useUserProfile,
+  useProfileSetting,
 } from '@/features/profile';
 import { convertPhoneNumber } from '@/shared';
 
@@ -502,6 +503,8 @@ interface UserProfileInfoProps {
   isMySelf: boolean;
   certification?: boolean;
   myID: string;
+  myName: string;
+  recommendOn: boolean;
 }
 
 function UserInfo({
@@ -513,8 +516,14 @@ function UserInfo({
   isMySelf,
   certification,
   myID,
+  myName,
+  recommendOn,
 }: UserProfileInfoProps) {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(recommendOn);
+
+  useEffect(() => {
+    setIsChecked(recommendOn);
+  }, [recommendOn]);
 
   const [followList, setFollowList] = useState<
     Array<{
@@ -547,7 +556,10 @@ function UserInfo({
     })();
   }, [setIsMarked]);
 
+  const { mutate: settingRecommend } = useProfileSetting();
+
   const toggleSwitch = () => {
+    settingRecommend(!isChecked);
     setIsChecked(!isChecked);
   };
 
@@ -602,7 +614,11 @@ function UserInfo({
       </styles.userProfileWithoutInfo>
       <styles.userInfoContainer>
         <styles.userName>{name}</styles.userName>
-        <ToggleSwitch isChecked onToggle={toggleSwitch} isMySelf={isMySelf} />
+        <ToggleSwitch
+          isChecked={isChecked}
+          onToggle={toggleSwitch}
+          isMySelf={isMySelf}
+        />
         <styles.userDetailedContainer>
           <div
             style={{
@@ -622,7 +638,7 @@ function UserInfo({
                 onClick={() => {
                   if (name != null)
                     chattingMutate({
-                      roomName: name,
+                      roomName: `${name}, ${myName}`,
                       members: [memberId],
                       myID,
                     });
@@ -834,6 +850,9 @@ function Posts({ posts }: { posts?: PostsProps[] }) {
     <styles.postContainer>
       <h1>게시글</h1>
       <styles.posts>
+        {posts?.length === 0 && (
+          <styles.postName>게시글이 없습니다.</styles.postName>
+        )}
         {posts?.map(post => (
           <Link
             key={post.id}
@@ -890,6 +909,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
   } = useUserProfile(memberId);
   const [profileImg, setProfileImg] = useState<string>('');
   const [posts, setPosts] = useState<PostsProps[]>();
+  const [recommendOn, setRecommendOn] = useState(false);
 
   const profileImgChanged = useRecoilValue(profileImgState);
 
@@ -929,6 +949,7 @@ export function ProfilePage({ memberId }: { memberId: string }) {
       });
       setProfileImg(profileData.data.profileImage);
       setPosts(profileData.data.posts);
+      setRecommendOn(profileData.data.recommendOn);
       if (authId === memberId) {
         setIsMySelf(true);
       }
@@ -946,6 +967,8 @@ export function ProfilePage({ memberId }: { memberId: string }) {
         isMySelf={isMySelf}
         certification={userData?.univCertified}
         myID={authId ?? ''}
+        myName={auth?.user?.name ?? ''}
+        recommendOn={recommendOn}
       />
       <Card
         name={userData?.name}
