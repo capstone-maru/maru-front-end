@@ -372,6 +372,7 @@ interface UserProfileInfoProps {
   myID: string;
   myName: string;
   recommendOn: boolean;
+  onProfileImageChanged: () => void;
 }
 
 function UserInfo({
@@ -385,6 +386,7 @@ function UserInfo({
   myID,
   myName,
   recommendOn,
+  onProfileImageChanged,
 }: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(recommendOn);
 
@@ -434,7 +436,6 @@ function UserInfo({
   const { mutate: unfollow } = useUnfollowUser(memberId);
 
   const [, setIsChatOpen] = useRecoilState(chatOpenState);
-  const [, setProfileImgChanged] = useRecoilState(profileImgState);
 
   const { mutate: chattingMutate } = useCreateChatRoom();
 
@@ -457,7 +458,7 @@ function UserInfo({
     } catch (error) {
       console.error(error);
     }
-    setProfileImgChanged(prev => !prev);
+    onProfileImageChanged();
   };
 
   return (
@@ -754,11 +755,6 @@ interface PostsProps {
   modifiedAt: string;
 }
 
-const profileImgState = atom<boolean>({
-  key: 'isChangeProfileImg',
-  default: false,
-});
-
 export function MobileProfilePage({ memberId }: { memberId: string }) {
   const auth = useAuthValue();
   const { data } = useUserData(auth?.accessToken !== undefined);
@@ -778,15 +774,13 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
   const [posts, setPosts] = useState<PostsProps[]>();
   const [recommendOn, setRecommendOn] = useState(false);
 
-  const profileImgChanged = useRecoilValue(profileImgState);
-
   useEffect(() => {
     if (error != null) router.replace('/error');
   }, [error]);
 
   useEffect(() => {
     mutateProfile();
-  }, [auth, profileImgChanged]);
+  }, [auth, mutateProfile]);
 
   useEffect(() => {
     if (profileData?.data !== undefined) {
@@ -836,6 +830,9 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
         myID={authId ?? ''}
         myName={auth?.user?.name ?? ''}
         recommendOn={recommendOn}
+        onProfileImageChanged={() => {
+          mutateProfile();
+        }}
       />
       <Card
         name={userData?.name}
