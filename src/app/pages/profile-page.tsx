@@ -19,6 +19,7 @@ import {
   useUnfollowUser,
   useUserProfile,
 } from '@/features/profile';
+import { convertPhoneNumber } from '@/shared';
 
 const styles = {
   pageContainer: styled.div`
@@ -610,7 +611,9 @@ function UserInfo({
               gap: '0.25rem',
             }}
           >
-            <styles.userDetailedInfo>{phoneNum}</styles.userDetailedInfo>
+            <styles.userDetailedInfo>
+              {phoneNum != null && convertPhoneNumber(phoneNum)}
+            </styles.userDetailedInfo>
             <styles.userDetailedInfo>{email}</styles.userDetailedInfo>
           </div>
           {!isMySelf && (
@@ -621,7 +624,7 @@ function UserInfo({
                     chattingMutate({
                       roomName: name,
                       members: [memberId],
-                      myID: myID,
+                      myID,
                     });
 
                   setTimeout(() => {
