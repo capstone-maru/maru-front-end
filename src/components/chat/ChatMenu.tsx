@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -202,6 +203,7 @@ export function ChatMenu({
   const [isInviteClick, setIsInviteClick] = useState<boolean>(false);
   const users = useChatRoomUser(roomId);
   const [userList, setUserList] = useState<User[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     if (users.data !== undefined) {
@@ -216,7 +218,11 @@ export function ChatMenu({
   };
 
   const [email, setEmail] = useState<string>('');
-  const { mutate: mutateSearchUser, data: searchData } = useSearchUser(email);
+  const {
+    mutate: mutateSearchUser,
+    data: searchData,
+    error,
+  } = useSearchUser(email);
 
   const [searchUser, setSearchUser] = useState<User>();
 
@@ -225,6 +231,10 @@ export function ChatMenu({
       setSearchUser(searchData.data);
     }
   }, [searchData]);
+
+  useEffect(() => {
+    if (error != null) router.replace('/error');
+  }, [error]);
 
   const { mutate: inviteUser } = useInviteUsers(roomId, [
     searchUser?.memberId ?? '',

@@ -2,6 +2,7 @@
 
 import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useRef } from 'react';
 import { atom, useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
@@ -866,17 +867,26 @@ const profileImgState = atom<boolean>({
 export function ProfilePage({ memberId }: { memberId: string }) {
   const auth = useAuthValue();
   const { data } = useUserData(auth?.accessToken !== undefined);
+  const router = useRouter();
 
   const authId = data?.memberId;
 
   const [userData, setUserData] = useState<UserProps | null>(null);
   const [isMySelf, setIsMySelf] = useState(false);
 
-  const { mutate: mutateProfile, data: profileData } = useUserProfile(memberId);
+  const {
+    mutate: mutateProfile,
+    data: profileData,
+    error,
+  } = useUserProfile(memberId);
   const [profileImg, setProfileImg] = useState<string>('');
   const [posts, setPosts] = useState<PostsProps[]>();
 
   const profileImgChanged = useRecoilValue(profileImgState);
+
+  useEffect(() => {
+    if (error != null) router.replace('/error');
+  }, [error]);
 
   useEffect(() => {
     mutateProfile();

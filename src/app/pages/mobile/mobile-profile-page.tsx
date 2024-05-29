@@ -2,6 +2,7 @@
 
 import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useRef } from 'react';
 import { atom, useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
@@ -730,20 +731,25 @@ interface PostsProps {
 }
 
 const profileImgState = atom<boolean>({
-  key: 'isChangeProfileImg',
+  key: 'isMobileChangeProfileImg',
   default: false,
 });
 
 export function MobileProfilePage({ memberId }: { memberId: string }) {
   const auth = useAuthValue();
   const { data } = useUserData(auth?.accessToken !== undefined);
+  const router = useRouter();
 
   const authId = data?.memberId;
 
   const [userData, setUserData] = useState<UserProps | null>(null);
   const [isMySelf, setIsMySelf] = useState(false);
 
-  const { mutate: mutateProfile, data: profileData } = useUserProfile(memberId);
+  const {
+    mutate: mutateProfile,
+    data: profileData,
+    error,
+  } = useUserProfile(memberId);
   const [profileImg, setProfileImg] = useState<string>('');
   const [posts, setPosts] = useState<PostsProps[]>();
 
@@ -752,6 +758,10 @@ export function MobileProfilePage({ memberId }: { memberId: string }) {
   useEffect(() => {
     mutateProfile();
   }, [auth, profileImgChanged]);
+
+  useEffect(() => {
+    if (error != null) router.replace('/error');
+  }, [error]);
 
   useEffect(() => {
     if (profileData?.data !== undefined) {
