@@ -376,7 +376,7 @@ export const useSharedPosts = ({
 
   return useQuery({
     queryKey: [
-      '/api/shared/posts/studio',
+      '/shared/posts/studio',
       { cardOption, debounceFilter, search, page },
     ],
     queryFn: async () =>
@@ -398,7 +398,7 @@ export const useSharedPost = ({
   enabled: boolean;
 }) =>
   useQuery({
-    queryKey: [`/api/shared/posts/studio/${postId}`],
+    queryKey: [`/shared/posts/studio/${postId}`],
     queryFn: async () =>
       await getSharedPost(postId).then(response => response.data),
     enabled,
@@ -439,7 +439,7 @@ export const useDormitorySharedPosts = ({
 
   return useQuery({
     queryKey: [
-      '/api/shared/posts/dormitory',
+      '/shared/posts/dormitory',
       { cardOption, debounceFilter, search, page },
     ],
     queryFn: async () =>
@@ -461,7 +461,7 @@ export const useDormitorySharedPost = ({
   enabled: boolean;
 }) =>
   useQuery({
-    queryKey: [`/api/shared/posts/dormitory/${postId}`],
+    queryKey: [`/shared/posts/dormitory/${postId}`],
     queryFn: async () =>
       await getDormitorySharedPost(postId).then(response => response.data),
     enabled,
