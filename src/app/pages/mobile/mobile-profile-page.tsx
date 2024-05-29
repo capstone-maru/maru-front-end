@@ -313,11 +313,17 @@ function UserInfo({
 }: UserProfileInfoProps) {
   const [isChecked, setIsChecked] = useState(false);
 
-  const [followList, setFollowList] = useState<Record<string, string[]>>();
+  const [followList, setFollowList] = useState<
+    Array<{
+      memberId: string;
+      nickname: string;
+      profileImage: string;
+    }>
+  >();
   const [isMarked, setIsMarked] = useState(false);
 
   useEffect(() => {
-    if (followList?.[memberId] != null) {
+    if (followList?.find(elem => elem.memberId === memberId) != null) {
       setIsMarked(true);
     } else setIsMarked(false);
   }, [followList]);
