@@ -247,13 +247,16 @@ export function SharedPostsPage() {
     }
 
     return recommendationMates.data.map(
-      ({ memberId, score, nickname, location, profileImageUrl }) => (
+      ({ memberId, score, nickname, location, profileImageUrl, options }) => (
         <Link href={`/profile/${memberId}`} key={memberId}>
           <UserCard
             name={nickname}
             percentage={score}
-            location={location}
             profileImage={profileImageUrl}
+            location={location}
+            smoking={options.smoking}
+            roomSharingOption={options.roomSharingOption}
+            mateAge={options.mateAge}
             hideScore={false}
           />
         </Link>

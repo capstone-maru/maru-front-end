@@ -153,13 +153,23 @@ export function MobileMainPage() {
         recommendationMates.data.length > 0 ? (
           <styles.mateRecommendation>
             {recommendationMates.data.map(
-              ({ memberId, score, nickname, location, profileImageUrl }) => (
+              ({
+                memberId,
+                score,
+                nickname,
+                location,
+                profileImageUrl,
+                options,
+              }) => (
                 <Link href={`/profile/${memberId}`} key={memberId}>
                   <UserCard
                     name={nickname}
                     percentage={score}
                     profileImage={profileImageUrl}
                     location={location}
+                    smoking={options.smoking}
+                    roomSharingOption={options.roomSharingOption}
+                    mateAge={options.mateAge}
                     hideScore={false}
                   />
                 </Link>
