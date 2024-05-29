@@ -328,7 +328,7 @@ export function VitalSection({
     value: string,
   ) => void;
   onLocationChange: React.Dispatch<React.SetStateAction<string | undefined>>;
-  onMateAgeChange: React.Dispatch<React.SetStateAction<number | undefined>>;
+  onMateAgeChange: (mateAge?: number) => void;
   isMySelf: boolean;
   type: string;
 }) {

@@ -1069,7 +1069,15 @@ export function MobileWritingPostPage({
                   onVitalChange={handleMateCardEssentialFeatureChange}
                   onOptionChange={handleMateCardOptionalFeatureChange}
                   onLocationChange={() => {}}
-                  onMateAgeChange={() => {}}
+                  onMateAgeChange={mateAge => {
+                    setSharedPostProps(prev => ({
+                      ...prev,
+                      mateCard: {
+                        ...prev.mateCard,
+                        features: { ...prev.mateCard.features, mateAge },
+                      },
+                    }));
+                  }}
                   onMbtiChange={() => {}}
                   onMajorChange={() => {}}
                   onBudgetChange={() => {}}
