@@ -144,6 +144,8 @@ export function MainPage() {
 
   const router = useRouter();
 
+  const [permission, setPermission] = useState<string>();
+
   const handleScrollRight = () => {
     if (scrollRef.current !== null) {
       scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
@@ -155,6 +157,22 @@ export function MainPage() {
       scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const permissionStatus = await navigator.permissions.query({
+          name: 'geolocation',
+        });
+
+        permissionStatus.onchange = () => {
+          setPermission(permissionStatus.state);
+        };
+      } catch (error) {
+        console.error('Error checking geolocation permission:', error);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     getGeolocation({
@@ -257,21 +275,27 @@ export function MainPage() {
     };
   }, [createdMarkers, map]);
 
+  const renderIndicator = () => {
+    if (permission != null && permission !== 'granted')
+      return <p className="caption">(위치 권한이 필요합니다)</p>;
+    if (map == null)
+      return (
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="color-ring-loading"
+          wrapperStyle={{}}
+          wrapperClass="color-ring-wrapper"
+          colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+        />
+      );
+    return <></>;
+  };
+
   return (
     <styles.container>
-      <styles.map id="map">
-        {map == null && (
-          <ColorRing
-            visible={true}
-            height="80"
-            width="80"
-            ariaLabel="color-ring-loading"
-            wrapperStyle={{}}
-            wrapperClass="color-ring-wrapper"
-            colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-          />
-        )}
-      </styles.map>
+      <styles.map id="map">{renderIndicator()}</styles.map>
       <styles.mateRecommendationContainer>
         <styles.mateRecommendationTitle>
           {auth?.user?.name}님의 추천 메이트

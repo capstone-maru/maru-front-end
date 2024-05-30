@@ -149,6 +149,8 @@ export function MobileMainPage() {
 
   const router = useRouter();
 
+  const [permission, setPermission] = useState<string>();
+
   useEffect(() => {
     getGeolocation({
       onSuccess: position => {
@@ -169,6 +171,22 @@ export function MobileMainPage() {
         console.error(error);
       },
     });
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const permissionStatus = await navigator.permissions.query({
+          name: 'geolocation',
+        });
+
+        permissionStatus.onchange = () => {
+          setPermission(permissionStatus.state);
+        };
+      } catch (error) {
+        console.error('Error checking geolocation permission:', error);
+      }
+    })();
   }, []);
 
   const [createdMarkers, setCreatedMarkers] = useState<naver.maps.Marker[]>([]);
@@ -250,23 +268,27 @@ export function MobileMainPage() {
     };
   }, [createdMarkers, map]);
 
+  const renderIndicator = () => {
+    if (permission != null && permission !== 'granted')
+      return <p className="caption">(위치 권한이 필요합니다)</p>;
+    if (map == null)
+      return (
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="color-ring-loading"
+          wrapperStyle={{}}
+          wrapperClass="color-ring-wrapper"
+          colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+        />
+      );
+    return <></>;
+  };
+
   return (
     <styles.container>
-      <styles.map id="map">
-        {map == null && (
-          <>
-            <ColorRing
-              visible={true}
-              height="80"
-              width="80"
-              ariaLabel="color-ring-loading"
-              wrapperStyle={{}}
-              wrapperClass="color-ring-wrapper"
-              colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-            />
-          </>
-        )}
-      </styles.map>
+      <styles.map id="map">{renderIndicator()}</styles.map>
       <styles.mateRecommendationContainer>
         <styles.mateRecommendationTitle>
           <h1>{auth?.user?.name}님의 추천 메이트</h1>
