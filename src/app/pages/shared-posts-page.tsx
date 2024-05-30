@@ -23,6 +23,7 @@ import {
   usePaging,
   useSharedPosts,
 } from '@/features/shared';
+import { MagnifyingGlass } from 'react-loader-spinner';
 
 const styles = {
   container: styled.div`
@@ -124,6 +125,10 @@ const styles = {
     width: 100%;
     justify-content: center;
   `,
+  loadingIndicatorContainer: styled.div`
+    display: flex;
+    justify-content: center;
+  `,
 };
 
 export function SharedPostsPage() {
@@ -197,7 +202,18 @@ export function SharedPostsPage() {
   const renderPosts = useMemo(() => {
     if (isSharedPostsLoading || isDormitorySharedPostsLoading) {
       return (
-        <styles.noRecommendation>잠시만 기다려주세요..</styles.noRecommendation>
+        <styles.loadingIndicatorContainer>
+          <MagnifyingGlass
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="magnifying-glass-loading"
+            wrapperStyle={{}}
+            wrapperClass="magnifying-glass-wrapper"
+            glassColor="#c0efff"
+            color="#e15b64"
+          />
+        </styles.loadingIndicatorContainer>
       );
     }
 
@@ -231,7 +247,18 @@ export function SharedPostsPage() {
   const renderMates = useMemo(() => {
     if (isMatesLoading) {
       return (
-        <styles.noRecommendation>잠시만 기다려주세요..</styles.noRecommendation>
+        <styles.loadingIndicatorContainer>
+          <MagnifyingGlass
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="magnifying-glass-loading"
+            wrapperStyle={{}}
+            wrapperClass="magnifying-glass-wrapper"
+            glassColor="#c0efff"
+            color="#e15b64"
+          />
+        </styles.loadingIndicatorContainer>
       );
     }
 
