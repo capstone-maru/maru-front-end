@@ -88,6 +88,7 @@ const styles = {
   senderFrame: styled.div`
     display: flex;
     width: 20rem;
+    max-width: 20rem;
     justify-content: flex-end;
     padding-right: 0.8rem;
     margin: 0.8rem 0 0.8rem 5rem;
@@ -95,6 +96,7 @@ const styles = {
   receiverFrame: styled.div`
     display: flex;
     width: 23rem;
+    max-width: 20rem;
     justify-content: flex-start;
     padding-left: 0.8rem;
     margin: 0.8rem 0;
