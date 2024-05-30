@@ -592,7 +592,14 @@ export function SharedPostPage({
     if (post == null) return '없어요';
     const value = JSON.parse(post.data.roomMateFeatures.options) as string[];
     if (value == null) return '없어요';
-    return value.join(', ');
+    return value
+      .map(elem =>
+        ['상', '평범보통', '천하태평'].includes(elem)
+          ? `깔끔 정도: ${elem}`
+          : elem,
+      )
+      .filter(elem => !Array.isArray(elem))
+      .join(', ');
   }, [post]);
 
   if (isLoading || post == null) return <></>;
