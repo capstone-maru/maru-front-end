@@ -11,6 +11,7 @@ import { UserCard } from '@/components/main-page';
 import { useAuthValue } from '@/features/auth';
 import { fromAddrToCoord, getGeolocation } from '@/features/geocoding';
 import { useRecommendMates } from '@/features/profile';
+import { ColorRing } from 'react-loader-spinner';
 
 const styles = {
   container: styled.div`
@@ -148,6 +149,8 @@ export function MobileMainPage() {
 
   const router = useRouter();
 
+  const [permission, setPermission] = useState<string>();
+
   useEffect(() => {
     getGeolocation({
       onSuccess: position => {
@@ -170,12 +173,28 @@ export function MobileMainPage() {
     });
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const permissionStatus = await navigator.permissions.query({
+          name: 'geolocation',
+        });
+
+        permissionStatus.onchange = () => {
+          setPermission(permissionStatus.state);
+        };
+      } catch (error) {
+        console.error('Error checking geolocation permission:', error);
+      }
+    })();
+  }, []);
+
   const [createdMarkers, setCreatedMarkers] = useState<naver.maps.Marker[]>([]);
 
   useEffect(() => {
-    if (map == null) return;
+    if (map == null || recommendationMates == null) return;
 
-    recommendationMates?.data.forEach(mate => {
+    recommendationMates.forEach(mate => {
       fromAddrToCoord({ query: mate.location }).then(res => {
         const address = res.shift();
         if (address == null) return;
@@ -202,7 +221,7 @@ export function MobileMainPage() {
         setCreatedMarkers(prev => prev.concat(marker));
       });
     });
-  }, [map, recommendationMates?.data, router]);
+  }, [map, recommendationMates, router]);
 
   useEffect(() => {
     if (map == null) return () => {};
@@ -249,24 +268,34 @@ export function MobileMainPage() {
     };
   }, [createdMarkers, map]);
 
+  const renderIndicator = () => {
+    if (permission != null && permission !== 'granted')
+      return <p className="caption">(위치 권한이 필요합니다)</p>;
+    if (map == null)
+      return (
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="color-ring-loading"
+          wrapperStyle={{}}
+          wrapperClass="color-ring-wrapper"
+          colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+        />
+      );
+    return <></>;
+  };
+
   return (
     <styles.container>
-      <styles.map id="map">
-        {map == null && (
-          <>
-            <p>지도를 불러오는 중입니다.</p>
-            <p className="caption">(위치 권한이 필요합니다)</p>
-          </>
-        )}
-      </styles.map>
+      <styles.map id="map">{renderIndicator()}</styles.map>
       <styles.mateRecommendationContainer>
         <styles.mateRecommendationTitle>
           <h1>{auth?.user?.name}님의 추천 메이트</h1>
         </styles.mateRecommendationTitle>
-        {recommendationMates?.data != null &&
-        recommendationMates.data.length > 0 ? (
+        {recommendationMates != null && recommendationMates.length > 0 ? (
           <styles.mateRecommendation>
-            {recommendationMates.data.map(
+            {recommendationMates.map(
               ({
                 memberId,
                 score,

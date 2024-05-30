@@ -76,6 +76,7 @@ const styles = {
     height: calc(100% - 7.5rem);
     box-shadow: 0px -1px 0px 0px #e5e5ea inset;
     position: relative;
+    overflow-x: hidden;
 
     &::-webkit-scrollbar {
       width: 0.5rem;
@@ -88,6 +89,7 @@ const styles = {
   senderFrame: styled.div`
     display: flex;
     width: 20rem;
+    max-width: 20rem;
     justify-content: flex-end;
     padding-right: 0.8rem;
     margin: 0.8rem 0 0.8rem 5rem;
@@ -95,6 +97,7 @@ const styles = {
   receiverFrame: styled.div`
     display: flex;
     width: 23rem;
+    max-width: 20rem;
     justify-content: flex-start;
     padding-left: 0.8rem;
     margin: 0.8rem 0;

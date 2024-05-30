@@ -19,10 +19,14 @@ import {
 import { useAuthValue } from '@/features/auth';
 import { useRecommendMates } from '@/features/profile';
 import {
+  getDormitorySharedPosts,
+  getSharedPosts,
   useDormitorySharedPosts,
   usePaging,
   useSharedPosts,
 } from '@/features/shared';
+import { MagnifyingGlass } from 'react-loader-spinner';
+import { useQueryClient } from '@tanstack/react-query';
 
 const styles = {
   container: styled.div`
@@ -124,10 +128,16 @@ const styles = {
     width: 100%;
     justify-content: center;
   `,
+  loadingIndicatorContainer: styled.div`
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  `,
 };
 
 export function SharedPostsPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const auth = useAuthValue();
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
@@ -188,20 +198,71 @@ export function SharedPostsPage() {
 
   useEffect(() => {
     if (selected === 'hasRoom' && sharedPosts != null) {
-      setTotalPageCount(sharedPosts.data.totalPages);
+      setTotalPageCount(sharedPosts.totalPages);
     } else if (selected === 'dormitory' && dormitorySharedPosts != null) {
-      setTotalPageCount(dormitorySharedPosts.data.totalPages);
+      setTotalPageCount(dormitorySharedPosts.totalPages);
     }
   }, [selected, dormitorySharedPosts, sharedPosts]);
+
+  useEffect(() => {
+    if (!isLastPage) {
+      if (selected === 'hasRoom') {
+        queryClient.prefetchQuery({
+          queryKey: [
+            '/shared/posts/studio',
+            {
+              cardOption: filter.cardType ?? 'my',
+              debounceFilter: derivedFilter,
+              page,
+            },
+          ],
+          queryFn: async () =>
+            await getSharedPosts({
+              cardOption: filter.cardType ?? 'my',
+              filter: derivedFilter,
+              page,
+            }).then(res => res),
+        });
+      } else if (selected === 'dormitory') {
+        queryClient.prefetchQuery({
+          queryKey: [
+            '/shared/posts/dormitory',
+            {
+              cardOption: filter.cardType ?? 'my',
+              debounceFilter: derivedFilter,
+              page,
+            },
+          ],
+          queryFn: async () =>
+            await getDormitorySharedPosts({
+              cardOption: filter.cardType ?? 'my',
+              filter: derivedFilter,
+              page,
+            }).then(res => res),
+        });
+      }
+    }
+  }, [page, selected, filter.cardType, derivedFilter, queryClient, isLastPage]);
 
   const renderPosts = useMemo(() => {
     if (isSharedPostsLoading || isDormitorySharedPostsLoading) {
       return (
-        <styles.noRecommendation>잠시만 기다려주세요..</styles.noRecommendation>
+        <styles.loadingIndicatorContainer>
+          <MagnifyingGlass
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="magnifying-glass-loading"
+            wrapperStyle={{}}
+            wrapperClass="magnifying-glass-wrapper"
+            glassColor="#c0efff"
+            color="#e15b64"
+          />
+        </styles.loadingIndicatorContainer>
       );
     }
 
-    if (posts?.data == null || posts.data.content.length === 0) {
+    if (posts == null || posts.data.length === 0) {
       return (
         <styles.noRecommendation>
           <p>추천되는 게시글이 없습니다.</p>
@@ -209,7 +270,7 @@ export function SharedPostsPage() {
       );
     }
 
-    return posts?.data.content.map(post => (
+    return posts.data.map(post => (
       <PostCard
         key={post.id}
         post={post}
@@ -231,14 +292,22 @@ export function SharedPostsPage() {
   const renderMates = useMemo(() => {
     if (isMatesLoading) {
       return (
-        <styles.noRecommendation>잠시만 기다려주세요..</styles.noRecommendation>
+        <styles.loadingIndicatorContainer>
+          <MagnifyingGlass
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="magnifying-glass-loading"
+            wrapperStyle={{}}
+            wrapperClass="magnifying-glass-wrapper"
+            glassColor="#c0efff"
+            color="#e15b64"
+          />
+        </styles.loadingIndicatorContainer>
       );
     }
 
-    if (
-      recommendationMates?.data == null ||
-      recommendationMates.data.length === 0
-    ) {
+    if (recommendationMates == null || recommendationMates.length === 0) {
       return (
         <styles.noRecommendation>
           <p>추천되는 메이트가 없습니다.</p>
@@ -246,7 +315,7 @@ export function SharedPostsPage() {
       );
     }
 
-    return recommendationMates.data.map(
+    return recommendationMates.map(
       ({ memberId, score, nickname, location, profileImageUrl, options }) => (
         <Link href={`/profile/${memberId}`} key={memberId}>
           <UserCard
@@ -262,7 +331,7 @@ export function SharedPostsPage() {
         </Link>
       ),
     );
-  }, [isMatesLoading, recommendationMates?.data]);
+  }, [isMatesLoading, recommendationMates]);
 
   return (
     <styles.container>
@@ -284,7 +353,7 @@ export function SharedPostsPage() {
       {selected === 'hasRoom' || selected === 'dormitory' ? (
         <>
           <styles.posts>{renderPosts}</styles.posts>
-          {posts != null && posts.data.content.length !== 0 && (
+          {posts != null && posts.data.length !== 0 && (
             <styles.pagingRow>
               <styles.CircularButton
                 direction="left"

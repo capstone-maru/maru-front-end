@@ -414,7 +414,7 @@ export const useSharedPosts = ({
         filter: debounceFilter,
         search,
         page,
-      }).then(response => response.data),
+      }).then(res => res),
     enabled,
   });
 };
@@ -477,7 +477,7 @@ export const useDormitorySharedPosts = ({
         filter: debounceFilter,
         search,
         page,
-      }).then(response => response.data),
+      }).then(res => res),
     enabled,
   });
 };
