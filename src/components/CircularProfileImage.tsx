@@ -5,7 +5,16 @@ import styled from 'styled-components';
 import { CircularProgressBar } from './CircularProgressBar';
 
 const styles = {
-  backgroundContainer: styled.div<{ $url: string }>`
+  backgroundContainer: styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  `,
+  background: styled.div<{ $url: string }>`
     width: 100%;
     height: 100%;
     border-radius: 50%;
@@ -82,7 +91,9 @@ export function CircularProfileImage({
 }) {
   return (
     <styles.container $diameter={diameter}>
-      <styles.backgroundContainer $url={url} />
+      <styles.backgroundContainer>
+        <styles.background $url={url} />
+      </styles.backgroundContainer>
       {hideScore === false && (
         <>
           <styles.CircularProgressBar
