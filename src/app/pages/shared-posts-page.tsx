@@ -19,11 +19,14 @@ import {
 import { useAuthValue } from '@/features/auth';
 import { useRecommendMates } from '@/features/profile';
 import {
+  getDormitorySharedPosts,
+  getSharedPosts,
   useDormitorySharedPosts,
   usePaging,
   useSharedPosts,
 } from '@/features/shared';
 import { MagnifyingGlass } from 'react-loader-spinner';
+import { useQueryClient } from '@tanstack/react-query';
 
 const styles = {
   container: styled.div`
@@ -127,12 +130,14 @@ const styles = {
   `,
   loadingIndicatorContainer: styled.div`
     display: flex;
+    width: 100%;
     justify-content: center;
   `,
 };
 
 export function SharedPostsPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const auth = useAuthValue();
   const [selected, setSelected] = useState<SharedPostsType>('hasRoom');
@@ -198,6 +203,46 @@ export function SharedPostsPage() {
       setTotalPageCount(dormitorySharedPosts.data.totalPages);
     }
   }, [selected, dormitorySharedPosts, sharedPosts]);
+
+  useEffect(() => {
+    if (!isLastPage) {
+      if (selected === 'hasRoom') {
+        queryClient.prefetchQuery({
+          queryKey: [
+            '/shared/posts/studio',
+            {
+              cardOption: filter.cardType ?? 'my',
+              debounceFilter: derivedFilter,
+              page,
+            },
+          ],
+          queryFn: async () =>
+            await getSharedPosts({
+              cardOption: filter.cardType ?? 'my',
+              filter: derivedFilter,
+              page,
+            }).then(res => res.data),
+        });
+      } else if (selected === 'dormitory') {
+        queryClient.prefetchQuery({
+          queryKey: [
+            '/shared/posts/dormitory',
+            {
+              cardOption: filter.cardType ?? 'my',
+              debounceFilter: derivedFilter,
+              page,
+            },
+          ],
+          queryFn: async () =>
+            await getDormitorySharedPosts({
+              cardOption: filter.cardType ?? 'my',
+              filter: derivedFilter,
+              page,
+            }).then(res => res.data),
+        });
+      }
+    }
+  }, [page, selected, filter.cardType, derivedFilter, queryClient, isLastPage]);
 
   const renderPosts = useMemo(() => {
     if (isSharedPostsLoading || isDormitorySharedPostsLoading) {
