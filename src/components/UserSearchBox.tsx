@@ -51,5 +51,11 @@ export function UserSearchBox() {
     if (searchError != null) router.replace('/error');
   }, [searchError]);
 
-  return <SearchBox onContentChange={setEmail} onEnter={handleEnter} />;
+  return (
+    <SearchBox
+      placeholder="찾을 사람의 이메일 입력"
+      onContentChange={setEmail}
+      onEnter={handleEnter}
+    />
+  );
 }
