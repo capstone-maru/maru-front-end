@@ -11,6 +11,7 @@ import { UserCard } from '@/components/main-page';
 import { useAuthValue } from '@/features/auth';
 import { fromAddrToCoord, getGeolocation } from '@/features/geocoding';
 import { useRecommendMates } from '@/features/profile';
+import { ColorRing } from 'react-loader-spinner';
 
 const styles = {
   container: styled.div`
@@ -254,8 +255,15 @@ export function MobileMainPage() {
       <styles.map id="map">
         {map == null && (
           <>
-            <p>지도를 불러오는 중입니다.</p>
-            <p className="caption">(위치 권한이 필요합니다)</p>
+            <ColorRing
+              visible={true}
+              height="80"
+              width="80"
+              ariaLabel="color-ring-loading"
+              wrapperStyle={{}}
+              wrapperClass="color-ring-wrapper"
+              colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+            />
           </>
         )}
       </styles.map>
