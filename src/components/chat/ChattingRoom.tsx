@@ -76,6 +76,7 @@ const styles = {
     height: calc(100% - 7.5rem);
     box-shadow: 0px -1px 0px 0px #e5e5ea inset;
     position: relative;
+    overflow-x: hidden;
 
     &::-webkit-scrollbar {
       width: 0.5rem;
