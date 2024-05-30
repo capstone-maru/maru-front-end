@@ -33,7 +33,10 @@ export const getSharedPosts = async ({
     return `${baseURL}?${encodeURI(query)}&cardOption=${cardOption}`;
   };
 
-  return await axios.get<GetSharedPostsDTO>(getURI());
+  return await axios.get<GetSharedPostsDTO>(getURI()).then(res => ({
+    totalPages: res.data.data.totalPages,
+    data: res.data.data.content,
+  }));
 };
 
 export const createSharedPost = async (postData: SharedPostProps) =>
@@ -85,7 +88,10 @@ export const getDormitorySharedPosts = async ({
     return `${baseURL}?${encodeURI(query)}&cardOption=${cardOption}`;
   };
 
-  return await axios.get<GetDormitorySharedPostsDTO>(getURI());
+  return await axios.get<GetDormitorySharedPostsDTO>(getURI()).then(res => ({
+    totalPages: res.data.data.totalPages,
+    data: res.data.data.content,
+  }));
 };
 
 export const createDormitorySharedPost = async (postData: SharedPostProps) =>

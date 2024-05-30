@@ -198,9 +198,9 @@ export function SharedPostsPage() {
 
   useEffect(() => {
     if (selected === 'hasRoom' && sharedPosts != null) {
-      setTotalPageCount(sharedPosts.data.totalPages);
+      setTotalPageCount(sharedPosts.totalPages);
     } else if (selected === 'dormitory' && dormitorySharedPosts != null) {
-      setTotalPageCount(dormitorySharedPosts.data.totalPages);
+      setTotalPageCount(dormitorySharedPosts.totalPages);
     }
   }, [selected, dormitorySharedPosts, sharedPosts]);
 
@@ -221,7 +221,7 @@ export function SharedPostsPage() {
               cardOption: filter.cardType ?? 'my',
               filter: derivedFilter,
               page,
-            }).then(res => res.data),
+            }).then(res => res),
         });
       } else if (selected === 'dormitory') {
         queryClient.prefetchQuery({
@@ -238,7 +238,7 @@ export function SharedPostsPage() {
               cardOption: filter.cardType ?? 'my',
               filter: derivedFilter,
               page,
-            }).then(res => res.data),
+            }).then(res => res),
         });
       }
     }
@@ -262,7 +262,7 @@ export function SharedPostsPage() {
       );
     }
 
-    if (posts?.data == null || posts.data.content.length === 0) {
+    if (posts == null || posts.data.length === 0) {
       return (
         <styles.noRecommendation>
           <p>추천되는 게시글이 없습니다.</p>
@@ -270,7 +270,7 @@ export function SharedPostsPage() {
       );
     }
 
-    return posts?.data.content.map(post => (
+    return posts.data.map(post => (
       <PostCard
         key={post.id}
         post={post}
@@ -307,10 +307,7 @@ export function SharedPostsPage() {
       );
     }
 
-    if (
-      recommendationMates?.data == null ||
-      recommendationMates.data.length === 0
-    ) {
+    if (recommendationMates == null || recommendationMates.length === 0) {
       return (
         <styles.noRecommendation>
           <p>추천되는 메이트가 없습니다.</p>
@@ -318,7 +315,7 @@ export function SharedPostsPage() {
       );
     }
 
-    return recommendationMates.data.map(
+    return recommendationMates.map(
       ({ memberId, score, nickname, location, profileImageUrl, options }) => (
         <Link href={`/profile/${memberId}`} key={memberId}>
           <UserCard
@@ -334,7 +331,7 @@ export function SharedPostsPage() {
         </Link>
       ),
     );
-  }, [isMatesLoading, recommendationMates?.data]);
+  }, [isMatesLoading, recommendationMates]);
 
   return (
     <styles.container>
@@ -356,7 +353,7 @@ export function SharedPostsPage() {
       {selected === 'hasRoom' || selected === 'dormitory' ? (
         <>
           <styles.posts>{renderPosts}</styles.posts>
-          {posts != null && posts.data.content.length !== 0 && (
+          {posts != null && posts.data.length !== 0 && (
             <styles.pagingRow>
               <styles.CircularButton
                 direction="left"

@@ -201,9 +201,9 @@ export function MobileSharedPostsPage() {
 
   useEffect(() => {
     if (selected === 'hasRoom' && sharedPosts != null) {
-      setTotalPageCount(sharedPosts.data.totalPages);
+      setTotalPageCount(sharedPosts.totalPages);
     } else if (selected === 'dormitory' && dormitorySharedPosts != null) {
-      setTotalPageCount(dormitorySharedPosts.data.totalPages);
+      setTotalPageCount(dormitorySharedPosts.totalPages);
     }
   }, [selected, dormitorySharedPosts, sharedPosts]);
 
@@ -227,8 +227,8 @@ export function MobileSharedPostsPage() {
       {selected === 'hasRoom' || selected === 'dormitory' ? (
         <>
           <styles.posts>
-            {posts?.data != null && posts.data.content.length > 0 ? (
-              posts?.data.content.map(post => (
+            {posts != null && posts.data.length > 0 ? (
+              posts.data.map(post => (
                 <PostCard
                   key={post.id}
                   post={post}
@@ -245,7 +245,7 @@ export function MobileSharedPostsPage() {
               </styles.noRecommendation>
             )}
           </styles.posts>
-          {posts?.data.content.length !== 0 && (
+          {posts?.data.length !== 0 && (
             <styles.pagingRow>
               <styles.CircularButton
                 direction="left"
@@ -292,9 +292,8 @@ export function MobileSharedPostsPage() {
         </>
       ) : (
         <styles.cards>
-          {recommendationMates?.data != null &&
-          recommendationMates.data.length > 0 ? (
-            recommendationMates.data.map(
+          {recommendationMates != null && recommendationMates.length > 0 ? (
+            recommendationMates.map(
               ({
                 memberId,
                 score,

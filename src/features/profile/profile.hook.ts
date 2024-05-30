@@ -101,7 +101,7 @@ export const useRecommendMates = ({
 }) =>
   useQuery({
     queryKey: ['/profile/recommend', cardOption],
-    queryFn: async () => await getRecommendMates(cardOption),
+    queryFn: async () => await getRecommendMates(cardOption).then(res => res),
     enabled,
   });
 

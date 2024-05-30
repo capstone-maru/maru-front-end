@@ -173,9 +173,9 @@ export function MobileMainPage() {
   const [createdMarkers, setCreatedMarkers] = useState<naver.maps.Marker[]>([]);
 
   useEffect(() => {
-    if (map == null) return;
+    if (map == null || recommendationMates == null) return;
 
-    recommendationMates?.data.forEach(mate => {
+    recommendationMates.forEach(mate => {
       fromAddrToCoord({ query: mate.location }).then(res => {
         const address = res.shift();
         if (address == null) return;
@@ -202,7 +202,7 @@ export function MobileMainPage() {
         setCreatedMarkers(prev => prev.concat(marker));
       });
     });
-  }, [map, recommendationMates?.data, router]);
+  }, [map, recommendationMates, router]);
 
   useEffect(() => {
     if (map == null) return () => {};
@@ -263,10 +263,9 @@ export function MobileMainPage() {
         <styles.mateRecommendationTitle>
           <h1>{auth?.user?.name}님의 추천 메이트</h1>
         </styles.mateRecommendationTitle>
-        {recommendationMates?.data != null &&
-        recommendationMates.data.length > 0 ? (
+        {recommendationMates != null && recommendationMates.length > 0 ? (
           <styles.mateRecommendation>
-            {recommendationMates.data.map(
+            {recommendationMates.map(
               ({
                 memberId,
                 score,

@@ -101,7 +101,7 @@ export const getRecommendMates = async (cardOption: CardType) => {
   const res = await axios.get<GetRecommendMatesDTO>(
     `/maru-api/profile/recommend?cardOption=${cardOption}`,
   );
-  return res.data;
+  return res.data.data.filter(mate => mate.score > 0);
 };
 
 export const patchProfileImage = async (fileName: string) =>
